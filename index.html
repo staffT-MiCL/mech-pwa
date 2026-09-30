@@ -126,7 +126,10 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .shd .sub{font-size:12px;color:#aab6b0}
 .cols2{grid-template-columns:minmax(0,10.5em) minmax(0,1fr);flex:1;min-height:0}
 .plist{gap:4px}
-.pitem{min-height:0;height:34px;padding:0 8px;display:grid;grid-template-columns:3.2em minmax(0,1fr) auto;align-items:center;gap:6px}
+.pitem{min-height:0;height:40px;padding:0 8px;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;column-gap:6px;row-gap:1px;align-content:center}
+.pitem .pc{grid-column:1/-1;font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--khaki);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pitem .pc small{font-family:var(--body);font-weight:400;letter-spacing:0;color:var(--dim);margin-left:6px;font-size:10px}
+.pitem.sel .pc{color:var(--fire)}
 .pitem .c{font-size:10px;color:var(--dim)}.pitem .n{font-family:var(--disp);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pitem .t{font-size:10px;color:var(--dim)}.pitem .t.eq{color:var(--accent)}.pitem.sel .c,.pitem.sel .t{color:var(--fire)}
 .detail{gap:6px;padding:8px 10px;min-height:0}
@@ -143,6 +146,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .ovl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
 .orow{padding:6px 8px;grid-template-columns:3.6em minmax(0,1fr);font-size:13px}
 .orow .wt{display:none}
+.orow .vc{margin-left:6px;font-family:var(--body);font-size:10px;color:var(--dim)}
 .note{font-size:12px;color:#aab6b0}
 .gs .h{font-size:11px}.gs .h em{color:#98a59f}
 .ptag{transform:translate(-50%,-50%);width:100px;height:30px;font-size:12px}
@@ -166,25 +170,27 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 /* ===== 英語表記・ゲージの見た目 ===== */
 .en{font-family:var(--mech);letter-spacing:.08em}
 .shd .ttl.en{font-size:18px;font-weight:700;letter-spacing:.14em}
-.detail .nm.en{font-size:16px;font-weight:700}
+.detail .en{font-family:var(--mech)!important;letter-spacing:.12em}
 .secj{margin-left:8px;letter-spacing:0;color:var(--faint);font-family:var(--body)}
-.sec,.cmp .k,.orow .k,.gs .gl{font-family:var(--mech);letter-spacing:.14em}
-.cmp .k{font-size:10.5px}
-.orow .v{font-family:var(--mech);font-size:12px;letter-spacing:.06em}
-.pitem .n{font-family:var(--mech);font-size:12px;letter-spacing:.05em}
+.orow .k{font-family:var(--mech);letter-spacing:.14em}
+.sec{font-family:var(--disp)}
+.cmp .k{font-size:11px;font-family:var(--disp)}
+.orow .v{font-family:var(--disp);font-size:13px}
+.pitem .n{font-family:var(--disp);font-size:13px;letter-spacing:.02em}
 .ptag{font-family:var(--mech);letter-spacing:.1em;font-weight:700}
 .ptag span{font-weight:500;letter-spacing:.04em}
 .specs{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:4px}
 .specs span{display:flex;flex-direction:column;padding:4px 8px;background:var(--panel2);border-left:2px solid var(--olive)}
-.specs small{font-size:9px;color:var(--dim);letter-spacing:.14em}.specs b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}.specs i{font-style:normal;font-size:10px;color:var(--dim);margin-left:2px}
+.specs small{font-size:10px;color:var(--dim)}.specs b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}.specs i{font-style:normal;font-size:10px;color:var(--dim);margin-left:2px}
 .mitem .t.en{font-family:var(--mech);font-weight:700;letter-spacing:.16em;font-size:14px}
 .mitem .t.en small{display:block;font-family:var(--body);letter-spacing:0;font-weight:400}
 .tools button{font-family:var(--mech);font-weight:700;letter-spacing:.08em;font-size:10px}
 #gstats{gap:6px 16px;padding:8px 12px 7px;background:linear-gradient(180deg,rgba(14,19,17,.94),rgba(8,11,10,.94));border:1px solid #34403a;border-top:2px solid var(--olive)}
-#gstats::before{content:"UNIT STATUS";position:absolute;right:10px;top:-9px;padding:0 6px;background:#0b0e0d;font-family:var(--sten);font-size:10px;letter-spacing:3px;color:var(--khaki)}
+#gstats::before{content:"STATUS";position:absolute;right:10px;top:-9px;padding:0 6px;background:#0b0e0d;font-family:var(--sten);font-size:10px;letter-spacing:3px;color:var(--khaki)}
 .gs{gap:3px}
 .gh{display:flex;align-items:baseline;gap:8px}
-.gl{font-size:10px;color:var(--khaki);font-weight:700;min-width:5.6em}
+.gl{font-size:12px;color:var(--khaki);font-weight:700;min-width:6.5em;font-family:var(--disp)!important;letter-spacing:.06em!important}
+.gf{font-family:var(--body)!important;letter-spacing:0!important;font-size:10px!important;color:#7f8c86!important}
 .gv{font-family:var(--mech);font-size:17px;font-weight:700;color:#eef2ef;font-variant-numeric:tabular-nums;line-height:1}
 .gv small{font-size:10px;color:var(--dim);margin-left:3px;font-weight:500}
 .dchip{margin-left:auto;font-family:var(--mech);font-size:11px;font-weight:700;padding:0 5px;border:1px solid currentColor;line-height:15px}
@@ -865,7 +871,7 @@ const VEN={'射撃':'FIRE','近接':'MELEE','補助':'SUPPORT','防御':'DEFENSE
 const RATEN={'1回／1秒':'1 / 1.0s','3点射／1.2秒':'3-RND BURST / 1.2s','12発／秒':'12 RND / s','1発／2秒':'1 / 2.0s','1回／1.3秒':'1 / 1.3s','押している間':'WHILE HELD','1斉射／2秒':'1 SALVO / 2.0s','1発／3秒':'1 / 3.0s'};
 const ven=v=>typeof v==='string'&&VEN[v]?VEN[v]:v;
 function cmpRow(k,a,b,better='hi',fmt=v=>v){
- k=KEN[k]||k;{const f0=fmt;fmt=v=>ven(f0(v))}
+ 
  const na=typeof a==='number',nb=typeof b==='number';let cls='',mark='';
  if(na&&nb&&a!==b){const good=better==='hi'?b>a:b<a;cls=good?'up':'dn';mark=b>a?'▲':'▼'}
  else if(!na||!nb){if(a!==b)cls='up'}
@@ -887,18 +893,18 @@ function renderGStats(){
  const S2=P2||SS,lr=S2.weap/S2.load,lc=lr>1?'c-over':lr>.8?'c-warn':'c-load';
  const row=(code,val,unit,chip,bar,foot='')=>`<div class="gs"><div class="gh"><span class="gl">${code}</span><span class="gv">${val}<small>${unit}</small></span>${chip}</div>${bar}${foot?`<div class="gf">${foot}</div>`:''}</div>`;
  $('gstats').innerHTML=
-  row('ARMOR',SS.armor,'AP',dl(SS.armor,P2?.armor),cells(1400,[[SS.armorCore,'c-core'],[SS.armor-SS.armorCore,'c-sub']],P2?.armor),`CORE ${SS.armorCore} ／ OTHER ${SS.armor-SS.armorCore}`)+
-  row('MOBILITY',Math.round(SS.mob),'',dl(SS.mob,P2?.mob),cells(100,[[SS.mob,'c-mob'],[SS.pen,'c-pen']],P2?.mob),`LEGS +${SS.legMob} ／ WEIGHT −${Math.round(SS.pen)}`)+
-  row('BOOST',SS.boost,'EN',dl(SS.boost,P2?.boost),cells(130,[[SS.boost,'c-mob']],P2?.boost),'CAPACITY')+
-  row('LOAD',S2.weap,'/'+S2.load,P2&&(P2.weap!==SS.weap||P2.load!==SS.load)?`<span class="dchip ${P2.over?'dn':'up'}">${P2.weap-SS.weap>=0?'+':''}${P2.weap-SS.weap}</span>`:'',cells(S2.load,[[Math.min(S2.weap,S2.load),lc]]),lr>1?'OVERLOAD':`${Math.round(lr*100)}% USED`);
+  row('装甲',SS.armor,'',dl(SS.armor,P2?.armor),cells(1400,[[SS.armorCore,'c-core'],[SS.armor-SS.armorCore,'c-sub']],P2?.armor),`コア ${SS.armorCore} ＋ アーム・レッグ ${SS.armor-SS.armorCore}`)+
+  row('機動',Math.round(SS.mob),'',dl(SS.mob,P2?.mob),cells(100,[[SS.mob,'c-mob'],[SS.pen,'c-pen']],P2?.mob),`レッグ +${SS.legMob} − 重量 ${Math.round(SS.pen)}（赤枠＝重さで失った分）`)+
+  row('ブースト容量',SS.boost,'',dl(SS.boost,P2?.boost),cells(130,[[SS.boost,'c-mob']],P2?.boost),'ダッシュ・跳躍・急加速で使う量')+
+  row('積載',S2.weap,'/'+S2.load,P2&&(P2.weap!==SS.weap||P2.load!==SS.load)?`<span class="dchip ${P2.over?'dn':'up'}">${P2.weap-SS.weap>=0?'+':''}${P2.weap-SS.weap}</span>`:'',cells(S2.load,[[Math.min(S2.weap,S2.load),lc]]),lr>1?'積載オーバー：出撃できません':`兵装の重さ ${S2.weap} ／ 上限 ${S2.load}（${Math.round(lr*100)}%）`);
 }
 function renderSide(){
  const el=$('side');
  if(view==='overview'){
   const hd=HEADS[cfg.head];
   el.innerHTML=`<div class="shd"><span class="code">UNIT</span><span class="ttl en">CONFIGURATION</span><span class="sub">部位を押すと装備を変更できます</span></div><div class="rule"></div>
-  <div class="ovl">${SLOTS.map(sl=>{const d=sl.cat[cfg[sl.key]],w=d.st?d.st.wt:d.wt;return `<button class="orow" data-slot="${sl.key}"><span class="k ${sl.group==='F'?'f':'w'}">${sl.label}</span><span class="v">${esc(ENM(sl.key,cfg[sl.key]))}</span><span class="wt">${w?'WT '+w:''}</span></button>`}).join('')}</div>
-  <div class="specs"><span><small>ABILITY</small><b>${hd.abEn}</b></span><span><small>LOCK RANGE</small><b>${SS.lockRange}<i>m</i></b></span><span><small>WALK</small><b>${SS.walk.toFixed(1)}</b></span><span><small>DASH</small><b>${SS.dash.toFixed(1)}</b></span><span><small>QUICK BOOST</small><b>${SS.qb.toFixed(1)}<i>m</i></b></span></div>
+  <div class="ovl">${SLOTS.map(sl=>{const d=sl.cat[cfg[sl.key]],w=d.st?d.st.wt:d.wt;return `<button class="orow" data-slot="${sl.key}"><span class="k ${sl.group==='F'?'f':'w'}">${sl.label}</span><span class="v">${esc(ENM(sl.key,cfg[sl.key]).trim())}<small class="vc">${pn(sl.key,cfg[sl.key])[1]}</small></span><span class="wt"></span></button>`}).join('')}</div>
+  <div class="specs"><span><small>ヘッド能力</small><b>${hd.abName}</b></span><span><small>ロック距離</small><b>${SS.lockRange}<i>m</i></b></span><span><small>歩行</small><b>${SS.walk.toFixed(1)}</b></span><span><small>ダッシュ</small><b>${SS.dash.toFixed(1)}</b></span><span><small>急加速</small><b>${SS.qb.toFixed(1)}<i>m</i></b></span></div>
   <div class="note">${hd.abDesc}</div>
   ${SS.over?`<div class="warn-msg">兵装が積載を ${SS.weap-SS.load} 超えています。軽い兵装にするか、積載の大きいアームにしてください。</div>`:''}`;
   el.querySelectorAll('[data-slot]').forEach(b=>b.onclick=()=>openSlot(b.dataset.slot));
@@ -924,7 +930,7 @@ function renderSide(){
     rows.push(cmpRow('種類',a.kind||'－',b.kind||'－'));
     rows.push(cmpRow('使用回数',a.ammo??0,b.ammo??0));
     if(a.dur||b.dur)rows.push(cmpRow('効果時間',a.dur||0,b.dur||0));
-    rows.push(cmpRow('リロード',a.reload||0,b.reload||0,'lo',v=>v+'s'));
+    rows.push(cmpRow('リロード',a.reload||0,b.reload||0,'lo',v=>v+'秒'));
    }
    if(kind==='射撃'||kind==='近接'||a.kind==='射撃'||a.kind==='近接'){
     if(!(kind==='補助'||kind==='防御'))rows.push(cmpRow('種類',a.kind||'－',b.kind||'－'));
@@ -933,15 +939,15 @@ function renderSide(){
     rows.push(cmpRow('範囲',a.area||0,b.area||0,'hi',v=>v?v+'m':'－'));
     rows.push(cmpRow('同時発射',a.count||0,b.count||0));
     rows.push(cmpRow('弾数',a.ammo??0,b.ammo??0,'hi',R0));
-    rows.push(cmpRow('リロード',a.reload||0,b.reload||0,'lo',v=>v?v+'s':'－'));
+    rows.push(cmpRow('リロード',a.reload||0,b.reload||0,'lo',v=>v?v+'秒':'－'));
     rows.push(cmpRow('衝撃',a.imp||'－',b.imp||'－'));
     rows.push(cmpRow('弾速',a.spd||0,b.spd||0,'hi',v=>v||'－'));
     rows.push(cmpRow('誘導',a.hom||'－',b.hom||'－'));
    }
    rows.push(cmpRow('重量',a.wt||0,b.wt||0,'lo'));
-   if(b.rate)rows.push(`<div class="c"><span class="k">RATE</span><span class="v">${esc(RATEN[b.rate]||b.rate)}</span></div>`);
+   if(b.rate)rows.push(`<div class="c"><span class="k">連射</span><span class="v">${esc(b.rate)}</span></div>`);
    part=rows.join('');
-   const KEYS=(b.kind==='補助'||b.kind==='防御'||(!b.kind&&(a.kind==='補助'||a.kind==='防御')))?['USES','DURATION','RELOAD','WEIGHT']:['POWER','RANGE','AMMO','RELOAD','IMPACT','WEIGHT'];
+   const KEYS=(b.kind==='補助'||b.kind==='防御'||(!b.kind&&(a.kind==='補助'||a.kind==='防御')))?['使用回数','効果時間','リロード','重量']:['威力','射程','弾数','リロード','衝撃','重量'];
    brief=rows.filter(r=>KEYS.some(k=>r.includes(`class="k">${k}<`))).join('');
   }
   const whole=[cmpRow('装甲',SS.armor,P2.armor),cmpRow('機動',Math.round(SS.mob),Math.round(P2.mob)),cmpRow('ブースト容量',SS.boost,P2.boost),
@@ -950,15 +956,15 @@ function renderSide(){
   el.innerHTML=`<div class="shd"><span class="code">SLOT ${no}</span><span class="ttl en">${sl.label}</span><span class="sub">${sub}</span></div><div class="rule"></div>
   <div class="cols2"><div class="plist">${items.map(id=>{const d=sl.cat[id],w=d.st?d.st.wt:d.wt;const s=id===cand,e=id===cur;
     const ov=!e&&statsFor({...cfg,[selSlot]:id}).over;
-    return `<button class="pitem${s?' sel':''}${ov?' ovw':''}" data-id="${id}" ${ov?'disabled':''}><span class="c">${id==='none'?'―':id}</span><span class="n">${esc(ENM(selSlot,id))}</span>${e?'<span class="t eq">EQ</span>':ov?'<span class="t ov">OVER</span>':`<span class="t">${w?w:''}</span>`}</button>`}).join('')}
-    <div class="pitem lock"><span class="c">－</span><span class="n">LOCKED</span><span class="t"></span></div></div>
-   <div class="detail"><div class="dtop">${sl.group==='W'&&cand!=='none'?'<div class="pv" id="pv"></div>':''}<div class="dtxt"><span class="en">${id2code(cand)} ／ ${esc(cd.name)}</span><span class="nm en">${EN[cand]||''}</span><p>${esc(DESC[cand]||'')}</p></div></div>
-    <div class="sec">${sl.group==='F'?'PART SPEC':'WEAPON SPEC'}</div><div class="cmp">${brief}</div>
+    return `<button class="pitem${s?' sel':''}${ov?' ovw':''}" data-id="${id}" ${ov?'disabled':''}><span class="pc">${pn(selSlot,id)[0]}<small>${pn(selSlot,id)[1]}</small></span><span class="n">${esc(ENM(selSlot,id).trim())}</span>${e?'<span class="t eq">装備中</span>':ov?'<span class="t ov">重すぎ</span>':`<span class="t">重量${w||0}</span>`}</button>`}).join('')}
+    ${items.length<5?'<div class="pitem lock"><span class="pc">－</span><span class="n">未入手</span><span class="t"></span></div>':''}</div>
+   <div class="detail"><div class="dtop">${sl.group==='W'&&cand!=='none'?'<div class="pv" id="pv"></div>':''}<div class="dtxt"><span class="en">${pn(selSlot,cand)[0]} ／ ${pn(selSlot,cand)[1]}</span><span class="nm">${esc(ENM(selSlot,cand).trim())}</span><p>${esc(DESC[cand]||'')}</p></div></div>
+    <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${brief}</div>
     <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur?'disabled':''}>${cand===cur?'EQUIPPED':'EQUIP'}</button><button class="btn-sub" id="more">DETAIL</button><button class="btn-sub" id="back">BACK</button></div></div></div>`;
-  $('more').onclick=()=>openModal(`<div class="shd"><span class="code">${id2code(cand)} / ${EN[cand]||''}</span><span class="ttl">${esc(cd.name)}</span></div><div class="rule"></div>
+  $('more').onclick=()=>openModal(`<div class="shd"><span class="code">${pn(selSlot,cand)[0]} ／ ${pn(selSlot,cand)[1]}</span><span class="ttl">${esc(ENM(selSlot,cand).trim())}</span></div><div class="rule"></div>
    <p class="note" style="margin:0">${esc(DESC[cand]||'')}${cd.st&&cd.st.note?'<br>'+esc(cd.st.note):''}</p>
-   <div class="sec">${sl.group==='F'?'PART SPEC':'WEAPON SPEC'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${part}</div>
-   <div class="sec">UNIT TOTAL<span class="secj">現在 → 装備後</span></div><div class="cmp">${whole}${cmpRow('歩行速度',+SS.walk.toFixed(1),+P2.walk.toFixed(1))}${cmpRow('ダッシュ速度',+SS.dash.toFixed(1),+P2.dash.toFixed(1))}${cmpRow('急加速距離',+SS.qb.toFixed(1),+P2.qb.toFixed(1))}${cmpRow('ロック距離',SS.lockRange,P2.lockRange,'hi',v=>v+'m')}</div>
+   <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${part}</div>
+   <div class="sec">機体全体<span class="secj">現在 → 装備後</span></div><div class="cmp">${whole}${cmpRow('歩行速度',+SS.walk.toFixed(1),+P2.walk.toFixed(1))}${cmpRow('ダッシュ速度',+SS.dash.toFixed(1),+P2.dash.toFixed(1))}${cmpRow('急加速距離',+SS.qb.toFixed(1),+P2.qb.toFixed(1))}${cmpRow('ロック距離',SS.lockRange,P2.lockRange,'hi',v=>v+'m')}</div>
    ${P2.over?`<div class="warn-msg">この装備にすると積載を ${P2.weap-P2.load} 超えます（出撃不可）</div>`:''}`);
   el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{cand=b.dataset.id;renderGarage()});
   const pv=$('pv');if(pv&&pv.appendChild){pv.appendChild(PR.domElement);setPreview(selSlot,cand)}else setPreview(null);
@@ -988,14 +994,26 @@ function renderSide(){
  syncPreviewMech();updateTagsState();highlight(view==='slot'?selSlot:null);
 }
 const id2code=id=>id==='none'?'―':id;
-const ENM=(slot,id)=>id==='none'?(SLOTOF(slot).cat===HAND?'BARE HAND':'EMPTY'):(EN[id]||SLOTOF(slot).cat[id].name);
+/* 名前の体系：CAT＝種類（英語の項目名）、TYPE＝種類の日本語、MODEL＝型番、NAME＝固有名。
+   同じ種類の装備が増えたら、同じ CAT で型番と固有名だけ変えて追加する */
+const PN={
+ 'HD-01':['SENSOR','センサー型','HD-01','千里眼'],'HD-02':['MONO-EYE','モノアイ型','HD-02','一ツ目'],
+ 'CR-01':['STANDARD','標準型','CR-01','鋼心'],'CR-02':['HEAVY','重装型','CR-02','鉄甲'],
+ 'AR-01':['STANDARD','標準型','AR-01','隼腕'],'AR-02':['HEAVY','重装型','AR-02','剛腕'],
+ 'LG-01':['BIPED','中量二脚','LG-01','疾風'],'LG-02':['HEAVY BIPED','重量二脚','LG-02','山嶽'],
+ 'RF':['RIFLE','ライフル','RF-01','燕'],'MG':['MACHINE GUN','マシンガン','MG-01','驟雨'],'BZ':['BAZOOKA','バズーカ','BZ-01','轟'],
+ 'BL':['BLADE','ブレード','BL-01','紫電'],'SH':['SHIELD','シールド','SH-01','大楯'],
+ 'MS':['MISSILE','ミサイル','MS-06','群鴉'],'RD':['RADAR','レーダー','RD-01','遠目'],'GC':['CANNON','グレネード砲','GC-01','雷鼓'],
+ 'BT':['BOOSTER','追加ブースター','BT-01','迅雷'],'IC':['INTERCEPTOR','迎撃装置','IC-01','番犬']};
+const pn=(slot,id)=>id==='none'?(SLOTOF(slot).cat===HAND?['NONE','','','素手（武器なし）']:['NONE','','','装備なし']):(PN[id]||['','',id,SLOTOF(slot).cat[id].name]);
+const ENM=(slot,id)=>{const p=pn(slot,id);return (p[2]?p[2]+' ':'')+p[3]};
 
 /* 部位ボタン：機体のまわりの決まった位置に配置（x%,y% は3D画面内の中心位置）。選ぶと実機のその部位を強調 */
 const TAGPOS={head:[50,9],ext:[18,11],rShoulder:[18,24],lShoulder:[82,24],core:[18,38],arms:[82,38],rHand:[18,53],lHand:[82,53],legs:[82,67]};
 const tagEls={};
 Object.keys(TAGPOS).forEach(k=>{const sl=SLOTOF(k),b=document.createElement('button');b.className='ptag '+(sl.group==='F'?'f':'w');b.innerHTML=`${sl.label}<span></span>`;
  b.style.left=TAGPOS[k][0]+'%';b.style.top=TAGPOS[k][1]+'%';b.onclick=()=>openSlot(k);$('tags').appendChild(b);tagEls[k]=b});
-function updateTagsState(){Object.entries(tagEls).forEach(([k,b])=>{const d=SLOTOF(k).cat[cfg[k]];b.querySelector('span').textContent=k==='head'||k==='core'||k==='arms'||k==='legs'?cfg[k]:ENM(k,cfg[k]);b.classList.toggle('on',view==='slot'&&selSlot===k)})}
+function updateTagsState(){Object.entries(tagEls).forEach(([k,b])=>{const d=SLOTOF(k).cat[cfg[k]];b.querySelector('span').textContent=pn(k,cfg[k])[3];b.classList.toggle('on',view==='slot'&&selSlot===k)})}
 function updateTags(){}
 // 強調表示：その部位のポリゴンに橙色のワイヤーフレームを重ねて点滅させる
 const HL=new THREE.LineBasicMaterial({color:0xffb040,transparent:true});const EDGES=new WeakMap();
