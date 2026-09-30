@@ -1,17 +1,33 @@
 {
+  "id": "/mech-pwa/",
   "name": "重装機体",
   "short_name": "重装機体",
   "description": "PS初期風の3Dロボアクション。パーツを組み替えて演習場で戦う",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/mech-pwa/",
+  "scope": "/mech-pwa/",
   "display": "fullscreen",
   "orientation": "any",
   "background_color": "#0a0c0b",
   "theme_color": "#0a0c0b",
   "lang": "ja",
   "icons": [
-    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
-    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
-    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
