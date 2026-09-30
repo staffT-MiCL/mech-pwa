@@ -997,14 +997,14 @@ const id2code=id=>id==='none'?'―':id;
 /* 名前の体系：CAT＝種類（英語の項目名）、TYPE＝種類の日本語、MODEL＝型番、NAME＝固有名。
    同じ種類の装備が増えたら、同じ CAT で型番と固有名だけ変えて追加する */
 const PN={
- 'HD-01':['SENSOR','センサー型','HD-01','千里眼'],'HD-02':['MONO-EYE','モノアイ型','HD-02','一ツ目'],
- 'CR-01':['STANDARD','標準型','CR-01','鋼心'],'CR-02':['HEAVY','重装型','CR-02','鉄甲'],
- 'AR-01':['STANDARD','標準型','AR-01','隼腕'],'AR-02':['HEAVY','重装型','AR-02','剛腕'],
- 'LG-01':['BIPED','中量二脚','LG-01','疾風'],'LG-02':['HEAVY BIPED','重量二脚','LG-02','山嶽'],
- 'RF':['RIFLE','ライフル','RF-01','燕'],'MG':['MACHINE GUN','マシンガン','MG-01','驟雨'],'BZ':['BAZOOKA','バズーカ','BZ-01','轟'],
- 'BL':['BLADE','ブレード','BL-01','紫電'],'SH':['SHIELD','シールド','SH-01','大楯'],
- 'MS':['MISSILE','ミサイル','MS-06','群鴉'],'RD':['RADAR','レーダー','RD-01','遠目'],'GC':['CANNON','グレネード砲','GC-01','雷鼓'],
- 'BT':['BOOSTER','追加ブースター','BT-01','迅雷'],'IC':['INTERCEPTOR','迎撃装置','IC-01','番犬']};
+ 'HD-01':['SENSOR','センサー型','','HS-110A'],'HD-02':['MONO-EYE','モノアイ型','','HM-220'],
+ 'CR-01':['STANDARD','標準型','','CM-300'],'CR-02':['HEAVY','重装型','','CH-420B'],
+ 'AR-01':['STANDARD','標準型','','AM-150'],'AR-02':['HEAVY','重装型','','AH-260'],
+ 'LG-01':['BIPED','中量二脚','','LM-200'],'LG-02':['HEAVY BIPED','重量二脚','','LH-350'],
+ 'RF':['RIFLE','ライフル','','WR-07A'],'MG':['MACHINE GUN','マシンガン','','WM-12'],'BZ':['BAZOOKA','バズーカ','','WB-40'],
+ 'BL':['BLADE','ブレード','','WL-03'],'SH':['SHIELD','シールド','','WS-08'],
+ 'MS':['MISSILE','ミサイル','','SM-6X'],'RD':['RADAR','レーダー','','SR-02'],'GC':['CANNON','グレネード砲','','SG-90'],
+ 'BT':['BOOSTER','追加ブースター','','XB-15'],'IC':['INTERCEPTOR','迎撃装置','','XI-04']};
 const pn=(slot,id)=>id==='none'?(SLOTOF(slot).cat===HAND?['NONE','','','素手（武器なし）']:['NONE','','','装備なし']):(PN[id]||['','',id,SLOTOF(slot).cat[id].name]);
 const ENM=(slot,id)=>{const p=pn(slot,id);return (p[2]?p[2]+' ':'')+p[3]};
 
