@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>重装機体 v2</title>
+<title>重装機体</title>
 <meta name="theme-color" content="#0a0c0b">
 <meta name="description" content="PS初期風の3Dロボアクション。パーツを組み替えて演習場で戦う">
 <link rel="manifest" href="manifest.webmanifest">
@@ -15,51 +15,121 @@
 <style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}[hidden]{display:none!important}</style>
 
 <style>
-/* ガレージ：上に3D画面、下にアセンブル用パネル／出撃：3D画面いっぱいに操作UIを重ねる。単一の暗色ルック（初期3Dゲームの計器盤風） */
+/* ガレージ：スマホ横画面を基準に左右2分割（左＝機体と性能、右＝情報パネル）／出撃：3D画面いっぱいに操作UI
+   方向性：SF計器盤×ミリタリー（ステンシル文字、オリーブ、警告帯、製造番号）×初代PS風の低解像度 */
 :root{
- --bg:#0a0c0b; --panel:#141816; --line:#2a312d; --fg:#d6dcd8; --dim:#7f8a84; --accent:#8cf06e; --fire:#f0a040; --alert:#ff5a3c;
- --disp:"DotGothic16","MS Gothic",monospace; --body:"M PLUS 1p","Hiragino Sans",sans-serif;
+ --bg:#07090a; --panel:#0e1211; --panel2:#121816; --line:#2c3833; --fg:#d9e0dc; --dim:#7f8c86; --faint:#4a5550;
+ --accent:#8cf06e; --fire:#f0a040; --cyan:#6fd3e0; --alert:#ff5a3c; --olive:#5b6b3a; --khaki:#b8a878;
+ --disp:"DotGothic16","MS Gothic",monospace; --mech:"Chakra Petch","DotGothic16",monospace; --sten:"Stardos Stencil","Chakra Petch",monospace;
+ --body:"M PLUS 1p","Hiragino Sans",sans-serif;
  color-scheme:dark;
 }
 html,body{height:100%}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);display:flex;flex-direction:column;overscroll-behavior:none}
-#wrap{flex:1;min-height:0;position:relative;background:#000;overflow:hidden;touch-action:none}
-#wrap canvas{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
-#wrap::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
- background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px)}
-.hud{position:absolute;left:16px;top:12px;right:16px;font-family:var(--disp);font-size:11px;color:var(--accent);letter-spacing:.06em;pointer-events:none;text-shadow:1px 1px 0 #000;z-index:2;line-height:1.55}
-.hud b{display:block;font-size:17px;color:var(--fg);font-weight:400}
-.bar{background:var(--panel);border-top:1px solid var(--line);padding-block:10px;padding-inline:16px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto}
-.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.lbl{font-family:var(--disp);font-size:12px;color:var(--dim);letter-spacing:.1em;width:4.5em}
-button{font-family:var(--disp);font-size:13px;background:#1d2320;color:var(--fg);border:1px solid var(--line);border-radius:2px;padding:6px 11px;cursor:pointer}
-button[aria-pressed="true"]{background:var(--accent);color:#0c160a;border-color:var(--accent)}
+body{background:var(--bg);color:var(--fg);font-family:var(--mech);overscroll-behavior:none}
+button{font-family:var(--mech);font-size:13px;background:#1a201d;color:var(--fg);border:1px solid var(--line);border-radius:0;padding:6px 11px;cursor:pointer}
 button:disabled{opacity:.35;cursor:default}
-button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#sortie{background:var(--accent);color:#0c160a;border-color:var(--accent);font-size:15px;padding:8px 18px;letter-spacing:.2em}
-.act button{border-color:#5a4020;background:#231c14}
-.asm{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 10px}
-.asm h3{grid-column:1/-1;margin:4px 0 0;font-family:var(--disp);font-weight:400;font-size:12px;color:var(--accent);letter-spacing:.12em;border-bottom:1px solid var(--line);padding-bottom:3px}
-.asm label{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--dim);min-width:0}
-select{font-family:var(--disp);font-size:13px;background:#1d2320;color:var(--fg);border:1px solid var(--line);border-radius:2px;padding:5px 6px;width:100%}
-.cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px 10px}
-.cols label{flex-direction:row;align-items:center;gap:6px}
-input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);background:none;border-radius:2px}
-.hint{font-size:12px;color:var(--dim)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--fire);outline-offset:2px}
+.cut{clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+#app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:40px minmax(0,1fr)}
+#app.play{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+#app.play #hdr,#app.play #side{display:none}
+@media (orientation:portrait){#app:not(.play){grid-template-columns:minmax(0,1fr);grid-template-rows:40px 52% minmax(0,1fr)}}
+
+/* ヘッダー */
+#hdr{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:0 12px;background:#101513;border-bottom:1px solid var(--line);position:relative;min-width:0}
+#hdr::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:3px;background:repeating-linear-gradient(-45deg,#f2c21a 0 6px,#111 6px 12px);opacity:.55;pointer-events:none;z-index:4}
+.logo{display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+.logo .jp{font-family:var(--disp);font-size:17px;color:#eef2ef;letter-spacing:2px}
+.logo .en{font-family:var(--sten);font-size:13px;color:var(--fire);letter-spacing:3px}
+.sep{width:1px;height:18px;background:var(--line)}
+.tag{font-family:var(--sten);font-size:12px;color:var(--khaki);letter-spacing:2px;white-space:nowrap}
+#uname{min-width:0;width:11em;background:transparent;border:0;border-bottom:1px dashed var(--faint);color:var(--fg);font-family:var(--disp);font-size:13px;padding:2px 2px}
+.grow{flex:1}
+.kv{display:flex;align-items:baseline;gap:5px;white-space:nowrap}.kv small{font-size:10px;color:var(--dim);letter-spacing:1px}.kv b{font-size:13px;font-variant-numeric:tabular-nums}
+.kv b.over{color:var(--alert)}
+#menuBtn{height:28px;padding:0 14px;display:flex;align-items:center;gap:8px;background:#1c1409;border:1px solid var(--fire);color:var(--fire);font-size:12px;font-weight:700;letter-spacing:3px}
+@media (max-width:700px){.kv:first-of-type,.tag{display:none}}
+
+/* 3D画面 */
+#wrap{position:relative;min-height:0;min-width:0;background:#000;overflow:hidden;touch-action:none;border-right:1px solid var(--line)}
+#wrap canvas{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+#wrap::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background:repeating-linear-gradient(0deg,rgba(0,0,0,.24) 0 1px,transparent 1px 3px)}
 #err{position:absolute;inset:auto 16px 16px 16px;color:#ffb0a0;font-size:13px;z-index:5}
-/* 性能表示 */
-.stats{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);padding:10px 12px;background:#101311}
-.srow{display:grid;grid-template-columns:5.5em 1fr 8.5em;gap:8px;align-items:center;font-size:12px}
-.srow b{font-family:var(--disp);font-weight:400;color:var(--dim);letter-spacing:.08em}
-.srow .v{font-family:var(--disp);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.sbar{position:relative;height:12px;background:#1d2320;border:1px solid var(--line);overflow:hidden}
-.sbar i{position:absolute;top:0;bottom:0;left:0}
-.seg-core{background:#8cf06e}.seg-sub{background:#4f7c42}.seg-mob{background:#6fc8ff}.seg-base{background:#2c4f63}.seg-pen{background:repeating-linear-gradient(45deg,#ff5a3c 0 3px,#6a2418 3px 6px)}
-.seg-boost{background:#6fc8ff}.seg-load{background:#8cf06e}.seg-load.warn{background:#f0c040}.seg-load.over{background:#ff5a3c}
-.sline{font-size:12px;color:var(--dim);line-height:1.6}.sline em{font-style:normal;color:var(--fg)}
-.over-msg{color:var(--alert);font-size:12px}
-#sortie:disabled{background:#3a2a26;color:#a08a84;border-color:#5a3a30}
-.wspec{font-size:11px;color:var(--dim);grid-column:1/-1;line-height:1.5}
+
+/* ガレージの重ね表示 */
+#gui{position:absolute;inset:0;z-index:2;pointer-events:none}
+#leaders{position:absolute;inset:0;width:100%;height:100%}
+.ptag{position:absolute;pointer-events:auto;height:26px;width:104px;padding:0 8px;display:flex;align-items:center;justify-content:space-between;gap:4px;font-size:11px;white-space:nowrap}
+.ptag span{font-size:9px;opacity:.75;overflow:hidden;text-overflow:ellipsis}
+.ptag.f{background:rgba(12,23,24,.88);border:1px solid #2d6068;color:#9fe6ee}
+.ptag.w{background:rgba(22,18,11,.88);border:1px solid #6a4a20;color:#f0c080}
+.ptag.on{background:var(--fire);border-color:var(--fire);color:#1a1006;font-weight:700}
+.ptag.on span{opacity:1}
+.tools{position:absolute;left:10px;top:10px;display:flex;gap:6px;pointer-events:auto}
+.tools button{height:26px;padding:0 10px;background:rgba(14,18,17,.85);border:1px solid #3a4540;color:#aeb8b3;font-size:11px;letter-spacing:1px}
+.stamp{position:absolute;right:10px;top:10px;text-align:right;font-family:var(--sten);font-size:10px;line-height:1.35;color:var(--khaki);opacity:.55;letter-spacing:2px}
+.stamp b{display:inline-block;border:1px solid var(--khaki);padding:1px 5px;margin-bottom:2px;font-weight:400}
+#gstats{position:absolute;left:8px;right:8px;bottom:8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 14px;padding:7px 10px;background:rgba(10,14,13,.9);border:1px solid var(--line);pointer-events:auto}
+.gs{display:flex;flex-direction:column;gap:3px;min-width:0}
+.gs .h{display:flex;justify-content:space-between;font-size:10px;gap:6px}.gs .h em{font-style:normal;color:var(--dim);letter-spacing:2px}
+.gs .h b{font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.up{color:var(--accent)}.dn{color:#ff6a4c}
+.bar{position:relative;height:7px;background:#1a211e;overflow:hidden}.bar i{position:absolute;top:0;bottom:0}
+.b-core{background:var(--accent)}.b-sub{background:#4f7c42}.b-mob{background:var(--cyan)}.b-pen{background:repeating-linear-gradient(45deg,#ff5a3c 0 3px,#5a2014 3px 6px)}
+.b-prev{background:rgba(255,255,255,.28)}.b-load{background:var(--accent)}.b-load.warn{background:#f0c040}.b-load.over{background:var(--alert)}
+
+/* 右：情報パネル */
+#side{min-height:0;min-width:0;overflow-y:auto;background:var(--panel);padding:12px 14px;display:flex;flex-direction:column;gap:10px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+.shd{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.shd .code{font-family:var(--sten);font-size:12px;color:var(--fire);letter-spacing:3px}
+.shd .ttl{font-family:var(--disp);font-size:18px;color:#eef2ef}
+.shd .sub{font-size:11px;color:var(--dim)}
+.rule{height:1px;background:linear-gradient(90deg,var(--fire) 0 60px,var(--line) 60px);flex-shrink:0}
+.cols2{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr);gap:10px;align-items:start}
+@media (max-width:520px){.cols2{grid-template-columns:minmax(0,1fr)}}
+.plist{display:flex;flex-direction:column;gap:6px}
+.pitem{min-height:46px;padding:5px 10px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;text-align:left;background:var(--panel2);border:1px solid var(--line)}
+.pitem .r{display:flex;width:100%;justify-content:space-between;font-size:10px;color:var(--dim)}
+.pitem .n{font-family:var(--disp);font-size:13px}
+.pitem .eq{color:var(--accent)}
+.pitem.sel{background:#1f170b;border-color:var(--fire);color:#ffe2b8;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
+.pitem.sel .r{color:var(--fire)}
+.pitem.lock{border-style:dashed;color:var(--faint);background:transparent}
+.detail{padding:10px 12px;background:var(--panel2);border:1px solid var(--line);display:flex;flex-direction:column;gap:7px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
+.detail .en{font-family:var(--sten);font-size:11px;color:var(--fire);letter-spacing:2px}
+.detail .nm{font-family:var(--disp);font-size:17px;color:#eef2ef}
+.detail p{margin:0;font-size:11px;color:#9aa6a0;line-height:1.55;font-family:var(--body)}
+.sec{font-size:10px;color:var(--dim);letter-spacing:2px;border-bottom:1px solid var(--line);padding-bottom:3px}
+.cmp{display:grid;grid-template-columns:minmax(0,1fr) auto 1.2em auto;gap:3px 8px;font-size:11px;align-items:baseline;font-variant-numeric:tabular-nums}
+.cmp .k{color:var(--dim)}.cmp .a{text-align:right}.cmp .ar{color:var(--faint);text-align:center}.cmp .b{text-align:right;white-space:nowrap}
+.acts{display:flex;gap:8px;margin-top:4px}
+.btn-main{flex:1;height:36px;background:var(--fire);border:0;color:#1a1006;font-size:13px;font-weight:700;letter-spacing:3px}
+.btn-sub{height:36px;padding:0 14px;background:transparent;border:1px solid #3a4540;color:#aeb8b3;font-size:12px}
+.warn-msg{font-size:11px;color:var(--alert);line-height:1.5;font-family:var(--body)}
+.ovl{display:flex;flex-direction:column;gap:4px}
+.orow{display:grid;grid-template-columns:4.5em minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 8px;background:var(--panel2);border:1px solid var(--line);text-align:left;font-size:12px}
+.orow .k{font-size:10px;letter-spacing:1px}.orow .k.f{color:#9fe6ee}.orow .k.w{color:#f0c080}
+.orow .v{font-family:var(--disp);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.orow .wt{font-size:10px;color:var(--dim)}
+.note{font-size:11px;color:var(--dim);line-height:1.6;font-family:var(--body)}
+.note em{font-style:normal;color:var(--fg)}
+.swatches{display:flex;gap:6px;flex-wrap:wrap}
+.colrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.colrow label{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--dim)}
+input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);background:none}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button[aria-pressed="true"]{background:var(--fire);color:#1a1006;border-color:var(--fire)}
+
+/* メニュー */
+#menu{position:fixed;inset:0;z-index:20;background:rgba(4,6,5,.6)}
+#menu .drawer{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));box-sizing:border-box;background:#101513;border-left:2px solid var(--fire);display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+.mhd{display:flex;justify-content:space-between;align-items:center}
+.mhd span{font-family:var(--sten);font-size:13px;color:var(--fire);letter-spacing:4px}
+.mitem{min-height:44px;padding:0 14px;display:flex;align-items:center;gap:12px;background:#151b19;text-align:left}
+.mitem .no{font-family:var(--sten);font-size:11px;color:var(--fire);letter-spacing:2px;width:40px}
+.mitem .t{font-family:var(--disp);font-size:14px;flex:1}.mitem small{font-size:9px;color:var(--faint);letter-spacing:1px}
+.mitem.big{min-height:52px;background:var(--fire);color:#1a1006;border:0;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
+.mitem.big .no{color:#1a1006}.mitem.big small{color:#3a2408}
+.mfoot{margin-top:auto;display:flex;justify-content:space-between;font-family:var(--sten);font-size:10px;color:var(--faint);letter-spacing:1px}
 
 /* ===== 出撃画面 ===== */
 #play{position:absolute;inset:0;z-index:3;touch-action:none;user-select:none;-webkit-user-select:none;font-family:var(--disp);color:var(--accent);text-shadow:1px 1px 0 #000}
@@ -71,6 +141,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .num{font-variant-numeric:tabular-nums;min-width:3em;text-align:right}
 #score{position:absolute;right:16px;top:calc(48px + env(safe-area-inset-top,0px));font-size:12px;pointer-events:none;font-variant-numeric:tabular-nums}
 #garage{position:absolute;right:16px;top:calc(10px + env(safe-area-inset-top,0px));font-size:12px;padding:5px 10px}
+#modeBadge{position:absolute;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);font-family:var(--sten);font-size:12px;letter-spacing:4px;color:var(--khaki);border:1px solid var(--khaki);padding:2px 10px;pointer-events:none}
 #reticle{position:absolute;left:50%;top:44%;width:26px;height:26px;margin:-13px 0 0 -13px;border:1px solid rgba(140,240,110,.6);pointer-events:none}
 #reticle::before,#reticle::after{content:"";position:absolute;background:rgba(140,240,110,.7)}
 #reticle::before{left:12px;top:-6px;width:1px;height:38px}#reticle::after{top:12px;left:-6px;height:1px;width:38px}
@@ -79,7 +150,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #msg{position:absolute;left:0;right:0;top:30%;text-align:center;font-size:22px;color:var(--fire);letter-spacing:.2em;pointer-events:none}
 #stickArea{position:absolute;left:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:200px;height:200px;pointer-events:none}
 #stick{position:absolute;left:50%;top:50%;width:104px;height:104px;margin:-52px 0 0 -52px;border:2px solid rgba(140,240,110,.35);border-radius:50%;pointer-events:none}
-.qb{position:absolute;background:rgba(111,200,255,.22);pointer-events:auto;touch-action:none}
+.qb{position:absolute;background:rgba(111,200,255,.22);pointer-events:auto;touch-action:none;border:0;padding:0}
 .qb.on{background:rgba(111,200,255,.85)}
 .qb[data-d=u]{left:82px;top:0;width:36px;height:40px;clip-path:polygon(50% 0,100% 100%,0 100%)}
 .qb[data-d=d]{left:82px;bottom:0;width:36px;height:40px;clip-path:polygon(0 0,100% 0,50% 100%)}
@@ -89,7 +160,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #knob{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(140,240,110,.35)}
 #stick.dash{border-color:rgba(111,200,255,.8)}#stick.dash #knob{background:rgba(111,200,255,.55)}
 .pbtns{position:absolute;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:186px;height:186px}
-.pbtn{position:absolute;width:74px;height:74px;border-radius:50%;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:13px;line-height:1.1;background:linear-gradient(to top,rgba(111,200,255,.4) var(--rl,0%),rgba(20,24,22,.55) var(--rl,0%));border:2px solid rgba(214,220,216,.35);color:var(--fg);touch-action:none}
+.pbtn{position:absolute;width:74px;height:74px;border-radius:50%;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-family:var(--disp);font-size:13px;line-height:1.1;background:linear-gradient(to top,rgba(111,200,255,.4) var(--rl,0%),rgba(20,24,22,.55) var(--rl,0%));border:2px solid rgba(214,220,216,.35);color:var(--fg);touch-action:none}
 .pbtn small{font-size:10px;color:var(--dim);font-variant-numeric:tabular-nums;max-width:70px;overflow:hidden;white-space:nowrap}
 .pbtn.empty{color:var(--dim)}.pbtn.empty small{color:#6fc8ff}
 #lock2{position:absolute;width:40px;height:40px;margin:-20px 0 0 -20px;border:2px dashed var(--fire);pointer-events:none}
@@ -100,17 +171,35 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #pcHelp{position:absolute;left:16px;bottom:calc(14px + env(safe-area-inset-bottom,0px));font-size:11px;color:var(--dim);line-height:1.6;pointer-events:none;max-width:50%}
 @media (pointer:coarse){#pcHelp{display:none}}
 </style>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+1p:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=DotGothic16&family=M+PLUS+1p:wght@400;700&family=Stardos+Stencil:wght@400;700&display=swap">
 
 </head>
 <body>
+<div id="app">
+<header id="hdr">
+ <div class="logo"><span class="jp">重装機体</span><span class="en">GARAGE</span></div>
+ <span class="sep"></span>
+ <span class="tag">UNIT-01</span>
+ <input id="uname" aria-label="機体名" maxlength="16" placeholder="機体名 未設定">
+ <span class="grow"></span>
+ <span class="kv"><small>総重量</small><b id="hWt"></b></span>
+ <span class="kv"><small>積載</small><b id="hLoad"></b></span>
+ <button id="menuBtn" class="cut" aria-haspopup="true"><svg width="14" height="12" viewBox="0 0 14 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 1h14M0 6h14M0 11h14"/></svg>MENU</button>
+</header>
 <div id="wrap">
- <div class="hud" id="hud"></div>
+ <div id="gui">
+  <svg id="leaders"></svg>
+  <div id="tags"></div>
+  <div class="tools"><button id="btnPaint">塗装</button><button id="btnTrain">試運転</button><button id="btnView">視点</button></div>
+  <div class="stamp"><b>HX-07</b><br>S/N 0417-A<br>LOT 07 / CLASS B</div>
+  <div id="gstats"></div>
+ </div>
  <div id="play" hidden>
   <div class="gauges">
    <span>装甲</span><div class="gauge" id="apG"><i id="apBar"></i></div><span class="num" id="apNum"></span>
    <span>BOOST</span><div class="gauge" id="bsG"><i id="bsBar"></i></div><span class="num" id="bsNum"></span>
   </div>
+  <div id="modeBadge"></div>
   <button id="garage">ガレージ</button>
   <div id="score"></div>
   <div id="reticle"></div>
@@ -129,22 +218,21 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
  </div>
  <div id="err" hidden></div>
 </div>
-<div class="bar" id="panel">
- <div class="row"><button id="sortie">出撃</button><span class="hint" id="sortieHint">標的機のいる演習場で操作できます</span></div>
- <div class="stats" id="stats"></div>
- <div class="row act" id="acts"><span class="lbl">試射</span></div>
- <div class="row"><span class="lbl">移動</span>
-  <button id="p0" aria-pressed="true">待機</button><button id="p1" aria-pressed="false">歩行</button><button id="p2" aria-pressed="false">ダッシュ</button><button id="jump">跳躍</button></div>
- <div class="asm" id="asm"></div>
- <div class="asm">
-  <h3>カラーリング（フレームのみ）</h3>
-  <div class="row" style="grid-column:1/-1" id="presets"></div>
-  <div class="cols" style="grid-column:1/-1" id="cols"></div>
+<aside id="side" aria-live="polite"></aside>
+</div>
+<div id="menu" hidden>
+ <div class="drawer" role="dialog" aria-label="メニュー">
+  <div class="mhd"><span>MAIN MENU</span><button id="menuClose" aria-label="閉じる" style="width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 12 12" stroke="#aeb8b3" stroke-width="2"><path d="M1 1l10 10M11 1L1 11"/></svg></button></div>
+  <div style="height:1px;background:var(--line)"></div>
+  <button class="mitem big" id="mSortie"><span class="no">01</span><span class="t">出撃<br><small>SORTIE ／ 演習場（標的機が反撃する）</small></span></button>
+  <button class="mitem" id="mTrain"><span class="no">02</span><span class="t">試運転</span><small>反撃なし</small></button>
+  <button class="mitem" disabled><span class="no">03</span><span class="t">ミッション</span><small>準備中</small></button>
+  <button class="mitem" disabled><span class="no">04</span><span class="t">対戦</span><small>準備中</small></button>
+  <button class="mitem" disabled><span class="no">05</span><span class="t">ショップ</span><small>準備中</small></button>
+  <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t">コンフィグ</span><small>画質・表示</small></button>
+  <div class="warn-msg" id="mWarn"></div>
+  <div class="mfoot"><span id="mUnit">UNIT-01</span><span>VER 0.5</span></div>
  </div>
- <div class="row"><span class="lbl">画面</span>
-  <button id="r0" aria-pressed="true">240p</button><button id="r1" aria-pressed="false">480p</button><button id="r2" aria-pressed="false">高精細</button>
-  <button id="jit" aria-pressed="true">頂点ガタつき</button><button id="rot" aria-pressed="true">自動回転</button></div>
- <div class="hint">ドラッグで回転・ホイール／ピンチで拡大</div>
 </div>
 
 <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
@@ -562,31 +650,17 @@ const UPPER=1.25;
 const WEIGHT_K=.15;
 let SS={};
 function wOf(cat,id){return cat[id].st?cat[id].st.wt:0}
-function calcStats(){
- const hd=HEADS[cfg.head],co=CORES[cfg.core],ar=ARMS[cfg.arms],lg=LEGS[cfg.legs];
- const weap=wOf(HAND,cfg.rHand)+wOf(HAND,cfg.lHand)+wOf(SHOULDER,cfg.rShoulder)+wOf(SHOULDER,cfg.lShoulder)+wOf(EXT,cfg.ext);
+function statsFor(c){
+ const hd=HEADS[c.head],co=CORES[c.core],ar=ARMS[c.arms],lg=LEGS[c.legs];
+ const weap=wOf(HAND,c.rHand)+wOf(HAND,c.lHand)+wOf(SHOULDER,c.rShoulder)+wOf(SHOULDER,c.lShoulder)+wOf(EXT,c.ext);
  const parts=hd.wt+co.wt+ar.wt+lg.wt,total=parts+weap,pen=total*WEIGHT_K,mob=Math.max(5,lg.mob-pen);
- const ranges=[HAND[cfg.rHand],HAND[cfg.lHand],SHOULDER[cfg.rShoulder],SHOULDER[cfg.lShoulder]].map(d=>d.st&&d.st.range||0);
- const radar=cfg.rShoulder==='RD'||cfg.lShoulder==='RD';
- SS={armor:co.armor+ar.armor+lg.armor,armorCore:co.armor,boost:co.boost,load:ar.load,weap,total,legMob:lg.mob,pen,mob,
+ const ranges=[HAND[c.rHand],HAND[c.lHand],SHOULDER[c.rShoulder],SHOULDER[c.lShoulder]].map(d=>d.st&&d.st.range||0);
+ const radar=c.rShoulder==='RD'||c.lShoulder==='RD';
+ return {armor:co.armor+ar.armor+lg.armor,armorCore:co.armor,boost:co.boost,load:ar.load,weap,total,legMob:lg.mob,pen,mob,
   walk:4+mob*.08,dash:12+mob*.15,qb:8+mob*.1,jump:.6+mob*.008,
   lockRange:Math.max(40,...ranges)+(radar?25:0)+(hd.ability==='long'?30:0),cone:radar?.7:.45,multi:hd.ability==='multi',over:weap>ar.load};
- renderStats();
 }
-function renderStats(){
- const bar=(segs)=>`<div class="sbar">${segs.map(([cls,from,w])=>`<i class="${cls}" style="left:${from}%;width:${Math.max(0,w)}%"></i>`).join('')}</div>`;
- const pct=(v,m)=>Math.min(100,v/m*100);
- const loadR=SS.weap/SS.load,lc=loadR>1?'over':loadR>.8?'warn':'';
- const hd=HEADS[cfg.head];
- $('stats').innerHTML=
-  `<div class="srow"><b>装甲</b>${bar([['seg-sub',0,pct(SS.armor,1400)],['seg-core',0,pct(SS.armorCore,1400)]])}<span class="v">${SS.armor}</span></div>`+
-  `<div class="srow"><b>機動</b>${bar([['seg-base',0,pct(SS.legMob,100)],['seg-pen',pct(SS.mob,100),pct(SS.legMob,100)-pct(SS.mob,100)],['seg-mob',0,pct(SS.mob,100)]])}<span class="v">+${SS.legMob} −${Math.round(SS.pen)} = ${Math.round(SS.mob)}</span></div>`+
-  `<div class="srow"><b>ブースト容量</b>${bar([['seg-boost',0,pct(SS.boost,130)]])}<span class="v">${SS.boost}</span></div>`+
-  `<div class="srow"><b>積載</b>${bar([['seg-load '+lc,0,pct(SS.weap,SS.load)]])}<span class="v">${SS.weap} ／ ${SS.load}</span></div>`+
-  `<div class="sline">ヘッド能力：<em>${hd.abName}</em>（${hd.abDesc}）　総重量 ${SS.total}　ロック距離 ${SS.lockRange}m</div>`+
-  (SS.over?`<div class="over-msg">兵装が積載を ${SS.weap-SS.load} 超えています。軽い兵装にするか、積載の大きいアームにしてください</div>`:'');
- $('sortie').disabled=SS.over;$('sortieHint').textContent=SS.over?'積載オーバーのため出撃できません':'標的機のいる演習場で操作できます';
-}
+function calcStats(){SS=statsFor(cfg);renderGarage()}
 /* 弾数：兵装ごとに残弾とリロード残り時間を持つ。0になったときだけ自動でリロード */
 const AM={};
 function stOf(key){const sl=WSLOTS.find(s=>s.key===key);return sl.cat[cfg[key]].st}
@@ -604,25 +678,27 @@ function assemble(){
  const torso=grp(hip,0,.25,0);torso.scale.setScalar(UPPER);
  const so=CORES[cfg.core].build(torso);
  const head=grp(torso,...so.neck);HEADS[cfg.head].build(head);
- const weps={};
+ const weps={},anchors={};
  const arms=[-1,1].map(s=>{
   const sh=grp(torso,s*so.arm[0],so.arm[1],so.arm[2]);
   const {el,hand}=ARMS[cfg.arms].build(sh,s);
   const hk=s<0?'rHand':'lHand',sk=s<0?'rShoulder':'lShoulder';
-  weps[hk]=HAND[cfg[hk]].build(mountHand(hand),s);
-  weps[sk]=SHOULDER[cfg[sk]].build(mountShoulder(grp(torso,s*so.shoulder[0],so.shoulder[1],so.shoulder[2])),s);
+  const hm=mountHand(hand),hp=grp(torso,s*so.shoulder[0],so.shoulder[1],so.shoulder[2]);
+  weps[hk]=HAND[cfg[hk]].build(hm,s);anchors[hk]=hm;
+  weps[sk]=SHOULDER[cfg[sk]].build(mountShoulder(hp),s);anchors[sk]=hp;
+  if(s>0)anchors.arms=el;
   return {sh,el,s};
  });
- weps.ext=EXT[cfg.ext].build(mountExt(grp(torso,...so.ext)));
+ const eg=grp(torso,...so.ext);weps.ext=EXT[cfg.ext].build(mountExt(eg));anchors.ext=eg;
+ anchors.head=grp(head,0,.3,0);anchors.core=grp(torso,.7,1.0,.3);anchors.legs=grp(legs[1].kn,0,-.6,0);
  const flames=[-1,1].map(s=>{const n=grp(torso,s*so.boost[0],so.boost[1],so.boost[2]);
   box(n,.3,.3,.3,M.frame,0,0,.1);cyl(n,.13,.18,.3,Wp.frame,0,0,-.1,Math.PI/2,0,8);cyl(n,.12,.12,.02,Wp.glow,0,0,-.26,Math.PI/2,0,8);
   const f=grp(n,0,0,-.27);f.rotation.x=-Math.PI/2-.35;cyl(f,.02,.15,1,Wp.glow,0,.5,0,0,0,6);f.scale.set(1,.01,1);return f});
- mech={bot,hip,torso,head,arms,legs,weps,flames};
+ mech={bot,hip,torso,head,arms,legs,weps,flames,anchors};
  if(mode==='play'){bot.position.set(P.pos.x,0,P.pos.z);bot.rotation.y=P.yaw}
- calcStats();resetAmmo();updateHUD();updateActs();
+ calcStats();resetAmmo();updateHUD();
 }
 function updateHUD(){
- $('hud').innerHTML=`${CORES[cfg.core].name}／${LEGS[cfg.legs].name}<br>R: ${HAND[cfg.rHand].name}・${SHOULDER[cfg.rShoulder].name}　L: ${HAND[cfg.lHand].name}・${SHOULDER[cfg.lShoulder].name}　EX: ${EXT[cfg.ext].name}<b id="st">${NAMES[pose]}</b>`;
  $('nR').textContent=HAND[cfg.rHand].name;$('nL').textContent=HAND[cfg.lHand].name;
  $('nS').textContent=[cfg.rShoulder,cfg.lShoulder].filter(k=>k!=='none').map(k=>SHOULDER[k].name).join('＋')||'なし';
 }
@@ -647,35 +723,183 @@ function jump(){
  run('jump',JUMP);
 }
 
-/* ===== ガレージUI ===== */
-let az=.6,el2=.15,dist=13,auto=true,pose=0,res=0,t=0,shake=0;
+/* ===== ガレージUI =====
+ 左：3D機体＋部位タグ（機体の各部位の位置に追従）＋性能バー
+ 右：情報パネル（概要／部位の装備選択と比較／塗装／コンフィグ） */
+let az=.35,el2=.12,dist=14,auto=false,pose=0,res=0,t=0,shake=0,TRAIN=false;
 const RES=[[320,240],[640,480],null],NAMES=['待機','歩行','ダッシュ'];
 const $=id=>document.getElementById(id);
-const acts=$('acts');
-WSLOTS.forEach(sl=>{const b=document.createElement('button');b.id='a-'+sl.key;b.onclick=()=>trigger(sl.key);acts.appendChild(b)});
-function updateActs(){WSLOTS.forEach(sl=>{const d=sl.cat[cfg[sl.key]],b=$('a-'+sl.key);
- b.textContent=`${sl.label}：${d.act?d.act.name:'—'}`;b.disabled=!d.act})}
-const asm=$('asm');let lastGroup='';
-SLOTS.forEach(sl=>{
- if(sl.group!==lastGroup){const h=document.createElement('h3');h.textContent=sl.group==='F'?'フレーム（基本パーツ）':'兵装（外装）';asm.appendChild(h);lastGroup=sl.group}
- const lab=document.createElement('label');lab.textContent=sl.label;
- const sel=document.createElement('select');sel.id='sel-'+sl.key;
- Object.entries(sl.cat).forEach(([id,p])=>{const o=document.createElement('option');o.value=id;const w=p.st?p.st.wt:p.wt;o.textContent=p.name+(w?`（重量${w}）`:'');sel.appendChild(o)});
- sel.value=cfg[sl.key];sel.onchange=()=>{cfg[sl.key]=sel.value;assemble()};
- lab.appendChild(sel);asm.appendChild(lab);
-});
-const cols=$('cols'),pre=$('presets');
-COLOR_KEYS.forEach(([k,n])=>{const lab=document.createElement('label');const inp=document.createElement('input');inp.type='color';inp.id='c-'+k;inp.value=COL[k];
- inp.oninput=()=>{COL[k]=inp.value;applyColors()};lab.append(inp,n);cols.appendChild(lab)});
-Object.entries(PRESETS).forEach(([n,p])=>{const b=document.createElement('button');b.textContent=n;
- b.onclick=()=>{Object.assign(COL,p);COLOR_KEYS.forEach(([k])=>$('c-'+k).value=COL[k]);applyColors()};pre.appendChild(b)});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function updateActs(){}
+
+/* パーツ・兵装の説明文 */
+const DESC={
+ 'HD-01':'広い視野のセンサー群を持つ頭部。2体を同時に捕捉できる。','HD-02':'単眼の長距離センサー。捕捉距離が長い。',
+ 'CR-01':'扱いやすい標準のコア。ブースト容量に余裕がある。','CR-02':'分厚い装甲のコア。硬いぶん重く、ブースト容量は少なめ。',
+ 'AR-01':'軽くて素直な腕。中量までの兵装向け。','AR-02':'太い骨格の腕。重い兵装をまとめて積める。',
+ 'LG-01':'バランスの良い二脚。重量を抑えればよく走る。','LG-02':'装甲が厚く崩れにくい二脚。自重があり足は遅い。',
+ 'none':'何も装備しない。','RF':'扱いやすい主力の小銃。3点射で確実に削る。','MG':'威力は低いが連射で相手を止め続ける。',
+ 'BZ':'一撃が重い大砲。弾が遅く、当てるには距離が要る。','BL':'踏み込んで斬る近接兵装。弾切れがない。','SH':'正面の弾を防ぐ盾。押している間だけ構える。',
+ 'MS':'6発を順に撃ち出す誘導弾。','RD':'積むだけで捕捉範囲が広がる索敵装置。','GC':'しゃがんで撃つ大口径砲。撃つ間は動けない。',
+ 'BT':'前方へ一気に突進する追加推進器。','IC':'近づく敵弾を自動で撃ち落とす。'};
+const EN={'HD-01':'SENSOR HEAD','HD-02':'MONO-EYE HEAD','CR-01':'STANDARD CORE','CR-02':'HEAVY CORE','AR-01':'STANDARD ARMS','AR-02':'HEAVY ARMS',
+ 'LG-01':'MEDIUM BIPED','LG-02':'HEAVY BIPED','none':'EMPTY','RF':'RIFLE','MG':'MACHINE GUN','BZ':'BAZOOKA','BL':'BLADE','SH':'SHIELD',
+ 'MS':'MISSILE POD','RD':'RADAR','GC':'GRENADE CANNON','BT':'BOOSTER','IC':'INTERCEPTOR'};
+const SLOTINFO={head:['01','センサーと特殊能力'],core:['02','装甲の中心、ブーストの容量'],arms:['03','積める兵装の重さ（全兵装の合計）'],legs:['04','歩行・ダッシュ・急加速・跳躍の速さ'],
+ rHand:['05','右手の兵装'],lHand:['06','左手の兵装'],rShoulder:['07','右肩の兵装（両肩同時に発動）'],lShoulder:['08','左肩の兵装（両肩同時に発動）'],ext:['09','背面の補助兵装（肩と同時に発動）']};
+const SLOTOF=k=>SLOTS.find(s=>s.key===k);
+
+/* 右パネルの状態 */
+let view='overview',selSlot=null,cand=null;
+function openSlot(k){view='slot';selSlot=k;cand=cfg[k];renderGarage()}
+function renderGarage(){renderHeader();renderGStats();renderSide()}
+function renderHeader(){
+ $('hWt').textContent=SS.total;const l=$('hLoad');l.textContent=`${SS.weap}/${SS.load}`;l.classList.toggle('over',SS.over);
+ $('mSortie').disabled=SS.over;$('mTrain').disabled=SS.over;$('mWarn').textContent=SS.over?'積載オーバーのため出撃できません。ガレージで兵装を見直してください':'';
+}
+// 比較表の1行（better='hi'：大きいほど良い、'lo'：小さいほど良い）
+function cmpRow(k,a,b,better='hi',fmt=v=>v){
+ const na=typeof a==='number',nb=typeof b==='number';let cls='',mark='';
+ if(na&&nb&&a!==b){const good=better==='hi'?b>a:b<a;cls=good?'up':'dn';mark=b>a?' ▲':' ▼'}
+ else if(!na||!nb){if(a!==b)cls='up'}
+ return `<span class="k">${k}</span><span class="a">${fmt(a)}</span><span class="ar">→</span><span class="b ${cls}">${fmt(b)}${mark}</span>`;
+}
+const R0=v=>typeof v==='number'?(v===INF?'∞':Math.round(v)):v;
+function renderGStats(){
+ const P2=view==='slot'&&cand!==cfg[selSlot]?statsFor({...cfg,[selSlot]:cand}):null;
+ const pct=(v,m)=>Math.max(0,Math.min(100,v/m*100));
+ const d=(a,b,better='hi')=>{if(!P2||Math.round(a)===Math.round(b))return '';const g=better==='hi'?b>a:b<a;return ` <span class="${g?'up':'dn'}">${b>a?'▲':'▼'}${Math.round(b)}</span>`};
+ const S2=P2||SS,lr=S2.weap/S2.load,lc=lr>1?'over':lr>.8?'warn':'';
+ $('gstats').innerHTML=
+  `<div class="gs"><div class="h"><em>装甲</em><b>${SS.armor}${d(SS.armor,P2?.armor)}</b></div><div class="bar"><i class="b-sub" style="left:0;width:${pct(SS.armor,1400)}%"></i><i class="b-core" style="left:0;width:${pct(SS.armorCore,1400)}%"></i>${P2&&P2.armor>SS.armor?`<i class="b-prev" style="left:${pct(SS.armor,1400)}%;width:${pct(P2.armor-SS.armor,1400)}%"></i>`:''}</div></div>`+
+  `<div class="gs"><div class="h"><em>機動</em><b>+${SS.legMob} −${Math.round(SS.pen)} = ${Math.round(SS.mob)}${d(SS.mob,P2?.mob)}</b></div><div class="bar"><i class="b-mob" style="left:0;width:${pct(SS.mob,100)}%"></i><i class="b-pen" style="left:${pct(SS.mob,100)}%;width:${pct(SS.pen,100)}%"></i>${P2?`<i class="b-prev" style="left:${pct(P2.mob,100)}%;width:2px"></i>`:''}</div></div>`+
+  `<div class="gs"><div class="h"><em>ブースト容量</em><b>${SS.boost}${d(SS.boost,P2?.boost)}</b></div><div class="bar"><i class="b-mob" style="left:0;width:${pct(SS.boost,130)}%"></i></div></div>`+
+  `<div class="gs"><div class="h"><em>積載</em><b>${SS.weap}/${SS.load}${P2&&(P2.weap!==SS.weap||P2.load!==SS.load)?` <span class="${P2.over?'dn':'up'}">→${P2.weap}/${P2.load}</span>`:''}</b></div><div class="bar"><i class="b-load ${lc}" style="left:0;width:${pct(S2.weap,S2.load)}%"></i></div></div>`;
+}
+function renderSide(){
+ const el=$('side');
+ if(view==='overview'){
+  const hd=HEADS[cfg.head];
+  el.innerHTML=`<div class="shd"><span class="code">UNIT OVERVIEW</span><span class="ttl">機体構成</span><span class="sub">部位を押すと装備を変更できます</span></div><div class="rule"></div>
+  <div class="ovl">${SLOTS.map(sl=>{const d=sl.cat[cfg[sl.key]],w=d.st?d.st.wt:d.wt;return `<button class="orow" data-slot="${sl.key}"><span class="k ${sl.group==='F'?'f':'w'}">${sl.label}</span><span class="v">${esc(d.name)}</span><span class="wt">${w?'重量 '+w:''}</span></button>`}).join('')}</div>
+  <div class="note">ヘッド能力：<em>${hd.abName}</em>（${hd.abDesc}）<br>ロック距離 <em>${SS.lockRange}m</em>　歩行 <em>${SS.walk.toFixed(1)}</em>　ダッシュ <em>${SS.dash.toFixed(1)}</em>　急加速 <em>${SS.qb.toFixed(1)}m</em></div>
+  ${SS.over?`<div class="warn-msg">兵装が積載を ${SS.weap-SS.load} 超えています。軽い兵装にするか、積載の大きいアームにしてください。</div>`:''}`;
+  el.querySelectorAll('[data-slot]').forEach(b=>b.onclick=()=>openSlot(b.dataset.slot));
+ }else if(view==='slot'){
+  const sl=SLOTOF(selSlot),cur=cfg[selSlot],[no,sub]=SLOTINFO[selSlot];
+  const items=Object.keys(sl.cat);
+  const cd=sl.cat[cand],cu=sl.cat[cur];
+  const P2=statsFor({...cfg,[selSlot]:cand});
+  let part='';
+  if(sl.group==='F'){
+   const rows=[];
+   if(selSlot==='head')rows.push(cmpRow('能力',cu.abName,cd.abName,'hi'));
+   if(cu.armor!=null)rows.push(cmpRow('装甲',cu.armor,cd.armor));
+   if(selSlot==='core')rows.push(cmpRow('ブースト容量',cu.boost,cd.boost));
+   if(selSlot==='arms')rows.push(cmpRow('積載',cu.load,cd.load));
+   if(selSlot==='legs')rows.push(cmpRow('機動値',cu.mob,cd.mob));
+   rows.push(cmpRow('重量',cu.wt,cd.wt,'lo'));
+   part=rows.join('');
+  }else{
+   const a=cu.st||{},b=cd.st||{},rows=[];
+   const kind=b.kind||a.kind;
+   if(kind==='補助'||kind==='防御'||a.kind==='補助'||a.kind==='防御'){
+    rows.push(cmpRow('種類',a.kind||'－',b.kind||'－'));
+    rows.push(cmpRow('使用回数',a.ammo??0,b.ammo??0));
+    if(a.dur||b.dur)rows.push(cmpRow('効果時間',a.dur||0,b.dur||0));
+    rows.push(cmpRow('リロード',a.reload||0,b.reload||0,'lo',v=>v+'秒'));
+   }
+   if(kind==='射撃'||kind==='近接'||a.kind==='射撃'||a.kind==='近接'){
+    if(!(kind==='補助'||kind==='防御'))rows.push(cmpRow('種類',a.kind||'－',b.kind||'－'));
+    rows.push(cmpRow('威力',a.dmg||0,b.dmg||0));
+    rows.push(cmpRow('射程',a.range||0,b.range||0,'hi',v=>v+'m'));
+    rows.push(cmpRow('範囲',a.area||0,b.area||0,'hi',v=>v?v+'m':'－'));
+    rows.push(cmpRow('同時発射',a.count||0,b.count||0));
+    rows.push(cmpRow('弾数',a.ammo??0,b.ammo??0,'hi',R0));
+    rows.push(cmpRow('リロード',a.reload||0,b.reload||0,'lo',v=>v?v+'秒':'－'));
+    rows.push(cmpRow('衝撃',a.imp||'－',b.imp||'－'));
+    rows.push(cmpRow('弾速',a.spd||0,b.spd||0,'hi',v=>v||'－'));
+    rows.push(cmpRow('誘導',a.hom||'－',b.hom||'－'));
+   }
+   rows.push(cmpRow('重量',a.wt||0,b.wt||0,'lo'));
+   part=rows.join('')+(b.rate?`<span class="k">連射</span><span class="a"></span><span class="ar"></span><span class="b">${esc(b.rate)}</span>`:'');
+  }
+  const whole=[cmpRow('装甲',SS.armor,P2.armor),cmpRow('機動',Math.round(SS.mob),Math.round(P2.mob)),cmpRow('ブースト容量',SS.boost,P2.boost),
+   cmpRow('積載',`${SS.weap}/${SS.load}`,`${P2.weap}/${P2.load}`),cmpRow('総重量',SS.total,P2.total,'lo')].join('');
+  const note=(cd.st&&cd.st.note)?`<p>${esc(cd.st.note)}</p>`:'';
+  el.innerHTML=`<div class="shd"><span class="code">SLOT ${no}</span><span class="ttl">${sl.label}</span><span class="sub">${sub}</span></div><div class="rule"></div>
+  <div class="cols2"><div class="plist">${items.map(id=>{const d=sl.cat[id],w=d.st?d.st.wt:d.wt;const s=id===cand,e=id===cur;
+    return `<button class="pitem${s?' sel':''}" data-id="${id}"><span class="r"><span>${id==='none'?'―':id}</span>${e?'<span class="eq">装備中</span>':s?'<span>選択中</span>':`<span>${w?'重量 '+w:''}</span>`}</span><span class="n">${esc(d.name)}</span></button>`}).join('')}
+    <div class="pitem lock"><span class="r"><span>－－－</span></span><span class="n">未入手</span></div></div>
+   <div class="detail"><span class="en">${id2code(cand)} / ${EN[cand]||''}</span><span class="nm">${esc(cd.name)}</span><p>${esc(DESC[cand]||'')}</p>${note}
+    <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}</div><div class="cmp">${part}</div>
+    <div class="sec">機体全体</div><div class="cmp">${whole}</div>
+    ${P2.over?`<div class="warn-msg">この装備にすると積載を ${P2.weap-P2.load} 超えます（出撃不可）</div>`:''}
+    <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur?'disabled':''}>${cand===cur?'装備中':'装備する'}</button><button class="btn-sub" id="back">戻る</button></div></div></div>`;
+  el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{cand=b.dataset.id;renderGarage()});
+  $('equip').onclick=()=>{cfg[selSlot]=cand;assemble()};
+  $('back').onclick=()=>{view='overview';selSlot=null;renderGarage()};
+ }else if(view==='paint'){
+  el.innerHTML=`<div class="shd"><span class="code">PAINT</span><span class="ttl">塗装</span><span class="sub">フレームの色を変更（兵装は変わりません）</span></div><div class="rule"></div>
+  <div class="sec">プリセット</div><div class="swatches">${Object.keys(PRESETS).map(n=>`<button data-p="${n}">${n}</button>`).join('')}</div>
+  <div class="sec">個別の色</div><div class="colrow">${COLOR_KEYS.map(([k,n])=>`<label><input type="color" id="c-${k}" value="${COL[k]}">${n}</label>`).join('')}</div>
+  <div class="acts"><button class="btn-sub" id="back">戻る</button></div>`;
+  el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{Object.assign(COL,PRESETS[b.dataset.p]);applyColors();renderSide()});
+  COLOR_KEYS.forEach(([k])=>{$('c-'+k).oninput=e=>{COL[k]=e.target.value;applyColors()}});
+  $('back').onclick=()=>{view='overview';renderGarage()};
+ }else if(view==='config'){
+  el.innerHTML=`<div class="shd"><span class="code">SYSTEM</span><span class="ttl">コンフィグ</span></div><div class="rule"></div>
+  <div class="sec">画質</div><div class="seg">${['240p','480p','高精細'].map((n,i)=>`<button data-r="${i}" aria-pressed="${res===i}">${n}</button>`).join('')}</div>
+  <div class="sec">表示</div><div class="seg"><button id="cJit" aria-pressed="${jitOn.value===1}">頂点ガタつき</button></div>
+  <div class="note">240p が初代プレイステーションに近い見た目です。動作が重いときも 240p にしてください。</div>
+  <div class="acts"><button class="btn-sub" id="back">戻る</button></div>`;
+  el.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{res=+b.dataset.r;resize();renderSide()});
+  $('cJit').onclick=()=>{jitOn.value=1-jitOn.value;renderSide()};
+  $('back').onclick=()=>{view='overview';renderGarage()};
+ }
+ updateTagsState();
+}
+const id2code=id=>id==='none'?'―':id;
+
+/* 部位タグ：左列＝機体の右側（画面の左）、右列＝機体の左側 */
+const TAGCOLS={L:['rShoulder','ext','rHand'],R:['head','lShoulder','core','arms','lHand','legs']};
+const tagEls={};
+[...TAGCOLS.L,...TAGCOLS.R].forEach(k=>{const sl=SLOTOF(k),b=document.createElement('button');b.className='ptag '+(sl.group==='F'?'f':'w');b.innerHTML=`${sl.label}<span></span>`;
+ b.onclick=()=>openSlot(k);$('tags').appendChild(b);tagEls[k]=b});
+function updateTagsState(){Object.entries(tagEls).forEach(([k,b])=>{const d=SLOTOF(k).cat[cfg[k]];b.querySelector('span').textContent=k==='head'||k==='core'||k==='arms'||k==='legs'?cfg[k]:d.name;b.classList.toggle('on',view==='slot'&&selSlot===k)})}
+const _tv=new THREE.Vector3();
+function updateTags(){
+ const w=W.clientWidth,h=W.clientHeight,top=44,bottom=h-(($('gstats').offsetHeight||60)+16),TH=26,GAP=4;
+ const lines=[];
+ for(const side of ['L','R']){
+  const keys=TAGCOLS[side];
+  const pts=keys.map(k=>{mech.anchors[k].getWorldPosition(_tv);_tv.project(C);return {k,x:(_tv.x+1)/2*w,y:(1-_tv.y)/2*h}});
+  const order=[...pts].sort((a,b)=>a.y-b.y);
+  let y=top;order.forEach(p=>{p.ty=Math.max(y,Math.min(p.y-TH/2,bottom-TH));y=p.ty+TH+GAP});
+  for(let i=order.length-1;i>=0;i--){const lim=(i===order.length-1?bottom:order[i+1].ty-GAP)-TH;if(order[i].ty>lim)order[i].ty=lim}
+  const bx=side==='L'?10:w-10-104;
+  order.forEach(p=>{const b=tagEls[p.k];b.style.left=bx+'px';b.style.top=p.ty+'px';
+   const ex=side==='L'?bx+104:bx,ey=p.ty+TH/2,mx=side==='L'?ex+14:ex-14,on=view==='slot'&&selSlot===p.k;
+   const col=on?'#f0a040':(SLOTOF(p.k).group==='F'?'#6fd3e0':'#f0a040');
+   lines.push(`<polyline points="${ex},${ey} ${mx},${ey} ${p.x},${p.y}" fill="none" stroke="${col}" stroke-opacity="${on?1:.55}" stroke-width="${on?2:1}"/><rect x="${p.x-2.5}" y="${p.y-2.5}" width="5" height="5" fill="${col}"/>`)});
+ }
+ $('leaders').innerHTML=lines.join('');
+}
+
+/* ボタン類 */
+const menu=$('menu');
+function openMenu(o){menu.hidden=!o}
+$('menuBtn').onclick=()=>openMenu(true);$('menuClose').onclick=()=>openMenu(false);
+menu.addEventListener('click',e=>{if(e.target===menu)openMenu(false)});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden)openMenu(false)});
+$('mSortie').onclick=()=>{if(!SS.over){openMenu(false);setMode('play',false)}};
+$('mTrain').onclick=()=>{if(!SS.over){openMenu(false);setMode('play',true)}};
+$('mConfig').onclick=()=>{openMenu(false);view='config';renderGarage()};
+$('btnPaint').onclick=()=>{view='paint';renderGarage()};
+$('btnTrain').onclick=()=>{if(SS.over){view='overview';renderGarage()}else setMode('play',true)};
+$('btnView').onclick=()=>{az=.35;el2=.12;dist=14};
+$('uname').addEventListener('input',e=>{$('mUnit').textContent=e.target.value?e.target.value.toUpperCase():'UNIT-01'});
 applyColors();
-function press(prefix,n,i){for(let k=0;k<n;k++)$(prefix+k).setAttribute('aria-pressed',k===i)}
-[0,1,2].forEach(i=>{$('p'+i).onclick=()=>{pose=i;press('p',3,i);$('st').textContent=NAMES[i]};
- $('r'+i).onclick=()=>{res=i;press('r',3,i);resize()}});
-$('jit').onclick=e=>{jitOn.value=1-jitOn.value;e.target.setAttribute('aria-pressed',jitOn.value===1)};
-$('jump').onclick=jump;
-const rb=$('rot');rb.onclick=()=>{auto=!auto;rb.setAttribute('aria-pressed',auto)};
 
 /* ===== 演習場：地面・建物・標的機 ===== */
 const gt=tex(g=>{for(let i=0;i<16;i++)for(let j=0;j<16;j++){g.fillStyle=((i>>3)+(j>>3))%2?'#2c302d':'#252926';g.fillRect(i,j,1,1)}g.fillStyle='#343a35';g.fillRect(0,0,16,1);g.fillRect(0,0,1,16)});
@@ -719,7 +943,7 @@ function updateEnemies(dt){
   e.mat.emissive.setRGB(e.hit>0?1:0,e.hit>0?1:0,e.hit>0?1:0);e.hit-=dt;
   e.hpBar.scale.set(1.6*e.hp/e.max,.1,.1);e.hpBar.lookAt(C.position);
   if(e.stun<=0)e.cd-=dt;
-  if(e.cd<=0&&d<50&&P.ap>0){e.cd=2.2+Math.random()*2.2;
+  if(e.cd<=0&&d<50&&P.ap>0&&!TRAIN){e.cd=2.2+Math.random()*2.2;
    const from=e.center(new THREE.Vector3()),dir=playerCenter(new THREE.Vector3()).sub(from).normalize();
    spawn(0xff5030,.3,from,{vel:dir.multiplyScalar(18),life:4,len:2.5,team:'e',dmg:e.type==='drone'?60:100,imp:e.type==='drone'?'D':'B'});spawn(0xff9060,.8,from,{life:.08})}
  });
@@ -820,23 +1044,25 @@ function readInput(dt){
 }
 
 /* ===== ガレージ／出撃の切り替え ===== */
-function setMode(m){
- mode=m;const p=m==='play';
- $('panel').hidden=p;play.hidden=!p;$('hud').hidden=p;world.visible=p;
+function setMode(m,training=false){
+ mode=m;const p=m==='play';TRAIN=p&&training;
+ $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p;
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
- S.fog.near=p?25:12;S.fog.far=p?80:28;
+ S.fog.near=p?30:12;S.fog.far=p?95:30;C.fov=p?52:38;
  P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;P.apMax=SS.armor;P.ap=P.apMax;P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=null;reveal=0;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
- if(p){ENEMIES.forEach(placeEnemy);P.kills=0;say('演習開始',1.2)}
- resize();
+ $('modeBadge').textContent=TRAIN?'TRAINING ／ 試運転':'SORTIE ／ 演習';
+ if(p){ENEMIES.forEach(placeEnemy);P.kills=0;say(TRAIN?'試運転開始':'演習開始',1.2)}
+ else{view='overview';selSlot=null;renderGarage()}
+ requestAnimationFrame(resize);resize();
 }
-$('sortie').onclick=()=>{if(!SS.over)setMode('play')};$('garage').onclick=()=>setMode('garage');
+$('garage').onclick=()=>setMode('garage');
 assemble();
 
 /* ===== 視点（ガレージ） ===== */
 const pts=new Map();let pinch0=0;const cv=R.domElement;
-cv.addEventListener('pointerdown',e=>{if(mode!=='garage')return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});auto=false;rb.setAttribute('aria-pressed',false);cv.setPointerCapture(e.pointerId)});
+cv.addEventListener('pointerdown',e=>{if(mode!=='garage')return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});cv.setPointerCapture(e.pointerId)});
 const up=e=>{pts.delete(e.pointerId);pinch0=0};
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;
@@ -949,14 +1175,15 @@ R.setAnimationLoop(()=>{
  // カメラ
  if(mode==='play'){
   const f=_q.set(Math.sin(camYaw),0,Math.cos(camYaw)),y=m.bot.position.y;
-  _v.set(P.pos.x-f.x*11,6+y*.6,P.pos.z-f.z*11);C.position.lerp(_v,Math.min(1,dt*8));
-  C.lookAt(P.pos.x+f.x*8,3.2+y*.5,P.pos.z+f.z*8);
- }else{C.position.set(Math.sin(az)*dist*Math.cos(el2),3.4+Math.sin(el2)*dist,Math.cos(az)*dist*Math.cos(el2));C.lookAt(0,3.5,0)}
+  _v.set(P.pos.x-f.x*16,8+y*.6,P.pos.z-f.z*16);C.position.lerp(_v,Math.min(1,dt*8));
+  C.lookAt(P.pos.x+f.x*12,2.8+y*.5,P.pos.z+f.z*12);
+ }else{C.position.set(Math.sin(az)*dist*Math.cos(el2),3.4+Math.sin(el2)*dist,Math.cos(az)*dist*Math.cos(el2));C.lookAt(0,3.7,0)}
  updateFX(dt);
  if(shake>0&&!reduce){C.position.x+=(Math.random()-.5)*shake;C.position.y+=(Math.random()-.5)*shake;shake*=.85;if(shake<.005)shake=0}
  Wp.glow.color.setHSL(.07,1,.5+Math.sin(t*6)*.08);
  Sk.lamp.color.setHSL(0,1,(Math.floor(t*2)%2)?.55:.18);
  R.render(S,C);
+ if(mode==='garage')updateTags();
  // HUD
  if(mode==='play'){
   $('apBar').style.width=(P.ap/P.apMax*100)+'%';$('apNum').textContent=Math.round(P.ap);
