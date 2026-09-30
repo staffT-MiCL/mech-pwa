@@ -37,7 +37,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 
 /* ヘッダー */
 #hdr{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:0 12px;background:#101513;border-bottom:1px solid var(--line);position:relative;min-width:0}
-#hdr::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:3px;background:repeating-linear-gradient(-45deg,#f2c21a 0 6px,#111 6px 12px);opacity:.55;pointer-events:none;z-index:4}
+#hdr::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:4px;background:linear-gradient(var(--olive),var(--olive)) 0 0/100% 1px no-repeat,repeating-linear-gradient(90deg,var(--khaki) 0 1px,transparent 1px 16px) 0 1px/100% 3px no-repeat,repeating-linear-gradient(90deg,var(--khaki) 0 2px,transparent 2px 80px) 0 0/100% 4px no-repeat;opacity:.6;pointer-events:none;z-index:4}
 .logo{display:flex;align-items:baseline;gap:8px;white-space:nowrap}
 .logo .jp{font-family:var(--disp);font-size:17px;color:#eef2ef;letter-spacing:2px}
 .logo .en{font-family:var(--sten);font-size:13px;color:var(--fire);letter-spacing:3px}
@@ -163,6 +163,40 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .detail p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .pitem:disabled{opacity:.45}.pitem .t.ov{color:var(--alert)}
 #reticle{display:none}
+/* ===== 英語表記・ゲージの見た目 ===== */
+.en{font-family:var(--mech);letter-spacing:.08em}
+.shd .ttl.en{font-size:18px;font-weight:700;letter-spacing:.14em}
+.detail .nm.en{font-size:16px;font-weight:700}
+.secj{margin-left:8px;letter-spacing:0;color:var(--faint);font-family:var(--body)}
+.sec,.cmp .k,.orow .k,.gs .gl{font-family:var(--mech);letter-spacing:.14em}
+.cmp .k{font-size:10.5px}
+.orow .v{font-family:var(--mech);font-size:12px;letter-spacing:.06em}
+.pitem .n{font-family:var(--mech);font-size:12px;letter-spacing:.05em}
+.ptag{font-family:var(--mech);letter-spacing:.1em;font-weight:700}
+.ptag span{font-weight:500;letter-spacing:.04em}
+.specs{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:4px}
+.specs span{display:flex;flex-direction:column;padding:4px 8px;background:var(--panel2);border-left:2px solid var(--olive)}
+.specs small{font-size:9px;color:var(--dim);letter-spacing:.14em}.specs b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}.specs i{font-style:normal;font-size:10px;color:var(--dim);margin-left:2px}
+.mitem .t.en{font-family:var(--mech);font-weight:700;letter-spacing:.16em;font-size:14px}
+.mitem .t.en small{display:block;font-family:var(--body);letter-spacing:0;font-weight:400}
+.tools button{font-family:var(--mech);font-weight:700;letter-spacing:.08em;font-size:10px}
+#gstats{gap:6px 16px;padding:8px 12px 7px;background:linear-gradient(180deg,rgba(14,19,17,.94),rgba(8,11,10,.94));border:1px solid #34403a;border-top:2px solid var(--olive)}
+#gstats::before{content:"UNIT STATUS";position:absolute;right:10px;top:-9px;padding:0 6px;background:#0b0e0d;font-family:var(--sten);font-size:10px;letter-spacing:3px;color:var(--khaki)}
+.gs{gap:3px}
+.gh{display:flex;align-items:baseline;gap:8px}
+.gl{font-size:10px;color:var(--khaki);font-weight:700;min-width:5.6em}
+.gv{font-family:var(--mech);font-size:17px;font-weight:700;color:#eef2ef;font-variant-numeric:tabular-nums;line-height:1}
+.gv small{font-size:10px;color:var(--dim);margin-left:3px;font-weight:500}
+.dchip{margin-left:auto;font-family:var(--mech);font-size:11px;font-weight:700;padding:0 5px;border:1px solid currentColor;line-height:15px}
+.cells{display:grid;grid-template-columns:repeat(28,minmax(0,1fr));gap:2px;height:9px}
+.cells i{background:#18201c;transform:skewX(-24deg)}
+.cells i.c-core{background:var(--accent);box-shadow:0 0 4px rgba(140,240,110,.5)}.cells i.c-sub{background:#4f7c42}
+.cells i.c-mob{background:var(--cyan);box-shadow:0 0 4px rgba(111,211,224,.45)}
+.cells i.c-pen{background:transparent;outline:1px solid #ff5a3c;outline-offset:-1px}
+.cells i.c-load{background:#b8c890}.cells i.c-warn{background:#e0b040}.cells i.c-over{background:var(--alert)}
+.cells i.gu{outline:1px dashed var(--accent);outline-offset:-1px}.cells i.gd{opacity:.35}
+.gf{font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:var(--faint)}
+.gs .h,.gs .bar{display:none}
 /* メニュー */
 #menu{position:fixed;inset:0;z-index:20;background:rgba(4,6,5,.6)}
 #menu .drawer{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));box-sizing:border-box;background:#101513;border-left:2px solid var(--fire);display:flex;flex-direction:column;gap:8px;overflow-y:auto}
@@ -224,16 +258,16 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
  <div class="logo"><span class="jp">重装機体</span><span class="en">GARAGE</span></div>
  <span class="sep"></span>
  <span class="tag">UNIT-01</span>
- <input id="uname" aria-label="機体名" maxlength="16" placeholder="機体名 未設定">
+ <input id="uname" aria-label="機体名" maxlength="16" placeholder="UNIT NAME">
  <span class="grow"></span>
- <span class="kv"><small>総重量</small><b id="hWt"></b></span>
- <span class="kv"><small>積載</small><b id="hLoad"></b></span>
+ <span class="kv"><small>WEIGHT</small><b id="hWt"></b></span>
+ <span class="kv"><small>LOAD</small><b id="hLoad"></b></span>
  <button id="menuBtn" class="cut" aria-haspopup="true"><svg width="14" height="12" viewBox="0 0 14 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 1h14M0 6h14M0 11h14"/></svg>MENU</button>
 </header>
 <div id="wrap">
  <div id="gui">
   <div id="tags"></div>
-  <div class="tools"><button id="btnPaint">塗装</button><button id="btnTrain">試運転</button><button id="btnView">視点</button></div>
+  <div class="tools"><button id="btnPaint">PAINT</button><button id="btnTrain">TRAINING</button><button id="btnView">VIEW</button></div>
   <div class="stamp"><b>HX-07</b><br>S/N 0417-A<br>LOT 07 / CLASS B</div>
   <div id="gstats"></div>
  </div>
@@ -244,7 +278,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
   </div>
   <div id="modeBadge"></div>
   <button id="garage">ガレージ</button>
-  <button id="camBtn">視点：追従</button>
+  <button id="camBtn">CAM: CHASE</button>
   <div id="score"></div>
   <div id="reticle"></div>
   <div id="lock" hidden><span id="lockTxt"></span></div>
@@ -264,17 +298,17 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 </div>
 <aside id="side" aria-live="polite"></aside>
 </div>
-<div id="modal" hidden><div class="mbox" role="dialog" aria-label="詳細"><div id="modalBody"></div><div class="acts"><button class="btn-sub" id="modalClose" style="margin-left:auto">閉じる</button></div></div></div>
+<div id="modal" hidden><div class="mbox" role="dialog" aria-label="詳細"><div id="modalBody"></div><div class="acts"><button class="btn-sub" id="modalClose" style="margin-left:auto">CLOSE</button></div></div></div>
 <div id="menu" hidden>
  <div class="drawer" role="dialog" aria-label="メニュー">
   <div class="mhd"><span>MAIN MENU</span><button id="menuClose" aria-label="閉じる" style="width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 12 12" stroke="#aeb8b3" stroke-width="2"><path d="M1 1l10 10M11 1L1 11"/></svg></button></div>
   <div style="height:1px;background:var(--line)"></div>
-  <button class="mitem big" id="mSortie"><span class="no">01</span><span class="t">出撃<br><small>SORTIE ／ 演習場（標的機が反撃する）</small></span></button>
-  <button class="mitem" id="mTrain"><span class="no">02</span><span class="t">試運転</span><small>反撃なし</small></button>
-  <button class="mitem" disabled><span class="no">03</span><span class="t">ミッション</span><small>準備中</small></button>
-  <button class="mitem" disabled><span class="no">04</span><span class="t">対戦</span><small>準備中</small></button>
-  <button class="mitem" disabled><span class="no">05</span><span class="t">ショップ</span><small>準備中</small></button>
-  <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t">コンフィグ</span><small>画質・表示</small></button>
+  <button class="mitem big" id="mSortie"><span class="no">01</span><span class="t en">SORTIE<br><small>演習場で標的機と戦う</small></span></button>
+  <button class="mitem" id="mTrain"><span class="no">02</span><span class="t en">TRAINING</span><small>反撃なしの試運転</small></button>
+  <button class="mitem" disabled><span class="no">03</span><span class="t en">MISSION</span><small>準備中</small></button>
+  <button class="mitem" disabled><span class="no">04</span><span class="t en">VERSUS</span><small>準備中</small></button>
+  <button class="mitem" disabled><span class="no">05</span><span class="t en">SHOP</span><small>準備中</small></button>
+  <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG</span><small>画質・表示・視点</small></button>
   <div class="warn-msg" id="mWarn"></div>
   <div class="mfoot"><span id="mUnit">UNIT-01</span><span>VER 0.5</span></div>
  </div>
@@ -325,7 +359,7 @@ const Wp={
 // ソケット（取付部）用：無骨で派手な色固定
 const Sk={
  plate:psMat(0xffffff,{map:panel('#454b50','#1e2124')}),
- hazard:psMat(0xffffff,{map:stripes('#141414','#f2c21a')}),
+ hazard:psMat(0xffffff,{map:stripes('#23281d','#56623e')}),
  bolt:psMat(0xd0d4d8),
  lamp:new THREE.MeshBasicMaterial({color:0xff3020}),
 };
@@ -334,15 +368,15 @@ function cyl(p,r1,r2,h,mat,x,y,z,rx=0,rz=0,s=6){const m=new THREE.Mesh(new THREE
 function grp(p,x=0,y=0,z=0){const g=new THREE.Group();g.position.set(x,y,z);p.add(g);return g}
 
 /* ===== カラーリング ===== */
-const COLOR_KEYS=[['main','メイン'],['sub','サブ'],['joint','関節'],['line','ライン'],['eye','アイ']];
+const COLOR_KEYS=[['main','MAIN'],['sub','SUB'],['joint','JOINT'],['line','LINE'],['eye','EYE']];
 const PRESETS={
- '標準':{main:'#737a80',sub:'#4a4f45',joint:'#25282c',line:'#d8741e',eye:'#8cf06e'},
- '砂漠':{main:'#b59b6d',sub:'#7a6a4a',joint:'#3a3228',line:'#c0402a',eye:'#ffd060'},
- '寒冷地':{main:'#d8dde0',sub:'#8a96a0',joint:'#2a3038',line:'#2a78d8',eye:'#60e0ff'},
- '紅':{main:'#8e2e26',sub:'#bdb6a3',joint:'#2b2d31',line:'#c39640',eye:'#55e0ff'},
- '夜間':{main:'#2e3238',sub:'#1c1f24',joint:'#101214',line:'#8a1c1c',eye:'#ff4040'},
+ 'STANDARD':{main:'#737a80',sub:'#4a4f45',joint:'#25282c',line:'#d8741e',eye:'#8cf06e'},
+ 'DESERT':{main:'#b59b6d',sub:'#7a6a4a',joint:'#3a3228',line:'#c0402a',eye:'#ffd060'},
+ 'ARCTIC':{main:'#d8dde0',sub:'#8a96a0',joint:'#2a3038',line:'#2a78d8',eye:'#60e0ff'},
+ 'CRIMSON':{main:'#8e2e26',sub:'#bdb6a3',joint:'#2b2d31',line:'#c39640',eye:'#55e0ff'},
+ 'NIGHT':{main:'#2e3238',sub:'#1c1f24',joint:'#101214',line:'#8a1c1c',eye:'#ff4040'},
 };
-const COL={...PRESETS['標準']};
+const COL={...PRESETS['STANDARD']};
 function applyColors(){M.main.color.set(COL.main);M.sub.color.set(COL.sub);M.frame.color.set(COL.joint);M.warn.color.set(COL.line);M.eye.color.set(COL.eye);}
 
 /* ===== ソケット（取付部） ===== */
@@ -429,11 +463,11 @@ const CORES={
  }},
 };
 const HEADS={
- 'HD-01':{name:'HD-01 センサー型',wt:8,ability:'multi',abName:'多重ロック',abDesc:'2体を同時にロックし、左手とミサイルは2体目も狙う',build(h){
+ 'HD-01':{name:'HD-01 センサー型',wt:8,ability:'multi',abName:'多重ロック',abEn:'MULTI-LOCK',abDesc:'2体を同時にロックし、左手とミサイルは2体目も狙う',build(h){
   box(h,.24,.2,.24,M.frame,0,.05,0);box(h,.62,.24,.6,M.main,0,.25,.02);box(h,.5,.14,.3,M.sub,0,.22,.36,-.35);
   box(h,.46,.05,.04,M.eye,0,.25,.47,-.35);box(h,.03,.55,.03,Wp.metal,.26,.55,-.15,-.25);box(h,.03,.3,.03,Wp.metal,-.2,.45,-.2,-.4);
  }},
- 'HD-02':{name:'HD-02 モノアイ型',wt:12,ability:'long',abName:'遠距離ロック',abDesc:'ロック距離＋30m',build(h){
+ 'HD-02':{name:'HD-02 モノアイ型',wt:12,ability:'long',abName:'遠距離ロック',abEn:'LONG-RANGE LOCK',abDesc:'ロック距離＋30m',build(h){
   box(h,.26,.2,.26,M.frame,0,.05,0);box(h,.52,.42,.52,M.sub,0,.34,0);box(h,.56,.12,.56,M.main,0,.58,0);
   box(h,.4,.22,.2,M.dark,0,.32,.26);cyl(h,.08,.08,.06,M.eye,0,.34,.36,Math.PI/2,0,8);
   [-1,1].forEach(s=>box(h,.1,.3,.35,M.main,s*.3,.32,-.02));box(h,.05,.2,.4,M.warn,0,.7,-.05);
@@ -679,11 +713,11 @@ const QBA={act:{dur:.45,run(c){if(c.once('d',0))dust(1);
 
 /* ===== アセンブル ===== */
 const SLOTS=[
- {key:'head',label:'ヘッド',group:'F',cat:HEADS},{key:'core',label:'コア',group:'F',cat:CORES},
- {key:'arms',label:'アーム',group:'F',cat:ARMS},{key:'legs',label:'レッグ',group:'F',cat:LEGS},
- {key:'rHand',label:'右手',group:'W',cat:HAND,side:-1},{key:'lHand',label:'左手',group:'W',cat:HAND,side:1},
- {key:'rShoulder',label:'右肩',group:'W',cat:SHOULDER,side:-1},{key:'lShoulder',label:'左肩',group:'W',cat:SHOULDER,side:1},
- {key:'ext',label:'その他',group:'W',cat:EXT,side:0},
+ {key:'head',label:'HEAD',group:'F',cat:HEADS},{key:'core',label:'CORE',group:'F',cat:CORES},
+ {key:'arms',label:'ARMS',group:'F',cat:ARMS},{key:'legs',label:'LEGS',group:'F',cat:LEGS},
+ {key:'rHand',label:'R-HAND',group:'W',cat:HAND,side:-1},{key:'lHand',label:'L-HAND',group:'W',cat:HAND,side:1},
+ {key:'rShoulder',label:'R-SHLDR',group:'W',cat:SHOULDER,side:-1},{key:'lShoulder',label:'L-SHLDR',group:'W',cat:SHOULDER,side:1},
+ {key:'ext',label:'EXTRA',group:'W',cat:EXT,side:0},
 ];
 const WSLOTS=SLOTS.filter(s=>s.group==='W');
 const cfg={head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'BL',rShoulder:'MS',lShoulder:'RD',ext:'BT'};
@@ -789,7 +823,7 @@ function jump(){
  右：情報パネル（概要／部位の装備選択と比較／塗装／コンフィグ） */
 let az=.35,el2=.12,dist=14,auto=false,pose=0,res=0,t=0,shake=0,TRAIN=false,CAMMODE='tps';
 const camC=new THREE.Vector3();
-function setCam(m){CAMMODE=m;const b=document.getElementById('camBtn');if(b)b.textContent=m==='top'?'視点：俯瞰':'視点：追従';if(mode==='play'){C.fov=m==='top'?48:72;C.updateProjectionMatrix();camC.copy(P.pos)}}
+function setCam(m){CAMMODE=m;const b=document.getElementById('camBtn');if(b)b.textContent=m==='top'?'CAM: OVERHEAD':'CAM: CHASE';if(mode==='play'){C.fov=m==='top'?48:72;C.updateProjectionMatrix();camC.copy(P.pos)}}
 const RES=[[320,240],[640,480],null],NAMES=['待機','歩行','ダッシュ'];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -823,10 +857,15 @@ function syncPreviewMech(){
 }
 function renderHeader(){
  $('hWt').textContent=SS.total;const l=$('hLoad');l.textContent=`${SS.weap}/${SS.load}`;l.classList.toggle('over',SS.over);
- $('mSortie').disabled=SS.over;$('mTrain').disabled=SS.over;$('mWarn').textContent=SS.over?'積載オーバーのため出撃できません。ガレージで兵装を見直してください':'';
+ $('mSortie').disabled=SS.over;$('mTrain').disabled=SS.over;$('mWarn').textContent=SS.over?'積載オーバーのため出撃できません。兵装を見直してください':'';
 }
 // 比較表の1行（better='hi'：大きいほど良い、'lo'：小さいほど良い）
+const KEN={'能力':'ABILITY','装甲':'ARMOR','ブースト容量':'BOOST CAP','積載':'LOAD','機動値':'MOB. RATING','機動':'MOBILITY','重量':'WEIGHT','総重量':'TOTAL WT','種類':'TYPE','使用回数':'USES','効果時間':'DURATION','リロード':'RELOAD','威力':'POWER','射程':'RANGE','範囲':'BLAST','同時発射':'SALVO','弾数':'AMMO','衝撃':'IMPACT','弾速':'VELOCITY','誘導':'HOMING','連射':'RATE','歩行速度':'WALK','ダッシュ速度':'DASH','急加速距離':'QUICK BOOST','ロック距離':'LOCK RANGE'};
+const VEN={'射撃':'FIRE','近接':'MELEE','補助':'SUPPORT','防御':'DEFENSE','なし':'NONE','－':'—','弱':'LOW','中':'MID','強':'HIGH','多重ロック':'MULTI-LOCK','遠距離ロック':'LONG LOCK'};
+const RATEN={'1回／1秒':'1 / 1.0s','3点射／1.2秒':'3-RND BURST / 1.2s','12発／秒':'12 RND / s','1発／2秒':'1 / 2.0s','1回／1.3秒':'1 / 1.3s','押している間':'WHILE HELD','1斉射／2秒':'1 SALVO / 2.0s','1発／3秒':'1 / 3.0s'};
+const ven=v=>typeof v==='string'&&VEN[v]?VEN[v]:v;
 function cmpRow(k,a,b,better='hi',fmt=v=>v){
+ k=KEN[k]||k;{const f0=fmt;fmt=v=>ven(f0(v))}
  const na=typeof a==='number',nb=typeof b==='number';let cls='',mark='';
  if(na&&nb&&a!==b){const good=better==='hi'?b>a:b<a;cls=good?'up':'dn';mark=b>a?'▲':'▼'}
  else if(!na||!nb){if(a!==b)cls='up'}
@@ -836,22 +875,31 @@ function cmpRow(k,a,b,better='hi',fmt=v=>v){
 const R0=v=>typeof v==='number'?(v===INF?'∞':Math.round(v)):v;
 function renderGStats(){
  const P2=view==='slot'&&cand!==cfg[selSlot]?statsFor({...cfg,[selSlot]:cand}):null;
- const pct=(v,m)=>Math.max(0,Math.min(100,v/m*100));
- const d=(a,b,better='hi')=>{if(!P2||Math.round(a)===Math.round(b))return '';const g=better==='hi'?b>a:b<a;return ` <span class="${g?'up':'dn'}">${b>a?'▲':'▼'}${Math.round(b)}</span>`};
- const S2=P2||SS,lr=S2.weap/S2.load,lc=lr>1?'over':lr>.8?'warn':'';
+ const N=28;
+ // セル列：parts=[[値,クラス],...] を左から積む。ghost=変更後の位置（点線の縁）
+ const cells=(max,parts,ghost)=>{let out='',acc=0;const ends=parts.map(([v,c])=>[(acc+=v)/max*N,c]);
+  const g=ghost!=null?ghost/max*N:null;
+  for(let i=0;i<N;i++){let c='';for(const [e,k] of ends){if(i<Math.round(e)){c=k;break}}
+   const gh=g!=null&&((g>acc/max*N&&i>=Math.round(acc/max*N)&&i<Math.round(g))||(g<acc/max*N&&i>=Math.round(g)&&i<Math.round(acc/max*N)))?(g>acc/max*N?' gu':' gd'):'';
+   out+=`<i class="${c}${gh}"></i>`}
+  return `<div class="cells">${out}</div>`};
+ const dl=(a,b,better='hi')=>{if(!P2||Math.round(a)===Math.round(b))return '';const g=better==='hi'?b>a:b<a;return `<span class="dchip ${g?'up':'dn'}">${b>a?'▲':'▼'}${Math.abs(Math.round(b-a))}</span>`};
+ const S2=P2||SS,lr=S2.weap/S2.load,lc=lr>1?'c-over':lr>.8?'c-warn':'c-load';
+ const row=(code,val,unit,chip,bar,foot='')=>`<div class="gs"><div class="gh"><span class="gl">${code}</span><span class="gv">${val}<small>${unit}</small></span>${chip}</div>${bar}${foot?`<div class="gf">${foot}</div>`:''}</div>`;
  $('gstats').innerHTML=
-  `<div class="gs"><div class="h"><em>装甲</em><b>${SS.armor}${d(SS.armor,P2?.armor)}</b></div><div class="bar"><i class="b-sub" style="left:0;width:${pct(SS.armor,1400)}%"></i><i class="b-core" style="left:0;width:${pct(SS.armorCore,1400)}%"></i>${P2&&P2.armor>SS.armor?`<i class="b-prev" style="left:${pct(SS.armor,1400)}%;width:${pct(P2.armor-SS.armor,1400)}%"></i>`:''}</div></div>`+
-  `<div class="gs"><div class="h"><em>機動</em><b>+${SS.legMob} −${Math.round(SS.pen)} = ${Math.round(SS.mob)}${d(SS.mob,P2?.mob)}</b></div><div class="bar"><i class="b-mob" style="left:0;width:${pct(SS.mob,100)}%"></i><i class="b-pen" style="left:${pct(SS.mob,100)}%;width:${pct(SS.pen,100)}%"></i>${P2?`<i class="b-prev" style="left:${pct(P2.mob,100)}%;width:2px"></i>`:''}</div></div>`+
-  `<div class="gs"><div class="h"><em>ブースト容量</em><b>${SS.boost}${d(SS.boost,P2?.boost)}</b></div><div class="bar"><i class="b-mob" style="left:0;width:${pct(SS.boost,130)}%"></i></div></div>`+
-  `<div class="gs"><div class="h"><em>積載</em><b>${SS.weap}/${SS.load}${P2&&(P2.weap!==SS.weap||P2.load!==SS.load)?` <span class="${P2.over?'dn':'up'}">→${P2.weap}/${P2.load}</span>`:''}</b></div><div class="bar"><i class="b-load ${lc}" style="left:0;width:${pct(S2.weap,S2.load)}%"></i></div></div>`;
+  row('ARMOR',SS.armor,'AP',dl(SS.armor,P2?.armor),cells(1400,[[SS.armorCore,'c-core'],[SS.armor-SS.armorCore,'c-sub']],P2?.armor),`CORE ${SS.armorCore} ／ OTHER ${SS.armor-SS.armorCore}`)+
+  row('MOBILITY',Math.round(SS.mob),'',dl(SS.mob,P2?.mob),cells(100,[[SS.mob,'c-mob'],[SS.pen,'c-pen']],P2?.mob),`LEGS +${SS.legMob} ／ WEIGHT −${Math.round(SS.pen)}`)+
+  row('BOOST',SS.boost,'EN',dl(SS.boost,P2?.boost),cells(130,[[SS.boost,'c-mob']],P2?.boost),'CAPACITY')+
+  row('LOAD',S2.weap,'/'+S2.load,P2&&(P2.weap!==SS.weap||P2.load!==SS.load)?`<span class="dchip ${P2.over?'dn':'up'}">${P2.weap-SS.weap>=0?'+':''}${P2.weap-SS.weap}</span>`:'',cells(S2.load,[[Math.min(S2.weap,S2.load),lc]]),lr>1?'OVERLOAD':`${Math.round(lr*100)}% USED`);
 }
 function renderSide(){
  const el=$('side');
  if(view==='overview'){
   const hd=HEADS[cfg.head];
-  el.innerHTML=`<div class="shd"><span class="code">UNIT OVERVIEW</span><span class="ttl">機体構成</span><span class="sub">部位を押すと装備を変更できます</span></div><div class="rule"></div>
-  <div class="ovl">${SLOTS.map(sl=>{const d=sl.cat[cfg[sl.key]],w=d.st?d.st.wt:d.wt;return `<button class="orow" data-slot="${sl.key}"><span class="k ${sl.group==='F'?'f':'w'}">${sl.label}</span><span class="v">${esc(d.name)}</span><span class="wt">${w?'重量 '+w:''}</span></button>`}).join('')}</div>
-  <div class="note">ヘッド能力：<em>${hd.abName}</em>（${hd.abDesc}）<br>ロック距離 <em>${SS.lockRange}m</em>　歩行 <em>${SS.walk.toFixed(1)}</em>　ダッシュ <em>${SS.dash.toFixed(1)}</em>　急加速 <em>${SS.qb.toFixed(1)}m</em></div>
+  el.innerHTML=`<div class="shd"><span class="code">UNIT</span><span class="ttl en">CONFIGURATION</span><span class="sub">部位を押すと装備を変更できます</span></div><div class="rule"></div>
+  <div class="ovl">${SLOTS.map(sl=>{const d=sl.cat[cfg[sl.key]],w=d.st?d.st.wt:d.wt;return `<button class="orow" data-slot="${sl.key}"><span class="k ${sl.group==='F'?'f':'w'}">${sl.label}</span><span class="v">${esc(ENM(sl.key,cfg[sl.key]))}</span><span class="wt">${w?'WT '+w:''}</span></button>`}).join('')}</div>
+  <div class="specs"><span><small>ABILITY</small><b>${hd.abEn}</b></span><span><small>LOCK RANGE</small><b>${SS.lockRange}<i>m</i></b></span><span><small>WALK</small><b>${SS.walk.toFixed(1)}</b></span><span><small>DASH</small><b>${SS.dash.toFixed(1)}</b></span><span><small>QUICK BOOST</small><b>${SS.qb.toFixed(1)}<i>m</i></b></span></div>
+  <div class="note">${hd.abDesc}</div>
   ${SS.over?`<div class="warn-msg">兵装が積載を ${SS.weap-SS.load} 超えています。軽い兵装にするか、積載の大きいアームにしてください。</div>`:''}`;
   el.querySelectorAll('[data-slot]').forEach(b=>b.onclick=()=>openSlot(b.dataset.slot));
  }else if(view==='slot'){
@@ -876,7 +924,7 @@ function renderSide(){
     rows.push(cmpRow('種類',a.kind||'－',b.kind||'－'));
     rows.push(cmpRow('使用回数',a.ammo??0,b.ammo??0));
     if(a.dur||b.dur)rows.push(cmpRow('効果時間',a.dur||0,b.dur||0));
-    rows.push(cmpRow('リロード',a.reload||0,b.reload||0,'lo',v=>v+'秒'));
+    rows.push(cmpRow('リロード',a.reload||0,b.reload||0,'lo',v=>v+'s'));
    }
    if(kind==='射撃'||kind==='近接'||a.kind==='射撃'||a.kind==='近接'){
     if(!(kind==='補助'||kind==='防御'))rows.push(cmpRow('種類',a.kind||'－',b.kind||'－'));
@@ -885,52 +933,52 @@ function renderSide(){
     rows.push(cmpRow('範囲',a.area||0,b.area||0,'hi',v=>v?v+'m':'－'));
     rows.push(cmpRow('同時発射',a.count||0,b.count||0));
     rows.push(cmpRow('弾数',a.ammo??0,b.ammo??0,'hi',R0));
-    rows.push(cmpRow('リロード',a.reload||0,b.reload||0,'lo',v=>v?v+'秒':'－'));
+    rows.push(cmpRow('リロード',a.reload||0,b.reload||0,'lo',v=>v?v+'s':'－'));
     rows.push(cmpRow('衝撃',a.imp||'－',b.imp||'－'));
     rows.push(cmpRow('弾速',a.spd||0,b.spd||0,'hi',v=>v||'－'));
     rows.push(cmpRow('誘導',a.hom||'－',b.hom||'－'));
    }
    rows.push(cmpRow('重量',a.wt||0,b.wt||0,'lo'));
-   if(b.rate)rows.push(`<div class="c"><span class="k">連射</span><span class="v">${esc(b.rate)}</span></div>`);
+   if(b.rate)rows.push(`<div class="c"><span class="k">RATE</span><span class="v">${esc(RATEN[b.rate]||b.rate)}</span></div>`);
    part=rows.join('');
-   const KEYS=(b.kind==='補助'||b.kind==='防御'||(!b.kind&&(a.kind==='補助'||a.kind==='防御')))?['使用回数','効果時間','リロード','重量']:['威力','射程','弾数','リロード','衝撃','重量'];
+   const KEYS=(b.kind==='補助'||b.kind==='防御'||(!b.kind&&(a.kind==='補助'||a.kind==='防御')))?['USES','DURATION','RELOAD','WEIGHT']:['POWER','RANGE','AMMO','RELOAD','IMPACT','WEIGHT'];
    brief=rows.filter(r=>KEYS.some(k=>r.includes(`class="k">${k}<`))).join('');
   }
   const whole=[cmpRow('装甲',SS.armor,P2.armor),cmpRow('機動',Math.round(SS.mob),Math.round(P2.mob)),cmpRow('ブースト容量',SS.boost,P2.boost),
    cmpRow('積載',`${SS.weap}/${SS.load}`,`${P2.weap}/${P2.load}`),cmpRow('総重量',SS.total,P2.total,'lo')].join('');
   const note=(cd.st&&cd.st.note)?`<p>${esc(cd.st.note)}</p>`:'';
-  el.innerHTML=`<div class="shd"><span class="code">SLOT ${no}</span><span class="ttl">${sl.label}</span><span class="sub">${sub}</span></div><div class="rule"></div>
+  el.innerHTML=`<div class="shd"><span class="code">SLOT ${no}</span><span class="ttl en">${sl.label}</span><span class="sub">${sub}</span></div><div class="rule"></div>
   <div class="cols2"><div class="plist">${items.map(id=>{const d=sl.cat[id],w=d.st?d.st.wt:d.wt;const s=id===cand,e=id===cur;
     const ov=!e&&statsFor({...cfg,[selSlot]:id}).over;
-    return `<button class="pitem${s?' sel':''}${ov?' ovw':''}" data-id="${id}" ${ov?'disabled':''}><span class="c">${id==='none'?'―':id}</span><span class="n">${esc(d.name)}</span>${e?'<span class="t eq">装備中</span>':ov?'<span class="t ov">積載超過</span>':`<span class="t">${w?w:''}</span>`}</button>`}).join('')}
-    <div class="pitem lock"><span class="c">－</span><span class="n">未入手</span><span class="t"></span></div></div>
-   <div class="detail"><div class="dtop">${sl.group==='W'&&cand!=='none'?'<div class="pv" id="pv"></div>':''}<div class="dtxt"><span class="en">${id2code(cand)} / ${EN[cand]||''}</span><span class="nm">${esc(cd.name)}</span><p>${esc(DESC[cand]||'')}</p></div></div>
-    <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能（主な項目）'}</div><div class="cmp">${brief}</div>
-    <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur?'disabled':''}>${cand===cur?'装備中':'装備する'}</button><button class="btn-sub" id="more">詳細比較</button><button class="btn-sub" id="back">戻る</button></div></div></div>`;
+    return `<button class="pitem${s?' sel':''}${ov?' ovw':''}" data-id="${id}" ${ov?'disabled':''}><span class="c">${id==='none'?'―':id}</span><span class="n">${esc(ENM(selSlot,id))}</span>${e?'<span class="t eq">EQ</span>':ov?'<span class="t ov">OVER</span>':`<span class="t">${w?w:''}</span>`}</button>`}).join('')}
+    <div class="pitem lock"><span class="c">－</span><span class="n">LOCKED</span><span class="t"></span></div></div>
+   <div class="detail"><div class="dtop">${sl.group==='W'&&cand!=='none'?'<div class="pv" id="pv"></div>':''}<div class="dtxt"><span class="en">${id2code(cand)} ／ ${esc(cd.name)}</span><span class="nm en">${EN[cand]||''}</span><p>${esc(DESC[cand]||'')}</p></div></div>
+    <div class="sec">${sl.group==='F'?'PART SPEC':'WEAPON SPEC'}</div><div class="cmp">${brief}</div>
+    <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur?'disabled':''}>${cand===cur?'EQUIPPED':'EQUIP'}</button><button class="btn-sub" id="more">DETAIL</button><button class="btn-sub" id="back">BACK</button></div></div></div>`;
   $('more').onclick=()=>openModal(`<div class="shd"><span class="code">${id2code(cand)} / ${EN[cand]||''}</span><span class="ttl">${esc(cd.name)}</span></div><div class="rule"></div>
    <p class="note" style="margin:0">${esc(DESC[cand]||'')}${cd.st&&cd.st.note?'<br>'+esc(cd.st.note):''}</p>
-   <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}（現在 → 選択中）</div><div class="cmp">${part}</div>
-   <div class="sec">機体全体（現在 → 装備後）</div><div class="cmp">${whole}${cmpRow('歩行速度',+SS.walk.toFixed(1),+P2.walk.toFixed(1))}${cmpRow('ダッシュ速度',+SS.dash.toFixed(1),+P2.dash.toFixed(1))}${cmpRow('急加速距離',+SS.qb.toFixed(1),+P2.qb.toFixed(1))}${cmpRow('ロック距離',SS.lockRange,P2.lockRange,'hi',v=>v+'m')}</div>
+   <div class="sec">${sl.group==='F'?'PART SPEC':'WEAPON SPEC'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${part}</div>
+   <div class="sec">UNIT TOTAL<span class="secj">現在 → 装備後</span></div><div class="cmp">${whole}${cmpRow('歩行速度',+SS.walk.toFixed(1),+P2.walk.toFixed(1))}${cmpRow('ダッシュ速度',+SS.dash.toFixed(1),+P2.dash.toFixed(1))}${cmpRow('急加速距離',+SS.qb.toFixed(1),+P2.qb.toFixed(1))}${cmpRow('ロック距離',SS.lockRange,P2.lockRange,'hi',v=>v+'m')}</div>
    ${P2.over?`<div class="warn-msg">この装備にすると積載を ${P2.weap-P2.load} 超えます（出撃不可）</div>`:''}`);
   el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{cand=b.dataset.id;renderGarage()});
   const pv=$('pv');if(pv&&pv.appendChild){pv.appendChild(PR.domElement);setPreview(selSlot,cand)}else setPreview(null);
   $('equip').onclick=()=>{cfg[selSlot]=cand;assemble()};
   $('back').onclick=()=>{view='overview';selSlot=null;renderGarage()};
  }else if(view==='paint'){
-  el.innerHTML=`<div class="shd"><span class="code">PAINT</span><span class="ttl">塗装</span><span class="sub">フレームの色を変更（兵装は変わりません）</span></div><div class="rule"></div>
-  <div class="sec">プリセット</div><div class="swatches">${Object.keys(PRESETS).map(n=>`<button data-p="${n}">${n}</button>`).join('')}</div>
-  <div class="sec">個別の色</div><div class="colrow">${COLOR_KEYS.map(([k,n])=>`<label><input type="color" id="c-${k}" value="${COL[k]}">${n}</label>`).join('')}</div>
-  <div class="acts"><button class="btn-sub" id="back">戻る</button></div>`;
+  el.innerHTML=`<div class="shd"><span class="code">SYS</span><span class="ttl en">PAINT</span><span class="sub">フレームの色を変更します（兵装は変わりません）</span></div><div class="rule"></div>
+  <div class="sec">PRESET</div><div class="swatches">${Object.keys(PRESETS).map(n=>`<button data-p="${n}">${n}</button>`).join('')}</div>
+  <div class="sec">CUSTOM</div><div class="colrow">${COLOR_KEYS.map(([k,n])=>`<label><input type="color" id="c-${k}" value="${COL[k]}">${n}</label>`).join('')}</div>
+  <div class="acts"><button class="btn-sub" id="back">BACK</button></div>`;
   el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{Object.assign(COL,PRESETS[b.dataset.p]);applyColors();renderSide()});
   COLOR_KEYS.forEach(([k])=>{$('c-'+k).oninput=e=>{COL[k]=e.target.value;applyColors()}});
   $('back').onclick=()=>{view='overview';renderGarage()};
  }else if(view==='config'){
-  el.innerHTML=`<div class="shd"><span class="code">SYSTEM</span><span class="ttl">コンフィグ</span></div><div class="rule"></div>
-  <div class="sec">画質</div><div class="seg">${['240p','480p','高精細'].map((n,i)=>`<button data-r="${i}" aria-pressed="${res===i}">${n}</button>`).join('')}</div>
-  <div class="sec">表示</div><div class="seg"><button id="cJit" aria-pressed="${jitOn.value===1}">頂点ガタつき</button></div>
-  <div class="sec">出撃時の視点</div><div class="seg"><button data-cam="tps" aria-pressed="${CAMMODE==='tps'}">追従</button><button data-cam="top" aria-pressed="${CAMMODE==='top'}">俯瞰</button></div>
+  el.innerHTML=`<div class="shd"><span class="code">SYS</span><span class="ttl en">CONFIG</span></div><div class="rule"></div>
+  <div class="sec">RESOLUTION</div><div class="seg">${['240p','480p','HIGH'].map((n,i)=>`<button data-r="${i}" aria-pressed="${res===i}">${n}</button>`).join('')}</div>
+  <div class="sec">DISPLAY</div><div class="seg"><button id="cJit" aria-pressed="${jitOn.value===1}">VERTEX JITTER</button></div>
+  <div class="sec">CAMERA</div><div class="seg"><button data-cam="tps" aria-pressed="${CAMMODE==='tps'}">CHASE</button><button data-cam="top" aria-pressed="${CAMMODE==='top'}">OVERHEAD</button></div>
   <div class="note">240p が初代プレイステーションに近い見た目です。動作が重いときも 240p にしてください。</div>
-  <div class="acts"><button class="btn-sub" id="back">戻る</button></div>`;
+  <div class="acts"><button class="btn-sub" id="back">BACK</button></div>`;
   el.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{res=+b.dataset.r;resize();renderSide()});
   $('cJit').onclick=()=>{jitOn.value=1-jitOn.value;renderSide()};
   el.querySelectorAll('[data-cam]').forEach(b=>b.onclick=()=>{setCam(b.dataset.cam);renderSide()});
@@ -940,13 +988,14 @@ function renderSide(){
  syncPreviewMech();updateTagsState();highlight(view==='slot'?selSlot:null);
 }
 const id2code=id=>id==='none'?'―':id;
+const ENM=(slot,id)=>id==='none'?(SLOTOF(slot).cat===HAND?'BARE HAND':'EMPTY'):(EN[id]||SLOTOF(slot).cat[id].name);
 
 /* 部位ボタン：機体のまわりの決まった位置に配置（x%,y% は3D画面内の中心位置）。選ぶと実機のその部位を強調 */
 const TAGPOS={head:[50,9],ext:[18,11],rShoulder:[18,24],lShoulder:[82,24],core:[18,38],arms:[82,38],rHand:[18,53],lHand:[82,53],legs:[82,67]};
 const tagEls={};
 Object.keys(TAGPOS).forEach(k=>{const sl=SLOTOF(k),b=document.createElement('button');b.className='ptag '+(sl.group==='F'?'f':'w');b.innerHTML=`${sl.label}<span></span>`;
  b.style.left=TAGPOS[k][0]+'%';b.style.top=TAGPOS[k][1]+'%';b.onclick=()=>openSlot(k);$('tags').appendChild(b);tagEls[k]=b});
-function updateTagsState(){Object.entries(tagEls).forEach(([k,b])=>{const d=SLOTOF(k).cat[cfg[k]];b.querySelector('span').textContent=k==='head'||k==='core'||k==='arms'||k==='legs'?cfg[k]:d.name;b.classList.toggle('on',view==='slot'&&selSlot===k)})}
+function updateTagsState(){Object.entries(tagEls).forEach(([k,b])=>{const d=SLOTOF(k).cat[cfg[k]];b.querySelector('span').textContent=k==='head'||k==='core'||k==='arms'||k==='legs'?cfg[k]:ENM(k,cfg[k]);b.classList.toggle('on',view==='slot'&&selSlot===k)})}
 function updateTags(){}
 // 強調表示：その部位のポリゴンに橙色のワイヤーフレームを重ねて点滅させる
 const HL=new THREE.LineBasicMaterial({color:0xffb040,transparent:true});const EDGES=new WeakMap();
@@ -1017,7 +1066,7 @@ const world=grp(S);world.visible=false;
 {const bm=psMat(0xffffff,{map:panel('#5a6058','#2c302b')}),rm=psMat(0x3b3f3a);
  for(let i=0;i<14;i++){const a=i/14*Math.PI*2+Math.random()*.3,r=28+Math.random()*40,w=4+Math.random()*6,h=4+Math.random()*14,d=4+Math.random()*6;
   const b=box(world,w,h,d,bm,Math.sin(a)*r,h/2,Math.cos(a)*r,0,Math.random()*3,0);box(world,w*.8,.6,d*.8,rm,b.position.x,h+.3,b.position.z,0,b.rotation.y,0)}
- const wm=psMat(0xffffff,{map:stripes('#141414','#f2c21a')});
+ const wm=psMat(0xffffff,{map:stripes('#23281d','#56623e')});
  for(let i=0;i<36;i++){const a=i/36*Math.PI*2;box(world,1,1.4,13.5,wm,Math.sin(a)*(ARENA+2),.7,Math.cos(a)*(ARENA+2),0,a,0)}}
 
 const ENEMIES=[];
