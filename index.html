@@ -65,8 +65,9 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .ptag.w{background:rgba(22,18,11,.88);border:1px solid #6a4a20;color:#f0c080}
 .ptag.on{background:var(--fire);border-color:var(--fire);color:#1a1006;font-weight:700}
 .ptag.on span{opacity:1}
-.tools{position:absolute;left:10px;top:10px;display:flex;gap:6px;pointer-events:auto}
-.tools button{height:26px;padding:0 10px;background:rgba(14,18,17,.85);border:1px solid #3a4540;color:#aeb8b3;font-size:11px;letter-spacing:1px}
+.tools{position:absolute;left:calc(18% - 50px);top:calc(53% + 22px);display:flex;flex-wrap:wrap;gap:4px;width:104px;pointer-events:auto}
+.tools button{flex:1 1 44px;padding:0 4px}
+.tools button{height:26px;background:rgba(14,18,17,.85);border:1px solid #3a4540;color:#aeb8b3;font-size:11px;letter-spacing:1px}
 .stamp{position:absolute;right:10px;top:10px;text-align:right;font-family:var(--sten);font-size:10px;line-height:1.35;color:var(--khaki);opacity:.55;letter-spacing:2px}
 .stamp b{display:inline-block;border:1px solid var(--khaki);padding:1px 5px;margin-bottom:2px;font-weight:400}
 #gstats{position:absolute;left:8px;right:8px;bottom:8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 14px;padding:7px 10px;background:rgba(10,14,13,.9);border:1px solid var(--line);pointer-events:auto}
@@ -149,6 +150,8 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #camBtn{position:absolute;right:16px;top:calc(46px + env(safe-area-inset-top,0px));font-size:12px;padding:5px 10px}
 #score{top:calc(84px + env(safe-area-inset-top,0px))}
 
+#modal{position:fixed;inset:0;z-index:25;background:rgba(4,6,5,.7);display:flex;align-items:center;justify-content:center;padding:12px}
+.mbox{width:min(560px,100%);max-height:100%;overflow:auto;background:var(--panel);border:1px solid var(--fire);padding:12px 14px;display:flex;flex-direction:column;gap:8px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
 /* メニュー */
 #menu{position:fixed;inset:0;z-index:20;background:rgba(4,6,5,.6)}
 #menu .drawer{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));box-sizing:border-box;background:#101513;border-left:2px solid var(--fire);display:flex;flex-direction:column;gap:8px;overflow-y:auto}
@@ -250,6 +253,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 </div>
 <aside id="side" aria-live="polite"></aside>
 </div>
+<div id="modal" hidden><div class="mbox" role="dialog" aria-label="詳細"><div id="modalBody"></div><div class="acts"><button class="btn-sub" id="modalClose" style="margin-left:auto">閉じる</button></div></div></div>
 <div id="menu" hidden>
  <div class="drawer" role="dialog" aria-label="メニュー">
   <div class="mhd"><span>MAIN MENU</span><button id="menuClose" aria-label="閉じる" style="width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 12 12" stroke="#aeb8b3" stroke-width="2"><path d="M1 1l10 10M11 1L1 11"/></svg></button></div>
@@ -700,32 +704,39 @@ function ammoUse(key,n=1){if(mode!=='play')return true;const a=AM[key],st=stOf(k
  if(a.rl>0||a.ammo<n)return false;a.ammo-=n;if(a.ammo<=0){a.ammo=0;a.rl=st.reload}return true}
 function tickAmmo(dt){WSLOTS.forEach(sl=>{const a=AM[sl.key];if(a&&a.rl>0){a.rl-=dt;if(a.rl<=0){a.rl=0;a.ammo=stOf(sl.key).ammo}}})}
 let mech=null;const active={};
-function assemble(){
+let builtKey='';
+// 機体の3Dモデルを組む（c＝構成。ガレージでは選択中の装備を仮に組んで見せる）
+function buildMech(c){
+ builtKey=JSON.stringify(c);
  Object.keys(active).forEach(k=>delete active[k]);
  if(mech){S.remove(mech.bot);mech.bot.traverse(o=>o.geometry&&o.geometry!==UB&&o.geometry.dispose());}
  const bot=grp(S),hip=grp(bot,0,3.24,0);
- const legs=LEGS[cfg.legs].build(hip);
+ const legs=LEGS[c.legs].build(hip);
  const torso=grp(hip,0,.25,0);torso.scale.setScalar(UPPER);
- const so=CORES[cfg.core].build(torso);
- const head=grp(torso,...so.neck);HEADS[cfg.head].build(head);
+ const so=CORES[c.core].build(torso);
+ const head=grp(torso,...so.neck);HEADS[c.head].build(head);
  const weps={},anchors={};
  const arms=[-1,1].map(s=>{
   const sh=grp(torso,s*so.arm[0],so.arm[1],so.arm[2]);
-  const {el,hand}=ARMS[cfg.arms].build(sh,s);
+  const {el,hand}=ARMS[c.arms].build(sh,s);
   const hk=s<0?'rHand':'lHand',sk=s<0?'rShoulder':'lShoulder';
   const hm=mountHand(hand),hp=grp(torso,s*so.shoulder[0],so.shoulder[1],so.shoulder[2]);
-  weps[hk]=HAND[cfg[hk]].build(hm,s);anchors[hk]=hm;
-  weps[sk]=SHOULDER[cfg[sk]].build(mountShoulder(hp),s);anchors[sk]=hp;
+  weps[hk]=HAND[c[hk]].build(hm,s);anchors[hk]=hm;
+  weps[sk]=SHOULDER[c[sk]].build(mountShoulder(hp),s);anchors[sk]=hp;
   if(s>0)anchors.arms=el;
   return {sh,el,s};
  });
- const eg=grp(torso,...so.ext);weps.ext=EXT[cfg.ext].build(mountExt(eg));anchors.ext=eg;
+ const eg=grp(torso,...so.ext);weps.ext=EXT[c.ext].build(mountExt(eg));anchors.ext=eg;
  anchors.head=grp(head,0,.3,0);anchors.core=grp(torso,.7,1.0,.3);anchors.legs=grp(legs[1].kn,0,-.6,0);
  const flames=[-1,1].map(s=>{const n=grp(torso,s*so.boost[0],so.boost[1],so.boost[2]);
   box(n,.3,.3,.3,M.frame,0,0,.1);cyl(n,.13,.18,.3,Wp.frame,0,0,-.1,Math.PI/2,0,8);cyl(n,.12,.12,.02,Wp.glow,0,0,-.26,Math.PI/2,0,8);
   const f=grp(n,0,0,-.27);f.rotation.x=-Math.PI/2-.35;cyl(f,.02,.15,1,Wp.glow,0,.5,0,0,0,6);f.scale.set(1,.01,1);return f});
  mech={bot,hip,torso,head,arms,legs,weps,flames,anchors};
  if(mode==='play'){bot.position.set(P.pos.x,0,P.pos.z);bot.rotation.y=P.yaw}
+ hlMech=null;
+}
+function assemble(){
+ buildMech(cfg);
  calcStats();resetAmmo();updateHUD();
 }
 function updateHUD(){
@@ -785,6 +796,11 @@ const SLOTOF=k=>SLOTS.find(s=>s.key===k);
 let view='overview',selSlot=null,cand=null;
 function openSlot(k){view='slot';selSlot=k;cand=cfg[k];renderGarage()}
 function renderGarage(){renderHeader();renderGStats();renderSide()}
+// ガレージでは、選択中（未装備）の装備を仮に組んだ見た目にする
+function syncPreviewMech(){
+ const want=mode==='garage'&&view==='slot'&&selSlot?{...cfg,[selSlot]:cand}:cfg;
+ if(JSON.stringify(want)!==builtKey&&mech)buildMech(want);
+}
 function renderHeader(){
  $('hWt').textContent=SS.total;const l=$('hLoad');l.textContent=`${SS.weap}/${SS.load}`;l.classList.toggle('over',SS.over);
  $('mSortie').disabled=SS.over;$('mTrain').disabled=SS.over;$('mWarn').textContent=SS.over?'積載オーバーのため出撃できません。ガレージで兵装を見直してください':'';
@@ -864,11 +880,15 @@ function renderSide(){
   <div class="cols2"><div class="plist">${items.map(id=>{const d=sl.cat[id],w=d.st?d.st.wt:d.wt;const s=id===cand,e=id===cur;
     return `<button class="pitem${s?' sel':''}" data-id="${id}"><span class="c">${id==='none'?'―':id}</span><span class="n">${esc(d.name)}</span>${e?'<span class="t eq">装備中</span>':`<span class="t">${w?w:''}</span>`}</button>`}).join('')}
     <div class="pitem lock"><span class="c">－</span><span class="n">未入手</span><span class="t"></span></div></div>
-   <div class="detail"><div class="dtop">${sl.group==='W'&&cand!=='none'?'<div class="pv" id="pv"></div>':''}<div class="dtxt"><span class="en">${id2code(cand)} / ${EN[cand]||''}</span><span class="nm">${esc(cd.name)}</span><p>${esc(DESC[cand]||'')}</p>${note}</div></div>
+   <div class="detail"><div class="dtop">${sl.group==='W'&&cand!=='none'?'<div class="pv" id="pv"></div>':''}<div class="dtxt"><span class="en">${id2code(cand)} / ${EN[cand]||''}</span><span class="nm">${esc(cd.name)}</span><p>${esc(DESC[cand]||'')}</p></div></div>
     <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}</div><div class="cmp">${part}</div>
-    <div class="sec">機体全体</div><div class="cmp">${whole}</div>
-    ${P2.over?`<div class="warn-msg">この装備にすると積載を ${P2.weap-P2.load} 超えます（出撃不可）</div>`:''}
-    <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur?'disabled':''}>${cand===cur?'装備中':'装備する'}</button><button class="btn-sub" id="back">戻る</button></div></div></div>`;
+    ${P2.over?`<div class="warn-msg">積載を ${P2.weap-P2.load} 超えます（出撃不可）</div>`:''}
+    <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur?'disabled':''}>${cand===cur?'装備中':'装備する'}</button><button class="btn-sub" id="more">詳細比較</button><button class="btn-sub" id="back">戻る</button></div></div></div>`;
+  $('more').onclick=()=>openModal(`<div class="shd"><span class="code">${id2code(cand)} / ${EN[cand]||''}</span><span class="ttl">${esc(cd.name)}</span></div><div class="rule"></div>
+   <p class="note" style="margin:0">${esc(DESC[cand]||'')}${cd.st&&cd.st.note?'<br>'+esc(cd.st.note):''}</p>
+   <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}（現在 → 選択中）</div><div class="cmp">${part}</div>
+   <div class="sec">機体全体（現在 → 装備後）</div><div class="cmp">${whole}${cmpRow('歩行速度',+SS.walk.toFixed(1),+P2.walk.toFixed(1))}${cmpRow('ダッシュ速度',+SS.dash.toFixed(1),+P2.dash.toFixed(1))}${cmpRow('急加速距離',+SS.qb.toFixed(1),+P2.qb.toFixed(1))}${cmpRow('ロック距離',SS.lockRange,P2.lockRange,'hi',v=>v+'m')}</div>
+   ${P2.over?`<div class="warn-msg">この装備にすると積載を ${P2.weap-P2.load} 超えます（出撃不可）</div>`:''}`);
   el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{cand=b.dataset.id;renderGarage()});
   const pv=$('pv');if(pv&&pv.appendChild){pv.appendChild(PR.domElement);setPreview(selSlot,cand)}else setPreview(null);
   $('equip').onclick=()=>{cfg[selSlot]=cand;assemble()};
@@ -894,7 +914,7 @@ function renderSide(){
   $('back').onclick=()=>{view='overview';renderGarage()};
  }
  if(view!=='slot')setPreview(null);
- updateTagsState();highlight(view==='slot'?selSlot:null);
+ syncPreviewMech();updateTagsState();highlight(view==='slot'?selSlot:null);
 }
 const id2code=id=>id==='none'?'―':id;
 
@@ -906,7 +926,7 @@ Object.keys(TAGPOS).forEach(k=>{const sl=SLOTOF(k),b=document.createElement('but
 function updateTagsState(){Object.entries(tagEls).forEach(([k,b])=>{const d=SLOTOF(k).cat[cfg[k]];b.querySelector('span').textContent=k==='head'||k==='core'||k==='arms'||k==='legs'?cfg[k]:d.name;b.classList.toggle('on',view==='slot'&&selSlot===k)})}
 function updateTags(){}
 // 強調表示：その部位のポリゴンに橙色のワイヤーフレームを重ねて点滅させる
-const HL=new THREE.MeshBasicMaterial({color:0xf0a040,wireframe:true,transparent:true,depthTest:false});
+const HL=new THREE.LineBasicMaterial({color:0xffb040,transparent:true});const EDGES=new WeakMap();
 let hlMeshes=[],hlSlot=null,hlMech=null;
 function slotMeshes(k){
  const m=mech,out=[],A=m.anchors,skip=new Set([A.rHand,A.lHand]);
@@ -923,7 +943,7 @@ function highlight(k){
  if(hlSlot===k&&hlMech===mech)return;
  hlMeshes.forEach(o=>o.parent&&o.parent.remove(o));hlMeshes=[];hlSlot=k;hlMech=mech;
  if(!k||!mech)return;
- slotMeshes(k).forEach(m=>{const o=new THREE.Mesh(m.geometry,HL);o.userData.hl=true;o.scale.setScalar(1.08);o.renderOrder=9;m.add(o);hlMeshes.push(o)});
+ slotMeshes(k).forEach(m=>{let eg=EDGES.get(m.geometry);if(!eg){eg=new THREE.EdgesGeometry(m.geometry,20);EDGES.set(m.geometry,eg)}const o=new THREE.LineSegments(eg,HL);o.userData.hl=true;o.scale.setScalar(1.015);m.add(o);hlMeshes.push(o)});
 }
 // 兵装プレビュー：選択中（未装備）の兵装を小さな画面で回して見せる
 const PR=new THREE.WebGLRenderer({antialias:false,alpha:true});PR.setPixelRatio(1);PR.setSize(124,84,false);
@@ -935,16 +955,23 @@ function setPreview(slot,id){
  while(pvSpin.children.length){const c=pvSpin.children.pop();c.traverse(o=>o.geometry&&o.geometry!==UB&&o.geometry.dispose())}
  pvOn=false;if(!slot||!id||id==='none')return;
  const sl=SLOTOF(slot);if(sl.group!=='W')return;
- const g=new THREE.Group();pvSpin.add(g);
+ // 回転の中心＝兵装の中心：組んだ形の中心を原点へ動かしてから、回転用グループに入れる
+ const g=new THREE.Group();
  if(slot==='rHand'||slot==='lHand')g.rotation.z=Math.PI/2;
- sl.cat[id].build(g,sl.side||1);
- const box=new THREE.Box3().setFromObject(g),c=box.getCenter(new THREE.Vector3()),sz=box.getSize(new THREE.Vector3()).length();
- g.position.sub(c);PC.position.set(sz*.9,sz*.55,sz*1.3);PC.lookAt(0,0,0);pvOn=true;
+ sl.cat[id].build(g,sl.side||1);g.updateMatrixWorld(true);
+ const box=new THREE.Box3().setFromObject(g),c=box.getCenter(new THREE.Vector3()),r=box.getBoundingSphere(new THREE.Sphere()).radius;
+ g.position.sub(c);pvSpin.rotation.set(0,0,0);pvSpin.add(g);
+ const d=r/Math.sin(PC.fov*Math.PI/360)*1.05;PC.position.set(0,d*.35,d);PC.lookAt(0,0,0);pvOn=true;
 }
+/* モーダル：パネルに収まらない詳しい情報を重ねて表示 */
+function openModal(html){const m=$('modal');$('modalBody').innerHTML=html;m.hidden=false}
+function closeModal(){$('modal').hidden=true}
 /* ボタン類 */
 const menu=$('menu');
 function openMenu(o){menu.hidden=!o}
-$('menuBtn').onclick=()=>openMenu(true);$('menuClose').onclick=()=>openMenu(false);
+$('menuBtn').onclick=()=>openMenu(true);
+$('modalClose').onclick=closeModal;$('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});$('menuClose').onclick=()=>openMenu(false);
 menu.addEventListener('click',e=>{if(e.target===menu)openMenu(false)});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden)openMenu(false)});
 $('mSortie').onclick=()=>{if(!SS.over){openMenu(false);setMode('play',false)}};
@@ -1102,6 +1129,7 @@ function readInput(dt){
 /* ===== ガレージ／出撃の切り替え ===== */
 function setMode(m,training=false){
  mode=m;const p=m==='play';TRAIN=p&&training;
+ if(p&&builtKey!==JSON.stringify(cfg))buildMech(cfg);
  $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p;
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
@@ -1154,8 +1182,8 @@ R.setAnimationLoop(()=>{
   const guard=guarding(-1)||guarding(1),rooted=Object.values(active).some(a=>a.def.act.root);
   const can=P.stun<=0&&!rooted,air=!!active.jump;
   const top=CAMMODE==='top';
-  if(top){ // 俯瞰：画面の上＝奥(-Z)。機体はロック中の敵、なければ進む方向を向く
-   let ty=null;if(lockT){lockT.center(_q).sub(P.pos);ty=Math.atan2(_q.x,_q.z)}else if(Math.hypot(inp.x,inp.y)>.2)ty=Math.atan2(inp.x,-inp.y);
+  if(top){ // 俯瞰：画面の上＝奥(-Z)。機体は操作した方向を向く（弾はロック中の敵へ飛ぶ）
+   let ty=null;if(Math.hypot(inp.x,inp.y)>.2)ty=Math.atan2(inp.x,-inp.y);
    if(ty!==null)P.yaw+=Math.atan2(Math.sin(ty-P.yaw),Math.cos(ty-P.yaw))*Math.min(1,dt*6);camYaw=P.yaw;
   }else P.yaw+=Math.atan2(Math.sin(camYaw-P.yaw),Math.cos(camYaw-P.yaw))*Math.min(1,dt*8);
   const f=top?new THREE.Vector3(0,0,-1):new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw)),r=top?new THREE.Vector3(1,0,0):new THREE.Vector3(-Math.cos(P.yaw),0,Math.sin(P.yaw));
@@ -1251,7 +1279,7 @@ R.setAnimationLoop(()=>{
  Wp.glow.color.setHSL(.07,1,.5+Math.sin(t*6)*.08);
  Sk.lamp.color.setHSL(0,1,(Math.floor(t*2)%2)?.55:.18);
  R.render(S,C);
- if(mode==='garage'){HL.opacity=.45+Math.sin(t*6)*.35;if(pvOn&&view==='slot'){pvSpin.rotation.y+=dt*.8;PR.render(PS,PC)}}
+ if(mode==='garage'){HL.opacity=.65+Math.sin(t*5)*.35;if(pvOn&&view==='slot'){pvSpin.rotation.y+=dt*.8;PR.render(PS,PC)}}
  // HUD
  if(mode==='play'){
   $('apBar').style.width=(P.ap/P.apMax*100)+'%';$('apNum').textContent=Math.round(P.ap);
