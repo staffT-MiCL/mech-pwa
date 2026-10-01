@@ -297,6 +297,19 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #fade::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(140,240,110,.05) 0 1px,transparent 1px 3px)}
 #fade.on{opacity:1;pointer-events:auto}
 #fade span{position:absolute;right:18px;bottom:14px;font-family:var(--mech);font-size:11px;letter-spacing:4px;color:var(--khaki);opacity:.7}
+/* ローディング：区切り式のゲージが段階的に伸び、起動ログが流れる */
+#loading{position:fixed;inset:0;z-index:42;background:#050706;display:flex;align-items:center;justify-content:center}
+#loading::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.3) 0 1px,transparent 1px 3px)}
+#loading .lbox{width:min(420px,80vw);display:flex;flex-direction:column;gap:10px}
+#loading .lhd{display:flex;align-items:baseline;justify-content:space-between;font-family:var(--mech);font-size:13px;font-weight:700;letter-spacing:.4em;color:var(--fire)}
+#loading .lhd b{font-weight:700;letter-spacing:.1em;color:#eef2ef;font-variant-numeric:tabular-nums}
+#loading .lbar{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:3px;height:12px}
+#loading .lbar i{background:#18201c;transform:skewX(-24deg)}#loading .lbar i.on{background:var(--accent);box-shadow:0 0 5px rgba(140,240,110,.5)}
+#loading .llog{min-height:4.8em;font-family:var(--mech);font-size:11px;line-height:1.6;letter-spacing:.08em;color:#6f8a76}
+#loading .llog div:last-child{color:var(--accent)}
+#loading .lgear{position:absolute;right:22px;bottom:18px;width:26px;height:26px;border:3px dotted var(--khaki);border-radius:50%;opacity:.7;animation:lspin 1.4s steps(8) infinite}
+@keyframes lspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){#loading .lgear{animation:none}}
 /* タイトル画面 */
 #title{position:fixed;inset:0;z-index:30;background:#07090a;overflow:hidden}
 #title canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
@@ -607,6 +620,7 @@ body.eqm #btnTrain{display:none}
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
  <div class="tver">VER 0.6</div>
 </div>
+<div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="fade" aria-hidden="true"><span id="fadeTxt"></span></div>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
 <script type="module">
@@ -2429,14 +2443,26 @@ function titleSize(){const w=innerWidth,h=innerHeight;const rh=RES[res]?RES[res]
  // 機体を画面の右寄りに：見る範囲を左へずらす（横長ほど大きく）
  TC.setViewOffset(w,h,-w*(w>h?.2:0),0,w,h);TC.updateProjectionMatrix()}
 function titleLoop(){if(!TT.on)return;TT.ang+=.0026;const r=19;TC.position.set(Math.sin(TT.ang)*r,5.6,Math.cos(TT.ang)*r);TC.lookAt(0,3.4,0);TR.render(S,TC);requestAnimationFrame(titleLoop)}
+/* ローディング演出：約1.6秒。終わったら fn（画面の準備）を実行して幕を上げる。
+   NEW GAME はこのあとにオープニングを入れる予定（playOpening はいまは何もしない） */
+function playOpening(next){next()}
+function loadingTo(fn,lines){const L=$('loading'),bar=$('lBar'),log=$('lLog'),pct=$('lPct');
+ bar.innerHTML='<i></i>'.repeat(24);log.innerHTML='';pct.textContent='0%';L.hidden=false;TT.on=false;
+ const steps=[0,3,7,8,12,16,17,21,24];let i=0;
+ const tick=()=>{const n=steps[i];bar.querySelectorAll('i').forEach((e,k)=>e.classList.toggle('on',k<n));pct.textContent=Math.round(n/24*100)+'%';
+  const ln=lines[Math.min(lines.length-1,Math.floor(i/steps.length*lines.length))];if(ln&&log.lastChild?.textContent!==ln){const d=document.createElement('div');d.textContent=ln;log.appendChild(d);while(log.children.length>3)log.firstChild.remove()}
+  if(++i<steps.length)setTimeout(tick,120+Math.random()*120);else setTimeout(()=>{fn();const f=$('fade');f.classList.add('on');L.hidden=true;requestAnimationFrame(()=>requestAnimationFrame(()=>f.classList.remove('on')))},260)};
+ tick()}
+const LOAD_CON=['> SAVE DATA ............ FOUND','> N-07 CONTROL UNIT .... ONLINE','> FRAME LINK ........... OK','> HANGAR 07 ............ READY'];
+const LOAD_NEW=['> NEW OPERATOR ......... REGISTERED','> N-07 CONTROL UNIT .... BOOTING','> FRAME LINK ........... OK','> HANGAR 07 ............ READY'];
 const hasSave=()=>{try{return !!localStorage.getItem(SAVE_KEY)}catch(e){return false}};
 function showTitle(){const t=$('title');t.hidden=false;TT.on=true;titleSize();titleLoop();
  const sv=hasSave();$('tCon').disabled=!sv;$('tConSub').textContent=sv?fmtCR(CREDIT)+' CR':'NO DATA';$('tNew').focus()}
 function hideTitle(){TT.on=false;$('title').hidden=true;view='overview';selSlot=null;renderGarage();resize()}
 addEventListener('resize',()=>{if(TT.on)titleSize()});
-$('tCon').onclick=()=>{if(hasSave())fadeTo(hideTitle,'GARAGE')};
+$('tCon').onclick=()=>{if(hasSave())fadeTo(()=>loadingTo(hideTitle,LOAD_CON))};
 $('tNew').onclick=()=>{
- if(!hasSave())return fadeTo(hideTitle,'GARAGE');
+ if(!hasSave())return fadeTo(()=>loadingTo(()=>playOpening(hideTitle),LOAD_NEW));
  const m=document.createElement('div');m.className='tmodal';m.innerHTML=`<div class="box" role="dialog" aria-label="データの削除の確認"><div class="shd"><span class="code" style="color:var(--alert)">WARNING</span><span class="ttl en">NEW GAME</span></div><div class="rule" style="background:linear-gradient(90deg,var(--alert) 0 60px,var(--line) 60px)"></div>
   <p>今までのデータ（所持金 ${fmtCR(CREDIT)} CR、購入したパーツ、改造、機体の損傷、装備）はすべて削除されます。元に戻すことはできません。<br>最初から始めますか？</p>
   <div class="acts"><button class="tdel" id="tDel">削除して始める</button><button class="btn-sub" id="tNo" style="width:90px">やめる</button></div></div>`;
@@ -2446,7 +2472,7 @@ $('tNew').onclick=()=>{
 };
 // NEW GAME でデータを消して読み直したときは、タイトルを飛ばしてガレージから始める
 {let skip=false;try{skip=sessionStorage.getItem('mech-newgame')==='1';sessionStorage.removeItem('mech-newgame')}catch(e){}
- if(skip){$('title').hidden=true;const f=$('fade');f.classList.add('on');requestAnimationFrame(()=>requestAnimationFrame(()=>f.classList.remove('on')))}else showTitle()}
+ if(skip){$('title').hidden=true;loadingTo(()=>playOpening(hideTitle),LOAD_NEW)}else showTitle()}
 </script>
 <script>
 setTimeout(()=>{if(!document.querySelector('#wrap canvas')){const e=document.getElementById('err');e.textContent='3Dライブラリを読み込めませんでした。再読み込みしてください。';e.hidden=false}},6000);
