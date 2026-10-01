@@ -43,7 +43,9 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .logo .en{font-family:var(--sten);font-size:13px;color:var(--fire);letter-spacing:3px}
 .sep{width:1px;height:18px;background:var(--line)}
 .tag{font-family:var(--sten);font-size:12px;color:var(--khaki);letter-spacing:2px;white-space:nowrap}
-#uname{min-width:0;width:11em;background:transparent;border:0;border-bottom:1px dashed var(--faint);color:var(--fg);font-family:var(--disp);font-size:13px;padding:2px 2px}
+#hdr .tag.unit{font-family:var(--mech);font-weight:700;font-size:13px;letter-spacing:.16em;color:#eef2ef}
+#hdr .sn{font-family:var(--mech);font-size:10px;letter-spacing:.12em;color:var(--dim);white-space:nowrap}
+@media (max-width:700px){#hdr .sn{display:none}}
 .grow{flex:1}
 .kv{display:flex;align-items:baseline;gap:5px;white-space:nowrap}.kv small{font-size:10px;color:var(--dim);letter-spacing:1px}.kv b{font-size:13px;font-variant-numeric:tabular-nums}
 .kv b.over{color:var(--alert)}
@@ -554,6 +556,8 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 .opbar.t{top:0;height:max(40px,9.5%)}.opbar.b{bottom:0;height:max(84px,20%);display:flex;align-items:center;justify-content:center;padding:0 24px;box-sizing:border-box}
 #opSub{font-family:var(--disp);font-size:16px;line-height:1.65;letter-spacing:.05em;color:#e6ebe7;text-align:center;max-width:720px}
 #opSub em{font-style:normal;color:var(--fire)}
+#op ruby rt{font-size:.5em;letter-spacing:.12em;color:#b8a878;font-family:var(--body)}
+#opArc ruby rt{font-size:.75em}
 #opArc{position:absolute;left:18px;top:12px;z-index:3;font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:.32em;color:var(--fire)}
 #opArc small{margin-left:10px;font-weight:500;letter-spacing:.16em;color:#7f8c86}
 #opVeil{position:absolute;inset:0;z-index:4;background:#000;opacity:1;transition:opacity .6s ease;pointer-events:none}
@@ -575,9 +579,9 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 .ofr::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(111,211,224,.07) 0 1px,transparent 1px 4px);animation:hflk 3.2s steps(1) infinite}
 @keyframes hflk{0%,100%{opacity:1}47%{opacity:.6}48%{opacity:1}83%{opacity:.75}}
 .ofr .ofh{position:absolute;left:10px;top:8px;z-index:1;font-size:12px;font-weight:700;letter-spacing:.24em;color:#6fd3e0}
-.hst{position:absolute;right:10px;top:8px;z-index:1;display:flex;flex-direction:column;gap:3px;font-size:12px;letter-spacing:.14em;color:#3f6f74}
+.hst{position:absolute;right:10px;top:40px;z-index:1;display:flex;flex-direction:column;gap:3px;font-size:12px;letter-spacing:.14em;color:#3f6f74}
 .hst div{display:flex;justify-content:space-between;gap:14px}.hst b{font-weight:700;color:#2f4f53}
-.hst div.on{color:#9ff6ff}.hst div.on b{color:var(--accent)}
+.hst div.on{color:#b8f0a0}.hst div.on b{color:var(--accent)}
 #opTalk{position:absolute;left:24px;right:24px;bottom:14px;height:104px;z-index:3;box-sizing:border-box;padding:16px 16px 10px;background:#0c110f;border:1px solid #2c3833;cursor:pointer}
 #opTalk .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:var(--olive);color:#e8ecd8;font-family:var(--mech);font-size:10px;letter-spacing:2px;display:flex;align-items:center}
 #opText{font-family:var(--disp);font-size:17px;line-height:1.6;color:#e6ebe7}
@@ -607,8 +611,7 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 <header id="hdr">
  <div class="logo"><span class="en">GARAGE</span></div>
  <span class="sep"></span>
- <span class="tag">UNIT-01</span>
- <input id="uname" aria-label="機体名" maxlength="16" placeholder="UNIT NAME">
+ <span class="tag unit">HX-07 VESTIGE</span><span class="sn">S/N 0417-A</span>
  <span class="grow"></span>
  <span class="kv"><small>WEIGHT</small><b id="hWt"></b></span>
  <span class="kv"><small>LOAD</small><b id="hLoad"></b></span>
@@ -619,7 +622,6 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
  <div id="gui">
   <div id="tagzone"><div id="tags"></div>
   <div class="tools"><button id="btnPaint">PAINT</button><button id="btnTrain">TRAINING</button><button id="btnView">VIEW</button></div></div>
-  <div class="stamp"><b>HX-07</b><br>S/N 0417-A<br>LOT 07 / CLASS B</div>
   <div id="gstats"></div>
   <div id="nonaBox" hidden role="status" aria-live="polite"><span class="nm">N-07 ノーナ</span><div id="nbText"></div><span id="nbNext" hidden>▼</span></div>
  </div>
@@ -665,7 +667,7 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">UNIT-01</span><span>VER 0.7</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.7</span></div>
  </div>
 </div>
 
@@ -723,7 +725,7 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
     <div class="r"><span>BIOMETRIC</span><b id="sBio">---</b></div>
     <div class="pls off" id="sPulse"><svg viewBox="0 0 400 34" preserveAspectRatio="none"><path d="M0 20 H40 L46 8 L52 30 L58 20 H140 L146 8 L152 30 L158 20 H200 H240 L246 8 L252 30 L258 20 H340 L346 8 L352 30 L358 20 H400" fill="none" stroke="#8cf06e" stroke-width="1.5"/></svg></div>
    </div></div>
-  <div class="ofr" id="opHolo"><span class="ofh">FRAME CHECK ／ HX-07</span>
+  <div class="ofr" id="opHolo"><span class="ofh">FRAME CHECK ／ HX-07 VESTIGE</span>
    <div class="hst"><div data-h="head">HEAD<b>---</b></div><div data-h="core">CORE<b>---</b></div><div data-h="arms">ARMS<b>---</b></div><div data-h="legs">LEGS<b>---</b></div></div></div>
  </div>
  <div id="opTalk" hidden><span class="nm">N-07</span><div id="opText" aria-live="polite"></div><span class="nx" id="opNx" hidden>▼</span><div id="opCh"></div></div>
@@ -1405,7 +1407,7 @@ function renderSide(){
  const el=$('side');
  if(view==='overview'){
   const hd=HEADS[cfg.head];
-  el.innerHTML=`<div class="shd"><span class="code">UNIT</span><span class="ttl en">CONFIGURATION</span><span class="sub">部位を押すと装備を変更できます</span></div><div class="rule"></div>
+  el.innerHTML=`<div class="shd"><span class="code">UNIT</span><span class="ttl en">HX-07 VESTIGE</span><span class="sub">S/N 0417-A ／ MFG LOT 07</span></div><div class="rule"></div>
   <div class="ovl">${SLOTS.map(sl=>{const d=sl.cat[cfg[sl.key]],w=d.st?d.st.wt:d.wt;return `<button class="orow" data-slot="${sl.key}"><span class="k ${sl.group==='F'?'f':'w'}">${sl.label}</span><span class="v">${esc(ENM(sl.key,cfg[sl.key]).trim())}<small class="vc">${pn(sl.key,cfg[sl.key])[1]}</small></span><span class="wt"></span></button>`}).join('')}</div>
   <div class="specs"><span><small>ヘッド能力</small><b>${hd.abName}</b></span><span><small>ロック距離</small><b>${SS.lockRange}<i>m</i></b></span><span><small>ロック角度</small><b>±${SS.lockDeg}<i>°</i></b></span><span><small>歩行</small><b>${SS.walk.toFixed(1)}</b></span><span><small>ダッシュ</small><b>${SS.dash.toFixed(1)}</b></span><span><small>急加速</small><b>${SS.qb.toFixed(1)}<i>m</i></b></span></div>
   <div class="note">${hd.abDesc}</div>
@@ -1610,7 +1612,6 @@ $('mConfig').onclick=()=>{if(tutBlock())return;openMenu(false);view='config';ren
 $('btnPaint').onclick=()=>{if(TUT!=='done')return;view='paint';renderGarage()};
 $('btnTrain').onclick=()=>{if(TUT!=='done')return;if(SS.over){view='overview';renderGarage()}else openTrainPrep()};
 $('btnView').onclick=()=>{if(TUT!=='done')return;az=.35;el2=.16;camAuto=true;fitGarageCam()};
-$('uname').addEventListener('input',e=>{$('mUnit').textContent=e.target.value?e.target.value.toUpperCase():'UNIT-01'});
 applyColors();
 
 /* ===== 所持品・所持金（端末に保存） =====
@@ -2648,7 +2649,7 @@ function firstShop(){
    D('まあ、なんて礼儀正しい方！ わたくしと気が合いそうです。……あっ、ネジが。','panic'),
    NN('左の棚の下に転がりました。'),
    D('ありがとうございます……！ では改めまして、'+SAMA()+'。','sorry'),
-   D('生活のためには、いずれ<em>依頼（ミッション）</em>をお受けになることです。管理局から、小さなお仕事が届くようになりますよ。','normal'),
+   D('生活のためには、いずれ<em>依頼（ミッション）</em>をお受けになることです。統治AIの管理局から、小さなお仕事が届くようになりますよ。','normal'),
    D('それまでは<em>演習場</em>で腕を磨かれるとよろしいかと。標的機に撃ち返させれば、管理局から<strong>報酬</strong>も出ます。','happy'),
    NN('承知しました。機体の準備も、ここで整えられそうですね。')],()=>{
    TUT='done';saveGame();applyTut();renderGarage();sh.classList.remove('greet');
@@ -2674,17 +2675,28 @@ function opSize(){const w=innerWidth,h=innerHeight;const rh=RES[res]?RES[res][1]
 addEventListener('resize',()=>{if(OP.on)opSize()});
 // 3Dのギア（兵装つき）を組む。tint で色を差し替え（闘技場の相手機など）
 function gearModel(parent,c,tint){
- const bot=grp(parent),hip=grp(bot,0,3.24,0);LEGS[c.legs].build(hip);
+ const bot=grp(parent),hip=grp(bot,0,3.24,0);const legs=LEGS[c.legs].build(hip);
  const torso=grp(hip,0,.25,0);torso.scale.setScalar(UPPER);const so=CORES[c.core].build(torso);
- const head=grp(torso,...so.neck);HEADS[c.head].build(head);
+ const head=grp(torso,...so.neck);HEADS[c.head].build(head);const arms=[];
  [-1,1].forEach(s=>{const sh=grp(torso,s*so.arm[0],so.arm[1],so.arm[2]);const a=ARMS[c.arms].build(sh,s);
   const hk=s<0?'rHand':'lHand',sk=s<0?'rShoulder':'lShoulder';
   if(c[hk]&&c[hk]!=='none')HAND[c[hk]].build(mountHand(a.hand),s);
   if(c[sk]&&c[sk]!=='none'){const hp=grp(torso,s*so.shoulder[0],so.shoulder[1],so.shoulder[2]);SHOULDER[c[sk]].build(mountShoulder(hp),s)}
-  sh.rotation.x=-.12;a.el.rotation.x=-.3});
- if(tint)bot.traverse(o=>{if(o.isMesh&&tint.has(o.material))o.material=tint.get(o.material)});
- return bot;
+  sh.rotation.x=-.12;a.el.rotation.x=-.3;arms.push({sh,el:a.el})});
+ bot.legs=legs;bot.arms=arms;
+ if(tint)retint(bot,tint);
+ bot.hip=hip;bot.torso=torso;bot.head=head;return bot;
 }
+/* 主人公機と別の色にするための差し替え表（フレーム用の素材 M を、その機体だけの色の素材に置き換える） */
+function makeTint(p){return new Map([[M.main,psMat(0xffffff,{map:M.main.map,color:p.main})],[M.sub,psMat(0xffffff,{map:M.sub.map,color:p.sub})],
+ [M.warn,psMat(0xffffff,{map:M.warn.map,color:p.warn})],[M.frame,psMat(p.joint)],[M.eye,new THREE.MeshBasicMaterial({color:p.eye})]])}
+function retint(o,tint){o.traverse(c=>{if(c.isMesh&&tint.has(c.material))c.material=tint.get(c.material)})}
+const OP_TINT={
+ sand:{main:0xa08a5c,sub:0x6b5c3e,warn:0x8a3a22,joint:0x2a2620,eye:0x401008},
+ rust:{main:0x6e3a2a,sub:0x4a3a30,warn:0xb08a40,joint:0x241c18,eye:0x401008},
+ graph:{main:0x4a4e52,sub:0x2e3236,warn:0x9a5a2a,joint:0x1c1e20,eye:0x401008},
+ purple:{main:0x5a3a7a,sub:0xa8acb4,warn:0x9a7ad8,joint:0x241a30,eye:0xd070ff},
+ crimson:{main:0x7a1e22,sub:0x3a2a30,warn:0xc0a060,joint:0x221418,eye:0xffb040}};
 function buildOpScenes(){
  if(OS)return;OS=new THREE.Scene();
  const amb=new THREE.AmbientLight(0x707a80,2),sun=new THREE.DirectionalLight(0xfff0d8,2.4);sun.position.set(-6,10,8);OS.add(amb,sun);
@@ -2704,7 +2716,7 @@ function buildOpScenes(){
   for(let i=0;i<22;i++){const x=rnd(-24,24),z=rnd(-40,-3);if(x>-14&&x<11&&z>-9)continue;const sl=box(g,rnd(2.5,6),rnd(.35,.6),rnd(2,4),rub[3],x,0,z,rnd(-.5,.5),rnd(0,3),rnd(-.45,.45));
    for(let k=0;k<3;k++)cyl(sl,.04,.04,rnd(1,2.2),rebar,rnd(-1,1),.6,rnd(-.8,.8),rnd(-.6,.6),rnd(-.6,.6),4);settle(sl,.2)}
   // ばらばらになったギア：頭・胴・両腕・脚・武器が別々に転がる（どれも地面に接地）
-  const scatter=(c,cx,cz,sp,k)=>{const put=(o,x,z,rx,rz)=>{o.position.set(x,0,z);o.rotation.set(rx,rnd(0,6.3),rz);settle(o,.18);dark(o,k)};
+  const scatter=(c,cx,cz,sp,k,tn)=>{const tint=makeTint(OP_TINT[tn]),put=(o,x,z,rx,rz)=>{o.position.set(x,0,Math.min(z,-6.5));o.rotation.set(rx,rnd(0,6.3),rz);retint(o,tint);settle(o,.18);dark(o,k)};
    const t=grp(g);t.scale.setScalar(UPPER);CORES[c.core].build(t);put(t,cx,cz,rnd(-1.6,-1.2),rnd(-.3,.3));
    const h=grp(g);h.scale.setScalar(UPPER);HEADS[c.head].build(h);put(h,cx+rnd(-sp,sp),cz+rnd(-sp,sp),rnd(-1.5,1.5),rnd(-1.5,1.5));
    [-1,1].forEach(s2=>{const a=grp(g);a.scale.setScalar(UPPER);const ar=ARMS[c.arms].build(a,s2);if(s2<0&&c.rHand!=='none')HAND[c.rHand].build(mountHand(ar.hand),s2);ar.el.rotation.x=rnd(-1.2,0);
@@ -2713,9 +2725,16 @@ function buildOpScenes(){
    put(hp,cx+rnd(-sp,sp),cz+rnd(-sp,sp),rnd(1.3,1.7),rnd(-.4,.4));put(lg,cx+rnd(-sp,sp)*1.3,cz+rnd(-sp,sp)*1.3,rnd(-1.6,-1.3),rnd(-.5,.5));
    if(c.lHand!=='none'){const w=grp(g);HAND[c.lHand].build(w,1);put(w,cx+rnd(-sp,sp)*1.4,cz+rnd(-sp,sp)*1.4,1.5,rnd(-.3,.3))}
    if(c.rShoulder!=='none'){const w=grp(g);SHOULDER[c.rShoulder].build(w,-1);put(w,cx+rnd(-sp,sp),cz+rnd(-sp,sp),rnd(-.5,.5),rnd(1,2))}};
-  scatter(DEFAULT_CFG,2,-10,4.5,.48);
-  scatter({...DEFAULT_CFG,core:'CR-02',head:'HD-02',legs:'LG-02',lHand:'BZ'},-10,-24,5,.4);
-  scatter({...DEFAULT_CFG,arms:'AR-02',rHand:'MG',lHand:'SH',rShoulder:'GC'},12,-20,5,.38);
+  const WAR={head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'BZ',lHand:'MG2',rShoulder:'GC',lShoulder:'none',ext:'none'};
+  scatter(WAR,2,-10,4.5,.55,'sand');
+  scatter({...WAR,legs:'LG-01',rHand:'MG2',lHand:'BZ2',rShoulder:'MS2'},-10,-24,5,.45,'rust');
+  scatter({...WAR,head:'HD-01',rHand:'RF2',lHand:'SH',rShoulder:'GC2'},12,-20,5,.42,'graph');
+  // うなだれて停止したギア：片膝をつき、上体・頭・両腕がだらりと下がる（膝と足は地面に接地）
+  {const sg=gearModel(g,{...WAR,rShoulder:'GC',lShoulder:'MS'},makeTint(OP_TINT.rust));const [R,Lg]=sg.legs;
+   R.th.rotation.x=-1.25;R.kn.rotation.x=1.35;R.ft.rotation.x=-(R.th.rotation.x+R.kn.rotation.x);
+   Lg.th.rotation.x=.15;Lg.kn.rotation.x=1.75;Lg.ft.rotation.x=-.4;
+   sg.torso.rotation.set(.72,.1,.06);sg.head.rotation.set(.55,-.2,0);sg.arms.forEach((a,i)=>{a.sh.rotation.set(.55,0,i?-.05:.05);a.el.rotation.x=-.08});
+   sg.position.set(-3,0,-15);sg.rotation.y=.55;settle(sg,.08);dark(sg,.55)}
   // 壊れた無人機（ドローン・砲台）：傾いて地面に落ち、翼や砲身が折れている
   const dm=psMat(0xffffff,{map:panel('#5a2a22','#2a1410')}),dk=psMat(0x221d1a),ey=psMat(0x2a0e08);
   [[-4,-6,.6,.3],[10,-8,-1.2,-.4],[-11,-13,2.2,.5],[4,-17,.9,-.6],[-2,-30,-.4,.4]].forEach(([x,z,ry,rz],i)=>{const d=grp(g,x,0,z);d.rotation.set(rnd(-.3,.3),ry,rz);
@@ -2723,7 +2742,22 @@ function buildOpScenes(){
    cyl(d,.25,.3,.3,dk,.5,-.55,0);box(d,.3,.3,.3,dk,rnd(-1.5,1.5),-.4,rnd(1,1.6));settle(d,.2)});
   [[10,-12,.8],[-7,-18,-1.5]].forEach(([x,z,ry])=>{const tr=grp(g,x,0,z);tr.rotation.y=ry;cyl(tr,1.2,1.5,.8,dk,0,.4,0,0,0,8);
    const h=grp(tr,0,1.3,0);h.rotation.set(.5,0,.35);box(h,1.6,1.1,1.6,dm,0,0,0);box(h,.18,.18,1.4,dk,.35,-.1,1.2,.6,0,0);settle(tr,.1)});
-  OSC.push({g,bg:0x2a2722,fog:[8,70],amb:0x8a8070,from:[[-9,.5,5],[3,2.6,-10],.07,40],to:[[6.5,1.1,-2.5],[1.5,.8,-11],-.04,30]})}
+  // 燃える廃墟：炎（ちらつく板）・黒煙・火の粉・赤い照り返し、地平線の赤い光
+  const fireM=[new THREE.MeshBasicMaterial({color:0xff7a20,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}),new THREE.MeshBasicMaterial({color:0xffc040,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false})];
+  const smM=new THREE.MeshBasicMaterial({color:0x1a1512,transparent:true,opacity:.32,depthWrite:false});
+  const fires=[];[[-14,-14,1.2],[8,-24,1.6],[-20,-32,2],[16,-12,1],[-3,-40,2.4],[22,-34,1.8],[-26,-20,1.3]].forEach(([x,z,sz])=>{
+   const fl=[];for(let k=0;k<6;k++){const H=rnd(1,2.4)*sz,f=box(g,rnd(.4,1)*sz,H,rnd(.4,1)*sz,fireM[k%2],x+rnd(-.8,.8)*sz,H/2,z+rnd(-.8,.8)*sz,0,rnd(0,3),0);f.userData.h=H;fl.push(f)}
+   const sm=[];for(let k=0;k<7;k++){const b2=box(g,rnd(1,1.8)*sz,rnd(.9,1.5)*sz,rnd(1,1.8)*sz,smM,x+rnd(-1,1),k*3*sz,z+rnd(-1,1),0,rnd(0,3),0);b2.userData.y0=k*3*sz;b2.userData.top=21*sz;sm.push(b2)}
+   const pl=new THREE.PointLight(0xff6a20,24*sz,18*sz,1.6);pl.position.set(x,1.5,z);g.add(pl);fires.push({fl,sm,pl,sz,ph:rnd(0,6)})});
+  const glow=box(g,320,26,2,new THREE.MeshBasicMaterial({color:0x7a2a10,fog:false}),0,6,-95);
+  const glow2=box(g,320,12,2,new THREE.MeshBasicMaterial({color:0xb04a18,fog:false}),0,-1,-94);
+  const emb=new THREE.InstancedMesh(new THREE.BoxGeometry(.08,.08,.08),new THREE.MeshBasicMaterial({color:0xffa040}),140),ED=[];
+  for(let i=0;i<140;i++)ED.push([rnd(-24,24),rnd(0,14),rnd(-40,6),rnd(.6,1.6)]);g.add(emb);const emx=new THREE.Matrix4();
+  let ft=0;const fireUpd=dt=>{ft+=dt;fires.forEach(F=>{F.fl.forEach((f,k)=>{const q=.6+Math.abs(Math.sin(ft*9+k*1.7+F.ph))*.6;f.scale.y=q;f.position.y=f.userData.h*q/2})
+    ;F.pl.intensity=24*F.sz*(.75+Math.sin(ft*13+F.ph)*.15+Math.random()*.1);
+    F.sm.forEach(b2=>{b2.position.y+=dt*1.6*F.sz;if(b2.position.y>b2.userData.top)b2.position.y=0;b2.rotation.y+=dt*.2})});
+   ED.forEach((p,i)=>{p[1]+=dt*p[3];p[0]+=Math.sin(ft+i)*dt*.4;if(p[1]>14)p[1]=0;emx.makeTranslation(p[0],p[1],p[2]);emb.setMatrixAt(i,emx)});emb.instanceMatrix.needsUpdate=true};
+  OSC.push({g,upd:fireUpd,bg:0x3a1a0e,fog:[8,72],amb:0x9a6048,from:[[-9,.5,5],[3,2.6,-10],.07,40],to:[[6.5,1.1,-2.5],[1.5,.8,-11],-.04,30]})}
  // 2) 統治AI：白い配給都市と塔、シアンの紋章
  {const g=grp(OS);g.add(ground(0x7c868a));
   const wm=T('#c9d2d4','#7d8e92'),cy=new THREE.MeshBasicMaterial({color:0x6fd3e0});
@@ -2746,8 +2780,8 @@ function buildOpScenes(){
   g.add(crowd);
   for(let i=0;i<8;i++){const a=i/8*Math.PI*2;box(g,1,26,1,psMat(0x22343a),Math.sin(a)*48,13,Math.cos(a)*48);box(g,3,.6,3,cy,Math.sin(a)*47,26,Math.cos(a)*47)}
   const red=new Map([[M.main,psMat(0xffffff,{map:M.main.map,color:0x8e2e26})],[M.sub,psMat(0xffffff,{map:M.sub.map,color:0xbdb6a3})],[M.warn,psMat(0xffffff,{map:M.warn.map,color:0xc39640})],[M.eye,new THREE.MeshBasicMaterial({color:0x55e0ff})]]);
-  const a=gearModel(g,DEFAULT_CFG);a.position.set(-7,0,0);a.rotation.y=Math.PI/2;
-  const b=gearModel(g,{...DEFAULT_CFG,rHand:'BZ',lHand:'SH',rShoulder:'GC',lShoulder:'none'},red);b.position.set(7,0,0);b.rotation.y=-Math.PI/2;
+  const a=gearModel(g,{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-01',rHand:'RF2',lHand:'SH2',rShoulder:'none',lShoulder:'none',ext:'RD2'},makeTint(OP_TINT.purple));a.position.set(-7,0,0);a.rotation.y=Math.PI/2;
+  const b=gearModel(g,{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-02',rHand:'BL2',lHand:'none',rShoulder:'MS',lShoulder:'MS2',ext:'BT'},makeTint(OP_TINT.crimson));b.position.set(7,0,0);b.rotation.y=-Math.PI/2;
   OSC.push({g,bg:0x0e1619,fog:[30,150],amb:0x7a8a90,from:[[-32,24,26],[0,4,0],0,42],to:[[-11,1.5,8],[7,4.8,0],.06,32]})}
  // 4) 主人公：ハンガー07の半開きのシャッター前、雨ざらしの払い下げギア（人は映さない）
  {const g=grp(OS);g.add(ground(0x1a1f1c));
@@ -2773,17 +2807,17 @@ function opLoop(){if(!OP.on)return;requestAnimationFrame(opLoop);holoFrame();if(
 const opChk=()=>{if(OP.skip&&!OP.noSkip)throw SKIP};
 const opWait=ms=>new Promise((res,rej)=>{const t0=performance.now(),k=()=>{if(OP.skip&&!OP.noSkip)return rej(SKIP);if(performance.now()-t0>=ms)return res();requestAnimationFrame(k)};k()});
 const opTapOr=ms=>new Promise((res,rej)=>{OP.tap=false;const t0=performance.now(),k=()=>{if(OP.skip&&!OP.noSkip)return rej(SKIP);if(OP.tap||performance.now()-t0>=ms){OP.tap=false;return res()}requestAnimationFrame(k)};k()});
-function opType(el,txt,spd=42){return new Promise((res,rej)=>{const parts=txt.split(/(<\/?(?:em|strong)>)/).filter(Boolean),total=parts.reduce((a,p)=>a+(p[0]==='<'?0:p.length),0);let n=0;OP.tap=false;
- const draw=k=>{let out='',left=k;for(const p of parts){if(p[0]==='<'){out+=p;continue}out+=p.slice(0,Math.max(0,left));left-=p.length}el.innerHTML=out};
+function opType(el,txt,spd=42){return new Promise((res,rej)=>{const parts=txt.split(/(<ruby>.*?<\/ruby>|<\/?(?:em|strong)>)/).filter(Boolean),isR=p=>p.startsWith('<ruby'),total=parts.reduce((a,p)=>a+(isR(p)?1:p[0]==='<'?0:p.length),0);let n=0;OP.tap=false;
+ const draw=k=>{let out='',left=k;for(const p of parts){if(isR(p)){if(left>0)out+=p;left-=1;continue}if(p[0]==='<'){out+=p;continue}out+=p.slice(0,Math.max(0,left));left-=p.length}el.innerHTML=out};
  const iv=setInterval(()=>{if(OP.skip&&!OP.noSkip){clearInterval(iv);return rej(SKIP)}if(OP.tap){OP.tap=false;n=total}draw(++n);if(n>=total){clearInterval(iv);el.innerHTML=txt;res()}},spd);draw(0)})}
 const veil=(v,ms=600)=>{opVeil.style.transitionDuration=ms+'ms';opVeil.style.opacity=v;return new Promise(r=>setTimeout(r,ms))};
 // ノーナのセリフ（第2部）：打ち出したあと、タップか時間で次へ（wait＝Infinity ならタップ待ち）
 async function opSay(txt,wait=4200){$('opTalk').hidden=false;$('opCh').innerHTML='';$('opNx').hidden=true;await opType($('opText'),txt,TXT_SPD);$('opNx').hidden=false;await opTapOr(wait);$('opNx').hidden=true}
 const OP_CARDS=[
- {arc:'ARCHIVE 01',ja:'旧戦役',lines:['少し前の時代。大陸の国々は、戦いの指揮を<em>AI</em>に任せた。','無人兵器と人型兵器「ギア」がぶつかり合った大戦争 ──<br><em>旧戦役</em>。','勝者は生まれなかった。<br>残ったのは、灰になった街と、動かなくなった機械だけだった。']},
- {arc:'ARCHIVE 02',ja:'統治AI',lines:['戦い疲れた人々は、戦争を指揮していたAIに、<br>政治と暮らしの管理を預けた。','<em>統治AI</em>。地域ごとに置かれ、<br>配給も、仕事も、移動も、すべてを決めている。','統治AIどうしは、資源と領域を奪い合っている。<br>ただ、旧戦役を繰り返さないよう、直接の戦争だけは互いに禁じた。']},
- {arc:'ARCHIVE 03',ja:'闘技場',lines:['戦争の代わりに選ばれたのが ── <em>闘技場</em>。','統治AIが代表のギア乗りを立てて戦わせ、<br>その勝ち負けで、資源の分け前が決まる。','観客にとっては娯楽。けれど戦うのは人間で、<br>自分たちを支配するAIのために、戦わされている。']},
- {arc:'HANGAR 07',ja:'第7整備区画',lines:['どの統治AIにも属さない、民間の<em>何でも屋</em>のギア乗りがいる。','持っているのは、軍から払い下げられた中古のギアが1機だけ。<br>拠点は、第7整備区画の<em>ハンガー07</em>。','目的は、ひとつ。<br>まずは、食べていくこと。']}];
+ {arc:'ARCHIVE 01',ja:'旧戦役',lines:['数十年前。大陸の国々は、戦いの指揮を<em>AI</em>に任せた。','無人兵器と人型兵器「ギア」がぶつかり合った大戦争 ──<br><em>旧戦役</em>。','勝者は生まれなかった。<br>残ったのは、灰になった街と、動かなくなった機械だけだった。']},
+ {arc:'ARCHIVE 02',ja:'統治AI',lines:['戦い疲れた人々は、戦争を指揮していたAIに、<br>政治と暮らしの管理を預けた。','<em>統治AI</em>。地域ごとに置かれ、<br>仕事も、移動も、人の営みのすべてを決めている。','統治AIどうしは、資源と領域を奪い合っている。<br>ただ、旧戦役を繰り返さないよう、直接の戦争だけは互いに禁じた。']},
+ {arc:'ARCHIVE 03',ja:'<ruby>闘技場<rt>コロッセオ</rt></ruby>',lines:['戦争の代わりに選ばれたのが ── <em><ruby>闘技場<rt>コロッセオ</rt></ruby></em>。','統治AIが代表のギア乗りを立てて戦わせ、<br>その勝ち負けで、資源の分け前が決まる。','観客にとっては娯楽。けれど戦うのは人間で、<br>自分たちを支配するAIのために、戦わされている。']},
+ {arc:'HANGAR 07',ja:'第7整備区画',lines:['どの統治AIにも属さない、民間の<em>何でも屋</em>のギア乗りがいる。','持っているのは、軍から払い下げられた中古のギアが1機だけ。<br>拠点は、第7整備区画の<em>ハンガー07</em>。','目的は、ひとつ。<br>自由であること……']}];
 const BOOT=[['> POWER ................ ','RESTORED','ok'],['> MEMORY BANK A ........ ','CORRUPTED','bad'],['> MEMORY BANK B ........ ','CORRUPTED','bad'],['> MEMORY BANK C ........ ','ERASED','bad'],['> COMBAT ROUTINE ....... ','OK','ok'],['> DESIGNATION .......... ','N-07','ok'],['> OPERATOR ............. ','UNKNOWN','bad']];
 /* フレームチェックのホログラム：いまの機体（cfg）を線画で組み、部位ごとに点灯させながら回す */
 let HOLO=null;
@@ -2810,10 +2844,10 @@ function buildHolo(){
 function holoSize(){if(!HOLO)return;const el=$('opHolo'),w=el.clientWidth||1,h=el.clientHeight||1;HOLO.r.setSize(Math.round(w*.75),Math.round(h*.75),false);HOLO.cam.aspect=w/h;
  const d=HOLO.h*.72/Math.tan(HOLO.cam.fov*Math.PI/360);HOLO.cam.position.set(0,HOLO.cy+HOLO.h*.12,d);HOLO.cam.lookAt(0,HOLO.cy+HOLO.h*.06,0);HOLO.cam.updateProjectionMatrix()}
 addEventListener('resize',()=>{if(OP.on)holoSize()});
-function holoSet(k,on){if(!HOLO)return;const m=HOLO.mat[k];m.line.color.setHex(on?0x9ff6ff:0x2c6a70);m.line.opacity=on?1:.55;m.fill.opacity=on?.1:.03;
+function holoSet(k,on){if(!HOLO)return;const m=HOLO.mat[k];m.line.color.setHex(on?0x8cf06e:0x2c6a70);m.line.opacity=on?1:.55;m.fill.color.setHex(on?0x8cf06e:0x6fe8ff);m.fill.opacity=on?.1:.03;
  const r=opEl.querySelector(`.hst [data-h="${k}"]`);r.classList.toggle('on',on);r.querySelector('b').textContent=on?'OK':'---'}
 function holoFrame(){if(!HOLO||$('opTerm').hidden)return;HOLO.root.rotation.y+=.012;const t=performance.now()/1000;HOLO.root.position.y=Math.sin(t*1.3)*.06;
- Object.values(HOLO.mat).forEach(m=>{if(m.line.opacity===1)m.line.color.setHSL(.52,1,.78+Math.sin(t*9)*.06)});HOLO.r.render(HOLO.sc,HOLO.cam)}
+ Object.values(HOLO.mat).forEach(m=>{if(m.line.opacity===1)m.line.color.setHSL(.29,.82,.6+Math.sin(t*9)*.06)});HOLO.r.render(HOLO.sc,HOLO.cam)}
 function opTermReset(){$('opLog').innerHTML='';buildHolo();['head','core','arms','legs'].forEach(k=>holoSet(k,false));
  [['sHatch','---',''],['sSeat','---',''],['sBio','---','']].forEach(([id,t,c])=>{$(id).textContent=t;$(id).className=c});$('sPulse').classList.add('off')}
 function opTermFull(){$('opLog').innerHTML=BOOT.map(([a,b,c])=>`<div>${a}<span class="${c}">${b}</span></div>`).join('');buildHolo();['head','core','arms','legs'].forEach(k=>holoSet(k,true));
@@ -2857,7 +2891,7 @@ async function opNameFlow(firstLine){
   if(await opChoose([['はい',1],['入力し直す',0]]))break;
   await opType($('opText'),'失礼いたしました。もう一度お願いいたします。',TXT_SPD);await opTapOr(1600)}
  PILOT=name;saveGame();$('sBio').textContent='REGISTERED: '+name;$('sBio').className='ok';
- await opSay('登録いたしました、<em>'+esc(name)+'</em>。本機の制御は、わたくし N-07 が担当いたします。',Infinity);
+ await opSay('登録いたしました、<em>'+esc(name)+'</em>。本機 HX-07 <ruby>VESTIGE<rt>ヴェスティージ</rt></ruby> の制御は、わたくし N-07 が担当いたします。',Infinity);
  await opSay('……呼びにくければ、<em>ノーナ</em>とお呼びください。この携帯端末からも、いつでもお呼び出しいただけます。',Infinity);
  $('opOnline').hidden=false;await new Promise(r=>setTimeout(r,1300));
 }
@@ -2918,7 +2952,7 @@ function loadingTo(fn,lines){const L=$('loading'),bar=$('lBar'),log=$('lLog'),pc
    requestAnimationFrame(wait)};
   requestAnimationFrame(step)},330)}
 const LOAD_CON=['> SAVE DATA ............ FOUND','> N-07 CONTROL UNIT .... ONLINE','> FRAME LINK ........... OK','> HANGAR 07 ............ READY'];
-const LOAD_NEW=['> NEW OPERATOR ......... REGISTERED','> N-07 CONTROL UNIT .... BOOTING','> FRAME LINK ........... OK','> HANGAR 07 ............ READY'];
+const LOAD_NEW=['> NEW OPERATOR ......... PENDING','> N-07 CONTROL UNIT .... BOOTING','> FRAME LINK ........... OK','> HANGAR 07 ............ READY'];
 const hasSave=()=>{try{return !!localStorage.getItem(SAVE_KEY)}catch(e){return false}};
 function showTitle(){const t=$('title');t.hidden=false;TT.on=true;titleSize();titleLoop();
  const sv=hasSave();$('tCon').disabled=!sv;$('tConSub').textContent=sv?fmtCR(CREDIT)+' CR':'NO DATA';$('tNew').focus()}
