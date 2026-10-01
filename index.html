@@ -335,17 +335,12 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #shopL{display:grid;grid-template-rows:minmax(0,1fr) clamp(128px,36%,190px);min-height:0;min-width:0;border-right:1px solid var(--line)}
 #scene{position:relative;overflow:hidden;min-height:0;border-bottom:1px solid var(--line);background:#0d1110}
 #scene .bg{position:absolute;inset:0;width:100%;height:100%}
-#scene .kp{position:absolute;right:7%;bottom:1%;height:94%;aspect-ratio:150/250;animation:kbob 3.2s ease-in-out infinite}
+#sceneGL{position:absolute;inset:0}#sceneGL canvas{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+#scene .kp{position:absolute;right:9%;top:4%;width:64px;height:44px;pointer-events:none;z-index:1}
 #scene .kp svg{width:100%;height:100%;display:block}
-@keyframes kbob{0%,100%{transform:translateY(0)}50%{transform:translateY(1.2%)}}
 #scene::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.24) 0 1px,transparent 1px 3px)}
-.kp .eye{transition:transform .25s}
 .kp .mk{display:none}
 .kp.happy .mk-h,.kp.panic .mk-p,.kp.sorry .mk-s{display:inline}
-.kp.panic .eye{transform:translateX(9px)}.kp.sorry .eye{transform:translate(-6px,3px)}
-.kp.panic{animation:kshake .18s linear 5}
-@keyframes kshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-1.5%)}75%{transform:translateX(1.5%)}}
-.kp.talking .lens{animation:klens .16s steps(2) infinite}@keyframes klens{50%{opacity:.55}}
 .opcard{position:absolute;left:12px;top:12px;padding:7px 10px;background:rgba(10,14,13,.84);border:1px solid var(--line);display:flex;flex-direction:column;gap:2px;z-index:1}
 .opcard .r{font-size:10px;color:var(--khaki);letter-spacing:3px}.opcard .n{font-family:var(--disp);font-size:15px;color:#eef2ef}
 .opcard .d{font-size:10px;color:var(--dim)}.opcard .st{display:flex;gap:6px;align-items:center;font-size:10px;color:var(--cyan)}.opcard .st::before{content:"";width:6px;height:6px;background:currentColor}
@@ -473,31 +468,12 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
  </div>
  <div id="shopL">
   <div id="scene">
-   <svg class="bg" viewBox="0 0 560 236" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="560" height="236" fill="#0d1110"/><polygon points="0,0 560,0 560,42 0,66" fill="#141a18"/><g stroke="#232d29" stroke-width="3" fill="none"><path d="M0 66 L560 42"/><path d="M60 0 L40 64"/><path d="M214 0 L204 57"/><path d="M437 0 L431 47"/><path d="M40 64 L204 0 M204 57 L437 0"/></g><rect x="0" y="66" width="560" height="123" fill="#101614"/><rect x="17" y="80" width="168" height="94" fill="#121a17" stroke="#24302b"/><rect x="23" y="102" width="156" height="3" fill="#1b2420"/><rect x="23" y="124" width="156" height="3" fill="#1b2420"/><rect x="23" y="146" width="156" height="3" fill="#1b2420"/><rect x="23" y="168" width="156" height="3" fill="#1b2420"/><rect x="23" y="90" width="14" height="10" fill="#3a4433"/><rect x="49" y="90" width="18" height="10" fill="#3a4433"/><rect x="75" y="90" width="22" height="10" fill="#3a4433"/><rect x="101" y="90" width="14" height="10" fill="#3a4433"/><rect x="127" y="90" width="18" height="10" fill="#3a4433"/><rect x="153" y="90" width="22" height="10" fill="#3a4433"/><rect x="23" y="112" width="18" height="10" fill="#3a4433"/><rect x="49" y="112" width="22" height="12" fill="#3a4433"/><rect x="75" y="112" width="14" height="10" fill="#3a4433"/><rect x="101" y="112" width="18" height="12" fill="#3a4433"/><rect x="127" y="112" width="22" height="10" fill="#3a4433"/><rect x="153" y="112" width="14" height="12" fill="#3a4433"/><rect x="23" y="134" width="22" height="10" fill="#3a4433"/><rect x="49" y="134" width="14" height="10" fill="#3a4433"/><rect x="75" y="134" width="18" height="10" fill="#3a4433"/><rect x="101" y="134" width="22" height="10" fill="#3a4433"/><rect x="127" y="134" width="14" height="10" fill="#3a4433"/><rect x="153" y="134" width="18" height="10" fill="#3a4433"/><rect x="23" y="156" width="14" height="10" fill="#3a4433"/><rect x="49" y="156" width="18" height="12" fill="#3a4433"/><rect x="75" y="156" width="22" height="10" fill="#3a4433"/><rect x="101" y="156" width="14" height="12" fill="#3a4433"/><rect x="127" y="156" width="18" height="10" fill="#3a4433"/><rect x="153" y="156" width="22" height="12" fill="#3a4433"/><g transform="translate(258 16)"><rect x="-4" y="0" width="8" height="50" fill="#2a3430"/><rect x="-46" y="47" width="92" height="10" fill="#3a4433"/><line x1="-30" y1="57" x2="-30" y2="99" stroke="#55604f" stroke-width="2"/><line x1="30" y1="57" x2="30" y2="99" stroke="#55604f" stroke-width="2"/><g opacity=".85"><rect x="-42" y="99" width="84" height="26" fill="#2c3530"/><rect x="-36" y="125" width="72" height="38" fill="#252d29"/><rect x="-14" y="81" width="28" height="18" fill="#2f3833"/><rect x="-10" y="87" width="20" height="3" fill="#4d6b3a"/><rect x="-60" y="101" width="16" height="50" fill="#222a26"/><rect x="44" y="101" width="16" height="50" fill="#222a26"/></g></g><rect x="0" y="189" width="560" height="47" fill="#0a0d0c"/><g stroke="#1c2522" stroke-width="1"><line x1="0" y1="189" x2="-168" y2="236"/><line x1="40" y1="189" x2="-104" y2="236"/><line x1="80" y1="189" x2="-40" y2="236"/><line x1="120" y1="189" x2="24" y2="236"/><line x1="160" y1="189" x2="88" y2="236"/><line x1="200" y1="189" x2="152" y2="236"/><line x1="240" y1="189" x2="216" y2="236"/><line x1="280" y1="189" x2="280" y2="236"/><line x1="320" y1="189" x2="344" y2="236"/><line x1="360" y1="189" x2="408" y2="236"/><line x1="400" y1="189" x2="472" y2="236"/><line x1="440" y1="189" x2="536" y2="236"/><line x1="480" y1="189" x2="600" y2="236"/><line x1="520" y1="189" x2="664" y2="236"/><line x1="560" y1="189" x2="728" y2="236"/><line x1="0" y1="208" x2="560" y2="208"/></g><rect x="0" y="187" width="560" height="2" fill="#5b6b3a"/><rect x="34" y="194" width="58" height="22" fill="#2a2f22"/><rect x="38" y="186" width="30" height="8" fill="#3a4433"/><text x="548" y="57" text-anchor="end" font-family="Chakra Petch,monospace" font-size="11" fill="#b8a878" opacity=".45" letter-spacing="3">HANGAR 07 / PARTS DEPOT</text><rect x="336" y="12" width="60" height="5" fill="#f0a040" opacity=".55"/><rect x="406" y="12" width="20" height="5" fill="#6fd3e0" opacity=".45"/></svg>
+   <div id="sceneGL"></div>
    <div class="opcard"><span class="r">OPERATOR</span><span class="n">D-06 ドール</span><span class="d">整備管理AI ／ 部品倉庫担当</span><span class="st" id="sState">応答中</span></div>
-   <div class="kp" id="keeper"><svg viewBox="0 0 150 250" aria-label="店主ロボ D-06">
-<rect x="61" y="58" width="28" height="12" fill="#3b423d"/><g fill="#4a4f45"><rect x="66" y="60" width="4" height="10"/><rect x="74" y="60" width="4" height="10"/><rect x="82" y="60" width="4" height="10"/></g>
-<polygon points="52,14 98,14 104,30 100,54 86,62 64,62 50,54 46,30" fill="#8e9690"/><polygon points="52,14 98,14 96,22 54,22" fill="#a7aea8"/>
-<polygon points="50,30 100,30 98,42 52,42" fill="#0b0f0e"/><rect class="lens" x="58" y="34" width="34" height="4" fill="#6fd3e0"/><rect class="eye" x="70" y="34" width="10" height="4" fill="#e6fbff"/>
-<rect x="64" y="48" width="22" height="2" fill="#5a625c"/><rect x="64" y="52" width="22" height="2" fill="#5a625c"/>
-<rect x="100" y="24" width="6" height="22" fill="#5b6b3a"/><rect x="104" y="4" width="2" height="22" fill="#9aa0a6"/><rect x="102" y="2" width="6" height="3" fill="#f0a040"/>
-<polygon points="34,72 116,72 110,128 40,128" fill="#737a80"/><polygon points="44,78 106,78 102,96 48,96" fill="#5f666b"/>
-<rect x="68" y="82" width="14" height="10" fill="#17191b"/><rect x="71" y="85" width="8" height="4" fill="#8cf06e"/>
-<polygon points="20,70 42,70 40,86 22,90" fill="#5b6b3a"/><polygon points="108,70 130,70 128,90 110,86" fill="#5b6b3a"/>
-<rect x="22" y="90" width="12" height="44" fill="#3b423d"/><circle cx="28" cy="136" r="6" fill="#25282c"/><rect x="21" y="140" width="14" height="40" fill="#8e9690"/><polygon points="20,180 36,180 38,194 30,198 22,194" fill="#4a4f45"/>
-<rect x="116" y="90" width="12" height="40" fill="#3b423d"/><circle cx="122" cy="132" r="6" fill="#25282c"/><polygon points="118,136 130,134 108,166 98,160" fill="#8e9690"/><polygon points="92,154 108,160 104,172 90,170" fill="#4a4f45"/>
-<rect x="78" y="146" width="22" height="7" fill="#9aa0a6" transform="rotate(-25 89 150)"/>
-<rect x="56" y="128" width="38" height="14" fill="#25282c"/>
-<polygon points="44,108 106,108 112,214 38,214" fill="#8a7d58"/><polygon points="44,108 106,108 104,120 46,120" fill="#a19470"/>
-<rect x="58" y="140" width="34" height="22" fill="#776b4a"/><rect x="62" y="144" width="26" height="2" fill="#5e5439"/>
-<text x="75" y="186" text-anchor="middle" font-family="Chakra Petch,monospace" font-size="9" fill="#5e5439" letter-spacing="1">D-06</text>
-<rect x="54" y="214" width="16" height="22" fill="#5f666b"/><rect x="80" y="214" width="16" height="22" fill="#5f666b"/>
-<polygon points="48,236 72,236 74,246 46,246" fill="#3b423d"/><polygon points="78,236 102,236 104,246 76,246" fill="#3b423d"/>
-<g class="mk mk-h" stroke="#8cf06e" stroke-width="3" fill="none"><path d="M108 18 L113 8 L118 18"/><path d="M122 26 L127 16 L132 26"/></g>
-<g class="mk mk-p"><path d="M112 22 L120 14 M116 32 L126 27 M30 10 L33 20" stroke="#f0a040" stroke-width="3"/><text x="122" y="16" font-family="Chakra Petch" font-size="15" font-weight="700" fill="#f0a040">!?</text>
-<rect x="8" y="232" width="9" height="4" fill="#9aa0a6" transform="rotate(30 12 234)"/><circle cx="24" cy="240" r="2.5" fill="#737a80"/></g>
-<g class="mk mk-s" fill="#6fd3e0"><rect x="112" y="40" width="3" height="8"/><rect x="118" y="44" width="3" height="10"/><rect x="124" y="40" width="3" height="7"/></g>
-</svg></div>
+   <div class="kp" id="keeper" aria-hidden="true"><svg viewBox="0 0 60 40">
+<g class="mk mk-h" stroke="#8cf06e" stroke-width="3" fill="none"><path d="M10 30 L16 18 L22 30"/><path d="M30 22 L36 10 L42 22"/></g>
+<g class="mk mk-p"><path d="M6 30 L16 22 M12 40 L24 34" stroke="#f0a040" stroke-width="3"/><text x="28" y="28" font-family="Chakra Petch,monospace" font-size="22" font-weight="700" fill="#f0a040">!?</text></g>
+<g class="mk mk-s" fill="#6fd3e0"><rect x="16" y="8" width="4" height="12"/><rect x="26" y="14" width="4" height="14"/><rect x="36" y="8" width="4" height="10"/></g></svg></div>
   </div>
   <div id="tbox"><span class="nm">D-06 ドール</span><div id="ttext" aria-live="polite"></div><div id="tchoice"></div><span id="tnext" hidden>▼</span></div>
  </div>
@@ -1416,8 +1392,143 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 
 let scat=null,ssel=null,talkQ=[],talkChoices=null,typing=null,stgt=null;
 const keeper=$('keeper');
+/* ===== SHOP の3D：整備工場（ハンガー）と店主ドール =====
+ ガレージと同じ PS 風の素材（psMat・低解像度・頂点ガタつき）で描く。ショップを開いている間だけ描画する */
+const SH3=(()=>{
+ const r=new THREE.WebGLRenderer({antialias:false});r.setPixelRatio(1);$('sceneGL').appendChild(r.domElement);
+ const sc=new THREE.Scene();sc.background=new THREE.Color(0x0c100f);sc.fog=new THREE.Fog(0x0c100f,14,34);
+ const cam=new THREE.PerspectiveCamera(34,2,.1,60);
+ sc.add(new THREE.AmbientLight(0x6a7470,2.0));
+ const sun=new THREE.DirectionalLight(0xffe8c8,2.4);sun.position.set(-3,9,7);sc.add(sun);
+ const back=new THREE.DirectionalLight(0x8fb0c0,.9);back.position.set(4,4,-6);sc.add(back);
+ const lamp=new THREE.PointLight(0xf0a040,0,10);lamp.position.set(5.2,5.4,-2);sc.add(lamp);
+ // 素材
+ const fl=tex(g=>{g.fillStyle='#262b28';g.fillRect(0,0,16,16);g.fillStyle='#1d221f';g.fillRect(0,0,16,1);g.fillRect(0,0,1,16);g.fillStyle='#2e3430';g.fillRect(4,6,3,1);g.fillRect(11,12,2,1)});
+ fl.wrapS=fl.wrapT=THREE.RepeatWrapping;fl.repeat.set(12,8);
+ const wl=tex(g=>{g.fillStyle='#1f2622';g.fillRect(0,0,16,16);g.fillStyle='#161b18';g.fillRect(0,0,16,1);g.fillRect(0,0,1,16);g.fillRect(8,0,1,16);g.fillStyle='#2a322d';g.fillRect(2,3,4,1);g.fillRect(10,9,4,1)});
+ wl.wrapS=wl.wrapT=THREE.RepeatWrapping;wl.repeat.set(10,3);
+ const T={floor:psMat(0xffffff,{map:fl}),wall:psMat(0xffffff,{map:wl}),steel:psMat(0x3a4440),dark:psMat(0x161a18),olive:psMat(0x4f5d34),
+  khaki:psMat(0x8a7d58),khakiL:psMat(0xa19470),grey:psMat(0x8e9690),greyL:psMat(0xa7aea8),greyD:psMat(0x5f666b),joint:psMat(0x2e3331),
+  stripe:psMat(0xffffff,{map:stripes('#23281d','#56623e')}),part:psMat(0x55604f),crate:psMat(0xffffff,{map:panel('#4a4f3c','#2b2e22')}),
+  glowO:new THREE.MeshBasicMaterial({color:0xf0a040}),glowC:new THREE.MeshBasicMaterial({color:0x6fd3e0}),glowW:new THREE.MeshBasicMaterial({color:0xe6fbff}),
+  visor:new THREE.MeshBasicMaterial({color:0x080b0a}),green:new THREE.MeshBasicMaterial({color:0x8cf06e})};
+ const root=grp(sc);
+ // 床・壁
+ const floor=new THREE.Mesh(new THREE.PlaneGeometry(40,24,12,8),T.floor);floor.rotation.x=-Math.PI/2;root.add(floor);
+ box(root,40,12,.4,T.wall,0,6,-7);box(root,.4,12,24,T.wall,-11,6,0);
+ box(root,40,.14,.02,T.stripe,0,.07,-6.79);                               // 壁の下の警告帯（オリーブ）
+ for(let x=-10;x<=12;x+=4.4)box(root,.3,12,.5,T.steel,x,6,-6.7);           // 柱
+ box(root,40,.5,.6,T.steel,0,9.2,-6.6);                                    // 梁
+ // 床のライン
+ box(root,.12,.02,14,T.olive,-2.4,.01,0);box(root,.12,.02,14,T.olive,7.6,.01,0);
+ // 左：部品棚
+ const shelf=grp(root,-7.2,0,-5.2);
+ for(let i=0;i<4;i++){box(shelf,5.4,.12,1.4,T.steel,0,.9+i*1.5,0);
+  for(let j=0;j<5;j++){const w=.5+((i+j)%3)*.25,h=.4+((i*j)%2)*.3;box(shelf,w,h,.8,(i+j)%2?T.crate:T.part,-2.1+j*1.05,.96+i*1.5+h/2,0,0,(j%2)*.2,0)}}
+ [-2.65,2.65].forEach(x=>box(shelf,.14,6.4,1.5,T.steel,x,3.2,0));
+ // 奥：吊り下げ中の機体（ガレージと同じパーツで組む）
+ const gantry=grp(root,-1.6,0,-4.4);
+ box(gantry,7,.4,.4,T.steel,0,10.2,0);[-3.3,3.3].forEach(x=>{box(gantry,.4,10.4,.4,T.steel,x,5.2,0);box(gantry,.9,.2,.9,T.dark,x,.1,0)});
+ box(gantry,.12,1.6,.12,T.dark,0,9.2,0);box(gantry,1.2,.3,.5,T.olive,0,8.3,0);
+ const hung=grp(gantry,0,4.3,0);hung.scale.setScalar(1.05);
+ {const t=grp(hung,0,0,0);const so=CORES['CR-02'].build(t);const h=grp(t,...so.neck);HEADS['HD-02'].build(h);
+  [-1,1].forEach(s=>{const sh=grp(t,s*so.arm[0],so.arm[1],so.arm[2]);const a=ARMS['AR-02'].build(sh,s);sh.rotation.z=s*.12;a.el.rotation.x=-.15});
+  box(t,.5,2.2,.3,T.dark,0,-.9,0);box(t,1.6,.5,.4,T.steel,0,-2.1,0)}
+ box(gantry,2.6,.15,2.6,T.stripe,0,.08,1.4);
+ // 右：作業台と工具
+ const bench=grp(root,6.6,0,.2);
+ box(bench,3.2,.16,1.2,T.steel,0,1.6,0);[-1.4,1.4].forEach(x=>[-.45,.45].forEach(z=>box(bench,.12,1.6,.12,T.dark,x,.8,z)));
+ box(bench,.9,.3,.5,T.part,-.8,1.83,0,0,.3,0);box(bench,.3,.5,.3,T.greyD,.4,1.93,.1);cyl(bench,.18,.18,.12,T.grey,1.0,1.75,-.2);
+ box(bench,.08,.08,.7,T.grey,.2,1.72,.35,0,.6,0);
+ box(bench,1.0,.7,.7,T.crate,-.9,.35,1.4);box(bench,.8,.5,.6,T.crate,.4,.25,1.6,0,.3,0);
+ // 警告灯（回転灯）とクレーンのフック
+ const bea=grp(root,5.2,5.6,-2.2);cyl(bea,.18,.2,.25,T.dark,0,0,0);const beaL=box(bea,.26,.18,.1,T.glowO,0,.18,0);
+ const crane=grp(root,-3.2,9.6,-1.5);box(crane,.1,2.4,.1,T.dark,0,-1.2,0);box(crane,.4,.3,.3,T.olive,0,-2.5,0);
+ // 看板
+ const sign=box(root,3,.6,.06,psMat(0xffffff,{map:tex(g=>{g.fillStyle='#1c2119';g.fillRect(0,0,16,16);g.fillStyle='#b8a878';g.fillRect(1,6,14,1);g.fillRect(1,9,9,1)})}),-1.6,7.6,-6.75);
+ box(root,.7,.12,.04,T.glowO,7.4,8.6,-6.75);box(root,.25,.12,.04,T.glowC,8.2,8.6,-6.75);
+
+ /* ===== 店主ドール：人間に近い体型の細身ロボ（バイザーの一つ目、作業エプロン、手にレンチ） ===== */
+ const doll=grp(root,3.6,0,1.4);doll.rotation.y=-.4;
+ const D={};
+ const hip=grp(doll,0,3.1,0);D.hip=hip;
+ box(hip,.9,.38,.5,T.joint,0,0,0);
+ D.legs=[-1,1].map(s=>{const th=grp(hip,s*.28,-.12,0);cyl(th,.13,.13,.26,T.joint,0,0,0,0,Math.PI/2,6);
+  box(th,.26,1.15,.28,T.greyD,0,-.62,0);const kn=grp(th,0,-1.25,0);cyl(kn,.12,.12,.28,T.joint,0,0,0,0,Math.PI/2,6);
+  box(kn,.3,1.2,.32,T.grey,0,-.62,0);box(kn,.32,.4,.34,T.greyL,0,-.25,.02);
+  const ft=grp(kn,0,-1.28,0);box(ft,.34,.16,.62,T.joint,0,-.03,.1);return {th,kn,ft}});
+ const torso=grp(hip,0,.22,0);D.torso=torso;
+ box(torso,.42,.5,.34,T.joint,0,.25,0);                                          // 腰
+ [0,1,2].forEach(i=>box(torso,.5-i*.02,.08,.32,T.greyD,0,.12+i*.13,0));       // 腹の蛇腹
+ const chest=grp(torso,0,.55,0);
+ box(chest,1.06,.82,.56,T.grey,0,.38,0);box(chest,.9,.3,.5,T.greyL,0,.82,0);
+ box(chest,.92,.42,.04,T.greyD,0,.42,.29);box(chest,.24,.16,.03,T.dark,0,.42,.31);box(chest,.14,.08,.03,T.green,0,.42,.33);
+ [-1,1].forEach(s=>box(chest,.34,.22,.52,T.olive,s*.58,.86,0));                 // 肩の装甲（オリーブ）
+ // エプロン（胸当て＋前掛け）
+ box(chest,.66,.5,.04,T.khakiL,0,.45,.3);
+ const apron=box(hip,.84,1.55,.05,T.khaki,0,-.6,.3);D.apron=apron;
+ box(hip,.4,.3,.02,psMat(0x776b4a),0,-.5,.34);
+ // 首と頭
+ const neck=grp(chest,0,.98,0);[0,1,2].forEach(i=>cyl(neck,.09,.1,.07,T.joint,0,.05+i*.08,0,0,0,6));
+ const head=grp(neck,0,.26,0);D.head=head;
+ box(head,.56,.5,.52,T.grey,0,.25,0);box(head,.6,.12,.56,T.greyL,0,.52,0);
+ box(head,.62,.16,.1,T.visor,0,.28,.24);                                        // バイザー
+ const lens=box(head,.5,.05,.02,T.glowC,0,.28,.3);D.lens=lens;
+ const eye=box(head,.14,.06,.02,T.glowW,0,.28,.315);D.eye=eye;
+ [0,1].forEach(i=>box(head,.3,.03,.02,T.greyD,0,.07+i*.06,.27));               // 口元のスリット
+ box(head,.08,.3,.08,T.olive,.32,.28,-.02);box(head,.03,.5,.03,T.grey,.33,.6,-.04);box(head,.07,.04,.07,T.glowO,.33,.86,-.04);
+ // 腕（肩→肘→手）。右手にレンチ
+ D.arms=[-1,1].map(s=>{const sh=grp(chest,s*.62,.66,0);cyl(sh,.13,.13,.24,T.joint,0,0,0,0,Math.PI/2,6);
+  box(sh,.2,.78,.2,T.greyD,0,-.42,0);const el=grp(sh,0,-.84,0);cyl(el,.1,.1,.22,T.joint,0,0,0,0,Math.PI/2,6);
+  box(el,.22,.72,.24,T.grey,0,-.38,0);const hd=grp(el,0,-.8,0);box(hd,.2,.22,.12,T.joint,0,-.06,0);
+  [0,1,2].forEach(i=>box(hd,.05,.14,.05,T.joint,-.06+i*.06,-.22,.03));return {sh,el,hd,s}});
+ const wrench=grp(D.arms[0].hd,0,-.14,.06);box(wrench,.07,.8,.07,T.grey,0,-.2,0);box(wrench,.22,.12,.08,T.greyL,0,-.62,0);D.wrench=wrench;
+ // 落ちるネジ（動揺したとき）
+ const screw=box(root,.08,.16,.08,T.greyL,0,-5,0);
+ let mood='normal',moodT=0,screwV=null;
+ function setMood3(m){mood=m||'normal';moodT=0;
+  if(mood==='panic'){D.hd0=D.arms[0].hd.getWorldPosition(new THREE.Vector3());screw.position.copy(D.hd0);screwV=new THREE.Vector3(.8,1.5,.6)}}
+ // 姿勢（毎フレーム）
+ let t3=0,on=false,last=0;
+ const Lr=(a,b,k)=>a+(b-a)*k;
+ const pose={tX:0,tY:0,hX:0,hY:0,hZ:0,a:[{x:0,z:0,e:0},{x:0,z:0,e:0}],y:0};
+ function animate(dt){
+  t3+=dt;moodT+=dt;const talking=keeper.classList.contains('talking'),k=Math.min(1,dt*8);
+  let w={tX:Math.sin(t3*1.6)*.02,tY:Math.sin(t3*.4)*.08,hX:0,hY:Math.sin(t3*.55)*.18,hZ:0,y:0,
+   a:[{x:-.55,z:-.12,e:-.9},{x:.05,z:.1,e:-.25}]};                              // 普段：右手でレンチを持ち上げ気味
+  if(talking){w.hX=Math.sin(t3*11)*.06;w.hY=Math.sin(t3*2.3)*.12;w.a[1]={x:-.6+Math.sin(t3*4)*.25,z:.3,e:-1.0+Math.sin(t3*5)*.2}}
+  if(mood==='happy'){w.y=Math.abs(Math.sin(t3*6))*.08*Math.max(0,1-moodT/2.5);w.hZ=Math.sin(t3*3)*.12;w.a[1]={x:-1.9,z:.35,e:-.4}}
+  if(mood==='panic'){const p=Math.max(0,1-moodT/2.2);w.hY+=Math.sin(t3*30)*.35*p;w.tY+=Math.sin(t3*22)*.1*p;
+   w.a=[{x:-1.2+Math.sin(t3*18)*.6*p,z:-.5,e:-1.3},{x:-1.4+Math.cos(t3*17)*.6*p,z:.5,e:-1.4}]}
+  if(mood==='sorry'){w.hX=.4;w.tX=.25;w.a=[{x:-.5,z:.25,e:-1.2},{x:-.5,z:-.25,e:-1.2}]}
+  for(const key of ['tX','tY','hX','hY','hZ','y'])pose[key]=Lr(pose[key],w[key],key==='y'?1:k);
+  pose.a.forEach((a,i)=>{a.x=Lr(a.x,w.a[i].x,k);a.z=Lr(a.z,w.a[i].z,k);a.e=Lr(a.e,w.a[i].e,k)});
+  D.torso.rotation.set(pose.tX,pose.tY,0);D.head.rotation.set(pose.hX,pose.hY,pose.hZ);doll.position.y=pose.y;
+  D.arms.forEach((a,i)=>{a.sh.rotation.set(pose.a[i].x,0,pose.a[i].z);a.el.rotation.x=pose.a[i].e});
+  D.apron.rotation.x=-pose.tX*.6;
+  // 目：話している間はレンズが明滅、動揺すると左右に泳ぐ、恐縮すると下を向く
+  D.lens.material.color.setHex(talking&&Math.floor(t3*12)%2?0x3f8a94:0x6fd3e0);
+  D.eye.position.x=mood==='panic'?Math.sin(t3*20)*.16:mood==='sorry'?-.08:Math.sin(t3*.55)*.05;
+  // 落ちるネジ
+  if(screwV){screwV.y-=9.8*dt;screw.position.addScaledVector(screwV,dt);screw.rotation.z+=dt*12;
+   if(screw.position.y<.05){screw.position.y=.05;if(Math.abs(screwV.y)>1.2)screwV.y*=-.35;else{screwV.set(0,0,0);screwV=null}screwV&&screwV.multiplyScalar(.7)}}
+  // 回転灯・照明のちらつき
+  bea.rotation.y+=dt*5;beaL.material.color.setHSL(.08,1,(Math.floor(t3*2)%2)?.55:.25);lamp.intensity=(Math.floor(t3*2)%2)?6:1.5;
+  hung.rotation.y=Math.sin(t3*.3)*.06;
+ }
+ function size(){const el=$('sceneGL'),w=el.clientWidth||1,h=el.clientHeight||1;const rh=RES[res]?RES[res][1]*.8:h*Math.min(devicePixelRatio,2);
+  r.setSize(Math.round(rh*w/h),Math.round(rh),false);cam.aspect=w/h;
+  // ドールが右寄りに大きく入るように：横長ほど引いて、少し左を見る
+  const a=w/h;cam.position.set(1.6,4.6,13.2+Math.max(0,1.9-a)*4);cam.lookAt(1.6+Math.min(a,2.4)*.35,3.3,0);cam.updateProjectionMatrix()}
+ function loop(){if(!on)return;const now=performance.now(),dt=Math.min((now-last)/1000,.05);last=now;animate(dt);r.render(sc,cam);requestAnimationFrame(loop)}
+ addEventListener('resize',()=>{if(on)size()});
+ return {start(){if(on)return;on=true;last=performance.now();size();requestAnimationFrame(()=>{size();loop()})},stop(){on=false},mood:setMood3};
+})();
+function startShop3D(){SH3.start()}
+function stopShop3D(){SH3.stop()}
+
 function setMood(m){keeper.classList.remove('happy','panic','sorry');void keeper.offsetWidth;if(m&&m!=='normal')keeper.classList.add(m);
- const st=$('sState');st.textContent=m==='panic'?'動揺しています':m==='sorry'?'恐縮しています':m==='happy'?'上機嫌':'応答中';st.classList.toggle('p',m==='panic')}
+ SH3.mood(m);const st=$('sState');st.textContent=m==='panic'?'動揺しています':m==='sorry'?'恐縮しています':m==='happy'?'上機嫌':'応答中';st.classList.toggle('p',m==='panic')}
 /* セリフ：lines は [文, 表情] の並び。文の中は <em>強調</em> と <strong>良い知らせ</strong> だけ使う。
    1文字ずつ表示し、文字欄を押すと早送り→次の文へ。最後の文のあとに choices（[ラベル, 処理]）を出す */
 function talk(lines,choices=null){talkQ=lines.map(l=>Array.isArray(l)?l:[l,null]);talkChoices=choices;nextLine()}
@@ -1557,12 +1668,12 @@ function buy(id,equip){
  else talk([['お買い上げ、ありがとうございます！ '+nm+' はガレージの棚に置いておきますね。','happy'],['……あ、棚を間違えました。いえ、<strong>合っています</strong>。たぶん。','sorry']]);
 }
 function openShop(){
- openMenu(false);closeModal();$('shop').hidden=false;scat=null;ssel=null;renderShop();setMood('normal');
+ openMenu(false);startShop3D();closeModal();$('shop').hidden=false;scat=null;ssel=null;renderShop();setMood('normal');
  const first=shopVisits===0;shopVisits++;saveGame();
  if(first)talk([['ようこそ、パイロット様！ 第7整備区画の部品倉庫へ。わたくし、整備管理AIの <em>D-06</em>、ドールと申します。','happy'],['こちらでは、ガレージにない部品や兵装をお売りしております。品ぞろえは万全です。……<em>たぶん</em>万全です。','normal']]);
  else talk([pick([['おかえりなさいませ、パイロット様！ 今日はどの部品をお探しでしょう？','happy'],['あ、パイロット様！ ちょうど棚を拭いていたところです。拭くたびに部品を<em>落とす</em>のですが。','sorry'],['いらっしゃいませ。本日も在庫は数えておきました。<em>4回</em>ほど。','normal']])]);
 }
-function closeShop(){clearInterval(typing);typing=null;closeConfirm();$('shop').hidden=true;view='overview';selSlot=null;renderGarage()}
+function closeShop(){stopShop3D();clearInterval(typing);typing=null;closeConfirm();$('shop').hidden=true;view='overview';selSlot=null;renderGarage()}
 $('mShop').onclick=openShop;$('sExit').onclick=closeShop;
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sconf').hidden)closeConfirm()});
 
