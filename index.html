@@ -345,6 +345,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 @keyframes tin{to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){#title .tbox>*{animation:none;opacity:1;transform:none}#menu,#menu .drawer,#fade{transition:none}}
 #menu .drawer{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));box-sizing:border-box;background:#101513;border-left:2px solid var(--fire);display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+@media (max-height:460px){#menu .drawer{gap:5px;padding-top:10px}#menu .mitem{min-height:44px}}
 .mhd{display:flex;justify-content:space-between;align-items:center}
 .mhd span{font-family:var(--sten);font-size:13px;color:var(--fire);letter-spacing:4px}
 .mitem{min-height:44px;padding:0 14px;display:flex;align-items:center;gap:12px;background:#151b19;text-align:left}
@@ -582,6 +583,7 @@ body.eqm #btnTrain{display:none}
   <button class="mitem" disabled><span class="no">04</span><span class="t en">VERSUS<br><small>ほかのプレイヤーと対戦する（準備中）</small></span></button>
   <button class="mitem" id="mShop"><span class="no">05</span><span class="t en">SHOP<br><small>パーツや兵装を買う</small></span></button>
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
+  <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
   <div class="mfoot"><span id="mUnit">UNIT-01</span><span>VER 0.6</span></div>
  </div>
@@ -1502,6 +1504,7 @@ menu.addEventListener('click',e=>{if(e.target===menu)openMenu(false)});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden)openMenu(false)});
 $('mSortie').onclick=()=>{if(!SS.over&&partNow('core')>0){openMenu(false);fadeTo(()=>setMode('play',false),'SORTIE')}};
 $('mTrain').onclick=()=>{if(!SS.over){openMenu(false);fadeTo(()=>setMode('play',true),'TRAINING')}};
+$('mExit').onclick=()=>{saveGame();openMenu(false);fadeTo(()=>showTitle(),'SAVING...')};
 $('mConfig').onclick=()=>{openMenu(false);view='config';renderGarage()};
 $('btnPaint').onclick=()=>{view='paint';renderGarage()};
 $('btnTrain').onclick=()=>{if(SS.over){view='overview';renderGarage()}else fadeTo(()=>setMode('play',true),'TRAINING')};
