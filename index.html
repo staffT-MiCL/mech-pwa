@@ -447,7 +447,16 @@ body.eqm #menuBtn{display:none}
 #eqClose{display:none;height:28px;padding:0 12px;align-items:center;gap:6px;background:#1c1409;border:1px solid var(--fire);color:var(--fire);font-size:12px;font-weight:700;letter-spacing:.12em}
 body.eqm #eqClose{display:flex}
 body.eqm #btnTrain{display:none}
-.tbtn{margin-top:auto;display:flex;gap:8px;align-items:center}.tbtn .btn-main{flex:1}
+.tbtn{margin-top:auto;display:flex;gap:8px;align-items:center}.tbtn .btn-main,.tbtn .btn-sub{flex:1}
+.tsel{display:flex;gap:3px}.tsel button{flex:1;height:26px;padding:0;font-size:11px;font-weight:700;letter-spacing:.1em;background:#121816;border:1px solid var(--line);color:#aeb8b3}
+.tsel button[aria-pressed=true]{background:#0c1718;border-color:#6fd3e0;color:#9fe6ee}.tsel small{font-size:9px;color:var(--accent);margin-left:3px}
+.tpart{display:flex;align-items:baseline;gap:8px}.tpart .nm{font-family:var(--disp);font-size:15px;color:#eef2ef}.tpart small{font-size:10px;color:var(--dim)}
+.tcard{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto auto;gap:4px 10px;padding:7px 10px;background:var(--panel2);border:1px solid var(--line);align-items:center}
+.tcard .th{display:flex;align-items:baseline;gap:7px}.tcard .th .en{font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--khaki)}.tcard .th b{font-family:var(--disp);font-size:13px;font-weight:400}
+.tcard .lvx{font-size:12px;font-weight:700;color:#eef2ef;margin-left:4px}.tcard .lvx small{font-size:9px;color:var(--dim)}
+.tcard .pips{grid-column:2;grid-row:1;display:flex;gap:3px;width:90px}.tcard .pips i{flex:1;height:8px;background:#1f2a24;transform:skewX(-25deg)}.tcard .pips i.on{background:#6fd3e0;box-shadow:0 0 4px rgba(111,211,224,.5)}
+.tcard .tv{grid-column:1;display:flex;flex-direction:column;gap:1px;font-size:12px;font-variant-numeric:tabular-nums}.tcard .tv i{font-style:normal;color:var(--faint)}.tcard .tv b{color:var(--accent);font-weight:700}.tcard .tv small{font-size:10px;color:var(--dim);font-family:var(--body)}
+.tcard .tup{grid-column:2;grid-row:2;height:30px;padding:0 10px;font-size:11px;font-weight:700;color:#9fe6ee;border-color:#2d6068;white-space:nowrap}
 #sconf .acts{display:flex;gap:8px}#sconf .acts button{height:38px}
 #sconf .b2{flex:1;background:#1a201d;border:1px solid var(--fire);color:var(--fire);font-size:13px;letter-spacing:2px}
 @media (orientation:portrait){#shop{grid-template-columns:minmax(0,1fr);grid-template-rows:40px 50% minmax(0,1fr)}}
@@ -1009,14 +1018,15 @@ const WEIGHT_K=.15;
 let SS={};
 function wOf(cat,id){return cat[id].st?cat[id].st.wt:0}
 function statsFor(c){
- const hd=HEADS[c.head],co=CORES[c.core],ar=ARMS[c.arms],lg=LEGS[c.legs];
+ const hd=HEADS[c.head],co=eff('core',c.core),ar=eff('arms',c.arms),lg=eff('legs',c.legs);
+ const tLR=1+tMul('head',c.head,0),tLD=1+tMul('head',c.head,1),tWK=1-tMul('legs',c.legs,1);
  const weap=wOf(HAND,c.rHand)+wOf(HAND,c.lHand)+wOf(SHOULDER,c.rShoulder)+wOf(SHOULDER,c.lShoulder)+wOf(EXT,c.ext);
- const parts=hd.wt+co.wt+ar.wt+lg.wt,total=parts+weap,pen=total*WEIGHT_K,mob=Math.max(5,lg.mob-pen);
+ const parts=hd.wt+co.wt+ar.wt+lg.wt,total=parts+weap,pen=total*WEIGHT_K*tWK,mob=Math.max(5,lg.mob-pen);
  const ranges=[HAND[c.rHand],HAND[c.lHand],SHOULDER[c.rShoulder],SHOULDER[c.lShoulder]].map(d=>d.st&&d.st.range||0);
  const px=(EXT[c.ext].st&&EXT[c.ext].st.pass)||{};
  return {armor:co.armor+ar.armor+lg.armor,armorCore:co.armor,boost:co.boost+(px.boost||0),load:ar.load,icInt:px.icInt||0,icR:px.icR||0,weap,total,legMob:lg.mob,pen,mob,
   walk:4+mob*.08,dash:(12+mob*.15)*(1+(px.dash||0)),qb:8+mob*.1+(px.qb||0),jump:.6+mob*.008,
-  lockRange:Math.max(40,...ranges)+(px.lockRange||0)+hd.lockAdd,lockDeg:hd.lockDeg+(px.lockDeg||0),cone:(hd.lockDeg+(px.lockDeg||0))*Math.PI/180,multi:hd.ability==='multi',over:weap>ar.load};
+  lockRange:Math.round((Math.max(40,...ranges)+(px.lockRange||0)+hd.lockAdd)*tLR),lockDeg:Math.round((hd.lockDeg+(px.lockDeg||0))*tLD),cone:Math.round((hd.lockDeg+(px.lockDeg||0))*tLD)*Math.PI/180,multi:hd.ability==='multi',over:weap>ar.load};
 }
 function calcStats(){SS=statsFor(cfg);renderGarage()}
 /* 弾数：兵装ごとに残弾とリロード残り時間を持つ。0になったときだけ自動でリロード */
@@ -1432,19 +1442,38 @@ const OWN=new Set(START_OWN);let CREDIT=START_CREDIT,shopVisits=0;
 /* 部位ダメージ：パーツそのものが受けた量（DMG[パーツID]）。出撃後も残り、修理（SHOP の REPAIR）でだけ戻る。
    HEAD は装甲を持たないので対象外。CORE が0＝機体破壊（ゲームオーバー） */
 const DMG={},PART_KEYS=['core','arms','legs'],PART_LABEL={core:'CORE',arms:'ARMS',legs:'LEGS'};
-const partMax=(k,c=cfg)=>SLOTOF(k).cat[c[k]].armor;
+const partMax=(k,c=cfg)=>eff(k,c[k]).armor;
 const partNow=(k,c=cfg)=>Math.max(0,partMax(k,c)-(DMG[c[k]]||0));
 const REPAIR_K=2; // 修理費：減った装甲1につき 2 CR
+/* 改造（TUNE）：フレームのパーツごとに2項目、それぞれ5段階。強化はパーツそのもの（TUNE[パーツID]=[項目1の段階,項目2の段階]）に残る。
+   伸びは元の値に対する％（累計）：＋10/25/45/70/100%。ロック角度と重量の影響だけは 0.4 倍（最大＋40%・−40%）。
+   最終的に初期の約10倍＝新パーツで約5倍×改造で約2倍、の見積もり */
+const TUNE={},TUNE_STEP=[0,.10,.25,.45,.70,1.0],TUNE_COST=[.2,.4,.7,1.1,1.6],TUNE_BASE=8000;
+const TUNE_DEF={
+ head:[{lab:'ロック距離',en:'LOCK RANGE',cap:1,desc:'ロックできる距離が伸びる'},{lab:'ロック角度',en:'LOCK ANGLE',cap:.4,desc:'ロックできる角度が広がる'}],
+ core:[{lab:'装甲',en:'ARMOR',cap:1,desc:'コアの装甲が増える'},{lab:'ブースト容量',en:'BOOST',cap:1,desc:'ブーストを長く使える'}],
+ arms:[{lab:'積載',en:'LOAD',cap:1,desc:'積める兵装の重さが増える'},{lab:'装甲',en:'ARMOR',cap:1,desc:'アームの装甲が増える'}],
+ legs:[{lab:'基本機動力',en:'MOBILITY',cap:1,desc:'歩行・ダッシュ・急加速・跳躍が伸びる'},{lab:'重量の影響',en:'WEIGHT',cap:.4,desc:'重さで機動力が落ちる分を減らす'}]};
+const tLv=(id,i)=>(TUNE[id]||[0,0])[i]||0;
+const tMul=(slot,id,i)=>TUNE_STEP[tLv(id,i)]*TUNE_DEF[slot][i].cap;
+const tCost=(id,lv)=>Math.round((PRICE[id]||TUNE_BASE)*TUNE_COST[lv]/100)*100;
+// 改造を反映したパーツの値（HEAD のロック、LEGS の重量の影響は statsFor で反映）
+function eff(slot,id){const b=SLOTOF(slot).cat[id];if(!b)return b;
+ if(slot==='core')return {...b,armor:Math.round(b.armor*(1+tMul(slot,id,0))),boost:Math.round(b.boost*(1+tMul(slot,id,1)))};
+ if(slot==='arms')return {...b,load:Math.round(b.load*(1+tMul(slot,id,0))),armor:Math.round(b.armor*(1+tMul(slot,id,1)))};
+ if(slot==='legs')return {...b,mob:Math.round(b.mob*(1+tMul(slot,id,0)))};
+ return b}
 function loadGame(){
  try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!d)return;
   (d.own||[]).forEach(id=>{if(PRICE[id])OWN.add(id)});
   if(typeof d.cr==='number'&&isFinite(d.cr))CREDIT=Math.max(0,Math.floor(d.cr));
   shopVisits=d.visits|0;
+  if(d.tune)Object.entries(d.tune).forEach(([k,v])=>{if(Array.isArray(v))TUNE[k]=[Math.min(5,v[0]|0),Math.min(5,v[1]|0)]});
   if(d.dmg)Object.entries(d.dmg).forEach(([k,v])=>{if(typeof v==='number'&&v>0)DMG[k]=v});
   if(d.cfg)SLOTS.forEach(sl=>{const v=d.cfg[sl.key];if(v&&sl.cat[v]&&(v==='none'||OWN.has(v)))cfg[sl.key]=v});
  }catch(e){}
 }
-function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG}))}catch(e){}}
+function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG,tune:TUNE}))}catch(e){}}
 
 /* ===== SHOP ===== */
 const fmtCR=n=>Math.round(n).toLocaleString('ja-JP');
@@ -1455,7 +1484,7 @@ function shopCatOf(id){const sl=slotOfItem(id);return FRAME_CAT[sl]||pn(sl,id)[0
 const SHOP_CATS=(()=>{const out=[];Object.keys(PN).forEach(id=>{const c=shopCatOf(id);if(!out.includes(c))out.push(c)});return out})();
 const stockOf=c=>Object.keys(PRICE).filter(id=>shopCatOf(id)===c);  // 購入済みも並べたまま（色を変えて表示）
 const isEquipped=id=>Object.values(cfg).includes(id);
-let smode='buy',rview='equip',rsel=null,ramt=null;
+let smode='buy',rview='equip',rsel=null,ramt=null,tsel='core';
 // 種類ごとの店主の説明
 const CAT_TALK={
  HEAD:'ヘッドは機体の目です。数値よりも、<em>ロックの仕方</em>が変わるのが特徴でございます。',
@@ -1723,12 +1752,12 @@ function renderAlt(){
   if(rview==='stock'&&!stockIds.length&&rsel&&!stockIds.includes(rsel))rsel=null;
   const list=rview==='equip'?eqIds:stockIds;
   if(!list.includes(rsel))rsel=list.find(id=>DMG[id]>0)||list[0]||null;
-  const row=id=>{const k=keyOf(id),mx=SLOTOF(k).cat[id].armor,nw=Math.max(0,mx-(DMG[id]||0)),r=nw/mx;
+  const row=id=>{const k=keyOf(id),mx=eff(k,id).armor,nw=Math.max(0,mx-(DMG[id]||0)),r=nw/mx;
    const on=id===rsel&&nw<mx;
    return `<div class="rp${id===rsel?' on':''}${nw<=0?' dead':''}" data-r="${id}" role="button" tabindex="0"><span class="k">${PART_LABEL[k]}</span><span class="nm">${esc(ENM(k,id).trim())}</span><span class="st" ${on?'id="rLab"':''}>${nw<=0?'損壊':nw<mx?nw+' / '+mx:'損傷なし'}</span>${on?`<div class="rsl" id="rSl" role="slider" aria-label="修理する量" tabindex="0"><i class="now" style="width:${r*100}%"></i><i class="add" id="rAdd"></i><i class="cap" id="rCap"></i><b class="knob" id="rKnob"></b></div>`:bar(nw,mx,nw<=0?'c-over':r<=.5?'c-warn':'c-core')}</div>`};
   const allIds=Object.keys(DMG),cAll=cost(allIds);
   // スライダー：選んだ部位をどこまで直すか（10刻み、所持金で払える量まで）
-  const sk=rsel&&keyOf(rsel),smx=sk?SLOTOF(sk).cat[rsel].armor:0,sdm=rsel?(DMG[rsel]||0):0,snw=smx-sdm;
+  const sk=rsel&&keyOf(rsel),smx=sk?eff(sk,rsel).armor:0,sdm=rsel?(DMG[rsel]||0):0,snw=smx-sdm;
   const afford=Math.floor(CREDIT/REPAIR_K),cap=Math.min(sdm,afford);
   if(ramt==null||ramt>cap)ramt=cap;
   const c1=Math.ceil(ramt*REPAIR_K);
@@ -1772,10 +1801,33 @@ function renderAlt(){
   const lk=el.querySelector('.lack');if(lk)lk.onclick=()=>talk([['所持金が足りず、少しも直せないようです……。','sorry'],['TRAINING では報酬が出ませんので、SORTIE で稼いでいらしてください。お気をつけて。','normal']]);
  }else{
   $('sTitle').textContent='TUNE';$('sSub').textContent='フレームの改造';
-  el.innerHTML=[['HEAD','head'],['CORE','core'],['ARMS','arms'],['LEGS','legs']].map(([lab,k])=>`<div class="tn"><span class="k">${lab}</span><span class="nm">${esc(ENM(k,cfg[k]).trim())}</span><span class="lv">LV 0</span><span class="slots"><i></i><i></i><i></i><i></i><i></i></span></div>`).join('')+
-   `<div class="snote">フレームのパーツを1つずつ強化します。強化できる項目（例：装甲、機動力、積載など）は検討中です。<span class="soon">準備中</span></div>
-   <div class="tbtn"><button class="btn-main cut" id="sEqm">装備を変更する</button></div>`;
+  const id=cfg[tsel],def=TUNE_DEF[tsel];
+  // 項目ごとの「今 → 次」の表示（機体全体の値で見せる）
+  const show=(i,lv)=>{const T=TUNE[id]||(TUNE[id]=[0,0]),old=T[i];T[i]=lv;const S2=statsFor(cfg),pv=eff(tsel,id);T[i]=old;if(!T[0]&&!T[1])delete TUNE[id];
+   return [[S2.lockRange+'m'],['±'+S2.lockDeg+'°'],[pv.armor],[pv.boost],[pv.load],[pv.armor],[pv.mob],['×'+(WEIGHT_K*(1-TUNE_STEP[lv]*.4)).toFixed(3)]][({head:0,core:2,arms:4,legs:6})[tsel]+i][0]};
+  const card=i=>{const lv=tLv(id,i),d=def[i],max=lv>=5,c=max?0:tCost(id,lv);
+   return `<div class="tcard"><div class="th"><span class="en">${d.en}</span><b>${d.lab}</b><span class="lvx">LV ${lv}<small>/5</small></span></div>
+    <div class="pips">${[1,2,3,4,5].map(n=>`<i class="${n<=lv?'on':''}"></i>`).join('')}</div>
+    <div class="tv"><span>${show(i,lv)}${max?'':` <i>→</i> <b>${show(i,lv+1)}</b>`}</span><small>${d.desc}</small></div>
+    <button class="btn-sub tup" data-i="${i}" ${max||c>CREDIT?'disabled':''}>${max?'MAX':`強化 ${fmtCR(c)} CR`}</button></div>`};
+  el.innerHTML=`<div class="tsel">${['head','core','arms','legs'].map(k=>{const L=(TUNE[cfg[k]]||[0,0]);return `<button data-t="${k}" aria-pressed="${k===tsel}">${PART_LABEL[k]||'HEAD'}<small>${L[0]+L[1]?'+'+(L[0]+L[1]):''}</small></button>`}).join('')}</div>
+   <div class="tpart"><span class="nm">${esc(ENM(tsel,id).trim())}</span><small>${esc(pn(tsel,id)[1])}</small></div>
+   ${card(0)}${card(1)}
+   <div class="tbtn"><button class="btn-sub" id="sEqm">装備を変更する</button></div>`;
+  el.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tsel=b.dataset.t;renderShop();const k=tsel;
+   talk([[{head:'ヘッドは<em>ロックの距離と角度</em>を鍛えられます。目がよくなる、ということですね。わたくしも鍛えたいものです。',core:'コアは<em>装甲とブースト容量</em>です。コアが壊れると終わりですので、ここは大事でございます。',arms:'アームは<em>積載と装甲</em>です。重い兵装を持ちたいなら、積載から。',legs:'レッグは<em>基本機動力</em>と、<em>重量の影響</em>を減らす改造です。重い機体ほど、後者がよく効きます。'}[k],'normal']])});
   $('sEqm').onclick=openEquipModal;
+  el.querySelectorAll('.tup').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,lv=tLv(id,i),c=tCost(id,lv),d=def[i];
+   $('sconfBox').innerHTML=`<div class="shd"><span class="code">TUNE</span><span class="ttl">${PART_LABEL[tsel]||'HEAD'} ${esc(ENM(tsel,id).trim())}</span></div><div class="rule"></div>
+    <div class="bal"><span>${d.lab}</span><span>LV ${lv} → <b>${lv+1}</b>（${show(i,lv)} → ${show(i,lv+1)}）</span><span>所持金</span><span>${fmtCR(CREDIT)} CR</span><span>費用</span><span class="dn">− ${fmtCR(c)} CR</span><span class="tot">強化後</span><span class="tot"><b>${fmtCR(CREDIT-c)} CR</b></span></div>
+    <div class="snote">改造はパーツそのものに残ります。元に戻すことはできません。</div>
+    <div class="acts"><button class="btn-main cut" id="cfEq">強化する</button><button class="btn-sub" id="cfNo" style="width:90px">やめる</button></div>`;
+   $('cfNo').onclick=closeConfirm;$('sconf').hidden=false;$('cfNo').focus();
+   $('cfEq').onclick=()=>{closeConfirm();if(c>CREDIT||tLv(id,i)!==lv)return;CREDIT-=c;const T=TUNE[id]||(TUNE[id]=[0,0]);T[i]=lv+1;saveGame();
+    const wasMax=SS.armor;assemble();renderGarage();renderShop();const m=$('sMoney');m.classList.add('flash');setTimeout(()=>m.classList.remove('flash'),600);
+    talk(lv+1>=5?[['これで<strong>最大まで</strong>鍛え上げました！ ……感動で、レンズが曇ってまいりました。','happy'],['いえ、ただの結露です。','sorry']]:
+     [[d.lab+'を <em>LV '+(lv+1)+'</em> に強化いたします。ええと、この部品をここに……','normal'],pick([['あっ、締めすぎ……いえ、ちょうどいいです。ちょうどいいということにします。','panic'],['あっ、マニュアルが逆さま……。いえ、手が覚えておりました。','panic']]),['<strong>強化完了</strong>でございます。','happy']])};
+  });
  }
 }
 // 比較表（ガレージと同じ項目から、主要なものだけ）
