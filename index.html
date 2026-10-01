@@ -288,7 +288,42 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .jbtn button.on+.ji{background:rgba(111,200,255,.35)}
 @media (max-height:420px){#bTgt{top:calc(120px + env(safe-area-inset-top,0px));width:104px}.extchip{top:calc(100px + env(safe-area-inset-top,0px))}}
 /* メニュー */
-#menu{position:fixed;inset:0;z-index:20;background:rgba(4,6,5,.6)}
+#menu{position:fixed;inset:0;z-index:20;background:rgba(4,6,5,.6);opacity:0;transition:opacity .2s}
+#menu.open{opacity:1}
+#menu .drawer{transform:translateX(100%);transition:transform .26s cubic-bezier(.2,.8,.2,1)}
+#menu.open .drawer{transform:none}
+/* 画面切り替えのトランジション：黒い幕が走査線つきで降りて上がる */
+#fade{position:fixed;inset:0;z-index:40;pointer-events:none;background:#050706;opacity:0;transition:opacity .22s ease}
+#fade::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(140,240,110,.05) 0 1px,transparent 1px 3px)}
+#fade.on{opacity:1;pointer-events:auto}
+#fade span{position:absolute;right:18px;bottom:14px;font-family:var(--mech);font-size:11px;letter-spacing:4px;color:var(--khaki);opacity:.7}
+/* タイトル画面 */
+#title{position:fixed;inset:0;z-index:30;background:#07090a;overflow:hidden}
+#title canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
+#title::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.26) 0 1px,transparent 1px 3px)}
+#title .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,7,6,.92) 0,rgba(5,7,6,.7) 34%,rgba(5,7,6,0) 62%);pointer-events:none}
+#title .tbox{position:absolute;left:max(6.5%,calc(18px + env(safe-area-inset-left,0px)));top:50%;transform:translateY(-54%);display:flex;flex-direction:column;gap:10px;z-index:1}
+#title .tname{font-family:var(--disp);font-size:clamp(44px,8vw,78px);line-height:1;color:#eef2ef;letter-spacing:.12em;text-shadow:3px 3px 0 #000}
+#title .tsub{font-family:var(--mech);font-size:13px;letter-spacing:.6em;color:var(--fire)}
+#title .trule{width:min(320px,70vw);height:1px;background:linear-gradient(90deg,var(--fire) 0 70px,var(--line) 70px);margin:4px 0 12px}
+#title .tbtn{width:min(260px,70vw);height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:15px;font-weight:700;letter-spacing:.32em}
+#title .tbtn small{font-size:10px;letter-spacing:.08em;font-weight:500;color:var(--dim)}
+#title .tnew{background:var(--fire);border:0;color:#1a1006;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
+#title .tcon{background:rgba(16,21,19,.85);border:1px solid #3a4540;color:var(--fg)}
+#title .tcon:disabled small{color:var(--faint)}
+#title .tcred{position:absolute;left:max(6.5%,18px);bottom:calc(14px + env(safe-area-inset-bottom,0px));font-family:var(--mech);font-size:10px;letter-spacing:.2em;color:var(--dim);z-index:1}
+#title .tcred b{font-family:var(--disp);font-weight:400;letter-spacing:.06em}
+#title .tver{position:absolute;right:18px;bottom:calc(14px + env(safe-area-inset-bottom,0px));font-family:var(--mech);font-size:10px;letter-spacing:.2em;color:var(--faint);z-index:1}
+#title .tmodal{position:absolute;inset:0;z-index:2;background:rgba(3,5,4,.75);display:flex;align-items:center;justify-content:center;padding:12px}
+#title .tmodal .box{width:min(440px,100%);padding:16px 18px;display:flex;flex-direction:column;gap:10px;border:1px solid var(--alert);background:linear-gradient(225deg,transparent 11px,var(--alert) 11px,var(--alert) 12.3px,transparent 12.3px) top right/26px 26px no-repeat,var(--panel);clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%)}
+#title .tmodal p{margin:0;font-family:var(--body);font-size:13px;line-height:1.6;color:#d9e0dc}
+#title .tmodal .acts{display:flex;gap:8px}#title .tmodal .acts button{height:40px}
+#title .tdel{flex:1;background:#2a0e09;border:1px solid var(--alert);color:#ffb0a0;font-weight:700;letter-spacing:.2em}
+/* タイトルの出だし：文字と機体が順に現れる */
+#title .tbox>*{opacity:0;transform:translateX(-12px);animation:tin .5s ease forwards}
+#title .tbox>*:nth-child(2){animation-delay:.12s}#title .tbox>*:nth-child(3){animation-delay:.2s}#title .tbox>*:nth-child(4){animation-delay:.32s}#title .tbox>*:nth-child(5){animation-delay:.42s}
+@keyframes tin{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#title .tbox>*{animation:none;opacity:1;transform:none}#menu,#menu .drawer,#fade{transition:none}}
 #menu .drawer{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));box-sizing:border-box;background:#101513;border-left:2px solid var(--fire);display:flex;flex-direction:column;gap:8px;overflow-y:auto}
 .mhd{display:flex;justify-content:space-between;align-items:center}
 .mhd span{font-family:var(--sten);font-size:13px;color:var(--fire);letter-spacing:4px}
@@ -528,7 +563,7 @@ body.eqm #btnTrain{display:none}
   <button class="mitem" id="mShop"><span class="no">05</span><span class="t en">SHOP<br><small>パーツや兵装を買う</small></span></button>
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">UNIT-01</span><span>VER 0.5</span></div>
+  <div class="mfoot"><span id="mUnit">UNIT-01</span><span>VER 0.6</span></div>
  </div>
 </div>
 
@@ -560,6 +595,19 @@ body.eqm #btnTrain{display:none}
  </div>
 </div>
 <div id="sconf" hidden><div class="box" role="dialog" aria-label="購入の確認" id="sconfBox"></div></div>
+<div id="title">
+ <div class="shade"></div>
+ <div class="tbox">
+  <div class="tname">重装操機</div>
+  <div class="tsub">HEAVY OPERATED GEAR</div>
+  <div class="trule"></div>
+  <button class="tbtn tnew" id="tNew">NEW GAME</button>
+  <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
+ </div>
+ <div class="tcred">© CREATED BY <b>スタッフT</b></div>
+ <div class="tver">VER 0.6</div>
+</div>
+<div id="fade" aria-hidden="true"><span id="fadeTxt"></span></div>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -1417,17 +1465,24 @@ function openModal(html){const m=$('modal');$('modalBody').innerHTML=html;m.hidd
 function closeModal(){$('modal').hidden=true}
 /* ボタン類 */
 const menu=$('menu');
-function openMenu(o){menu.hidden=!o}
+let menuT=null;
+function openMenu(o){clearTimeout(menuT);
+ if(o){menu.hidden=false;requestAnimationFrame(()=>requestAnimationFrame(()=>menu.classList.add('open')))}
+ else if(!menu.hidden){menu.classList.remove('open');menuT=setTimeout(()=>{menu.hidden=true},260)}}
+/* 画面切り替え：黒い幕を降ろしてから fn を実行し、幕を上げる */
+let fading=false;
+function fadeTo(fn,label=''){if(fading)return;fading=true;const f=$('fade');$('fadeTxt').textContent=label;f.classList.add('on');
+ setTimeout(()=>{try{fn()}finally{requestAnimationFrame(()=>requestAnimationFrame(()=>{f.classList.remove('on');setTimeout(()=>{fading=false},230)}))}},240)}
 $('menuBtn').onclick=()=>openMenu(true);
 $('modalClose').onclick=closeModal;$('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
 addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});$('menuClose').onclick=()=>openMenu(false);
 menu.addEventListener('click',e=>{if(e.target===menu)openMenu(false)});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden)openMenu(false)});
-$('mSortie').onclick=()=>{if(!SS.over&&partNow('core')>0){openMenu(false);setMode('play',false)}};
-$('mTrain').onclick=()=>{if(!SS.over){openMenu(false);setMode('play',true)}};
+$('mSortie').onclick=()=>{if(!SS.over&&partNow('core')>0){openMenu(false);fadeTo(()=>setMode('play',false),'SORTIE')}};
+$('mTrain').onclick=()=>{if(!SS.over){openMenu(false);fadeTo(()=>setMode('play',true),'TRAINING')}};
 $('mConfig').onclick=()=>{openMenu(false);view='config';renderGarage()};
 $('btnPaint').onclick=()=>{view='paint';renderGarage()};
-$('btnTrain').onclick=()=>{if(SS.over){view='overview';renderGarage()}else setMode('play',true)};
+$('btnTrain').onclick=()=>{if(SS.over){view='overview';renderGarage()}else fadeTo(()=>setMode('play',true),'TRAINING')};
 $('btnView').onclick=()=>{az=.35;el2=.16;dist=17.5};
 $('uname').addEventListener('input',e=>{$('mUnit').textContent=e.target.value?e.target.value.toUpperCase():'UNIT-01'});
 applyColors();
@@ -1667,13 +1722,13 @@ function showChoices(){const ch=$('tchoice');ch.innerHTML='';const list=talkChoi
 
 $('ttext').onclick=()=>{if(typing&&typingDone){typingDone()}else if(talkQ.length)nextLine()};
 
-function defaultChoices(){return [['品物を買う',()=>setSMode('buy')],['機体を修理する',()=>setSMode('repair')],['パーツを改造する',()=>setSMode('tune')],['話を聞く',openTalk],['ガレージへ戻る',closeShop]]}
+function defaultChoices(){return [['品物を買う',()=>setSMode('buy')],['機体を修理する',()=>setSMode('repair')],['パーツを改造する',()=>setSMode('tune')],['話を聞く',openTalk],['ガレージへ戻る',()=>fadeTo(closeShop,'GARAGE')]]}
 function openTalk(){talk([['お話ですか！ 喜んで。わたくし、おしゃべりは得意でして。……あ、いえ、得意だと<em>思っております</em>。','happy']],[
  ['おすすめを聞く',talkRecommend],['機体を見てもらう',talkCheck],['お金の稼ぎ方',()=>talk([['報酬は、<em>SORTIE</em> で標的機を倒すと入ります。ドローンは '+fmtCR(REWARD.drone)+' CR、砲台は '+fmtCR(REWARD.turret)+' CR です。','normal'],['TRAINING では入りませんので、ご注意を。わたくしも以前、練習で張り切って一銭にもなりませんでした。','sorry']],talkMenu())],
  ['あなたについて',()=>talk([['わたくしは整備管理AI、<em>D-06</em>。読みはドールでございます。もともとは在庫を数えるために作られました。','normal'],['数えるのは得意です。<em>数え直す</em>のも、とても得意です。','happy']],talkMenu())],
  ['この種類について',()=>talk([[CAT_TALK[scat]||'どの種類のお話をしましょう？ 右の棚で選んでいただければ、ご説明いたします。','normal']],talkMenu())],
  ['戻る',()=>talk([['はい、いつでもどうぞ。','normal']])]])}
-const talkMenu=()=>[['ほかの話を聞く',openTalk],['品物を買う',()=>setSMode('buy')],['ガレージへ戻る',closeShop]];
+const talkMenu=()=>[['ほかの話を聞く',openTalk],['品物を買う',()=>setSMode('buy')],['ガレージへ戻る',()=>fadeTo(closeShop,'GARAGE')]];
 function talkRecommend(){
  const left=Object.keys(PRICE).filter(id=>!OWN.has(id));
  if(!left.length)return talk([['なんと、在庫がすべて<strong>売り切れ</strong>です！ パイロット様のおかげです。','happy'],['次の入荷まで、わたくしは棚を磨いております。','normal']],talkMenu());
@@ -1817,7 +1872,7 @@ function renderAlt(){
    <div class="tbtn"><button class="btn-sub" id="sEqm">装備を変更する</button></div>`;
   el.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tsel=b.dataset.t;renderShop();const k=tsel;
    talk([[{head:'ヘッドは<em>ロックの距離と角度</em>を鍛えられます。目がよくなる、ということですね。わたくしも鍛えたいものです。',core:'コアは<em>装甲とブースト容量</em>です。コアが壊れると終わりですので、ここは大事でございます。',arms:'アームは<em>積載と装甲</em>です。重い兵装を持ちたいなら、積載から。',legs:'レッグは<em>基本機動力</em>と、<em>重量の影響</em>を減らす改造です。重い機体ほど、後者がよく効きます。'}[k],'normal']])});
-  $('sEqm').onclick=openEquipModal;
+  $('sEqm').onclick=()=>fadeTo(openEquipModal);
   el.querySelectorAll('.tup').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,lv=tLv(id,i),c=tCost(id,lv),d=def[i];
    $('sconfBox').innerHTML=`<div class="shd"><span class="code">TUNE</span><span class="ttl">${PART_LABEL[tsel]||'HEAD'} ${esc(ENM(tsel,id).trim())}</span></div><div class="rule"></div>
     <div class="bal"><span>${d.lab}</span><span>LV ${lv} → <b>${lv+1}</b>（${show(i,lv)} → ${show(i,lv+1)}）</span><span>所持金</span><span>${fmtCR(CREDIT)} CR</span><span>費用</span><span class="dn">− ${fmtCR(c)} CR</span><span class="tot">強化後</span><span class="tot"><b>${fmtCR(CREDIT-c)} CR</b></span></div>
@@ -1915,7 +1970,7 @@ function buy(id,equip){
 function openEquipModal(){stopShop3D();$('shop').hidden=true;document.body.classList.add('eqm');view='overview';selSlot=null;renderGarage();requestAnimationFrame(resize);resize()}
 function closeEquipModal(){if(!document.body.classList.contains('eqm'))return;document.body.classList.remove('eqm');view='overview';selSlot=null;renderGarage();resize();
  $('shop').hidden=false;startShop3D();renderShop();talk([['装備の調子はいかがですか？ ……おお、よくお似合いです。機体に似合う、という言い方で合っていますよね？','happy']])}
-$('eqClose').onclick=closeEquipModal;
+$('eqClose').onclick=()=>fadeTo(closeEquipModal,'SHOP');
 function openShop(){
  openMenu(false);startShop3D();closeModal();$('shop').hidden=false;smode='buy';rview='equip';rsel=null;ramt=null;spath=[];scat=null;ssel=null;renderShop();setMood('normal');
  const first=shopVisits===0;shopVisits++;saveGame();
@@ -1923,7 +1978,7 @@ function openShop(){
  else talk([pick([['おかえりなさいませ、パイロット様！ 今日はどの部品をお探しでしょう？','happy'],['あ、パイロット様！ ちょうど棚を拭いていたところです。拭くたびに部品を<em>落とす</em>のですが。','sorry'],['いらっしゃいませ。本日も在庫は数えておきました。<em>4回</em>ほど。','normal']])]);
 }
 function closeShop(){stopShop3D();clearInterval(typing);typing=null;closeConfirm();$('shop').hidden=true;view='overview';selSlot=null;renderGarage()}
-$('mShop').onclick=openShop;$('sExit').onclick=closeShop;
+$('mShop').onclick=()=>{openMenu(false);fadeTo(openShop,'SHOP')};$('sExit').onclick=()=>fadeTo(closeShop,'GARAGE');
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sconf').hidden)closeConfirm()});
 
 /* ===== 演習場：地面・建物・標的機 ===== */
@@ -2168,7 +2223,7 @@ function setMode(m,training=false){
  else{view='overview';selSlot=null;renderGarage();tintDamage()}
  requestAnimationFrame(resize);resize();
 }
-$('garage').onclick=()=>setMode('garage');
+$('garage').onclick=()=>fadeTo(()=>setMode('garage'),'GARAGE');
 loadGame();buildRings();buildCells();
 $('camBtn').onclick=()=>setCam(CAMMODE==='top'?'tps':'top');
 assemble();
@@ -2227,7 +2282,7 @@ R.setAnimationLoop(()=>{
  if(mode==='play'){
   const inp=readInput(dt);
   P.stun=Math.max(0,P.stun-dt);
-  if(P.down>0){P.down-=dt;if(P.down<=0){setMode('garage');openModal(`<div class="shd"><span class="code">MISSION FAILED</span><span class="ttl">CORE 大破</span></div><div class="rule"></div><p class="note" style="margin:0">コアが破壊され、機体は回収されました。SHOP の REPAIR で修理するまで、SORTIE には出撃できません。</p>`)}}
+  if(P.down>0){P.down-=dt;if(P.down<=0){fadeTo(()=>{setMode('garage');openModal(`<div class="shd"><span class="code">MISSION FAILED</span><span class="ttl">CORE 大破</span></div><div class="rule"></div><p class="note" style="margin:0">コアが破壊され、機体は回収されました。SHOP の REPAIR で修理するまで、SORTIE には出撃できません。</p>`)},'GARAGE')}}
   tickAmmo(dt);reveal=Math.max(0,reveal-dt);
   const guard=guarding(-1)||guarding(1),rooted=Object.values(active).some(a=>a.def.act.root);
   const can=P.stun<=0&&!rooted,air=!!active.jump;
@@ -2363,6 +2418,35 @@ R.setAnimationLoop(()=>{
    lockTxt.textContent='LOCK '+Math.round(lockT.center(_v).distanceTo(P.pos))+'m'}else lockEl.hidden=true}else lockEl.hidden=true;
  }
 });
+/* ===== タイトル画面 =====
+ ガレージと同じ3Dの場面（整備ドックと自機）を、別のカメラでゆっくり回りながら映す。機体は画面の右寄り。
+ NEW GAME：保存データがあれば、削除してよいかをモーダルで確認してから始める。CONTINUE：保存データがあるときだけ押せる */
+const TT={on:false,ang:.6};
+const TR=new THREE.WebGLRenderer({antialias:false});TR.setPixelRatio(1);$('title').prepend(TR.domElement);
+const TC=new THREE.PerspectiveCamera(36,1,.1,120);
+function titleSize(){const w=innerWidth,h=innerHeight;const rh=RES[res]?RES[res][1]:Math.round(h*Math.min(devicePixelRatio,2));const rw=Math.round(rh*w/h);
+ TR.setSize(rw,rh,false);TC.aspect=w/h;
+ // 機体を画面の右寄りに：見る範囲を左へずらす（横長ほど大きく）
+ TC.setViewOffset(w,h,-w*(w>h?.2:0),0,w,h);TC.updateProjectionMatrix()}
+function titleLoop(){if(!TT.on)return;TT.ang+=.0026;const r=19;TC.position.set(Math.sin(TT.ang)*r,5.6,Math.cos(TT.ang)*r);TC.lookAt(0,3.4,0);TR.render(S,TC);requestAnimationFrame(titleLoop)}
+const hasSave=()=>{try{return !!localStorage.getItem(SAVE_KEY)}catch(e){return false}};
+function showTitle(){const t=$('title');t.hidden=false;TT.on=true;titleSize();titleLoop();
+ const sv=hasSave();$('tCon').disabled=!sv;$('tConSub').textContent=sv?fmtCR(CREDIT)+' CR':'NO DATA';$('tNew').focus()}
+function hideTitle(){TT.on=false;$('title').hidden=true;view='overview';selSlot=null;renderGarage();resize()}
+addEventListener('resize',()=>{if(TT.on)titleSize()});
+$('tCon').onclick=()=>{if(hasSave())fadeTo(hideTitle,'GARAGE')};
+$('tNew').onclick=()=>{
+ if(!hasSave())return fadeTo(hideTitle,'GARAGE');
+ const m=document.createElement('div');m.className='tmodal';m.innerHTML=`<div class="box" role="dialog" aria-label="データの削除の確認"><div class="shd"><span class="code" style="color:var(--alert)">WARNING</span><span class="ttl en">NEW GAME</span></div><div class="rule" style="background:linear-gradient(90deg,var(--alert) 0 60px,var(--line) 60px)"></div>
+  <p>今までのデータ（所持金 ${fmtCR(CREDIT)} CR、購入したパーツ、改造、機体の損傷、装備）はすべて削除されます。元に戻すことはできません。<br>最初から始めますか？</p>
+  <div class="acts"><button class="tdel" id="tDel">削除して始める</button><button class="btn-sub" id="tNo" style="width:90px">やめる</button></div></div>`;
+ $('title').appendChild(m);$('tNo').focus();
+ const close=()=>m.remove();$('tNo').onclick=close;m.addEventListener('click',e=>{if(e.target===m)close()});
+ $('tDel').onclick=()=>{try{localStorage.removeItem(SAVE_KEY);sessionStorage.setItem('mech-newgame','1')}catch(e){}fadeTo(()=>location.reload())};
+};
+// NEW GAME でデータを消して読み直したときは、タイトルを飛ばしてガレージから始める
+{let skip=false;try{skip=sessionStorage.getItem('mech-newgame')==='1';sessionStorage.removeItem('mech-newgame')}catch(e){}
+ if(skip){$('title').hidden=true;const f=$('fade');f.classList.add('on');requestAnimationFrame(()=>requestAnimationFrame(()=>f.classList.remove('on')))}else showTitle()}
 </script>
 <script>
 setTimeout(()=>{if(!document.querySelector('#wrap canvas')){const e=document.getElementById('err');e.textContent='3Dライブラリを読み込めませんでした。再読み込みしてください。';e.hidden=false}},6000);
