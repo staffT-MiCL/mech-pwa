@@ -565,7 +565,7 @@ import * as THREE from 'three';
 
 const W=document.getElementById('wrap');
 const R=new THREE.WebGLRenderer({antialias:false});R.setPixelRatio(1);W.appendChild(R.domElement);
-const S=new THREE.Scene();S.background=new THREE.Color(0x1a1e1c);S.fog=new THREE.Fog(0x1a1e1c,12,28);
+const S=new THREE.Scene();S.background=new THREE.Color(0x0c100e);S.fog=new THREE.Fog(0x0c100e,16,44);
 const C=new THREE.PerspectiveCamera(40,1,.1,80);
 S.add(new THREE.AmbientLight(0x707a80,2.2));
 const key=new THREE.DirectionalLight(0xfff0d8,2.8);key.position.set(4,8,5);S.add(key);
@@ -1939,6 +1939,39 @@ const world=grp(S);world.visible=false;
  const wm=psMat(0xffffff,{map:stripes('#23281d','#56623e')});
  for(let i=0;i<36;i++){const a=i/36*Math.PI*2;box(world,1,1.4,13.5,wm,Math.sin(a)*(ARENA+2),.7,Math.cos(a)*(ARENA+2),0,a,0)}}
 
+/* ===== ガレージの背景：整備ドック（案A）=====
+ 暗い壁と柱、左右の整備足場とアーム、円形の台座、真上からのスポットライト。機体が主役になるよう色は抑える。ガレージ表示中だけ見せる */
+const dock=grp(S);
+let dockSpot=null;
+{const wall=psMat(0xffffff,{map:panel('#26302b','#171e1a')}),post=psMat(0x1e2622),dark=psMat(0x121614),olive=psMat(0x4f5d34),rail=psMat(0x2c3631),lampM=new THREE.MeshBasicMaterial({color:0xe8f0d8});
+ const wt=wall.map.clone();wt.needsUpdate=true;wt.wrapS=wt.wrapT=THREE.RepeatWrapping;wt.repeat.set(8,3);wall.map=wt;
+ // 壁（奥・左右・手前）と柱
+ box(dock,40,16,.6,wall,0,8,-11);box(dock,.6,16,40,wall,-13,8,0);box(dock,.6,16,40,wall,13,8,0);box(dock,40,16,.6,wall,0,8,13);
+ for(let i=-3;i<=3;i++){box(dock,.8,16,.8,post,i*4.4,8,-10.6);box(dock,.8,16,.8,post,-12.6,8,i*4.4);box(dock,.8,16,.8,post,12.6,8,i*4.4)}
+ box(dock,40,.7,.9,rail,0,10.5,-10.5);box(dock,26,.12,.04,olive,0,.25,-10.68);
+ // 天井の梁
+ for(let i=-2;i<=2;i++)box(dock,.6,.6,34,post,i*7,15,0);
+ // 円形の台座（オリーブの点線）
+ const tt=cyl(dock,5.2,5.4,.24,dark,0,.12,0,0,0,24);
+ for(let i=0;i<24;i++){if(i%2)continue;const a=i/24*Math.PI*2,b=box(dock,1.0,.04,.16,olive,Math.sin(a)*4.6,.26,Math.cos(a)*4.6);b.rotation.y=a+Math.PI/2}
+ const ring=new THREE.Mesh(new THREE.RingGeometry(5.25,5.45,48),new THREE.MeshBasicMaterial({color:0x2c3833}));ring.rotation.x=-Math.PI/2;ring.position.y=.25;dock.add(ring);
+ // 左右の整備足場（2段）とアーム
+ [-1,1].forEach(s=>{const t=grp(dock,s*6.4,0,-3.4);
+  [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>box(t,.22,9,.22,post,a*1.1,4.5,b*1.1));
+  [3.2,6.6].forEach(y=>{box(t,2.6,.16,2.6,rail,0,y,0);box(t,2.6,.5,.06,rail,0,y+.5,1.3);box(t,2.6,.04,.04,olive,0,y+.08,1.31)});
+  // 機体へ伸びる整備アーム（肩の高さ）
+  const arm=grp(t,-s*1.3,5.6,.4);box(arm,1.8,.3,.3,dark,-s*.9,0,0);const a2=grp(arm,-s*1.8,0,0);a2.rotation.z=s*.35;box(a2,1.4,.24,.24,post,-s*.7,0,0);box(a2,.34,.34,.5,olive,-s*1.45,0,0);
+  box(t,.5,.8,.5,dark,0,.4,1.6);cyl(t,.18,.18,.6,rail,.6,.3,1.7)});
+ // 奥の工具棚と床の荷
+ box(dock,6,3,1,dark,-7,1.5,-10.2);for(let i=0;i<5;i++)box(dock,.7,.5,.6,rail,-9.4+i*1.2,3.25,-10.2);
+ box(dock,1.4,1,1.2,psMat(0xffffff,{map:panel('#3a3f30','#22261c')}),9,.5,-11);box(dock,1,.7,1,psMat(0xffffff,{map:panel('#3a3f30','#22261c')}),10.4,.35,-10.2,0,.4,0);
+ // 真上のランプとスポットライト（光の筋は薄い円錐で表す）
+ box(dock,2.2,.4,2.2,dark,0,14.2,0);box(dock,1.6,.06,1.6,lampM,0,13.97,0);
+ const coneM=new THREE.MeshBasicMaterial({color:0xe8f0d8,transparent:true,opacity:.07,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});
+ const cone=new THREE.Mesh(new THREE.CylinderGeometry(.8,5.6,13.8,20,1,true),coneM);cone.position.set(0,7.05,0);dock.add(cone);
+ const cone2=new THREE.Mesh(new THREE.CylinderGeometry(.6,4.0,13.8,20,1,true),coneM);cone2.position.set(0,7.05,0);dock.add(cone2);
+ dockSpot=new THREE.SpotLight(0xfff4e0,60,30,.42,.5,1.2);dockSpot.position.set(0,13.8,0);dockSpot.target.position.set(0,0,0);dock.add(dockSpot);dock.add(dockSpot.target);
+}
 const ENEMIES=[];
 function makeEnemy(type){
  const g=grp(world),mat=psMat(0xffffff,{map:panel('#8a3a2c','#3a1812')}),dk=psMat(0x2a2320),eye=new THREE.MeshBasicMaterial({color:0xff4020});
@@ -2123,10 +2156,10 @@ function readInput(dt){
 function setMode(m,training=false){
  mode=m;const p=m==='play';TRAIN=p&&training;
  if(p&&builtKey!==JSON.stringify(cfg))buildMech(cfg);
- $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p;
+ $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p;dock.visible=!p;
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
- S.fog.near=p?40:12;S.fog.far=p?120:30;C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
+ S.fog.near=p?40:16;S.fog.far=p?120:44;S.background.setHex(p?0x1a1e1c:0x0c100e);S.fog.color.setHex(p?0x1a1e1c:0x0c100e);C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
  P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=null;pinned=null;reveal=0;topYaw=topYawC=0;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
  $('modeBadge').textContent=TRAIN?'TRAINING ／ 試運転':'SORTIE ／ 演習';
