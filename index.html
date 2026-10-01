@@ -2273,7 +2273,7 @@ cv.addEventListener('wheel',e=>{if(mode!=='garage')return;e.preventDefault();dis
    ・機体の大きさ（バウンディングボックス）から、全身がその範囲に大きく収まる距離を求める（斜めの角度はそのまま）
    ・ホイールやピンチで寄せ引きしたら自動合わせは止め、VIEW ボタンで戻す */
 function applyGarageView(){const w=W.clientWidth||1,h=W.clientHeight||1;
- if(mode==='garage'){C.setViewOffset(w,h,0,Math.round((lastGsh||0)*.5),w,h)}else C.clearViewOffset();C.updateProjectionMatrix()}
+ if(mode==='garage'){C.setViewOffset(w,h,0,Math.round((lastGsh||0)*.36),w,h)}else C.clearViewOffset();C.updateProjectionMatrix()}
 function fitGarageCam(){if(!mech||mode!=='garage')return;const w=W.clientWidth||1,h=W.clientHeight||1,vis=Math.max(.35,(h-(lastGsh||0)-12)/h);
  mech.bot.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(mech.bot),sz=b.getSize(new THREE.Vector3());
  camTY=(b.min.y+b.max.y)/2;const t=Math.tan(C.fov*Math.PI/360),aspV=w/(h*vis);
