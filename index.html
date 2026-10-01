@@ -332,7 +332,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #shop .money{display:flex;align-items:baseline;gap:6px;white-space:nowrap}#shop .money small{font-size:10px;color:var(--dim);letter-spacing:1px}
 #shop .money b{font-size:15px;font-variant-numeric:tabular-nums;color:#eef2ef}#shop .money i{font-style:normal;font-size:10px;color:var(--khaki)}
 #shop .money b.flash{color:var(--accent)}
-#shopL{display:grid;grid-template-rows:minmax(0,1fr) clamp(128px,36%,190px);min-height:0;min-width:0;border-right:1px solid var(--line)}
+#shopL{position:relative;display:grid;grid-template-rows:minmax(0,1fr) clamp(128px,36%,190px);min-height:0;min-width:0;border-right:1px solid var(--line)}
 #scene{position:relative;overflow:hidden;min-height:0;border-bottom:1px solid var(--line);background:#0d1110}
 #scene .bg{position:absolute;inset:0;width:100%;height:100%}
 #sceneGL{position:absolute;inset:0}#sceneGL canvas{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
@@ -345,23 +345,25 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .opcard .r{font-size:10px;color:var(--khaki);letter-spacing:3px}.opcard .n{font-family:var(--disp);font-size:15px;color:#eef2ef}
 .opcard .d{font-size:10px;color:var(--dim)}.opcard .st{display:flex;gap:6px;align-items:center;font-size:10px;color:var(--cyan)}.opcard .st::before{content:"";width:6px;height:6px;background:currentColor}
 .opcard .st.p{color:var(--fire)}
-#tbox{position:relative;margin:8px 10px 10px;min-height:0;padding:14px 14px 10px;background:rgba(12,16,15,.95);border:1px solid var(--line);display:flex;gap:12px;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+#tbox{position:relative;overflow:visible;margin:8px 10px 10px;min-height:0;padding:14px 14px 10px;background:rgba(12,16,15,.95);border:1px solid var(--line);display:flex;gap:12px}
 #tbox .nm{position:absolute;left:12px;top:-1px;height:16px;padding:0 8px;background:var(--olive);color:#e8ecd8;font-size:10px;letter-spacing:2px;display:flex;align-items:center}
 #ttext{flex:1;min-width:0;overflow:auto;font-family:var(--disp);font-size:13.5px;line-height:1.65;color:#e6ebe7;padding-top:3px;cursor:pointer}
 #ttext em{font-style:normal;color:var(--fire)}#ttext strong{font-weight:400;color:var(--accent)}
 #tnext{position:absolute;right:12px;bottom:8px;color:var(--fire);font-size:10px;animation:kblink .8s steps(2) infinite}@keyframes kblink{50%{opacity:0}}
-#tchoice{display:flex;flex-direction:column;gap:4px;justify-content:flex-end;flex:0 0 auto}
-#tchoice.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:min(260px,48%);align-content:end}
+#tchoice{position:absolute;left:10px;bottom:calc(100% + 8px);z-index:3;display:flex;flex-direction:column;gap:4px;padding:6px;background:rgba(10,14,13,.88);border:1px solid var(--line);border-left:2px solid var(--olive)}#tchoice:empty{display:none}
+#tchoice.grid{display:grid;grid-template-columns:repeat(2,auto)}
 #tchoice button{min-height:28px;padding:0 10px;text-align:left;background:#121816;border:1px solid #3a4540;color:#aeb8b3;font-size:11px;white-space:nowrap}
 #tchoice button:first-child{background:#1f170b;border-color:var(--fire);color:#ffe2b8}
 #tchoice button:first-child::before{content:"▶ "}
 #shopR{min-height:0;min-width:0;background:var(--panel);padding:8px 12px 10px;display:flex;flex-direction:column;gap:6px}
-#shopR .body{flex:1;min-height:0;display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px}
+#shopR .body{flex:1;min-height:0;display:grid;grid-template-columns:112px minmax(0,1fr);gap:8px}
 .scats{display:flex;flex-direction:column;gap:2px;overflow:auto;min-height:0}
 .scats button{min-height:20px;height:20px;flex:0 0 auto;padding:0 8px;display:flex;justify-content:space-between;align-items:center;background:transparent;border:1px solid #202a26;color:#aeb8b3;font-size:10px}
 .scats button.on{background:var(--fire);border-color:var(--fire);color:#1a1006;font-weight:700}
 .scats button span{font-size:9px;opacity:.7}.scats button.none{color:var(--faint)}
 .scats .gap{height:4px;flex:0 0 auto}
+.scats button{min-height:26px!important;height:26px!important;font-weight:700;letter-spacing:.04em;white-space:nowrap;gap:4px}.scats button.back{justify-content:flex-start;color:var(--fire);border-color:#3a4540;background:#141a17}
+.scats button.br span{color:var(--fire);opacity:1}
 .sdet{display:flex;flex-direction:column;gap:5px;min-height:0;min-width:0}
 .sitems{display:flex;flex-direction:column;gap:5px}
 .sitem{height:40px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;gap:6px;background:var(--panel2);border:1px solid var(--line);text-align:left}
@@ -1519,7 +1521,7 @@ const SH3=(()=>{
  function size(){const el=$('sceneGL'),w=el.clientWidth||1,h=el.clientHeight||1;const rh=RES[res]?RES[res][1]*.8:h*Math.min(devicePixelRatio,2);
   r.setSize(Math.round(rh*w/h),Math.round(rh),false);cam.aspect=w/h;
   // ドールが右寄りに大きく入るように：横長ほど引いて、少し左を見る
-  const a=w/h;cam.position.set(1.6,4.6,13.2+Math.max(0,1.9-a)*4);cam.lookAt(1.6+Math.min(a,2.4)*.35,3.3,0);cam.updateProjectionMatrix()}
+  const a=w/h;cam.position.set(2.2,5.0,6.8+Math.max(0,1.9-a)*2.2);cam.lookAt(2.6+Math.min(a,2.4)*.2,4.6,0);cam.updateProjectionMatrix()}
  function loop(){if(!on)return;const now=performance.now(),dt=Math.min((now-last)/1000,.05);last=now;animate(dt);r.render(sc,cam);requestAnimationFrame(loop)}
  addEventListener('resize',()=>{if(on)size()});
  return {start(){if(on)return;on=true;last=performance.now();size();requestAnimationFrame(()=>{size();loop()})},stop(){on=false},mood:setMood3};
@@ -1565,7 +1567,7 @@ function talkRecommend(){
  if(!ok.length){const c=left.reduce((a,b)=>PRICE[a]<PRICE[b]?a:b);
   return talk([['いまの所持金でお勧めできるものが……ございません。申し訳ありません。','sorry'],['いちばんお手頃なのは <em>'+esc(ENM(slotOfItem(c),c).trim())+'</em>（'+fmtCR(PRICE[c])+' CR）です。SORTIE で少し稼いでいらしてください。','normal']],talkMenu())}
  const id=pick(ok),sl=slotOfItem(id),cat=shopCatOf(id);
- scat=cat;ssel=id;renderShop();
+ spath=pathTo(cat);scat=cat;ssel=id;renderShop();
  talk([['わたくしのおすすめは、こちらの <em>'+esc(ENM(sl,id).trim())+'</em> です。','happy'],[(DESC[id]?esc(DESC[id]):CAT_TALK[cat]),'normal'],['いまの機体にも積めますし、お値段も '+fmtCR(PRICE[id])+' CR。……計算は合っているはずです。','normal']],talkMenu());
 }
 function talkCheck(){
@@ -1578,16 +1580,29 @@ function talkCheck(){
  talk(L,talkMenu());
 }
 
+/* 購入メニューの階層：FRAME → 部位 → パーツ／WEAPONS → HAND・SHOULDER → 種類 → 兵装／EXTRA → 種類 → パーツ
+   spath＝今開いている階層（例 ['WEAPONS','HAND']）、scat＝品物を並べている末端の種類 */
+const SHOP_TREE={FRAME:['HEAD','CORE','ARMS','LEGS'],WEAPONS:['HAND','SHOULDER'],HAND:['RIFLE','MACHINE GUN','BAZOOKA','BLADE','SHIELD'],SHOULDER:['MISSILE','CANNON'],EXTRA:['RADAR','BOOSTER','INTERCEPTOR']};
+const SHOP_ROOT=['FRAME','WEAPONS','EXTRA'];
+let spath=[];
+const nodeStock=n=>SHOP_TREE[n]?SHOP_TREE[n].reduce((a,c)=>a+nodeStock(c),0):stockOf(n).length;
+function pathTo(cat){const walk=(list,path)=>{for(const n of list){if(n===cat)return path;if(SHOP_TREE[n]){const r=walk(SHOP_TREE[n],[...path,n]);if(r)return r}}return null};return walk(SHOP_ROOT,[])||[]}
 function renderShop(){
  $('sMoney').textContent=fmtCR(CREDIT);
- if(!scat)scat=SHOP_CATS.find(c=>stockOf(c).length)||SHOP_CATS[0];
- const stock=stockOf(scat);if(!stock.includes(ssel))ssel=stock[0]||null;
- const isF=!!Object.values(FRAME_CAT).find(v=>v===scat);
- $('sTitle').textContent=scat;$('sSub').textContent=isF?'フレーム':(ssel?pn(slotOfItem(ssel),ssel)[1]:'');
- $('sCats').innerHTML=SHOP_CATS.map((c,i)=>{const n=stockOf(c).length;return (i===4?'<div class="gap"></div>':'')+`<button data-c="${c}" class="${c===scat?'on':''}${n?'':' none'}">${c==='MACHINE GUN'?'MG':c}<span>${n||'—'}</span></button>`}).join('');
- $('sCats').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{scat=b.dataset.c;ssel=null;renderShop();
+ const here=spath.length?SHOP_TREE[spath[spath.length-1]]:SHOP_ROOT;
+ if(scat&&!here.includes(scat))scat=null;
+ const stock=scat?stockOf(scat):[];if(!stock.includes(ssel))ssel=stock[0]||null;
+ $('sTitle').textContent=spath.length?spath[spath.length-1]:'PARTS DEPOT';
+ $('sSub').textContent=[...spath.slice(0,-1),scat].filter(Boolean).length?(spath.join(' › ')+(scat?' › '+scat:'')):'';
+ $('sCats').innerHTML=(spath.length?'<button data-back="1" class="back">◀ BACK</button>':'')+here.map(c=>{const n=nodeStock(c),leaf=!SHOP_TREE[c];
+  return `<button data-c="${c}" class="${c===scat?'on':''}${n?'':' none'}${leaf?'':' br'}">${c}<span>${n||'—'}${leaf?'':' ▶'}</span></button>`}).join('');
+ $('sCats').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{const c=b.dataset.c;
+  if(SHOP_TREE[c]){spath=[...spath,c];scat=null;ssel=null;renderShop();return}
+  scat=c;ssel=null;renderShop();
   const st=stockOf(scat);talk([[CAT_TALK[scat]||'',null]].concat(st.length?[]:[['……あいにく、この種類は<em>品切れ</em>です。申し訳ございません。','sorry']]))});
+ const bk=$('sCats').querySelector('[data-back]');if(bk)bk.onclick=()=>{spath=spath.slice(0,-1);scat=null;ssel=null;renderShop()};
  const det=$('sDet');
+ if(!scat){det.innerHTML=`<div class="sempty">${spath.length?'種類を選んでください。':'FRAME（フレーム）・WEAPONS（兵装）・EXTRA（背中の装備）から選んでください。'}<br>ボタンの数字は在庫の数です。</div>`;return}
  if(!ssel){det.innerHTML=`<div class="sempty">この種類の在庫はありません。<br>（所持品はガレージで装備できます）</div>`;return}
  const items=stock.map(id=>{const sl=slotOfItem(id),ov=statsFor({...cfg,[sl]:id}).over,ng=PRICE[id]>CREDIT;
   return `<button class="sitem${id===ssel?' sel':''}" data-i="${id}"><span class="a"><small>${esc(pn(sl,id)[1]||scat)}</small><b>${esc(ENM(sl,id).trim())}</b></span><span class="p"><small class="${ng?'ng':ov?'ov':''}">${ng?'資金不足':ov?'過積載':'NEW'}</small><b>${fmtCR(PRICE[id])}</b></span></button>`}).join('');
@@ -1668,7 +1683,7 @@ function buy(id,equip){
  else talk([['お買い上げ、ありがとうございます！ '+nm+' はガレージの棚に置いておきますね。','happy'],['……あ、棚を間違えました。いえ、<strong>合っています</strong>。たぶん。','sorry']]);
 }
 function openShop(){
- openMenu(false);startShop3D();closeModal();$('shop').hidden=false;scat=null;ssel=null;renderShop();setMood('normal');
+ openMenu(false);startShop3D();closeModal();$('shop').hidden=false;spath=[];scat=null;ssel=null;renderShop();setMood('normal');
  const first=shopVisits===0;shopVisits++;saveGame();
  if(first)talk([['ようこそ、パイロット様！ 第7整備区画の部品倉庫へ。わたくし、整備管理AIの <em>D-06</em>、ドールと申します。','happy'],['こちらでは、ガレージにない部品や兵装をお売りしております。品ぞろえは万全です。……<em>たぶん</em>万全です。','normal']]);
  else talk([pick([['おかえりなさいませ、パイロット様！ 今日はどの部品をお探しでしょう？','happy'],['あ、パイロット様！ ちょうど棚を拭いていたところです。拭くたびに部品を<em>落とす</em>のですが。','sorry'],['いらっしゃいませ。本日も在庫は数えておきました。<em>4回</em>ほど。','normal']])]);
