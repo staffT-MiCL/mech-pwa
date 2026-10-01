@@ -395,8 +395,15 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .rp .k{font-weight:700;letter-spacing:.1em;color:#9fe6ee}.rp .st{color:var(--accent);font-size:10px}
 .rp .cells{grid-column:1/-1;height:7px}
 .rp.dead{border-color:#5a2014}.rp.dead .k,.rp.dead .st{color:var(--alert)}
-.rp{width:100%;text-align:left;color:var(--fg);cursor:pointer}.rp .nm{font-family:var(--disp);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rp{width:100%;box-sizing:border-box;text-align:left;color:var(--fg);cursor:pointer}.rp .nm{font-family:var(--disp);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rp.on{border-color:var(--fire);background:#1f170b;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
+.rsl{grid-column:1/-1;position:relative;height:16px;margin:3px 0 1px;background:#18201c;cursor:ew-resize;touch-action:none;outline-offset:2px}
+.rsl i{position:absolute;top:3px;bottom:3px;left:0}.rsl .now{background:var(--accent)}.rsl .add{background:#e8fff0;opacity:.85;animation:radd 1s steps(2) infinite}
+@keyframes radd{50%{opacity:.55}}
+.rsl .cap{width:2px;top:0;bottom:0;background:var(--alert)}
+.rsl .knob{position:absolute;top:-2px;width:8px;height:20px;margin-left:-4px;background:var(--fire);clip-path:polygon(0 0,100% 0,100% 70%,50% 100%,0 70%)}
+.rp .st .ar{color:var(--faint);margin:0 3px}.rp .st b{color:#e8fff0}
+.sbuy .btn-main{flex:0 0 auto;padding:0 12px}.sbuy small{white-space:nowrap}.rsl{margin-left:4px;margin-right:4px}
 .rlist{display:flex;flex-direction:column;gap:5px;flex:1;min-height:0;overflow:auto}
 .rseg{display:flex;gap:3px}.rseg button{height:24px;padding:0 8px;font-size:10px;font-weight:700;letter-spacing:.1em;background:#121816;border:1px solid var(--line);color:#aeb8b3}
 .rseg button[aria-pressed=true]{background:var(--fire);border-color:var(--fire);color:#1a1006}.rseg i{font-style:normal;color:#ff6a4c;margin-left:2px}.rseg button[aria-pressed=true] i{color:#5a1408}
@@ -1429,7 +1436,7 @@ function shopCatOf(id){const sl=slotOfItem(id);return FRAME_CAT[sl]||pn(sl,id)[0
 const SHOP_CATS=(()=>{const out=[];Object.keys(PN).forEach(id=>{const c=shopCatOf(id);if(!out.includes(c))out.push(c)});return out})();
 const stockOf=c=>Object.keys(PRICE).filter(id=>shopCatOf(id)===c);  // 購入済みも並べたまま（色を変えて表示）
 const isEquipped=id=>Object.values(cfg).includes(id);
-let smode='buy',rview='equip',rsel=null;
+let smode='buy',rview='equip',rsel=null,ramt=null;
 // 種類ごとの店主の説明
 const CAT_TALK={
  HEAD:'ヘッドは機体の目です。数値よりも、<em>ロックの仕方</em>が変わるのが特徴でございます。',
@@ -1698,23 +1705,47 @@ function renderAlt(){
   const list=rview==='equip'?eqIds:stockIds;
   if(!list.includes(rsel))rsel=list.find(id=>DMG[id]>0)||list[0]||null;
   const row=id=>{const k=keyOf(id),mx=SLOTOF(k).cat[id].armor,nw=Math.max(0,mx-(DMG[id]||0)),r=nw/mx;
-   return `<button class="rp${id===rsel?' on':''}${nw<=0?' dead':''}" data-r="${id}"><span class="k">${PART_LABEL[k]}</span><span class="nm">${esc(ENM(k,id).trim())}</span><span class="st">${nw<=0?'損壊':nw<mx?nw+' / '+mx:'損傷なし'}</span>${bar(nw,mx,nw<=0?'c-over':r<=.5?'c-warn':'c-core')}</button>`};
-  const allIds=Object.keys(DMG),c1=rsel?cost([rsel]):0,cAll=cost(allIds);
+   const on=id===rsel&&nw<mx;
+   return `<div class="rp${id===rsel?' on':''}${nw<=0?' dead':''}" data-r="${id}" role="button" tabindex="0"><span class="k">${PART_LABEL[k]}</span><span class="nm">${esc(ENM(k,id).trim())}</span><span class="st" ${on?'id="rLab"':''}>${nw<=0?'損壊':nw<mx?nw+' / '+mx:'損傷なし'}</span>${on?`<div class="rsl" id="rSl" role="slider" aria-label="修理する量" tabindex="0"><i class="now" style="width:${r*100}%"></i><i class="add" id="rAdd"></i><i class="cap" id="rCap"></i><b class="knob" id="rKnob"></b></div>`:bar(nw,mx,nw<=0?'c-over':r<=.5?'c-warn':'c-core')}</div>`};
+  const allIds=Object.keys(DMG),cAll=cost(allIds);
+  // スライダー：選んだ部位をどこまで直すか（10刻み、所持金で払える量まで）
+  const sk=rsel&&keyOf(rsel),smx=sk?SLOTOF(sk).cat[rsel].armor:0,sdm=rsel?(DMG[rsel]||0):0,snw=smx-sdm;
+  const afford=Math.floor(CREDIT/REPAIR_K),cap=Math.min(sdm,afford);
+  if(ramt==null||ramt>cap)ramt=cap;
+  const c1=Math.ceil(ramt*REPAIR_K);
   el.innerHTML=`<div class="rtot"><small>装備中の装甲</small><b>${PART_KEYS.reduce((a,k)=>a+partNow(k),0)}</b><small>/ ${SS.armor}</small><span class="g"></span>
     <div class="rseg"><button data-v="equip" aria-pressed="${rview==='equip'}">EQUIPPED</button><button data-v="stock" aria-pressed="${rview==='stock'}">STOCK${stockIds.length?' <i>'+stockIds.length+'</i>':''}</button></div></div>
    <div class="rlist">${list.length?list.map(row).join(''):`<div class="sempty">傷んでいる所持品はありません。</div>`}</div>
-   <div class="sbuy"><small>修理費</small><span class="pr">${fmtCR(c1)}<i>CR</i></span><span class="grow" style="flex:1"></span>
-    <button class="btn-sub" id="sRepAll" ${!cAll||cAll>CREDIT?'disabled':''} title="損傷をすべて直す">すべて ${fmtCR(cAll)}</button>
-    ${!c1?'<button class="btn-main cut" disabled>損傷なし</button>':c1>CREDIT?`<span class="lack">不足 −${fmtCR(c1-CREDIT)}</span>`:'<button class="btn-main cut" id="sRep">修理する</button>'}</div>`;
-  el.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{rview=b.dataset.v;rsel=null;renderShop()});
-  el.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{rsel=b.dataset.r;renderShop();const d=DMG[rsel]||0;
+   <div class="sbuy"><small>修理費</small><span class="pr" id="rCost">${fmtCR(c1)}<i>CR</i></span><span class="grow" style="flex:1"></span>
+    <button class="btn-sub" id="sRepMax" ${!sdm||!cap?'disabled':''} title="選んだ部位を払える限り満タンまで">MAX</button>
+    <button class="btn-sub" id="sRepAll" ${!cAll||cAll>CREDIT?'disabled':''} title="全部位の損傷をすべて直す">すべて ${fmtCR(cAll)}</button>
+    ${!sdm?'<button class="btn-main cut" disabled>損傷なし</button>':!cap?`<span class="lack">資金不足</span>`:'<button class="btn-main cut" id="sRep">修理する</button>'}</div>`;
+  el.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{rview=b.dataset.v;rsel=null;ramt=null;renderShop()});
+  el.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{if(b.dataset.r===rsel)return;rsel=b.dataset.r;ramt=null;renderShop();const d=DMG[rsel]||0;
    talk([[d?esc(ENM(keyOf(rsel),rsel).trim())+' は装甲が <em>'+d+'</em> 減っています。修理費は '+fmtCR(cost([rsel]))+' CR です。':'こちらは傷ひとつございません。磨いておきますね。',d?'normal':'happy']])});
-  const doRepair=ids=>{const c=cost(ids);if(!c||c>CREDIT)return;CREDIT-=c;ids.forEach(id=>delete DMG[id]);saveGame();buildMech(cfg);renderGarage();renderShop();
+  const sl=$('rSl');
+  if(sl){const upd=()=>{const pct=v=>v/smx*100+'%';$('rAdd').style.left=pct(snw);$('rAdd').style.width=pct(ramt);$('rCap').style.left=pct(snw+cap);$('rCap').hidden=cap>=sdm;
+    $('rKnob').style.left=pct(snw+ramt);$('rLab').innerHTML=ramt?`${snw}<span class="ar">→</span><b>${snw+ramt}</b> / ${smx}`:`${snw} / ${smx}`;
+    $('rCost').innerHTML=fmtCR(Math.ceil(ramt*REPAIR_K))+'<i>CR</i>';const rb=$('sRep');if(rb){rb.disabled=!ramt;}sl.setAttribute('aria-valuenow',ramt)};
+   const at=x=>{const r=sl.getBoundingClientRect(),raw=(x-r.left)/r.width*smx-snw;let v=Math.round(raw/10)*10;if(raw>=cap-5)v=cap;ramt=Math.max(0,Math.min(cap,v));upd()};
+   let drag=false;
+   sl.addEventListener('pointerdown',e=>{e.stopPropagation();drag=true;sl.setPointerCapture(e.pointerId);at(e.clientX)});
+   sl.addEventListener('pointermove',e=>{if(drag)at(e.clientX)});
+   const end=()=>{drag=false};sl.addEventListener('pointerup',end);sl.addEventListener('pointercancel',end);
+   sl.addEventListener('click',e=>e.stopPropagation());
+   sl.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();ramt=Math.max(0,Math.min(cap,ramt+(e.key==='ArrowRight'?10:-10)));upd()}});
+   upd()}
+  const mx2=$('sRepMax');if(mx2)mx2.onclick=()=>{ramt=cap;if(sl)sl.dispatchEvent(new Event('upd'));renderShop()};
+  const fix=(id,amt)=>{const c=Math.ceil(amt*REPAIR_K);if(!amt||c>CREDIT)return;CREDIT-=c;DMG[id]=(DMG[id]||0)-amt;if(DMG[id]<=0)delete DMG[id];ramt=null;saveGame();buildMech(cfg);renderGarage();renderShop();
+   const m=$('sMoney');m.classList.add('flash');setTimeout(()=>m.classList.remove('flash'),600);
+   talk(DMG[id]?[['応急修理、承りました！ 装甲を <em>'+amt+'</em> ぶん張り替えました。','happy'],['残りは、またいつでも。……継ぎ目が少し目立ちますが、気にしないでくださいませ。','sorry']]:
+    [['修理、承りました！ 装甲板を張り替えて……溶接して……','happy'],pick([['あつっ。……いえ、わたくしは熱くないのでした。','panic'],['あっ、溶接棒が<em>もう一本</em>……どこへ。','panic'],['あっ、余ったネジが1本……。いえ、予備です。予備ということにいたしましょう。','panic']]),['<strong>修理完了</strong>でございます。新品同様です。たぶん新品以上です。','happy']])};
+  const doRepair=ids=>{const c=cost(ids);if(!c||c>CREDIT)return;CREDIT-=c;ids.forEach(id=>delete DMG[id]);ramt=null;saveGame();buildMech(cfg);renderGarage();renderShop();
    const m=$('sMoney');m.classList.add('flash');setTimeout(()=>m.classList.remove('flash'),600);
    talk([['修理、承りました！ 装甲板を張り替えて……溶接して……','happy'],pick([['あつっ。……いえ、わたくしは熱くないのでした。','panic'],['あっ、溶接棒が<em>もう一本</em>……どこへ。','panic'],['あっ、余ったネジが1本……。いえ、予備です。予備ということにいたしましょう。','panic']]),['<strong>修理完了</strong>でございます。新品同様です。たぶん新品以上です。','happy']])};
-  const rb=$('sRep');if(rb)rb.onclick=()=>doRepair([rsel]);
+  const rb=$('sRep');if(rb)rb.onclick=()=>fix(rsel,ramt);
   const ra=$('sRepAll');if(ra)ra.onclick=()=>doRepair(allIds);
-  const lk=el.querySelector('.lack');if(lk)lk.onclick=()=>talk([['修理費が <em>'+fmtCR(c1-CREDIT)+' CR</em> ほど足りないようです……。','sorry'],['TRAINING では報酬が出ませんので、SORTIE で稼いでいらしてください。お気をつけて。','normal']]);
+  const lk=el.querySelector('.lack');if(lk)lk.onclick=()=>talk([['所持金が足りず、少しも直せないようです……。','sorry'],['TRAINING では報酬が出ませんので、SORTIE で稼いでいらしてください。お気をつけて。','normal']]);
  }else{
   $('sTitle').textContent='TUNE';$('sSub').textContent='フレームの改造';
   el.innerHTML=[['HEAD','head'],['CORE','core'],['ARMS','arms'],['LEGS','legs']].map(([lab,k])=>`<div class="tn"><span class="k">${lab}</span><span class="nm">${esc(ENM(k,cfg[k]).trim())}</span><span class="lv">LV 0</span><span class="slots"><i></i><i></i><i></i><i></i><i></i></span></div>`).join('')+
@@ -1802,7 +1833,7 @@ function buy(id,equip){
  else talk([['お買い上げ、ありがとうございます！ '+nm+' はガレージの棚に置いておきますね。','happy'],['……あ、棚を間違えました。いえ、<strong>合っています</strong>。たぶん。','sorry']]);
 }
 function openShop(){
- openMenu(false);startShop3D();closeModal();$('shop').hidden=false;smode='buy';rview='equip';rsel=null;spath=[];scat=null;ssel=null;renderShop();setMood('normal');
+ openMenu(false);startShop3D();closeModal();$('shop').hidden=false;smode='buy';rview='equip';rsel=null;ramt=null;spath=[];scat=null;ssel=null;renderShop();setMood('normal');
  const first=shopVisits===0;shopVisits++;saveGame();
  if(first)talk([['ようこそ、パイロット様！ 第7整備区画の部品倉庫へ。わたくし、整備管理AIの <em>D-06</em>、ドールと申します。','happy'],['こちらでは、ガレージにない部品や兵装をお売りしております。品ぞろえは万全です。……<em>たぶん</em>万全です。','normal']]);
  else talk([pick([['おかえりなさいませ、パイロット様！ 今日はどの部品をお探しでしょう？','happy'],['あ、パイロット様！ ちょうど棚を拭いていたところです。拭くたびに部品を<em>落とす</em>のですが。','sorry'],['いらっしゃいませ。本日も在庫は数えておきました。<em>4回</em>ほど。','normal']])]);
