@@ -411,7 +411,6 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #scene .kp svg{width:100%;height:100%;display:block}
 #scene::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.24) 0 1px,transparent 1px 3px)}
 .kp .mk{display:none}
-.kp.happy .mk-h,.kp.panic .mk-p,.kp.sorry .mk-s{display:inline}
 .opcard{position:absolute;left:12px;top:12px;padding:7px 10px;background:rgba(10,14,13,.84);border:1px solid var(--line);display:flex;flex-direction:column;gap:2px;z-index:1}
 .opcard .r{font-size:10px;color:var(--khaki);letter-spacing:3px}.opcard .n{font-family:var(--disp);font-size:15px;color:#eef2ef}
 .opcard .d{font-size:10px;color:var(--dim)}.opcard .st{display:flex;gap:6px;align-items:center;font-size:10px;color:var(--cyan)}.opcard .st::before{content:"";width:6px;height:6px;background:currentColor}
@@ -1788,10 +1787,18 @@ const SH3=(()=>{
   box(el,.22,.72,.24,T.grey,0,-.38,0);const hd=grp(el,0,-.8,0);box(hd,.2,.22,.12,T.joint,0,-.06,0);
   [0,1,2].forEach(i=>box(hd,.05,.14,.05,T.joint,-.06+i*.06,-.22,.03));return {sh,el,hd,s}});
  const wrench=grp(D.arms[0].hd,0,-.14,.06);box(wrench,.07,.8,.07,T.grey,0,-.2,0);box(wrench,.22,.12,.08,T.greyL,0,-.62,0);D.wrench=wrench;
+ // 感情マーク（3D）：頭の右上に浮かべる。上機嫌＝緑の山形2つ、動揺＝オレンジの「!?」、恐縮＝水色の縦線3本
+ const MK=grp(doll,.85,5.9,.1),MKs={};
+ {const h=grp(MK);MKs.happy=h;[[-.2,-.05],[.2,.1]].forEach(([x,y])=>{const c=grp(h,x,y,0);box(c,.07,.3,.07,T.green,-.07,0,0,0,0,-.45);box(c,.07,.3,.07,T.green,.07,0,0,0,0,.45)});
+  const p=grp(MK);MKs.panic=p;box(p,.08,.3,.08,T.glowO,-.16,.08,0);box(p,.08,.08,.08,T.glowO,-.16,-.16,0);   // !
+  box(p,.24,.07,.08,T.glowO,.12,.22,0);box(p,.07,.16,.08,T.glowO,.22,.13,0);box(p,.14,.07,.08,T.glowO,.16,.04,0);box(p,.07,.1,.08,T.glowO,.1,-.03,0);box(p,.08,.08,.08,T.glowO,.1,-.16,0); // ?
+  box(p,.2,.05,.05,T.glowO,-.42,-.02,0,0,0,.5);box(p,.16,.05,.05,T.glowO,-.38,-.2,0,0,0,.3);
+  const so=grp(MK);MKs.sorry=so;[[-.16,.24],[0,.3],[.16,.22]].forEach(([x,h],i)=>box(so,.06,h,.06,T.glowC,x,i===1?-.04:0,0));
+  Object.values(MKs).forEach(m=>m.visible=false)}
  // 落ちるネジ（動揺したとき）
  const screw=box(root,.08,.16,.08,T.greyL,0,-5,0);
  let mood='normal',moodT=0,screwV=null;
- function setMood3(m){mood=m||'normal';moodT=0;
+ function setMood3(m){mood=m||'normal';moodT=0;Object.entries(MKs).forEach(([k,o])=>o.visible=k===mood);
   if(mood==='panic'){D.hd0=D.arms[0].hd.getWorldPosition(new THREE.Vector3());screw.position.copy(D.hd0);screwV=new THREE.Vector3(.8,1.5,.6)}}
  // 姿勢（毎フレーム）
  let t3=0,on=false,last=0;
@@ -1820,6 +1827,9 @@ const SH3=(()=>{
   // 回転灯・照明のちらつき
   bea.rotation.y+=dt*5;beaL.material.color.setHSL(.08,1,(Math.floor(t3*2)%2)?.55:.25);lamp.intensity=(Math.floor(t3*2)%2)?6:1.5;
   hung.rotation.y=Math.sin(t3*.3)*.06;
+  {const pop=Math.min(1,moodT/.18),sc=pop<1?pop*1.25:1+Math.max(0,.25-(moodT-.18)*1.5);MK.scale.setScalar(Math.max(.01,sc)*1.5);
+   MK.position.y=5.9+pose.y+Math.sin(t3*3)*.05+(mood==='sorry'?-.15:0);MK.rotation.y=.4+Math.sin(t3*1.2)*.35;
+   if(mood==='panic')MK.position.x=.85+Math.sin(t3*40)*.03*Math.max(0,1-moodT)}
  }
  let walk=null;const base={p:new THREE.Vector3(),l:new THREE.Vector3()};
  function size(){const el=$('sceneGL'),w=el.clientWidth||1,h=el.clientHeight||1;const rh=RES[res]?RES[res][1]*.8:h*Math.min(devicePixelRatio,2);
@@ -2805,9 +2815,13 @@ function buildOpScenes(){
 function opShowScene(i,dur){OSC.forEach((s,k)=>s.g.visible=k===i);const s=OSC[i];OS.background=new THREE.Color(s.bg);OS.fog=new THREE.Fog(s.bg,...s.fog);OS.userData.amb.color.setHex(s.amb);OP.sc=i;OP.t0=performance.now();OP.dur=dur}
 function opLoop(){if(!OP.on)return;requestAnimationFrame(opLoop);holoFrame();if(OP.sc<0||!OS)return;
  const s=OSC[OP.sc],u=Math.min(1,(performance.now()-OP.t0)/OP.dur);
- if(s.keys){const K=s.keys;let i=0;while(i<K.length-2&&u>K[i+1][0])i++;const A=K[i],B=K[i+1],q=Math.min(1,Math.max(0,(u-A[0])/(B[0]-A[0]))),e=q*q*(3-2*q),V=(a,b)=>a.map((v,k)=>v+(b[k]-v)*e);
-  OC.position.set(...V(A[1],B[1]));OC.lookAt(...V(A[2],B[2]));const fv=A[4]+(B[4]-A[4])*e;if(Math.abs(OC.fov-fv)>.01){OC.fov=fv;OC.updateProjectionMatrix()}
-  OC.rotateZ(A[3]+(B[3]-A[3])*e);if(s.upd)s.upd(1/60);OR.render(OS,OC);return}
+ if(s.keys){const K=s.keys,n=K.length;
+  // 通過点を道のりの長さで進める（区間の長さが違っても速さが一定）。始めと終わりだけ少しゆるめる
+  if(!s._d){s._d=[0];for(let j=1;j<n;j++)s._d.push(s._d[j-1]+Math.hypot(...K[j][1].map((v,k)=>v-K[j-1][1][k])))}
+  const D=s._d,g=(u-Math.sin(u*Math.PI*2)/(Math.PI*2)*.35)*D[n-1];let i=0;while(i<n-2&&g>D[i+1])i++;const q=Math.min(1,(g-D[i])/(D[i+1]-D[i])),
+   e=q*q*(3-2*q),w=.5,qq=q*(1-w)+e*w,A=K[i],B=K[i+1],V=(a,b,x)=>a.map((v,k)=>v+(b[k]-v)*x);   // 位置は道のりに比例（速さ一定）、向きは区間内で少しなめらかに
+  OC.position.set(...V(A[1],B[1],q));OC.lookAt(...V(A[2],B[2],qq));const fv=A[4]+(B[4]-A[4])*qq;if(Math.abs(OC.fov-fv)>.01){OC.fov=fv;OC.updateProjectionMatrix()}
+  OC.rotateZ(A[3]+(B[3]-A[3])*qq);if(s.upd)s.upd(1/60);OR.render(OS,OC);return}
  const e=u*u*(3-2*u),V=(a,b)=>a.map((v,k)=>v+(b[k]-v)*e);
  OC.position.set(...V(s.from[0],s.to[0]));OC.lookAt(...V(s.from[1],s.to[1]));
  const fv=s.from[3]+(s.to[3]-s.from[3])*e;if(Math.abs(OC.fov-fv)>.01){OC.fov=fv;OC.updateProjectionMatrix()}
@@ -2826,7 +2840,7 @@ const OP_CARDS=[
  {arc:'ARCHIVE 01',ja:'旧戦役',lines:['数十年前。大陸の国々は、戦いの指揮を<em>AI</em>に任せた。','無人兵器と人型兵器「ギア」がぶつかり合った大戦争 ──<br><em>旧戦役</em>。','勝者は生まれなかった。<br>残ったのは、灰になった街と、動かなくなった機械だけだった。']},
  {arc:'ARCHIVE 02',ja:'統治AI',lines:['戦い疲れた人々は、戦争を指揮していたAIに、<br>政治と暮らしの管理を預けた。','<em>統治AI</em>。地域ごとに置かれ、<br>仕事も、移動も、人の営みのすべてを決めている。','統治AIどうしは、資源と領域を奪い合っている。<br>ただ、旧戦役を繰り返さないよう、直接の戦争だけは互いに禁じた。']},
  {arc:'ARCHIVE 03',ja:'<ruby>闘技場<rt>コロッセオ</rt></ruby>',lines:['戦争の代わりに選ばれたのが ── <em><ruby>闘技場<rt>コロッセオ</rt></ruby></em>。','統治AIが代表のギア乗りを立てて戦わせ、<br>その勝ち負けで、資源の分け前が決まる。','観客にとっては娯楽。けれど戦うのは人間で、<br>自分たちを支配するAIのために、戦わされている。']},
- {arc:'HANGAR 07',ja:'第7整備区画',lines:['どの統治AIにも属さない、民間の<em>何でも屋</em>のギア乗りがいる。','持っているのは、軍から払い下げられた中古のギアが1機だけ。<br>拠点は、第7整備区画の<em>ハンガー07</em>。','目的は、ひとつ。<br>自由であること……']}];
+ {arc:'HANGAR 07',ja:'第7整備区画',lines:['どの統治AIにも属さない、何でも屋のギア乗りがいる。','持っているのは、軍から払い下げられた中古のギアが1機だけ。<br>拠点は、第7整備区画の<em>ハンガー07</em>。','目的は、ひとつ。<br>自由であること……']}];
 const BOOT=[['> POWER ................ ','RESTORED','ok'],['> MEMORY BANK A ........ ','CORRUPTED','bad'],['> MEMORY BANK B ........ ','CORRUPTED','bad'],['> MEMORY BANK C ........ ','ERASED','bad'],['> COMBAT ROUTINE ....... ','OK','ok'],['> DESIGNATION .......... ','N-07','ok'],['> OPERATOR ............. ','UNKNOWN','bad']];
 /* フレームチェックのホログラム：いまの機体（cfg）を線画で組み、部位ごとに点灯させながら回す */
 let HOLO=null;
