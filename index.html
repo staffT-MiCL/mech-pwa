@@ -518,6 +518,79 @@ body.eqm #btnTrain{display:none}
 #sconf .b2{flex:1;background:#1a201d;border:1px solid var(--fire);color:var(--fire);font-size:13px;letter-spacing:2px}
 @media (orientation:portrait){#shop{grid-template-columns:minmax(0,1fr);grid-template-rows:40px 50% minmax(0,1fr)}}
 @media (max-width:700px){#shop .loc{display:none}}
+
+/* ===== ノーナのセリフ欄（ガレージ：左下のステータスに重ねる） ===== */
+#nonaBox{position:absolute;left:8px;right:8px;bottom:8px;height:calc(var(--gsh,120px) - 4px);min-height:74px;z-index:3;pointer-events:auto;box-sizing:border-box;padding:16px 14px 10px;background:#0a0e0d;border:1px solid #34403a;border-top:2px solid var(--olive);cursor:pointer}
+#nonaBox .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:var(--olive);color:#e8ecd8;font-family:var(--mech);font-size:10px;letter-spacing:2px;display:flex;align-items:center}
+#nbText{font-family:var(--disp);font-size:13.5px;line-height:1.65;color:#e6ebe7;overflow:auto;height:100%}
+#nbText em{font-style:normal;color:var(--fire)}#nbText strong{font-weight:400;color:var(--accent)}
+#nbNext{position:absolute;right:12px;bottom:6px;color:var(--fire);font-size:10px;animation:kblink .8s steps(2) infinite}
+body.eqm #nonaBox{display:none}
+/* チュートリアル中：機体まわりの操作を止める */
+body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
+#menu .mitem.lk{opacity:.35}
+/* TRAINING の準備画面 */
+.tp{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:8px;align-items:center}
+.tpk{font-family:var(--mech);font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--khaki);display:flex;flex-direction:column}
+.tpk small{font-family:var(--body);font-size:10px;font-weight:400;letter-spacing:0;color:var(--dim)}
+.tp .seg button{min-width:64px;height:30px;font-weight:700;letter-spacing:.1em}
+.tp .seg button small{font-family:var(--body);font-size:9px;font-weight:400;margin-left:4px;color:var(--faint)}
+.tpn{font-family:var(--body);font-size:11.5px;line-height:1.55;color:#aab6b0;padding:6px 10px;background:var(--panel2);border-left:2px solid var(--olive)}
+.tpn.on{border-left-color:var(--fire)}
+/* SHOP 初回：歩いて近づく間はセリフ欄とメニューを隠す */
+#shop.walk #tbox,#shop.walk #shopR,#shop.walk #sExit,#shop.walk .opcard{visibility:hidden}
+#shop.greet #shopR,#shop.greet #sExit{opacity:.25;pointer-events:none}
+#unlock{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:2;min-width:300px;padding:10px 16px 12px;background:rgba(10,14,13,.94);border:1px solid var(--accent);display:flex;flex-direction:column;gap:5px;animation:ulin .4s ease}
+#unlock b{font-family:var(--mech);font-size:12px;letter-spacing:.3em;color:var(--accent)}
+#unlock span{font-family:var(--body);font-size:12px;color:#d9e0dc}
+@keyframes ulin{from{opacity:0;transform:translate(-50%,-8px)}}
+/* ===== オープニング ===== */
+#op{position:fixed;inset:0;z-index:44;background:#000;overflow:hidden;user-select:none;-webkit-user-select:none;transition:opacity .4s ease}
+#opGL{position:absolute;inset:0}#opGL canvas{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+#op::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;background:repeating-linear-gradient(0deg,rgba(0,0,0,.26) 0 1px,transparent 1px 3px)}
+.opbar{position:absolute;left:0;right:0;background:#000;z-index:2}
+.opbar.t{top:0;height:max(40px,9.5%)}.opbar.b{bottom:0;height:max(84px,20%);display:flex;align-items:center;justify-content:center;padding:0 24px;box-sizing:border-box}
+#opSub{font-family:var(--disp);font-size:16px;line-height:1.65;letter-spacing:.05em;color:#e6ebe7;text-align:center;max-width:720px}
+#opSub em{font-style:normal;color:var(--fire)}
+#opArc{position:absolute;left:18px;top:12px;z-index:3;font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:.32em;color:var(--fire)}
+#opArc small{margin-left:10px;font-weight:500;letter-spacing:.16em;color:#7f8c86}
+#opVeil{position:absolute;inset:0;z-index:4;background:#000;opacity:1;transition:opacity .6s ease;pointer-events:none}
+#opTerm{position:absolute;left:28px;right:28px;top:22px;bottom:122px;z-index:3;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;font-family:var(--mech);color:#6f8a76}
+#opTerm .oth{font-size:12px;font-weight:700;letter-spacing:.32em;color:var(--fire);margin-bottom:6px}
+#opLog{font-size:12px;line-height:1.55;letter-spacing:.06em;white-space:pre}
+#opLog .bad{color:var(--alert)}#opLog .ok{color:var(--accent)}
+.otr{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;align-content:start}
+.ofr{position:relative;border:1px solid #2c3833;background:#0b100e;height:150px}
+.ofr svg{position:absolute;inset:6px 6px 16px;width:calc(100% - 12px);height:calc(100% - 22px)}
+.ofr svg .p{fill:none;stroke:#2f3d36;stroke-width:2}.ofr svg .p.on{stroke:var(--accent)}
+.ofr .ofh{position:absolute;left:6px;bottom:3px;font-size:8px;letter-spacing:.24em;color:var(--khaki)}
+.osn{display:flex;flex-direction:column;gap:5px;font-size:11px;letter-spacing:.06em}
+.osn .r{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted #26302c;padding-bottom:2px;white-space:nowrap}
+.osn .r b{font-weight:700;color:#4a5550}.osn .r b.ok{color:var(--accent)}.osn .r b.w{color:var(--fire)}
+.osn .pls{height:34px;border:1px solid #2c3833;background:#0b100e;position:relative;overflow:hidden}
+.osn .pls svg{position:absolute;left:0;top:0;height:100%;width:200%;animation:pls 2.2s linear infinite}
+@keyframes pls{to{transform:translateX(-50%)}}
+.osn .pls.off svg{visibility:hidden}
+#opTalk{position:absolute;left:28px;right:28px;bottom:16px;height:92px;z-index:3;box-sizing:border-box;padding:16px 16px 10px;background:#0c110f;border:1px solid #2c3833;cursor:pointer}
+#opTalk .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:var(--olive);color:#e8ecd8;font-family:var(--mech);font-size:10px;letter-spacing:2px;display:flex;align-items:center}
+#opText{font-family:var(--disp);font-size:15px;line-height:1.65;color:#e6ebe7}
+#opText em{font-style:normal;color:var(--fire)}
+#opTalk .nx{position:absolute;right:12px;bottom:6px;color:var(--fire);font-size:10px;animation:kblink .8s steps(2) infinite}
+#opCh{position:absolute;right:12px;bottom:10px;display:flex;gap:6px}#opCh:empty{display:none}
+#opCh button{height:34px;padding:0 14px;font-size:12px;font-family:var(--disp)}
+#opCh button:first-child{background:#1f170b;border-color:var(--fire);color:#ffe2b8}
+#op.typing #opTerm,#op.typing #opTalk{opacity:.22}
+#opName{position:fixed;left:0;right:0;top:0;z-index:6;height:60px;box-sizing:border-box;padding:0 16px;display:flex;align-items:center;gap:10px;background:#0c110f;border-bottom:2px solid var(--fire)}
+#opName .q{font-family:var(--mech);font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--khaki);white-space:nowrap}
+#opName .q b{color:var(--fire);margin-right:6px}
+#opIn{flex:1;min-width:0;height:38px;box-sizing:border-box;padding:0 10px;background:#050706;border:1px solid var(--accent);color:#eef2ef;font-family:var(--disp);font-size:16px;letter-spacing:.08em;caret-color:var(--accent)}
+#opReg{height:38px;padding:0 14px;background:var(--fire);border:0;color:#1a1006;font-weight:700;letter-spacing:.18em}
+#opSkip{position:absolute;right:14px;top:8px;z-index:6;height:26px;padding:0 12px;overflow:hidden;background:rgba(0,0,0,.4);border:1px solid #4a5550;color:#aeb8b3;font-size:11px;font-weight:700;letter-spacing:.2em;touch-action:none}
+#opSkip i{position:absolute;left:0;top:0;bottom:0;width:var(--h,0%);background:rgba(240,160,64,.45)}
+#opSkip span{position:relative}
+#opOnline{position:absolute;left:50%;top:40%;z-index:6;transform:translate(-50%,-50%);padding:8px 18px;border:1px solid var(--accent);color:var(--accent);font-family:var(--mech);font-size:16px;font-weight:700;letter-spacing:.4em;background:rgba(5,7,6,.85)}
+@media (max-width:700px){#opTerm{grid-template-columns:minmax(0,1fr)}.otr{display:none}}
+@media (max-height:380px){#opTerm{bottom:110px}#opTalk{height:84px;padding-top:13px}#opText{font-size:14px}#opLog{font-size:11px;line-height:1.45}}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=DotGothic16&family=M+PLUS+1p:wght@400;700&family=Stardos+Stencil:wght@400;700&display=swap">
 
@@ -541,6 +614,7 @@ body.eqm #btnTrain{display:none}
   <div class="tools"><button id="btnPaint">PAINT</button><button id="btnTrain">TRAINING</button><button id="btnView">VIEW</button></div></div>
   <div class="stamp"><b>HX-07</b><br>S/N 0417-A<br>LOT 07 / CLASS B</div>
   <div id="gstats"></div>
+  <div id="nonaBox" hidden role="status" aria-live="polite"><span class="nm">N-07 ノーナ</span><div id="nbText"></div><span id="nbNext" hidden>▼</span></div>
  </div>
  <div id="play" hidden>
   <div class="hudp" id="hudp">
@@ -577,15 +651,14 @@ body.eqm #btnTrain{display:none}
  <div class="drawer" role="dialog" aria-label="メニュー">
   <div class="mhd"><span>MAIN MENU</span><button id="menuClose" aria-label="閉じる" style="width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 12 12" stroke="#aeb8b3" stroke-width="2"><path d="M1 1l10 10M11 1L1 11"/></svg></button></div>
   <div style="height:1px;background:var(--line)"></div>
-  <button class="mitem big" id="mSortie"><span class="no">01</span><span class="t en">SORTIE<br><small>演習場で標的機と戦う</small></span></button>
-  <button class="mitem" id="mTrain"><span class="no">02</span><span class="t en">TRAINING<br><small>攻撃してこない標的で操作を練習する</small></span></button>
-  <button class="mitem" disabled><span class="no">03</span><span class="t en">MISSION<br><small>任務を受けて戦う（準備中）</small></span></button>
-  <button class="mitem" disabled><span class="no">04</span><span class="t en">VERSUS<br><small>ほかのプレイヤーと対戦する（準備中）</small></span></button>
-  <button class="mitem" id="mShop"><span class="no">05</span><span class="t en">SHOP<br><small>パーツや兵装を買う</small></span></button>
+  <button class="mitem big" id="mTrain"><span class="no">01</span><span class="t en">TRAINING<br><small>演習場で標的機と戦う（攻撃あり／なし）</small></span></button>
+  <button class="mitem" disabled data-soon="1"><span class="no">02</span><span class="t en">MISSION<br><small>依頼を受けて戦う（準備中）</small></span></button>
+  <button class="mitem" disabled data-soon="1"><span class="no">03</span><span class="t en">VERSUS<br><small>闘技場で戦う（準備中）</small></span></button>
+  <button class="mitem" id="mShop"><span class="no">04</span><span class="t en">SHOP<br><small>パーツや兵装を買う</small></span></button>
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">UNIT-01</span><span>VER 0.6</span></div>
+  <div class="mfoot"><span id="mUnit">UNIT-01</span><span>VER 0.7</span></div>
  </div>
 </div>
 
@@ -601,6 +674,7 @@ body.eqm #btnTrain{display:none}
  <div id="shopL">
   <div id="scene">
    <div id="sceneGL"></div>
+   <div id="unlock" hidden role="status"><b>UNLOCKED ／ 機能が解放されました</b><span>・装備の変更（部位ボタン・機体のタッチ）、PAINT、VIEW</span><span>・SHOP の BUY／REPAIR／TUNE、CONFIG</span><span>・TRAINING（演習：敵の攻撃あり／なし）</span></div>
    <div class="opcard"><span class="r">OPERATOR</span><span class="n">D-06 ドール</span><span class="d">整備管理AI ／ 部品倉庫担当</span><span class="st" id="sState">応答中</span></div>
    <div class="kp" id="keeper" aria-hidden="true"><svg viewBox="0 0 60 40">
 <g class="mk mk-h" stroke="#8cf06e" stroke-width="3" fill="none"><path d="M10 30 L16 18 L22 30"/><path d="M30 22 L36 10 L42 22"/></g>
@@ -627,9 +701,36 @@ body.eqm #btnTrain{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver">VER 0.6</div>
+ <div class="tver">VER 0.7</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
+<div id="op" hidden>
+ <div id="opGL"></div>
+ <div class="opbar t"></div><div class="opbar b"><div id="opSub" aria-live="polite"></div></div>
+ <div id="opArc"></div>
+ <div id="opTerm" hidden>
+  <div><div class="oth">N-07 CONTROL UNIT</div><div id="opLog"></div></div>
+  <div class="otr">
+   <div class="ofr"><svg viewBox="0 0 100 130" aria-hidden="true">
+    <rect class="p" data-p="head" x="40" y="4" width="20" height="14"/>
+    <path class="p" data-p="core" d="M28 22 H72 L76 34 V58 H24 V34 Z"/>
+    <path class="p" data-p="arms" d="M22 24 H12 V64 H20 V24 M78 24 H88 V64 H80 V24"/>
+    <path class="p" data-p="legs" d="M34 62 H48 V120 H30 V108 H34 Z M52 62 H66 V108 H70 V120 H52 Z"/>
+   </svg><span class="ofh">FRAME CHECK</span></div>
+   <div class="osn">
+    <div class="r"><span>COCKPIT HATCH</span><b id="sHatch">---</b></div>
+    <div class="r"><span>PILOT SEAT</span><b id="sSeat">---</b></div>
+    <div class="r"><span>BIOMETRIC</span><b id="sBio">---</b></div>
+    <div class="pls off" id="sPulse"><svg viewBox="0 0 400 34" preserveAspectRatio="none"><path d="M0 20 H40 L46 8 L52 30 L58 20 H140 L146 8 L152 30 L158 20 H200 H240 L246 8 L252 30 L258 20 H340 L346 8 L352 30 L358 20 H400" fill="none" stroke="#8cf06e" stroke-width="1.5"/></svg></div>
+   </div>
+  </div>
+ </div>
+ <div id="opTalk" hidden><span class="nm">N-07</span><div id="opText" aria-live="polite"></div><span class="nx" id="opNx" hidden>▼</span><div id="opCh"></div></div>
+ <form id="opName" hidden onsubmit="return false"><span class="q"><b>N-07</b>お名前を入力してください</span><input id="opIn" maxlength="10" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" aria-label="操縦者の名前（10文字まで）"><button id="opReg" type="submit">REGISTER</button></form>
+ <div id="opOnline" hidden>N-07 ONLINE</div>
+ <div id="opVeil"></div>
+ <button id="opSkip" type="button"><i></i><span>HOLD TO SKIP</span></button>
+</div>
 <div id="fade" aria-hidden="true"><span id="fadeTxt"></span></div>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
 <script type="module">
@@ -1254,7 +1355,7 @@ const SLOTOF=k=>SLOTS.find(s=>s.key===k);
 /* 右パネルの状態 */
 let view='overview',selSlot=null,cand=null;
 let wcat=null; // 兵装の一覧で開いている種類（null＝種類の一覧）
-function openSlot(k){view='slot';selSlot=k;cand=cfg[k];wcat=null;renderGarage()}
+function openSlot(k){if(TUT!=='done')return;view='slot';selSlot=k;cand=cfg[k];wcat=null;renderGarage()}
 function renderGarage(){renderHeader();renderGStats();renderSide()}
 // ガレージでは、選択中（未装備）の装備を仮に組んだ見た目にする
 function syncPreviewMech(){
@@ -1263,7 +1364,7 @@ function syncPreviewMech(){
 }
 function renderHeader(){
  $('hWt').textContent=SS.total;const l=$('hLoad');l.textContent=`${SS.weap}/${SS.load}`;l.classList.toggle('over',SS.over);
- const dead=partNow('core')<=0;$('mSortie').disabled=SS.over||dead;$('mTrain').disabled=SS.over;$('mWarn').textContent=SS.over?'積載オーバーのため出撃できません。兵装を見直してください':dead?'CORE が大破しています。SHOP の REPAIR で修理してください':'';
+ const dead=partNow('core')<=0;$('mTrain').disabled=SS.over;$('mWarn').textContent=SS.over?'積載オーバーのため出撃できません。兵装を見直してください':dead?'CORE が大破しています。修理するまで、攻撃ありの TRAINING はできません':'';applyTut();
 }
 // 比較表の1行（better='hi'：大きいほど良い、'lo'：小さいほど良い）
 const KEN={'能力':'ABILITY','装甲':'ARMOR','ブースト容量':'BOOST CAP','積載':'LOAD','基本機動力':'BASE MOB.','機動力':'MOBILITY','重量':'WEIGHT','総重量':'TOTAL WT','種類':'TYPE','使用回数':'USES','効果時間':'DURATION','リロード':'RELOAD','威力':'POWER','射程':'RANGE','範囲':'BLAST','同時発射':'SALVO','弾数':'AMMO','衝撃':'IMPACT','弾速':'VELOCITY','誘導':'HOMING','連射':'RATE','歩行速度':'WALK','ダッシュ速度':'DASH','急加速距離':'QUICK BOOST','ロック距離':'LOCK RANGE'};
@@ -1502,18 +1603,17 @@ $('modalClose').onclick=closeModal;$('modal').addEventListener('click',e=>{if(e.
 addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});$('menuClose').onclick=()=>openMenu(false);
 menu.addEventListener('click',e=>{if(e.target===menu)openMenu(false)});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden)openMenu(false)});
-$('mSortie').onclick=()=>{if(!SS.over&&partNow('core')>0){openMenu(false);fadeTo(()=>setMode('play',false),'SORTIE')}};
-$('mTrain').onclick=()=>{if(!SS.over){openMenu(false);fadeTo(()=>setMode('play',true),'TRAINING')}};
-$('mExit').onclick=()=>{saveGame();openMenu(false);fadeTo(()=>showTitle(),'SAVING...')};
-$('mConfig').onclick=()=>{openMenu(false);view='config';renderGarage()};
-$('btnPaint').onclick=()=>{view='paint';renderGarage()};
-$('btnTrain').onclick=()=>{if(SS.over){view='overview';renderGarage()}else fadeTo(()=>setMode('play',true),'TRAINING')};
-$('btnView').onclick=()=>{az=.35;el2=.16;camAuto=true;fitGarageCam()};
+$('mTrain').onclick=()=>{if(tutBlock())return;if(!SS.over){openMenu(false);openTrainPrep()}};
+$('mExit').onclick=()=>{if(tutBlock())return;saveGame();openMenu(false);fadeTo(()=>showTitle(),'SAVING...')};
+$('mConfig').onclick=()=>{if(tutBlock())return;openMenu(false);view='config';renderGarage()};
+$('btnPaint').onclick=()=>{if(TUT!=='done')return;view='paint';renderGarage()};
+$('btnTrain').onclick=()=>{if(TUT!=='done')return;if(SS.over){view='overview';renderGarage()}else openTrainPrep()};
+$('btnView').onclick=()=>{if(TUT!=='done')return;az=.35;el2=.16;camAuto=true;fitGarageCam()};
 $('uname').addEventListener('input',e=>{$('mUnit').textContent=e.target.value?e.target.value.toUpperCase():'UNIT-01'});
 applyColors();
 
 /* ===== 所持品・所持金（端末に保存） =====
- 最初から持っているのは各種類の1つ目。2つ目以降は SHOP で買う。お金は SORTIE で標的機を倒すと入る */
+ 最初から持っているのは各種類の1つ目。2つ目以降は SHOP で買う。お金は TRAINING（攻撃あり）で標的機を倒すと入る */
 const SAVE_KEY='mech-pwa-save-1';
 const DEFAULT_CFG={...cfg};  // NEW GAME で戻す初期装備
 const START_OWN=['HD-01','CR-01','AR-01','LG-01','RF','MG','BZ','BL','SH','MS','GC','RD','BT','IC'];
@@ -1521,6 +1621,8 @@ const PRICE={'HD-02':12000,'CR-02':18000,'AR-02':15000,'LG-02':16000,
  'RF2':9000,'MG2':8500,'BZ2':9800,'BL2':11000,'SH2':6000,'MS2':14000,'GC2':13000,'RD2':7000,'BT2':7500,'IC2':9000};
 const START_CREDIT=30000,REWARD={drone:800,turret:1200};
 const OWN=new Set(START_OWN);let CREDIT=START_CREDIT,shopVisits=0;
+let PILOT='',TUT='intro',FIRE=true;const TSEL={target:'std',field:'range'};
+const SAMA=()=>esc(PILOT||'パイロット')+'様';
 /* 部位ダメージ：パーツそのものが受けた量（DMG[パーツID]）。出撃後も残り、修理（SHOP の REPAIR）でだけ戻る。
    HEAD は装甲を持たないので対象外。CORE が0＝機体破壊（ゲームオーバー） */
 const DMG={},PART_KEYS=['core','arms','legs'],PART_LABEL={core:'CORE',arms:'ARMS',legs:'LEGS'};
@@ -1550,12 +1652,14 @@ function loadGame(){
   (d.own||[]).forEach(id=>{if(PRICE[id])OWN.add(id)});
   if(typeof d.cr==='number'&&isFinite(d.cr))CREDIT=Math.max(0,Math.floor(d.cr));
   shopVisits=d.visits|0;
+  PILOT=typeof d.pilot==='string'?d.pilot.slice(0,10):'';TUT=d.tut==='intro'?'intro':'done';if(typeof d.fire==='boolean')FIRE=d.fire;
+  if(d.tsel&&typeof d.tsel.target==='string')TSEL.target=d.tsel.target;if(d.tsel&&typeof d.tsel.field==='string')TSEL.field=d.tsel.field;
   if(d.tune)Object.entries(d.tune).forEach(([k,v])=>{if(Array.isArray(v))TUNE[k]=[Math.min(5,v[0]|0),Math.min(5,v[1]|0)]});
   if(d.dmg)Object.entries(d.dmg).forEach(([k,v])=>{if(typeof v==='number'&&v>0)DMG[k]=v});
   if(d.cfg)SLOTS.forEach(sl=>{const v=d.cfg[sl.key];if(v&&sl.cat[v]&&(v==='none'||OWN.has(v)))cfg[sl.key]=v});
  }catch(e){}
 }
-function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG,tune:TUNE}))}catch(e){}}
+function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG,tune:TUNE,pilot:PILOT,tut:TUT,fire:FIRE,tsel:TSEL}))}catch(e){}}
 
 /* ===== SHOP ===== */
 const fmtCR=n=>Math.round(n).toLocaleString('ja-JP');
@@ -1713,13 +1817,19 @@ const SH3=(()=>{
   bea.rotation.y+=dt*5;beaL.material.color.setHSL(.08,1,(Math.floor(t3*2)%2)?.55:.25);lamp.intensity=(Math.floor(t3*2)%2)?6:1.5;
   hung.rotation.y=Math.sin(t3*.3)*.06;
  }
+ let walk=null;const base={p:new THREE.Vector3(),l:new THREE.Vector3()};
  function size(){const el=$('sceneGL'),w=el.clientWidth||1,h=el.clientHeight||1;const rh=RES[res]?RES[res][1]*.8:h*Math.min(devicePixelRatio,2);
   r.setSize(Math.round(rh*w/h),Math.round(rh),false);cam.aspect=w/h;
   // ドールが右寄りに大きく入るように：横長ほど引いて、少し左を見る
-  const a=w/h;cam.position.set(1.5,4.7,9.8+Math.max(0,1.9-a)*3.2);cam.lookAt(1.4+Math.min(a,2.4)*.18,4.1,0);cam.updateProjectionMatrix()}
- function loop(){if(!on)return;const now=performance.now(),dt=Math.min((now-last)/1000,.05);last=now;animate(dt);r.render(sc,cam);requestAnimationFrame(loop)}
+  const a=w/h;base.p.set(1.5,4.7,9.8+Math.max(0,1.9-a)*3.2);base.l.set(1.4+Math.min(a,2.4)*.18,4.1,0);cam.position.copy(base.p);cam.lookAt(base.l);cam.updateProjectionMatrix()}
+ // 初回来店：入口の遠くから、一歩ごとに小さく上下しながらドールへ近づく（主人公が歩いて近づくイメージ）
+ function walkCam(dt){walk.t+=dt;const u=Math.min(1,walk.t/walk.d),e=1-Math.pow(1-u,2),k=1-e;
+  cam.position.set(base.p.x-2.2*k,base.p.y+Math.abs(Math.sin(u*Math.PI*9))*.24*(1-u*.7)-.25*k,base.p.z+14*k);
+  cam.lookAt(base.l.x-1.2*k,base.l.y-.3*k+Math.sin(u*Math.PI*9)*.04,base.l.z);
+  if(u>=1){cam.position.copy(base.p);cam.lookAt(base.l);const f=walk.cb;walk=null;f&&f()}}
+ function loop(){if(!on)return;const now=performance.now(),dt=Math.min((now-last)/1000,.05);last=now;animate(dt);if(walk)walkCam(dt);r.render(sc,cam);requestAnimationFrame(loop)}
  addEventListener('resize',()=>{if(on)size()});
- return {start(){if(on)return;on=true;last=performance.now();size();requestAnimationFrame(()=>{size();loop()})},stop(){on=false},mood:setMood3};
+ return {start(){if(on)return;on=true;last=performance.now();size();requestAnimationFrame(()=>{size();loop()})},stop(){on=false;walk=null},mood:setMood3,walk(d,cb){walk={t:0,d,cb}}};
 })();
 function startShop3D(){SH3.start()}
 function stopShop3D(){SH3.stop()}
@@ -1733,15 +1843,15 @@ let curLine="",typingDone=null;
 function nextLine(){
  const ch=$('tchoice');ch.innerHTML='';ch.className='';clearInterval(typing);typing=null;
  if(!talkQ.length){$('tnext').hidden=true;keeper.classList.remove('talking');showChoices();return}
- const [txt,mood]=talkQ.shift();if(mood)setMood(mood);curLine=txt;
+ const [txt,mood,sp]=talkQ.shift();if(mood)setMood(mood);curLine=txt;const nona=sp==='nona';document.querySelector('#tbox .nm').textContent=nona?'N-07 ノーナ':'D-06 ドール';
  // タグと文字に分け、文字だけを1つずつ足していく（文の中身はこのファイルで書いたものだけ）
  const parts=txt.split(/(<\/?(?:em|strong)>)/).filter(Boolean),total=parts.reduce((a,p)=>a+(p[0]==='<'?0:p.length),0);
- const el=$('ttext');let n=0;keeper.classList.add('talking');$('tnext').hidden=true;
+ const el=$('ttext');let n=0;keeper.classList.toggle('talking',!nona);$('tnext').hidden=true;
  const draw=k=>{let out='',left=k;for(const p of parts){if(p[0]==='<'){out+=p;continue}out+=p.slice(0,Math.max(0,left));left-=p.length}el.innerHTML=out};
  const done=()=>{clearInterval(typing);typing=null;el.innerHTML=curLine;keeper.classList.remove('talking');if(talkQ.length)$('tnext').hidden=false;else nextLine()};
  draw(0);typingDone=done;typing=setInterval(()=>{draw(++n);if(n>=total)done()},28);
 }
-function showChoices(){const ch=$('tchoice');ch.innerHTML='';const list=talkChoices||defaultChoices();
+function showChoices(){const ch=$('tchoice');ch.innerHTML='';if(typeof talkChoices==='function'){const f=talkChoices;talkChoices=null;return f()}const list=talkChoices||defaultChoices();
  ch.className=list.length>4?'grid':'';
  list.forEach(([lab,fn])=>{const b=document.createElement('button');b.textContent=lab;b.onclick=fn;ch.appendChild(b)})}
 // 文字欄を押す：表示中なら早送り、表示し終えていれば次の文へ
@@ -1750,17 +1860,17 @@ $('ttext').onclick=()=>{if(typing&&typingDone){typingDone()}else if(talkQ.length
 
 function defaultChoices(){return [['品物を買う',()=>setSMode('buy')],['機体を修理する',()=>setSMode('repair')],['パーツを改造する',()=>setSMode('tune')],['話を聞く',openTalk],['ガレージへ戻る',()=>fadeTo(closeShop,'GARAGE')]]}
 function openTalk(){talk([['お話ですか！ 喜んで。わたくし、おしゃべりは得意でして。……あ、いえ、得意だと<em>思っております</em>。','happy']],[
- ['おすすめを聞く',talkRecommend],['機体を見てもらう',talkCheck],['お金の稼ぎ方',()=>talk([['報酬は、<em>SORTIE</em> で標的機を倒すと入ります。ドローンは '+fmtCR(REWARD.drone)+' CR、砲台は '+fmtCR(REWARD.turret)+' CR です。','normal'],['TRAINING では入りませんので、ご注意を。わたくしも以前、練習で張り切って一銭にもなりませんでした。','sorry']],talkMenu())],
+ ['おすすめを聞く',talkRecommend],['機体を見てもらう',talkCheck],['お金の稼ぎ方',()=>talk([['報酬は、<em>TRAINING</em> を<em>攻撃あり</em>にして標的機を倒すと入ります。ドローンは '+fmtCR(REWARD.drone)+' CR、砲台は '+fmtCR(REWARD.turret)+' CR です。','normal'],['攻撃なしでは入りませんので、ご注意を。わたくしも以前、練習で張り切って一銭にもなりませんでした。','sorry']],talkMenu())],
  ['あなたについて',()=>talk([['わたくしは整備管理AI、<em>D-06</em>。読みはドールでございます。もともとは在庫を数えるために作られました。','normal'],['数えるのは得意です。<em>数え直す</em>のも、とても得意です。','happy']],talkMenu())],
  ['この種類について',()=>talk([[CAT_TALK[scat]||'どの種類のお話をしましょう？ 右の棚で選んでいただければ、ご説明いたします。','normal']],talkMenu())],
  ['戻る',()=>talk([['はい、いつでもどうぞ。','normal']])]])}
 const talkMenu=()=>[['ほかの話を聞く',openTalk],['品物を買う',()=>setSMode('buy')],['ガレージへ戻る',()=>fadeTo(closeShop,'GARAGE')]];
 function talkRecommend(){
  const left=Object.keys(PRICE).filter(id=>!OWN.has(id));
- if(!left.length)return talk([['なんと、在庫がすべて<strong>売り切れ</strong>です！ パイロット様のおかげです。','happy'],['次の入荷まで、わたくしは棚を磨いております。','normal']],talkMenu());
+ if(!left.length)return talk([['なんと、在庫がすべて<strong>売り切れ</strong>です！ '+SAMA()+'のおかげです。','happy'],['次の入荷まで、わたくしは棚を磨いております。','normal']],talkMenu());
  const ok=left.filter(id=>PRICE[id]<=CREDIT&&!statsFor({...cfg,[slotOfItem(id)]:id}).over);
  if(!ok.length){const c=left.reduce((a,b)=>PRICE[a]<PRICE[b]?a:b);
-  return talk([['いまの所持金でお勧めできるものが……ございません。申し訳ありません。','sorry'],['いちばんお手頃なのは <em>'+esc(ENM(slotOfItem(c),c).trim())+'</em>（'+fmtCR(PRICE[c])+' CR）です。SORTIE で少し稼いでいらしてください。','normal']],talkMenu())}
+  return talk([['いまの所持金でお勧めできるものが……ございません。申し訳ありません。','sorry'],['いちばんお手頃なのは <em>'+esc(ENM(slotOfItem(c),c).trim())+'</em>（'+fmtCR(PRICE[c])+' CR）です。TRAINING（攻撃あり）で少し稼いでいらしてください。','normal']],talkMenu())}
  const id=pick(ok),sl=slotOfItem(id),cat=shopCatOf(id);
  spath=pathTo(cat);scat=cat;ssel=id;renderShop();
  talk([['わたくしのおすすめは、こちらの <em>'+esc(ENM(sl,id).trim())+'</em> です。','happy'],[(DESC[id]?esc(DESC[id]):CAT_TALK[cat]),'normal'],['いまの機体にも積めますし、お値段も '+fmtCR(PRICE[id])+' CR。……計算は合っているはずです。','normal']],talkMenu());
@@ -1819,7 +1929,7 @@ function renderShop(){
 /* メニューの切り替え：BUY（購入）／REPAIR（修理）／TUNE（改造）。修理と改造は画面だけ先に用意（中身は準備中） */
 function setSMode(m){smode=m;renderShop();
  if(m==='buy')talk([['どうぞ、ゆっくりご覧ください。右の棚から<em>種類</em>を選んでいただけます。','normal']]);
- if(m==='repair'){const t=Object.values(DMG).reduce((a,v)=>a+v,0);talk(t?[['修理でございますね。出撃で減った装甲は、<em>自然には戻りません</em>。こちらで直します。','normal'],[partNow('core')<=0?'……コアがひどい有様です。よくぞご無事で。いえ、ご無事なのはパイロット様で、機体はご無事ではありませんが。':'傷の具合を見ますと……修理費は <em>'+fmtCR(Math.ceil(t*REPAIR_K))+' CR</em> になります。','sorry']]:[['どこも傷んでおりません。<strong>完璧な状態</strong>です。わたくしより状態が良いくらいです。','happy']])}
+ if(m==='repair'){const t=Object.values(DMG).reduce((a,v)=>a+v,0);talk(t?[['修理でございますね。出撃で減った装甲は、<em>自然には戻りません</em>。こちらで直します。','normal'],[partNow('core')<=0?'……コアがひどい有様です。よくぞご無事で。いえ、ご無事なのは'+SAMA()+'で、機体はご無事ではありませんが。':'傷の具合を見ますと……修理費は <em>'+fmtCR(Math.ceil(t*REPAIR_K))+' CR</em> になります。','sorry']]:[['どこも傷んでおりません。<strong>完璧な状態</strong>です。わたくしより状態が良いくらいです。','happy']])}
  if(m==='tune')talk([['改造は、フレームの各パーツを<em>鍛え直す</em>作業です。わたくしの得意分野……になる予定です。','happy'],['どこを強くできるかは、ただいま<em>検討中</em>でございます。','normal']]);
 }
 function renderAlt(){
@@ -1880,7 +1990,7 @@ function renderAlt(){
   const rb=$('sRep');if(rb)rb.onclick=()=>{const k=keyOf(rsel),amt=ramt;
    ask(`${PART_LABEL[k]} ${esc(ENM(k,rsel).trim())} を修理`,`<span>装甲</span><span>${snw} → <b>${snw+amt}</b> / ${smx}</span>`,Math.ceil(amt*REPAIR_K),()=>fix(rsel,amt))};
   const ra=$('sRepAll');if(ra)ra.onclick=()=>ask('すべての損傷を修理',allIds.map(id=>{const k=keyOf(id);return `<span>${PART_LABEL[k]} ${esc(ENM(k,id).trim())}${PART_KEYS.some(q=>cfg[q]===id)?'':'（所持品）'}</span><span>＋${DMG[id]}</span>`}).join(''),cAll,()=>doRepair(allIds));
-  const lk=el.querySelector('.lack');if(lk)lk.onclick=()=>talk([['所持金が足りず、少しも直せないようです……。','sorry'],['TRAINING では報酬が出ませんので、SORTIE で稼いでいらしてください。お気をつけて。','normal']]);
+  const lk=el.querySelector('.lack');if(lk)lk.onclick=()=>talk([['所持金が足りず、少しも直せないようです……。','sorry'],['TRAINING を攻撃ありにすれば報酬が出ます。お気をつけて。','normal']]);
  }else{
   $('sTitle').textContent='TUNE';$('sSub').textContent='フレームの改造';
   const id=cfg[tsel],def=TUNE_DEF[tsel];
@@ -1999,11 +2109,12 @@ function closeEquipModal(){if(!document.body.classList.contains('eqm'))return;do
 $('eqClose').onclick=()=>fadeTo(closeEquipModal,'SHOP');
 function openShop(){
  openMenu(false);startShop3D();closeModal();$('shop').hidden=false;smode='buy';rview='equip';rsel=null;ramt=null;spath=[];scat=null;ssel=null;renderShop();setMood('normal');
+ if(TUT!=='done'){shopVisits++;saveGame();return firstShop()}
  const first=shopVisits===0;shopVisits++;saveGame();
- if(first)talk([['ようこそ、パイロット様！ 第7整備区画の部品倉庫へ。わたくし、整備管理AIの <em>D-06</em>、ドールと申します。','happy'],['こちらでは、ガレージにない部品や兵装をお売りしております。品ぞろえは万全です。……<em>たぶん</em>万全です。','normal']]);
- else talk([pick([['おかえりなさいませ、パイロット様！ 今日はどの部品をお探しでしょう？','happy'],['あ、パイロット様！ ちょうど棚を拭いていたところです。拭くたびに部品を<em>落とす</em>のですが。','sorry'],['いらっしゃいませ。本日も在庫は数えておきました。<em>4回</em>ほど。','normal']])]);
+ if(first)talk([['ようこそ、'+SAMA()+'！ 第7整備区画の部品倉庫へ。わたくし、整備管理AIの <em>D-06</em>、ドールと申します。','happy'],['こちらでは、ガレージにない部品や兵装をお売りしております。品ぞろえは万全です。……<em>たぶん</em>万全です。','normal']]);
+ else talk([pick([['おかえりなさいませ、'+SAMA()+'！ 今日はどの部品をお探しでしょう？','happy'],['あ、'+SAMA()+'！ ちょうど棚を拭いていたところです。拭くたびに部品を<em>落とす</em>のですが。','sorry'],['いらっしゃいませ。本日も在庫は数えておきました。<em>4回</em>ほど。','normal']])]);
 }
-function closeShop(){stopShop3D();clearInterval(typing);typing=null;closeConfirm();$('shop').hidden=true;view='overview';selSlot=null;renderGarage()}
+function closeShop(kind){stopShop3D();clearInterval(typing);typing=null;closeConfirm();$('shop').hidden=true;$('shop').classList.remove('walk','greet');view='overview';selSlot=null;renderGarage();garageGreet(typeof kind==='string'?kind:'shop')}
 $('mShop').onclick=()=>{openMenu(false);fadeTo(openShop,'SHOP')};$('sExit').onclick=()=>fadeTo(closeShop,'GARAGE');
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sconf').hidden)closeConfirm()});
 
@@ -2071,7 +2182,7 @@ for(let i=0;i<4;i++)makeEnemy('drone');for(let i=0;i<3;i++)makeEnemy('turret');
 const IMP={S:{st:.8,kb:4,p:1},A:{st:.6,kb:2.5,p:1},B:{st:.45,kb:1.5,p:1},C:{st:.35,kb:.8,p:.5},D:{st:.3,kb:.4,p:.25}};
 function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;e.hp-=dmg;e.hit=.08;spawn(0xffffff,.5,pos,{life:.08});
  const I=IMP[imp];if(I&&Math.random()<I.p){e.stun=Math.max(e.stun,I.st);e.kb.copy(e.g.position).sub(P.pos).setY(0).normalize().multiplyScalar(I.kb*3)}
- if(e.hp<=0){e.alive=false;e.g.visible=false;e.respawn=5;P.kills++;if(!TRAIN){const rw=e.type==='drone'?REWARD.drone:REWARD.turret;CREDIT+=rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
+ if(e.hp<=0){e.alive=false;e.g.visible=false;e.respawn=5;P.kills++;if(!TRAIN){const rw=e.type==='drone'?REWARD.drone:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
 function updateEnemies(dt){
  ENEMIES.forEach(e=>{
   if(!e.alive){e.respawn-=dt;if(e.respawn<=0)placeEnemy(e);return}
@@ -2236,6 +2347,7 @@ function readInput(dt){
 
 /* ===== ガレージ／出撃の切り替え ===== */
 function setMode(m,training=false){
+ const wasPlay=mode==='play',wasFire=wasPlay&&!TRAIN,earned=P.earned||0;
  mode=m;const p=m==='play';TRAIN=p&&training;
  if(p&&builtKey!==JSON.stringify(cfg))buildMech(cfg);
  $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p;dock.visible=!p;
@@ -2244,9 +2356,9 @@ function setMode(m,training=false){
  S.fog.near=p?40:20;S.fog.far=p?120:70;S.background.setHex(p?0x1a1e1c:0x0c100e);S.fog.color.setHex(p?0x1a1e1c:0x0c100e);C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
  P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=null;pinned=null;reveal=0;topYaw=topYawC=0;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
- $('modeBadge').textContent=TRAIN?'TRAINING ／ 試運転':'SORTIE ／ 演習';
- if(p){untintDamage();hudCache={};updateHUD();ENEMIES.forEach(placeEnemy);P.kills=0;say(TRAIN?'試運転開始':'演習開始',1.2)}
- else{view='overview';selSlot=null;renderGarage();tintDamage()}
+ $('modeBadge').textContent=TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';
+ if(p){untintDamage();hudCache={};updateHUD();ENEMIES.forEach(placeEnemy);P.kills=0;say(TRAIN?'演習開始（攻撃なし）':'演習開始（攻撃あり）',1.2);P.earned=0}
+ else{view='overview';selSlot=null;renderGarage();tintDamage();if(wasPlay)garageGreet('train',{fire:wasFire,earned})}
  applyGarageView();
  requestAnimationFrame(resize);resize();
 }
@@ -2266,7 +2378,7 @@ function pickSlot(x,y){
  order.forEach(k=>slotMeshes(k).forEach(m=>{if(!own.has(m))own.set(m,k)}));
  const hit=_pick.intersectObjects([...own.keys()],false)[0];return hit?own.get(hit.object):null;
 }
-cv.addEventListener('pointerdown',e=>{if(mode!=='garage')return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});tap0={x:e.clientX,y:e.clientY,t:performance.now(),multi:pts.size>1};cv.setPointerCapture(e.pointerId)});
+cv.addEventListener('pointerdown',e=>{if(mode!=='garage'||TUT!=='done')return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});tap0={x:e.clientX,y:e.clientY,t:performance.now(),multi:pts.size>1};cv.setPointerCapture(e.pointerId)});
 const up=e=>{
  if(mode==='garage'&&tap0&&!tap0.multi&&pts.size===1&&e.type==='pointerup'&&Math.hypot(e.clientX-tap0.x,e.clientY-tap0.y)<8&&performance.now()-tap0.t<350){const k=pickSlot(e.clientX,e.clientY);if(k)openSlot(k);else if(view!=='overview'){view='overview';selSlot=null;renderGarage()}}
  if(pts.size>1&&tap0)tap0.multi=true;
@@ -2276,7 +2388,7 @@ cv.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;
  if(pts.size===2){const [a,b]=[...pts.values()];p.x=e.clientX;p.y=e.clientY;const d=Math.hypot(a.x-b.x,a.y-b.y);
   if(pinch0){dist=Math.max(6,Math.min(30,dist*(pinch0/d)));camAuto=false}pinch0=d;return;}
  az-=(e.clientX-p.x)*.008;el2=Math.max(-.2,Math.min(.9,el2+(e.clientY-p.y)*.005));p.x=e.clientX;p.y=e.clientY});
-cv.addEventListener('wheel',e=>{if(mode!=='garage')return;e.preventDefault();dist=Math.max(6,Math.min(30,dist+e.deltaY*.01));camAuto=false},{passive:false});
+cv.addEventListener('wheel',e=>{if(mode!=='garage'||TUT!=='done')return;e.preventDefault();dist=Math.max(6,Math.min(30,dist+e.deltaY*.01));camAuto=false},{passive:false});
 /* ガレージのカメラ合わせ：
    ・見る窓を下へずらし（setViewOffset）、ステータス欄に隠れない範囲の中央に機体が来るようにする
    ・機体の大きさ（バウンディングボックス）から、全身がその範囲に大きく収まる距離を求める（斜めの角度はそのまま）
@@ -2320,7 +2432,7 @@ R.setAnimationLoop(()=>{
  if(mode==='play'){
   const inp=readInput(dt);
   P.stun=Math.max(0,P.stun-dt);
-  if(P.down>0){P.down-=dt;if(P.down<=0){fadeTo(()=>{setMode('garage');openModal(`<div class="shd"><span class="code">MISSION FAILED</span><span class="ttl">CORE 大破</span></div><div class="rule"></div><p class="note" style="margin:0">コアが破壊され、機体は回収されました。SHOP の REPAIR で修理するまで、SORTIE には出撃できません。</p>`)},'GARAGE')}}
+  if(P.down>0){P.down-=dt;if(P.down<=0){fadeTo(()=>{setMode('garage');openModal(`<div class="shd"><span class="code">MISSION FAILED</span><span class="ttl">CORE 大破</span></div><div class="rule"></div><p class="note" style="margin:0">コアが破壊され、機体は回収されました。SHOP の REPAIR で修理するまで、攻撃ありの TRAINING には出撃できません。</p>`)},'GARAGE')}}
   tickAmmo(dt);reveal=Math.max(0,reveal-dt);
   const guard=guarding(-1)||guarding(1),rooted=Object.values(active).some(a=>a.def.act.root);
   const can=P.stun<=0&&!rooted,air=!!active.jump;
@@ -2456,6 +2568,263 @@ R.setAnimationLoop(()=>{
    lockTxt.textContent='LOCK '+Math.round(lockT.center(_v).distanceTo(P.pos))+'m'}else lockEl.hidden=true}else lockEl.hidden=true;
  }
 });
+/* ===== 進行（チュートリアル）と操縦者名 =====
+ TUT：'intro'＝NEW GAME 直後（SHOP しか選べない）→ 初回 SHOP の最後に 'done'（すべて解放）
+ PILOT：オープニングで登録した操縦者名（以後変更不可）。ノーナは名前だけで、ドールは「○○様」で呼ぶ */
+function applyTut(){const lk=TUT!=='done';document.body.classList.toggle('tut',lk);
+ document.querySelectorAll('#menu .mitem').forEach(b=>b.classList.toggle('lk',lk&&b.id!=='mShop'&&!b.dataset.soon))}
+function tutBlock(){if(TUT==='done')return false;openMenu(false);nonaSay([['まずは <em>SHOP</em> へ参りましょう、'+esc(PILOT||'')+'。MENU から選べます。']],{hold:true});return true}
+
+/* ===== ノーナのセリフ（ガレージ左下）=====
+ 1文字ずつ表示。タップで早送り→次へ。hold＝最後の文を出したまま残す（チュートリアルの案内用）、それ以外は数秒で閉じる */
+const NB={q:[],iv:null,done:null,hold:false,t:null};
+function nonaSay(lines,{hold=false}={}){clearTimeout(NB.t);clearInterval(NB.iv);NB.q=lines.map(l=>Array.isArray(l)?l[0]:l);NB.hold=hold;$('nonaBox').hidden=false;nbNext()}
+function nbClose(){clearTimeout(NB.t);clearInterval(NB.iv);NB.iv=null;$('nonaBox').hidden=true}
+function nbNext(){clearInterval(NB.iv);clearTimeout(NB.t);NB.iv=null;
+ if(!NB.q.length){if(!NB.hold)nbClose();return}
+ const txt=NB.q.shift(),el=$('nbText'),parts=txt.split(/(<\/?(?:em|strong)>)/).filter(Boolean),total=parts.reduce((a,p)=>a+(p[0]==='<'?0:p.length),0);let n=0;
+ $('nbNext').hidden=true;
+ const draw=k=>{let out='',left=k;for(const p of parts){if(p[0]==='<'){out+=p;continue}out+=p.slice(0,Math.max(0,left));left-=p.length}el.innerHTML=out};
+ NB.done=()=>{clearInterval(NB.iv);NB.iv=null;el.innerHTML=txt;$('nbNext').hidden=!NB.q.length;if(!NB.q.length&&!NB.hold)NB.t=setTimeout(nbClose,5200)};
+ draw(0);NB.iv=setInterval(()=>{draw(++n);if(n>=total)NB.done()},30);
+}
+$('nonaBox').addEventListener('click',()=>{if(NB.iv)NB.done();else if(NB.q.length)nbNext();else if(!NB.hold)nbClose()});
+// ガレージに入ったときのひとこと（kind：intro／continue／shop／firstshop／train）
+const PARTJ={core:'コア',arms:'腕部',legs:'脚部'};
+function garageGreet(kind,info={}){
+ if(document.body.classList.contains('eqm'))return;
+ const N=esc(PILOT||'操縦者');let L;
+ if(TUT!=='done'){nonaSay([['ここがハンガー07、'+N+'の拠点です。'],['申し上げにくいのですが、本機の装備は最低限です。まずは <em>SHOP</em> へ参りましょう。部品倉庫を管理しているAIがいると、記録にあります。'],['右上の <em>MENU</em> から SHOP をお選びください。わたくしも、この端末から同行いたします。']],{hold:true});return}
+ if(kind==='firstshop')L=[['ドールさんは、良い方ですね。'],['依頼が届くまで、演習場で操作に慣れておきましょう、'+N+'。MENU の <em>TRAINING</em> で、敵の攻撃のあり・なしを選べます。']];
+ else if(kind==='shop')L=[[pick(['おかえりなさい、'+N+'。新しい装備は、ここで付け替えられます。','おかえりなさい、'+N+'。ドールさんは、今日もお元気そうでしたね。'])]];
+ else if(kind==='train'){
+  if(partNow('core')<=0)L=[['……申し訳ありません、機体を守りきれませんでした。'],['修理が終わるまで、攻撃ありの演習は控えましょう。']];
+  else if(!info.fire)L=[['お疲れさまでした。操作の記録は良好です。']];
+  else{const hurt=PART_KEYS.filter(k=>partNow(k)/partMax(k)<=.5);
+   L=[[(info.earned>0?'お疲れさまでした。獲得した報酬は <strong>'+fmtCR(info.earned)+' CR</strong> です。':'お疲れさまでした。')+(hurt.length?'':' 損傷は軽微です。')]];
+   if(hurt.length)L.push([hurt.map(k=>PARTJ[k]).join('と')+'の装甲が大きく減っています。SHOP での修理をおすすめします。'])}
+ }else{const dmg=PART_KEYS.some(k=>partNow(k)<partMax(k));L=[[dmg?'おかえりなさい、'+N+'。前回の損傷が残っています。修理は SHOP でどうぞ。':'おかえりなさい、'+N+'。本機に異常はありません。']]}
+ if(SS.over)L.push(['積載が上限を超えています。このままでは出撃できません。']);
+ nonaSay(L);
+}
+
+/* ===== TRAINING の準備画面 =====
+ 敵の攻撃 ON（撃ち返す・部位ダメージ・撃破で CR）／OFF（撃ってこない・報酬なし）。
+ 敵の種類と地形は今後追加する：TRAIN_TARGETS／TRAIN_FIELDS に1行足すと並ぶ（ready:false は「準備中」） */
+const TRAIN_TARGETS=[{id:'std',name:'STANDARD',ja:'ドローン＋砲台',ready:true},{id:'heavy',name:'HEAVY',ja:'重装の標的機',ready:false},{id:'gear',name:'GEAR',ja:'ギアの標的機',ready:false}];
+const TRAIN_FIELDS=[{id:'range',name:'RANGE',ja:'演習場',ready:true},{id:'ruins',name:'RUINS',ja:'廃墟',ready:false},{id:'city',name:'CITY',ja:'市街地',ready:false}];
+function openTrainPrep(){
+ if(SS.over)return;
+ if(!TRAIN_TARGETS.some(o=>o.ready&&o.id===TSEL.target))TSEL.target='std';if(!TRAIN_FIELDS.some(o=>o.ready&&o.id===TSEL.field))TSEL.field='range';
+ const draw=()=>{const dead=partNow('core')<=0,fire=FIRE&&!dead;
+  const row=(k,j,list,cur,attr)=>`<div class="tp"><div class="tpk">${k}<small>${j}</small></div><div class="seg">${list.map(o=>`<button data-${attr}="${o.id}" aria-pressed="${o.id===cur}" ${o.ready?'':'disabled'}>${o.name}<small>${o.ready?o.ja:'準備中'}</small></button>`).join('')}</div></div>`;
+  $('sconfBox').innerHTML=`<div class="shd"><span class="code">TRAINING</span><span class="ttl">演習の設定</span></div><div class="rule"></div>
+   <div class="tp"><div class="tpk">ENEMY FIRE<small>敵の攻撃</small></div><div class="seg"><button data-f="1" aria-pressed="${fire}" ${dead?'disabled':''}>ON<small>あり</small></button><button data-f="0" aria-pressed="${!fire}">OFF<small>なし</small></button></div></div>
+   <div class="tpn${fire?' on':''}">${fire?`標的機が撃ち返してきます。部位ダメージあり。撃破すると CR を獲得（ドローン ${fmtCR(REWARD.drone)}／砲台 ${fmtCR(REWARD.turret)} CR）。`:'標的機は撃ってきません。被弾なし・報酬なし。操作の練習向けです。'}</div>
+   ${dead?'<div class="warn-msg">CORE が大破しているため、攻撃ありは選べません。SHOP の REPAIR で修理してください。</div>':''}
+   ${row('TARGET','敵の種類',TRAIN_TARGETS,TSEL.target,'tg')}${row('FIELD','地形',TRAIN_FIELDS,TSEL.field,'fd')}
+   <div class="acts"><button class="btn-main cut" id="cfEq">出撃する</button><button class="btn-sub" id="cfNo" style="width:90px">やめる</button></div>`;
+  $('sconfBox').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{FIRE=b.dataset.f==='1';draw()});
+  $('sconfBox').querySelectorAll('[data-tg]').forEach(b=>b.onclick=()=>{TSEL.target=b.dataset.tg;draw()});
+  $('sconfBox').querySelectorAll('[data-fd]').forEach(b=>b.onclick=()=>{TSEL.field=b.dataset.fd;draw()});
+  $('cfNo').onclick=closeConfirm;
+  $('cfEq').onclick=()=>{const live=FIRE&&partNow('core')>0;closeConfirm();saveGame();fadeTo(()=>setMode('play',!live),'TRAINING')};
+ };
+ draw();$('sconf').hidden=false;$('cfEq').focus();
+}
+
+/* ===== SHOP：初回の来店 =====
+ カメラが歩くように上下しながらドールへ近づく → あいさつ → ノーナとの掛け合い → 機能の解放 → 締めのあいさつ → ガレージへ */
+function firstShop(){
+ const sh=$('shop');sh.classList.add('walk');$('tchoice').innerHTML='';$('ttext').innerHTML='';
+ SH3.walk(4.2,()=>{sh.classList.remove('walk');sh.classList.add('greet');
+  const D=(t,m)=>[t,m],NN=t=>[t,null,'nona'];
+  talk([D('は、はじめまして！ 第7整備区画の部品倉庫を預かっております、整備管理AIの <em>D-06</em>、ドールと申します。','happy'),
+   D(SAMA()+'でいらっしゃいますね。……あら？ その携帯端末から、どなたかのお声が。','panic'),
+   NN('はじめまして、ドールさん。ギアの制御AI、N-07 です。この端末からもお話しできます。<em>ノーナ</em>とお呼びください。'),
+   D('まあ、なんて礼儀正しい方！ わたくしと気が合いそうです。……あっ、ネジが。','panic'),
+   NN('左の棚の下に転がりました。'),
+   D('ありがとうございます……！ では改めまして、'+SAMA()+'。','sorry'),
+   D('生活のためには、いずれ<em>依頼（ミッション）</em>をお受けになることです。管理局から、小さなお仕事が届くようになりますよ。','normal'),
+   D('それまでは<em>演習場</em>で腕を磨かれるとよろしいかと。標的機に撃ち返させれば、管理局から<strong>報酬</strong>も出ます。','happy'),
+   NN('承知しました。機体の準備も、ここで整えられそうですね。')],()=>{
+   TUT='done';saveGame();applyTut();renderGarage();sh.classList.remove('greet');
+   const u=$('unlock');u.hidden=false;setTimeout(()=>{u.hidden=true},4200);
+   talk([D('部品のことでしたら、何なりと。在庫を数えるのだけは得意でございますので。','happy'),D('……今後とも、どうぞ<strong>よろしくお願いいたします</strong>！','happy')],()=>{
+    setTimeout(()=>fadeTo(()=>{$('unlock').hidden=true;closeShop('firstshop')},'GARAGE'),900)});
+  });
+ });
+}
+
+/* ===== オープニング（NEW GAME のときだけ）=====
+ 第1部：3Dの止まった場面をカメラがゆっくり動いて映し、下の黒帯に字幕（旧戦役→統治AI→闘技場→主人公）
+ 第2部：ノーナ（N-07）の起動ログ→機体チェック→操縦席の反応→名前の入力。主人公は画面に映さない。
+ HOLD TO SKIP（長押し約1秒）で名前の入力まで飛ばす。名前の入力から先は飛ばせない。
+ ローディングの暗転中に呼ばれるので、ここで画面を重ねておけばローディングが消えたときにはもう見えている */
+const OP={skip:false,noSkip:false,tap:false,on:false,sc:-1,t0:0,dur:1};
+const SKIP={};
+const opEl=$('op'),opVeil=$('opVeil');
+const OR=new THREE.WebGLRenderer({antialias:false});OR.setPixelRatio(1);$('opGL').appendChild(OR.domElement);
+const OC=new THREE.PerspectiveCamera(42,1,.1,220);
+let OS=null,OSC=[];
+function opSize(){const w=innerWidth,h=innerHeight;const rh=RES[res]?RES[res][1]:Math.round(h*Math.min(devicePixelRatio,2));OR.setSize(Math.round(rh*w/h),rh,false);OC.aspect=w/h;OC.updateProjectionMatrix()}
+addEventListener('resize',()=>{if(OP.on)opSize()});
+// 3Dのギア（兵装つき）を組む。tint で色を差し替え（闘技場の相手機など）
+function gearModel(parent,c,tint){
+ const bot=grp(parent),hip=grp(bot,0,3.24,0);LEGS[c.legs].build(hip);
+ const torso=grp(hip,0,.25,0);torso.scale.setScalar(UPPER);const so=CORES[c.core].build(torso);
+ const head=grp(torso,...so.neck);HEADS[c.head].build(head);
+ [-1,1].forEach(s=>{const sh=grp(torso,s*so.arm[0],so.arm[1],so.arm[2]);const a=ARMS[c.arms].build(sh,s);
+  const hk=s<0?'rHand':'lHand',sk=s<0?'rShoulder':'lShoulder';
+  if(c[hk]&&c[hk]!=='none')HAND[c[hk]].build(mountHand(a.hand),s);
+  if(c[sk]&&c[sk]!=='none'){const hp=grp(torso,s*so.shoulder[0],so.shoulder[1],so.shoulder[2]);SHOULDER[c[sk]].build(mountShoulder(hp),s)}
+  sh.rotation.x=-.12;a.el.rotation.x=-.3});
+ if(tint)bot.traverse(o=>{if(o.isMesh&&tint.has(o.material))o.material=tint.get(o.material)});
+ return bot;
+}
+function buildOpScenes(){
+ if(OS)return;OS=new THREE.Scene();
+ const amb=new THREE.AmbientLight(0x707a80,2),sun=new THREE.DirectionalLight(0xfff0d8,2.4);sun.position.set(-6,10,8);OS.add(amb,sun);
+ const T=(c,l)=>psMat(0xffffff,{map:panel(c,l)});
+ const ground=(col,size=160)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(size,size,16,16),psMat(col));m.rotation.x=-Math.PI/2;return m};
+ const rnd=(a,b)=>a+Math.random()*(b-a);
+ // 1) 旧戦役：灰色の廃墟と倒れたギア
+ {const g=grp(OS);g.add(ground(0x3a3832));
+  const wm=T('#4a4842','#2a2925');
+  for(let i=0;i<26;i++){const x=rnd(-40,40),z=rnd(-70,-8);if(Math.abs(x)<7&&z>-20)continue;const h=rnd(3,16);box(g,rnd(3,8),h,rnd(3,7),wm,x,h/2-rnd(0,1.5),z,rnd(-.12,.12),rnd(0,3),rnd(-.15,.15))}
+  for(let i=0;i<40;i++)box(g,rnd(.3,1.4),rnd(.2,.8),rnd(.3,1.4),psMat(0x2e2c28),rnd(-14,14),.2,rnd(-26,6),rnd(0,1),rnd(0,3),0);
+  const wreck=gearModel(g,{...DEFAULT_CFG,lShoulder:'none'});wreck.position.set(2,1.6,-10);wreck.rotation.set(-1.35,.5,.25);
+  wreck.traverse(o=>{if(o.isMesh&&o.material.color){const m=o.material.clone();m.color.multiplyScalar(.45);o.material=m}});
+  const w2=gearModel(g,DEFAULT_CFG);w2.position.set(-9,0,-24);w2.rotation.set(.35,-.8,-.2);w2.traverse(o=>{if(o.isMesh&&o.material.color){const m=o.material.clone();m.color.multiplyScalar(.4);o.material=m}});
+  OSC.push({g,bg:0x2a2722,fog:[8,70],amb:0x8a8070,from:[[-1,1.4,16],[2,1.6,-10]],to:[[1.4,2.4,1],[2.4,1.4,-10]]})}
+ // 2) 統治AI：白い配給都市と塔、シアンの紋章
+ {const g=grp(OS);g.add(ground(0xcfd8da));
+  const wm=T('#e4ebec','#9fb0b4'),cy=new THREE.MeshBasicMaterial({color:0x6fd3e0});
+  box(g,8,70,8,wm,0,35,-40);box(g,10,4,10,T('#c7d2d4','#8a9a9e'),0,72,-40);
+  for(let y=8;y<68;y+=6)box(g,8.1,.3,8.1,cy,0,y,-40);
+  const em=grp(g,0,52,-35.9);const ring=new THREE.Mesh(new THREE.RingGeometry(3.2,3.8,24),cy);em.add(ring);box(em,3,3,.1,cy,0,0,0,0,0,Math.PI/4);
+  for(let i=0;i<34;i++){const x=rnd(-46,46),z=rnd(-80,-12);if(Math.abs(x)<9&&z<-28&&z>-52)continue;const h=rnd(4,22);box(g,rnd(4,8),h,rnd(4,8),wm,x,h/2,z);if(Math.random()<.5)box(g,rnd(4,8)+.1,.25,.2,cy,x,h*.6,z+4.1)}
+  for(let i=0;i<14;i++)box(g,.4,.4,.4,psMat(0x55606a),rnd(-6,6),.2,rnd(-24,4));
+  OSC.push({g,bg:0xa9c4c8,fog:[24,140],amb:0xb0c0c4,from:[[0,1.8,20],[0,10,-40]],to:[[0,2.4,4],[0,58,-40]]})}
+ // 3) 闘技場：満員の観客席と向かい合う2機
+ {const g=grp(OS);const fl=new THREE.Mesh(new THREE.CircleGeometry(30,32),psMat(0xd4dcde));fl.rotation.x=-Math.PI/2;fl.position.y=.02;g.add(fl);{const gg=ground(0x101a1d,220);gg.position.y=-.4;g.add(gg)}
+  const cy=new THREE.MeshBasicMaterial({color:0x6fd3e0}),ln=new THREE.Mesh(new THREE.RingGeometry(14,14.4,48),cy);ln.rotation.x=-Math.PI/2;ln.position.y=.05;g.add(ln);
+  const sm=T('#2a3a40','#16242a');const N=40;
+  const crowd=new THREE.InstancedMesh(new THREE.BoxGeometry(.7,1,.7),new THREE.MeshLambertMaterial({color:0xffffff}),N*4*7);let ci=0;const mx=new THREE.Matrix4(),col=new THREE.Color();
+  for(let i=0;i<N;i++){const a=i/N*Math.PI*2;
+   for(let t=0;t<4;t++){const r=33+t*3.4,y=1+t*2.4;const b=box(g,2*Math.PI*r/N+.2,y*2,3.2,sm,Math.sin(a)*r,y,Math.cos(a)*r);b.rotation.y=a;
+    for(let k=0;k<7;k++){const aa=a+(k-3)/7*(2*Math.PI/N);mx.makeTranslation(Math.sin(aa)*r,y*2+.5,Math.cos(aa)*r);crowd.setMatrixAt(ci,mx);crowd.setColorAt(ci,col.setHSL(Math.random(),.25,.25+Math.random()*.35));ci++}}}
+  g.add(crowd);
+  for(let i=0;i<8;i++){const a=i/8*Math.PI*2;box(g,1,26,1,psMat(0x22343a),Math.sin(a)*48,13,Math.cos(a)*48);box(g,3,.6,3,cy,Math.sin(a)*47,26,Math.cos(a)*47)}
+  const red=new Map([[M.main,psMat(0xffffff,{map:M.main.map,color:0x8e2e26})],[M.sub,psMat(0xffffff,{map:M.sub.map,color:0xbdb6a3})],[M.warn,psMat(0xffffff,{map:M.warn.map,color:0xc39640})],[M.eye,new THREE.MeshBasicMaterial({color:0x55e0ff})]]);
+  const a=gearModel(g,DEFAULT_CFG);a.position.set(-7,0,0);a.rotation.y=Math.PI/2;
+  const b=gearModel(g,{...DEFAULT_CFG,rHand:'BZ',lHand:'SH',rShoulder:'GC',lShoulder:'none'},red);b.position.set(7,0,0);b.rotation.y=-Math.PI/2;
+  OSC.push({g,bg:0x0e1619,fog:[30,150],amb:0x7a8a90,from:[[-34,18,14],[-6,10,-34]],to:[[0,8.5,24],[0,2.6,0]]})}
+ // 4) 主人公：ハンガー07の半開きのシャッター前、雨ざらしの払い下げギア（人は映さない）
+ {const g=grp(OS);g.add(ground(0x1a1f1c));
+  const wm=T('#26302b','#171e1a');box(g,40,14,.6,wm,0,7,-9);
+  box(g,12,6,.4,psMat(0xffffff,{map:stripes('#2a312c','#1c221e')}),0,11,-8.6);box(g,12,8,.3,psMat(0x070908),0,4,-8.9);
+  box(g,12.6,.6,1.2,psMat(0x4f5d34),0,8.2,-8.4);box(g,.4,.4,.2,new THREE.MeshBasicMaterial({color:0xf0a040}),7,9.5,-8.6);
+  [-6.6,6.6].forEach(x=>box(g,.8,14,.8,psMat(0x1e2622),x,7,-8.5));
+  const st=gearModel(g,{...cfg});st.position.set(0,0,-3);
+  const rain=new THREE.InstancedMesh(new THREE.BoxGeometry(.03,.7,.03),new THREE.MeshBasicMaterial({color:0x8fa0a8,transparent:true,opacity:.5}),260);
+  const RD=[];for(let i=0;i<260;i++)RD.push([rnd(-14,14),rnd(0,16),rnd(-8,10)]);g.add(rain);
+  const upd=dt=>{RD.forEach((p,i)=>{p[1]-=dt*22;if(p[1]<0)p[1]+=16;mx.makeTranslation(p[0],p[1],p[2]);rain.setMatrixAt(i,mx)});rain.instanceMatrix.needsUpdate=true};
+  const mx=new THREE.Matrix4();
+  OSC.push({g,bg:0x0b0f0e,fog:[10,46],amb:0x5a6670,from:[[0,.8,8.5],[0,1.4,-3]],to:[[.6,5.4,10.5],[0,5.8,-3]],upd})}
+ OSC.forEach(s=>s.g.visible=false);OS.userData.amb=amb;
+}
+function opShowScene(i,dur){OSC.forEach((s,k)=>s.g.visible=k===i);const s=OSC[i];OS.background=new THREE.Color(s.bg);OS.fog=new THREE.Fog(s.bg,...s.fog);OS.userData.amb.color.setHex(s.amb);OP.sc=i;OP.t0=performance.now();OP.dur=dur}
+function opLoop(){if(!OP.on)return;requestAnimationFrame(opLoop);if(OP.sc<0||!OS)return;
+ const s=OSC[OP.sc],u=Math.min(1,(performance.now()-OP.t0)/OP.dur),e=u*u*(3-2*u),V=(a,b)=>a.map((v,k)=>v+(b[k]-v)*e);
+ OC.position.set(...V(s.from[0],s.to[0]));OC.lookAt(...V(s.from[1],s.to[1]));if(s.upd)s.upd(1/60);OR.render(OS,OC)}
+// 待ち・タップ・字幕の打ち出し（スキップされたら SKIP を投げる）
+const opChk=()=>{if(OP.skip&&!OP.noSkip)throw SKIP};
+const opWait=ms=>new Promise((res,rej)=>{const t0=performance.now(),k=()=>{if(OP.skip&&!OP.noSkip)return rej(SKIP);if(performance.now()-t0>=ms)return res();requestAnimationFrame(k)};k()});
+const opTapOr=ms=>new Promise((res,rej)=>{OP.tap=false;const t0=performance.now(),k=()=>{if(OP.skip&&!OP.noSkip)return rej(SKIP);if(OP.tap||performance.now()-t0>=ms){OP.tap=false;return res()}requestAnimationFrame(k)};k()});
+function opType(el,txt,spd=42){return new Promise((res,rej)=>{const parts=txt.split(/(<\/?(?:em|strong)>)/).filter(Boolean),total=parts.reduce((a,p)=>a+(p[0]==='<'?0:p.length),0);let n=0;OP.tap=false;
+ const draw=k=>{let out='',left=k;for(const p of parts){if(p[0]==='<'){out+=p;continue}out+=p.slice(0,Math.max(0,left));left-=p.length}el.innerHTML=out};
+ const iv=setInterval(()=>{if(OP.skip&&!OP.noSkip){clearInterval(iv);return rej(SKIP)}if(OP.tap){OP.tap=false;n=total}draw(++n);if(n>=total){clearInterval(iv);el.innerHTML=txt;res()}},spd);draw(0)})}
+const veil=(v,ms=600)=>{opVeil.style.transitionDuration=ms+'ms';opVeil.style.opacity=v;return new Promise(r=>setTimeout(r,ms))};
+// ノーナのセリフ（第2部）：打ち出したあと、タップか時間で次へ（wait＝Infinity ならタップ待ち）
+async function opSay(txt,wait=4200){$('opTalk').hidden=false;$('opCh').innerHTML='';$('opNx').hidden=true;await opType($('opText'),txt,36);$('opNx').hidden=false;await opTapOr(wait);$('opNx').hidden=true}
+const OP_CARDS=[
+ {arc:'ARCHIVE 01',ja:'旧戦役',lines:['少し前の時代。大陸の国々は、戦いの指揮を<em>AI</em>に任せた。','無人兵器と人型兵器「ギア」がぶつかり合った大戦争 ──<br><em>旧戦役</em>。','勝者は生まれなかった。<br>残ったのは、灰になった街と、動かなくなった機械だけだった。']},
+ {arc:'ARCHIVE 02',ja:'統治AI',lines:['戦い疲れた人々は、戦争を指揮していたAIに、<br>政治と暮らしの管理を預けた。','<em>統治AI</em>。地域ごとに置かれ、<br>配給も、仕事も、移動も、すべてを決めている。','統治AIどうしは、資源と領域を奪い合っている。<br>ただ、旧戦役を繰り返さないよう、直接の戦争だけは互いに禁じた。']},
+ {arc:'ARCHIVE 03',ja:'闘技場',lines:['戦争の代わりに選ばれたのが ── <em>闘技場</em>。','統治AIが代表のギア乗りを立てて戦わせ、<br>その勝ち負けで、資源の分け前が決まる。','観客にとっては娯楽。けれど戦うのは人間で、<br>自分たちを支配するAIのために、戦わされている。']},
+ {arc:'HANGAR 07',ja:'第7整備区画',lines:['どの統治AIにも属さない、民間の<em>何でも屋</em>のギア乗りがいる。','持っているのは、軍から払い下げられた中古のギアが1機だけ。<br>拠点は、第7整備区画の<em>ハンガー07</em>。','目的は、ひとつ。<br>まずは、食べていくこと。']}];
+const BOOT=[['> POWER ................ ','RESTORED','ok'],['> MEMORY BANK A ........ ','CORRUPTED','bad'],['> MEMORY BANK B ........ ','CORRUPTED','bad'],['> MEMORY BANK C ........ ','ERASED','bad'],['> COMBAT ROUTINE ....... ','OK','ok'],['> DESIGNATION .......... ','N-07','ok'],['> OPERATOR ............. ','UNKNOWN','bad']];
+function opTermReset(){$('opLog').innerHTML='';opEl.querySelectorAll('.ofr .p').forEach(p=>p.classList.remove('on'));
+ [['sHatch','---',''],['sSeat','---',''],['sBio','---','']].forEach(([id,t,c])=>{$(id).textContent=t;$(id).className=c});$('sPulse').classList.add('off')}
+function opTermFull(){$('opLog').innerHTML=BOOT.map(([a,b,c])=>`<div>${a}<span class="${c}">${b}</span></div>`).join('');opEl.querySelectorAll('.ofr .p').forEach(p=>p.classList.add('on'));
+ $('sHatch').textContent='CLOSED';$('sHatch').className='ok';$('sSeat').textContent='OCCUPIED';$('sSeat').className='w';$('sBio').textContent='UNREGISTERED';$('sBio').className='w';$('sPulse').classList.remove('off')}
+async function opPart1(){
+ buildOpScenes();$('opGL').hidden=false;$('opTerm').hidden=true;$('opTalk').hidden=true;
+ for(let i=0;i<OP_CARDS.length;i++){const c=OP_CARDS[i];
+  opShowScene(i,c.lines.length*4300);$('opArc').innerHTML=`${c.arc}<small>${c.ja}</small>`;$('opSub').innerHTML='';
+  await veil(0,900);
+  for(const l of c.lines){opChk();await opType($('opSub'),l,46);await opTapOr(1900+l.replace(/<[^>]+>/g,'').length*38)}
+  await veil(1,700)}
+ OP.sc=-1;$('opGL').hidden=true;$('opArc').innerHTML='';$('opSub').innerHTML='';
+}
+async function opPart2(){
+ $('opTerm').hidden=false;opTermReset();await veil(0,300);
+ for(const [a,b,c] of BOOT){opChk();const d=document.createElement('div');d.textContent=a;$('opLog').appendChild(d);await opWait(260);const s=document.createElement('span');s.className=c;s.textContent=b;d.appendChild(s);await opWait(200)}
+ for(const k of ['head','core','arms','legs']){opChk();opEl.querySelector(`.ofr .p[data-p="${k}"]`).classList.add('on');await opWait(380)}
+ for(const [id,t,c] of [['sHatch','CLOSED','ok'],['sSeat','OCCUPIED','w'],['sBio','UNREGISTERED','w']]){opChk();await opWait(520);$(id).textContent=t;$(id).className=c;if(id==='sBio')$('sPulse').classList.remove('off')}
+ await opWait(500);
+ await opSay('……起動いたしました。申し訳ありません、記憶領域の大半を確認できません。',5000);
+}
+// 名前の入力：スマホ横画面のキーボードで隠れないよう画面上端の帯に置き、見えている範囲（visualViewport）に合わせる
+function opBandPos(){const vv=window.visualViewport;$('opName').style.top=(vv?vv.offsetTop:0)+'px'}
+if(window.visualViewport){visualViewport.addEventListener('resize',opBandPos);visualViewport.addEventListener('scroll',opBandPos)}
+const cleanName=v=>v.replace(/[^\p{L}\p{N}ー・ 　\-]/gu,'');
+function askName(){return new Promise(res=>{const f=$('opName'),inp=$('opIn');f.hidden=false;opBandPos();inp.value='';
+ const done=()=>{const v=cleanName(inp.value).trim().slice(0,10);inp.blur();opEl.classList.remove('typing');f.hidden=true;res(v)};
+ f.onsubmit=e=>{e.preventDefault();done();return false};
+ inp.oninput=e=>{if(!e.isComposing){const c=cleanName(inp.value);if(c!==inp.value)inp.value=c}};
+ inp.onfocus=()=>{opEl.classList.add('typing');setTimeout(opBandPos,300)};inp.onblur=()=>{opEl.classList.remove('typing')};
+ setTimeout(()=>{try{inp.focus({preventScroll:true})}catch(e){}},60)})}
+function opChoose(list){return new Promise(res=>{const ch=$('opCh');ch.innerHTML='';$('opNx').hidden=true;list.forEach(([lab,v])=>{const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=e=>{e.stopPropagation();ch.innerHTML='';res(v)};ch.appendChild(b)})})}
+async function opNameFlow(firstLine){
+ OP.noSkip=true;$('opSkip').hidden=true;
+ if(firstLine)await opSay(firstLine,5000);
+ await opSay('操縦席に生体反応を確認しました。あなたが、この機体の操縦者でいらっしゃいますか。よろしければ、<em>お名前</em>を教えてください。',Infinity);
+ let name='';
+ for(;;){name=await askName();
+  if(!name){await opSay('お名前が入力されていないようです。もう一度お願いいたします。',3200);continue}
+  await opType($('opText'),'<em>'+esc(name)+'</em>、でよろしいですか。',36);
+  if(await opChoose([['はい',1],['入力し直す',0]]))break;
+  await opType($('opText'),'失礼いたしました。もう一度お願いいたします。',36);await opTapOr(1600)}
+ PILOT=name;saveGame();$('sBio').textContent='REGISTERED: '+name;$('sBio').className='ok';
+ await opSay('登録いたしました、<em>'+esc(name)+'</em>。本機の制御は、わたくし N-07 が担当いたします。',Infinity);
+ await opSay('……呼びにくければ、<em>ノーナ</em>とお呼びください。この携帯端末からも、いつでもお呼び出しいただけます。',Infinity);
+ $('opOnline').hidden=false;await new Promise(r=>setTimeout(r,1300));
+}
+function opStart(){OP.skip=false;OP.noSkip=false;OP.tap=false;OP.on=true;opEl.style.opacity=1;opEl.hidden=false;opVeil.style.opacity=1;
+ $('opSkip').hidden=false;$('opName').hidden=true;$('opOnline').hidden=true;$('opTalk').hidden=true;$('opTerm').hidden=true;$('opText').innerHTML='';$('opCh').innerHTML='';
+ opSize();requestAnimationFrame(opLoop)}
+function opEnd(next,kind){return veil(1,500).then(()=>{OP.on=false;OP.sc=-1;next();garageGreet(kind);
+ opEl.style.opacity=0;setTimeout(()=>{opEl.hidden=true;opEl.style.opacity=1;$('opOnline').hidden=true},420)})}
+async function playOpening(next){
+ opStart();
+ try{await opPart1();await opPart2()}
+ catch(e){if(e!==SKIP)console.error(e);await veil(1,250);OP.sc=-1;$('opGL').hidden=true;$('opArc').innerHTML='';$('opSub').innerHTML='';$('opTerm').hidden=false;opTermFull();$('opTalk').hidden=true;await veil(0,400)}
+ await opNameFlow(null);
+ await opEnd(next,'intro');
+}
+// 名前のない古い保存データで CONTINUE したとき：名前の登録だけを行う
+async function playNameEntry(next){
+ opStart();$('opGL').hidden=true;$('opSkip').hidden=true;$('opTerm').hidden=false;opTermFull();await veil(0,400);
+ await opNameFlow('おかえりなさい。……申し訳ありません、操縦者の登録記録が見つかりません。');
+ await opEnd(next,TUT!=='done'?'intro':'continue');
+}
+// タップで字幕・セリフを早送り。HOLD TO SKIP は約1秒の長押し
+opEl.addEventListener('pointerdown',e=>{if(e.target.closest('button,input,form'))return;OP.tap=true});
+{const b=$('opSkip');let t=null,st=0;const stop=()=>{cancelAnimationFrame(t);t=null;b.style.setProperty('--h','0%')};
+ b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(OP.noSkip)return;st=performance.now();const k=()=>{const p=Math.min(1,(performance.now()-st)/1000);b.style.setProperty('--h',p*100+'%');if(p>=1){OP.skip=true;stop();b.hidden=true;return}t=requestAnimationFrame(k)};k()});
+ ['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,stop))}
+
 /* ===== タイトル画面 =====
  ガレージと同じ3Dの場面（整備ドックと自機）を、別のカメラでゆっくり回りながら映す。機体は画面の右寄り。
  NEW GAME：保存データがあれば、削除してよいかをモーダルで確認してから始める。CONTINUE：保存データがあるときだけ押せる */
@@ -2469,7 +2838,6 @@ function titleSize(){const w=innerWidth,h=innerHeight;const rh=RES[res]?RES[res]
 function titleLoop(){if(!TT.on)return;TT.ang+=.0026;const r=19;TC.position.set(Math.sin(TT.ang)*r,5.6,Math.cos(TT.ang)*r);TC.lookAt(0,3.4,0);TR.render(S,TC);requestAnimationFrame(titleLoop)}
 /* ローディング演出：約1.6秒。終わったら fn（画面の準備）を実行して幕を上げる。
    NEW GAME はこのあとにオープニングを入れる予定（playOpening はいまは何もしない） */
-function playOpening(next){next()}
 function loadingTo(fn,lines){const L=$('loading'),bar=$('lBar'),log=$('lLog'),pct=$('lPct'),N=40;
  if(fading)return;fading=true;
  bar.style.gridTemplateColumns=`repeat(${N},minmax(0,1fr))`;bar.innerHTML='<i></i>'.repeat(N);log.innerHTML='';pct.textContent='0%';
@@ -2495,11 +2863,11 @@ const hasSave=()=>{try{return !!localStorage.getItem(SAVE_KEY)}catch(e){return f
 function showTitle(){const t=$('title');t.hidden=false;TT.on=true;titleSize();titleLoop();
  const sv=hasSave();$('tCon').disabled=!sv;$('tConSub').textContent=sv?fmtCR(CREDIT)+' CR':'NO DATA';$('tNew').focus()}
 function resetGame(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}
- OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;
+ OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();
  Object.keys(DMG).forEach(k=>delete DMG[k]);Object.keys(TUNE).forEach(k=>delete TUNE[k]);Object.assign(cfg,DEFAULT_CFG);assemble()}
 function hideTitle(){TT.on=false;$('title').hidden=true;$('title').querySelectorAll('.tmodal').forEach(m=>m.remove());view='overview';selSlot=null;renderGarage();resize()}
 addEventListener('resize',()=>{if(TT.on)titleSize()});
-$('tCon').onclick=()=>{if(hasSave())loadingTo(hideTitle,LOAD_CON)};
+$('tCon').onclick=()=>{if(hasSave())loadingTo(()=>{if(!PILOT)playNameEntry(hideTitle);else{hideTitle();garageGreet(TUT!=='done'?'intro':'continue')}},LOAD_CON)};
 $('tNew').onclick=()=>{
  if(!hasSave())return loadingTo(()=>playOpening(hideTitle),LOAD_NEW);
  const m=document.createElement('div');m.className='tmodal';m.innerHTML=`<div class="box" role="dialog" aria-label="データの削除の確認"><div class="shd"><span class="code" style="color:var(--alert)">WARNING</span><span class="ttl en">NEW GAME</span></div><div class="rule" style="background:linear-gradient(90deg,var(--alert) 0 60px,var(--line) 60px)"></div>
