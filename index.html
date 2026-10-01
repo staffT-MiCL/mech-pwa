@@ -235,11 +235,13 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #bTgt{position:absolute;right:65px;bottom:calc(214px + env(safe-area-inset-bottom,0px));width:88px;height:34px;padding:0;font-family:var(--mech);font-weight:700;font-size:11px;letter-spacing:.12em;background:rgba(20,24,22,.6);border:2px solid rgba(240,160,64,.7);color:var(--fire);touch-action:none;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
 #bTgt.on{background:rgba(240,160,64,.55);color:#1a1006}
 @media (max-height:420px){#map{width:104px;height:104px}#garage,#camBtn,#score{right:128px!important}#bTgt{bottom:calc(208px + env(safe-area-inset-bottom,0px))}}
-/* 説明文のコマ送り */
-.detail p.more{cursor:pointer;position:relative;padding-right:14px}
-.detail p.more::after{content:"▸";position:absolute;right:0;bottom:0;color:var(--fire);font-size:11px}
-.detail p.tick{display:block!important;-webkit-line-clamp:unset;white-space:nowrap;overflow:hidden;color:#eef2ef;background:#0b100e;border-left:2px solid var(--fire);padding:2px 6px}
-.detail p.tick::after{content:none}
+/* 説明文：タッチで全文 */
+.dtop{position:relative}
+.detail p.more{cursor:pointer}
+.detail p.more::after{content:"全文 ▼";position:absolute;right:0;bottom:-15px;font-family:var(--body);font-size:10px;color:var(--fire);background:var(--panel2);padding:0 2px}
+.dtxt{position:relative}
+.detail p.open{position:absolute;left:0;right:0;top:100%;z-index:6;display:block!important;-webkit-line-clamp:unset;overflow:visible;color:#eef2ef;font-size:12.5px;line-height:1.65;background:#0b100e;border:1px solid var(--fire);padding:8px 10px;box-shadow:0 6px 18px rgba(0,0,0,.6)}
+.detail p.open::after{content:"閉じる ▲";position:static;display:block;text-align:right;margin-top:4px;bottom:auto}
 /* メニュー */
 #menu{position:fixed;inset:0;z-index:20;background:rgba(4,6,5,.6)}
 #menu .drawer{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));box-sizing:border-box;background:#101513;border-left:2px solid var(--fire);display:flex;flex-direction:column;gap:8px;overflow-y:auto}
@@ -1159,19 +1161,10 @@ function setPreview(slot,id){
 /* 説明文のコマ送り：欄に収まらない文はタッチで1文字ずつ左へ送り、最後まで出したら先頭に戻す */
 let tickT=null;
 function setupTicker(p){
+ // 収まらない説明文は末尾に「全文 ▼」を出し、タッチで全文を広げる（性能表の上に重ねて表示）。もう一度タッチで閉じる
  const full=p.textContent;if(!full)return;
- requestAnimationFrame(()=>{if(p.scrollHeight>p.clientHeight+2||p.scrollWidth>p.clientWidth+2)p.classList.add('more')});
- p.onclick=()=>{
-  if(!p.classList.contains('more')&&!p.classList.contains('tick'))return;
-  clearInterval(tickT);
-  if(p.classList.contains('tick')){p.classList.remove('tick');p.textContent=full;return}
-  p.classList.add('tick');let i=0;p.textContent=full;
-  tickT=setInterval(()=>{
-   if(!p.isConnected){clearInterval(tickT);return}
-   i++;p.textContent=full.slice(i);
-   if(p.scrollWidth<=p.clientWidth||i>=full.length-1){clearInterval(tickT);setTimeout(()=>{if(p.isConnected){p.classList.remove('tick');p.textContent=full}},1600)}
-  },110);
- };
+ requestAnimationFrame(()=>{if(p.scrollHeight>p.clientHeight+2)p.classList.add('more')});
+ p.onclick=()=>{if(!p.classList.contains('more')&&!p.classList.contains('open'))return;p.classList.toggle('open')};
 }
 /* モーダル：パネルに収まらない詳しい情報を重ねて表示 */
 function openModal(html){const m=$('modal');$('modalBody').innerHTML=html;m.hidden=false}
@@ -1400,8 +1393,12 @@ assemble();
 
 /* ===== 視点（ガレージ） ===== */
 const pts=new Map();let pinch0=0;const cv=R.domElement;
-cv.addEventListener('pointerdown',e=>{if(mode!=='garage')return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});cv.setPointerCapture(e.pointerId)});
-const up=e=>{pts.delete(e.pointerId);pinch0=0};
+let tap0=null;
+cv.addEventListener('pointerdown',e=>{if(mode!=='garage')return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});tap0={x:e.clientX,y:e.clientY,t:performance.now(),multi:pts.size>1};cv.setPointerCapture(e.pointerId)});
+const up=e=>{
+ if(mode==='garage'&&tap0&&!tap0.multi&&pts.size===1&&e.type==='pointerup'&&Math.hypot(e.clientX-tap0.x,e.clientY-tap0.y)<8&&performance.now()-tap0.t<350&&view!=='overview'){view='overview';selSlot=null;renderGarage()}
+ if(pts.size>1&&tap0)tap0.multi=true;
+ pts.delete(e.pointerId);pinch0=0;if(!pts.size)tap0=null};
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;
  if(pts.size===2){const [a,b]=[...pts.values()];p.x=e.clientX;p.y=e.clientY;const d=Math.hypot(a.x-b.x,a.y-b.y);
