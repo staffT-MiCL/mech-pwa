@@ -304,7 +304,8 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #fade.on{opacity:1;pointer-events:auto}
 #fade span{position:absolute;right:18px;bottom:14px;font-family:var(--mech);font-size:11px;letter-spacing:4px;color:var(--khaki);opacity:.7}
 /* ローディング：区切り式のゲージが段階的に伸び、起動ログが流れる */
-#loading{position:fixed;inset:0;z-index:42;background:#050706;display:flex;align-items:center;justify-content:center}
+#loading{position:fixed;inset:0;z-index:42;background:#050706;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s ease}
+#loading.show{opacity:1}
 #loading::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.3) 0 1px,transparent 1px 3px)}
 #loading .lbox{width:min(420px,80vw);display:flex;flex-direction:column;gap:10px}
 #loading .lhd{display:flex;align-items:baseline;justify-content:space-between;font-family:var(--mech);font-size:13px;font-weight:700;letter-spacing:.4em;color:var(--fire)}
@@ -1511,6 +1512,7 @@ applyColors();
 /* ===== 所持品・所持金（端末に保存） =====
  最初から持っているのは各種類の1つ目。2つ目以降は SHOP で買う。お金は SORTIE で標的機を倒すと入る */
 const SAVE_KEY='mech-pwa-save-1';
+const DEFAULT_CFG={...cfg};  // NEW GAME で戻す初期装備
 const START_OWN=['HD-01','CR-01','AR-01','LG-01','RF','MG','BZ','BL','SH','MS','GC','RD','BT','IC'];
 const PRICE={'HD-02':12000,'CR-02':18000,'AR-02':15000,'LG-02':16000,
  'RF2':9000,'MG2':8500,'BZ2':9800,'BL2':11000,'SH2':6000,'MS2':14000,'GC2':13000,'RD2':7000,'BT2':7500,'IC2':9000};
@@ -2466,31 +2468,43 @@ function titleLoop(){if(!TT.on)return;TT.ang+=.0026;const r=19;TC.position.set(M
    NEW GAME はこのあとにオープニングを入れる予定（playOpening はいまは何もしない） */
 function playOpening(next){next()}
 function loadingTo(fn,lines){const L=$('loading'),bar=$('lBar'),log=$('lLog'),pct=$('lPct'),N=40;
- bar.style.gridTemplateColumns=`repeat(${N},minmax(0,1fr))`;bar.innerHTML='<i></i>'.repeat(N);log.innerHTML='';pct.textContent='0%';L.hidden=false;TT.on=false;
- const cells=[...bar.children],DUR=1700,t0=performance.now();let shown=-1,li=-1;
- // 進み方：ゆるやかに加速→途中で一瞬ためる→最後まで（なめらかに増える）
- const ease=u=>u<.55?.62*Math.pow(u/.55,1.15):u<.68?.62+.06*((u-.55)/.13):.68+.32*(1-Math.pow(1-(u-.68)/.32,2));
- const step=now=>{const u=Math.min(1,(now-t0)/DUR),p=ease(u),n=Math.round(p*N);
-  if(n!==shown){cells.forEach((e,k)=>e.classList.toggle('on',k<n));shown=n}pct.textContent=Math.round(p*100)+'%';
-  const k=Math.min(lines.length-1,Math.floor(p*lines.length));if(k!==li){li=k;const d=document.createElement('div');d.textContent=lines[k];log.appendChild(d);while(log.children.length>3)log.firstChild.remove()}
-  if(u<1)requestAnimationFrame(step);else setTimeout(()=>{fn();const f=$('fade');f.classList.add('on');L.hidden=true;requestAnimationFrame(()=>requestAnimationFrame(()=>f.classList.remove('on')))},220)};
- requestAnimationFrame(step)}
+ if(fading)return;fading=true;
+ bar.style.gridTemplateColumns=`repeat(${N},minmax(0,1fr))`;bar.innerHTML='<i></i>'.repeat(N);log.innerHTML='';pct.textContent='0%';
+ L.classList.remove('show');L.hidden=false;
+ // 1) 暗転：ローディング画面そのものを不透明までフェードイン（タイトルはその下で動いたまま）
+ requestAnimationFrame(()=>requestAnimationFrame(()=>L.classList.add('show')));
+ setTimeout(()=>{TT.on=false;
+  const cells=[...bar.children],DUR=1700,t0=performance.now();let shown=-1,li=-1;
+  const ease=u=>u<.55?.62*Math.pow(u/.55,1.15):u<.68?.62+.06*((u-.55)/.13):.68+.32*(1-Math.pow(1-(u-.68)/.32,2));
+  const step=now=>{const u=Math.min(1,(now-t0)/DUR),p=ease(u),n=Math.round(p*N);
+   if(n!==shown){cells.forEach((e,k)=>e.classList.toggle('on',k<n));shown=n}pct.textContent=Math.round(p*100)+'%';
+   const k=Math.min(lines.length-1,Math.floor(p*lines.length));if(k!==li){li=k;const d=document.createElement('div');d.textContent=lines[k];log.appendChild(d);while(log.children.length>3)log.firstChild.remove()}
+   if(u<1)return requestAnimationFrame(step);
+   // 2) ローディングの裏で次の画面を用意し、数フレーム描かせてから
+   fn();let f=0;const wait=()=>{if(++f<4)return requestAnimationFrame(wait);
+    // 3) ローディング画面をフェードアウト
+    L.classList.remove('show');setTimeout(()=>{L.hidden=true;fading=false},320)};
+   requestAnimationFrame(wait)};
+  requestAnimationFrame(step)},330)}
 const LOAD_CON=['> SAVE DATA ............ FOUND','> N-07 CONTROL UNIT .... ONLINE','> FRAME LINK ........... OK','> HANGAR 07 ............ READY'];
 const LOAD_NEW=['> NEW OPERATOR ......... REGISTERED','> N-07 CONTROL UNIT .... BOOTING','> FRAME LINK ........... OK','> HANGAR 07 ............ READY'];
 const hasSave=()=>{try{return !!localStorage.getItem(SAVE_KEY)}catch(e){return false}};
 function showTitle(){const t=$('title');t.hidden=false;TT.on=true;titleSize();titleLoop();
  const sv=hasSave();$('tCon').disabled=!sv;$('tConSub').textContent=sv?fmtCR(CREDIT)+' CR':'NO DATA';$('tNew').focus()}
-function hideTitle(){TT.on=false;$('title').hidden=true;view='overview';selSlot=null;renderGarage();resize()}
+function resetGame(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}
+ OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;
+ Object.keys(DMG).forEach(k=>delete DMG[k]);Object.keys(TUNE).forEach(k=>delete TUNE[k]);Object.assign(cfg,DEFAULT_CFG);assemble()}
+function hideTitle(){TT.on=false;$('title').hidden=true;$('title').querySelectorAll('.tmodal').forEach(m=>m.remove());view='overview';selSlot=null;renderGarage();resize()}
 addEventListener('resize',()=>{if(TT.on)titleSize()});
-$('tCon').onclick=()=>{if(hasSave())fadeTo(()=>loadingTo(hideTitle,LOAD_CON))};
+$('tCon').onclick=()=>{if(hasSave())loadingTo(hideTitle,LOAD_CON)};
 $('tNew').onclick=()=>{
- if(!hasSave())return fadeTo(()=>loadingTo(()=>playOpening(hideTitle),LOAD_NEW));
+ if(!hasSave())return loadingTo(()=>playOpening(hideTitle),LOAD_NEW);
  const m=document.createElement('div');m.className='tmodal';m.innerHTML=`<div class="box" role="dialog" aria-label="データの削除の確認"><div class="shd"><span class="code" style="color:var(--alert)">WARNING</span><span class="ttl en">NEW GAME</span></div><div class="rule" style="background:linear-gradient(90deg,var(--alert) 0 60px,var(--line) 60px)"></div>
   <p>今までのデータ（所持金 ${fmtCR(CREDIT)} CR、購入したパーツ、改造、機体の損傷、装備）はすべて削除されます。元に戻すことはできません。<br>最初から始めますか？</p>
   <div class="acts"><button class="tdel" id="tDel">削除して始める</button><button class="btn-sub" id="tNo" style="width:90px">やめる</button></div></div>`;
  $('title').appendChild(m);$('tNo').focus();
  const close=()=>m.remove();$('tNo').onclick=close;m.addEventListener('click',e=>{if(e.target===m)close()});
- $('tDel').onclick=()=>{try{localStorage.removeItem(SAVE_KEY);sessionStorage.setItem('mech-newgame','1')}catch(e){}fadeTo(()=>location.reload())};
+ $('tDel').onclick=()=>loadingTo(()=>{resetGame();playOpening(hideTitle)},LOAD_NEW);
 };
 // NEW GAME でデータを消して読み直したときは、タイトルを飛ばしてガレージから始める
 {let skip=false;try{skip=sessionStorage.getItem('mech-newgame')==='1';sessionStorage.removeItem('mech-newgame')}catch(e){}
