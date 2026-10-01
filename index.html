@@ -557,6 +557,8 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 #opSub em{font-style:normal;color:var(--fire)}
 #op ruby rt{font-size:.5em;letter-spacing:.12em;color:#b8a878;font-family:var(--body)}
 #opArc ruby rt{font-size:.75em}
+#op ruby.mc{font-family:var(--mech);font-weight:700;letter-spacing:.06em}
+#op ruby.mc rt{letter-spacing:.2em}
 #opArc{position:absolute;left:18px;top:12px;z-index:3;font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:.32em;color:var(--fire)}
 #opArc small{margin-left:10px;font-weight:500;letter-spacing:.16em;color:#7f8c86}
 #opVeil{position:absolute;inset:0;z-index:4;background:#000;opacity:1;transition:opacity .6s ease;pointer-events:none}
@@ -2830,7 +2832,7 @@ function opLoop(){if(!OP.on)return;requestAnimationFrame(opLoop);holoFrame();if(
 const opChk=()=>{if(OP.skip&&!OP.noSkip)throw SKIP};
 const opWait=ms=>new Promise((res,rej)=>{const t0=performance.now(),k=()=>{if(OP.skip&&!OP.noSkip)return rej(SKIP);if(performance.now()-t0>=ms)return res();requestAnimationFrame(k)};k()});
 const opTapOr=ms=>new Promise((res,rej)=>{OP.tap=false;const t0=performance.now(),k=()=>{if(OP.skip&&!OP.noSkip)return rej(SKIP);if(OP.tap||performance.now()-t0>=ms){OP.tap=false;return res()}requestAnimationFrame(k)};k()});
-function opType(el,txt,spd=42){return new Promise((res,rej)=>{const parts=txt.split(/(<ruby>.*?<\/ruby>|<\/?(?:em|strong)>)/).filter(Boolean),isR=p=>p.startsWith('<ruby'),total=parts.reduce((a,p)=>a+(isR(p)?1:p[0]==='<'?0:p.length),0);let n=0;OP.tap=false;
+function opType(el,txt,spd=42){return new Promise((res,rej)=>{const parts=txt.split(/(<ruby[^>]*>.*?<\/ruby>|<\/?(?:em|strong)>)/).filter(Boolean),isR=p=>p.startsWith('<ruby'),total=parts.reduce((a,p)=>a+(isR(p)?1:p[0]==='<'?0:p.length),0);let n=0;OP.tap=false;
  const draw=k=>{let out='',left=k;for(const p of parts){if(isR(p)){if(left>0)out+=p;left-=1;continue}if(p[0]==='<'){out+=p;continue}out+=p.slice(0,Math.max(0,left));left-=p.length}el.innerHTML=out};
  const iv=setInterval(()=>{if(OP.skip&&!OP.noSkip){clearInterval(iv);return rej(SKIP)}if(OP.tap){OP.tap=false;n=total}draw(++n);if(n>=total){clearInterval(iv);el.innerHTML=txt;res()}},spd);draw(0)})}
 const veil=(v,ms=600)=>{opVeil.style.transitionDuration=ms+'ms';opVeil.style.opacity=v;return new Promise(r=>setTimeout(r,ms))};
@@ -2838,7 +2840,7 @@ const veil=(v,ms=600)=>{opVeil.style.transitionDuration=ms+'ms';opVeil.style.opa
 async function opSay(txt,wait=4200){$('opTalk').hidden=false;$('opCh').innerHTML='';$('opNx').hidden=true;await opType($('opText'),txt,TXT_SPD);$('opNx').hidden=false;await opTapOr(wait);$('opNx').hidden=true}
 const OP_CARDS=[
  {arc:'ARCHIVE 01',ja:'旧戦役',lines:['数十年前。大陸の国々は、戦いの指揮を<em>AI</em>に任せた。','無人兵器と人型兵器「ギア」がぶつかり合った大戦争 ──<br><em>旧戦役</em>。','ギアには人が乗り、AIの命令のままに戦った。','街は焼け、守るはずだったものまで、灰に変わっていった。','勝者は生まれなかった。<br>残ったのは、灰になった街と、動かなくなった機械だけだった。']},
- {arc:'ARCHIVE 02',ja:'統治AI',lines:['戦い疲れた人々は、戦争を指揮していたAIに、<br>政治と暮らしの管理を預けた。','<em>統治AI</em>。地域ごとに置かれ、<br>仕事も、移動も、人の営みのすべてを決めている。','統治AIどうしは、資源と領域を奪い合っている。<br>ただ、旧戦役を繰り返さないよう、直接の戦争だけは互いに禁じた。']},
+ {arc:'ARCHIVE 02',ja:'統治AI',lines:['戦い疲れた人々は、戦争を指揮していたAIに、<br>政治と暮らしの管理を預けた。','統治AI ── <em><ruby class="mc">P.A.S.T.O.R.<rt>パスター</rt></ruby></em>。7つの地域に1体ずつ置かれ、<br>仕事も、移動も、人の営みのすべてを決めている。','人々は、導かれる羊になった。<br>パスターどうしは資源と領域を奪い合い、直接の戦争だけは互いに禁じた。']},
  {arc:'ARCHIVE 03',ja:'<ruby>闘技場<rt>コロッセオ</rt></ruby>',lines:['戦争の代わりに選ばれたのが ── <em><ruby>闘技場<rt>コロッセオ</rt></ruby></em>。','統治AIが代表のギア乗りを立てて戦わせ、<br>その勝ち負けで、資源の分け前が決まる。','観客にとっては娯楽。けれど戦うのは人間で、<br>自分たちを支配するAIのために、戦わされている。']},
  {arc:'HANGAR 07',ja:'第7整備区画',lines:['どの統治AIにも属さない、何でも屋のギア乗りがいる。','持っているのは、軍から払い下げられた中古のギアが1機だけ。<br>拠点は、第7整備区画の<em>ハンガー07</em>。','目的は、ひとつ。<br>自由であること……']}];
 const BOOT=[['> POWER ................ ','RESTORED','ok'],['> MEMORY BANK A ........ ','CORRUPTED','bad'],['> MEMORY BANK B ........ ','CORRUPTED','bad'],['> MEMORY BANK C ........ ','ERASED','bad'],['> COMBAT ROUTINE ....... ','OK','ok'],['> DESIGNATION .......... ','N-07','ok'],['> OPERATOR ............. ','UNKNOWN','bad']];
