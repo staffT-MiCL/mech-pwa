@@ -318,7 +318,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #title::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.26) 0 1px,transparent 1px 3px)}
 #title .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,7,6,.92) 0,rgba(5,7,6,.7) 34%,rgba(5,7,6,0) 62%);pointer-events:none}
 #title .tbox{position:absolute;left:max(6.5%,calc(18px + env(safe-area-inset-left,0px)));top:50%;transform:translateY(-54%);display:flex;flex-direction:column;gap:10px;z-index:1}
-#title .tname{font-family:var(--disp);font-size:clamp(44px,8vw,78px);line-height:1;color:#eef2ef;letter-spacing:.12em;text-shadow:3px 3px 0 #000}
+#title .tname{margin:0 0 0 -10px;line-height:0}#title .tname img{width:clamp(250px,40vw,440px);height:auto;filter:drop-shadow(3px 4px 0 rgba(0,0,0,.85))}
 #title .tsub{font-family:var(--mech);font-size:13px;letter-spacing:.6em;color:var(--fire)}
 #title .trule{width:min(320px,70vw);height:1px;background:linear-gradient(90deg,var(--fire) 0 70px,var(--line) 70px);margin:4px 0 12px}
 #title .tbtn{width:min(260px,70vw);height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:15px;font-weight:700;letter-spacing:.32em}
@@ -613,7 +613,7 @@ body.eqm #btnTrain{display:none}
 <div id="title">
  <div class="shade"></div>
  <div class="tbox">
-  <div class="tname">重装操機</div>
+  <h1 class="tname"><img src="title.png" alt="重装操機" width="919" height="309"></h1>
   <div class="tsub">HEAVY OPERATED GEAR</div>
   <div class="trule"></div>
   <button class="tbtn tnew" id="tNew">NEW GAME</button>
