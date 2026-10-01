@@ -242,6 +242,38 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .dtxt{position:relative}
 .detail p.open{position:absolute;left:0;right:0;top:100%;z-index:6;display:block!important;-webkit-line-clamp:unset;overflow:visible;color:#eef2ef;font-size:12.5px;line-height:1.65;background:#0b100e;border:1px solid var(--fire);padding:8px 10px;box-shadow:0 6px 18px rgba(0,0,0,.6)}
 .detail p.open::after{content:"▲";position:static;display:block;text-align:right;margin-top:4px;bottom:auto}
+/* ===== 出撃HUD（リング式） ===== */
+.gauges{display:none}
+.hudp{position:absolute;left:14px;top:calc(10px + env(safe-area-inset-top,0px));width:236px;padding:6px 10px 8px 12px;background:linear-gradient(90deg,rgba(8,12,10,.82),rgba(8,12,10,.3));border-left:2px solid #8cf06e;pointer-events:none;font-family:var(--mech);text-shadow:none}
+.hudp::before{content:"";position:absolute;left:-2px;top:-2px;width:10px;height:2px;background:#8cf06e}
+.hr1{display:flex;align-items:baseline;gap:8px}
+.hl{font-size:9px;font-weight:700;letter-spacing:3px;color:var(--khaki)}.hl.bs{color:#6fc8ff;width:44px}
+.hr1 b{font-size:24px;line-height:1;color:#eef2ef;font-variant-numeric:tabular-nums}.hr1 small{font-size:10px;color:var(--dim)}
+.hpct{margin-left:auto;font-size:9px;color:#8cf06e;letter-spacing:1px}
+.hcells{display:flex;gap:2px}.hcells i{flex:1;transform:skewX(-25deg);background:#1f2a24}
+.hcells.big{margin-top:4px}.hcells.big i{height:8px}.hcells.big i.on{background:#8cf06e}.hudp.dmg .hcells.big i.on{background:#f0c040}.hudp.crit .hcells.big i.on{background:#ff5a3c}
+.hr2{display:flex;align-items:center;gap:8px;margin-top:7px}.hcells.thin{flex:1;gap:1px}.hcells.thin i{height:4px;background:#16242c}.hcells.thin i.on{background:#6fc8ff}
+.hudp.low .hcells.thin i.on{background:#ff5a3c}
+.bsn{font-size:11px;color:#6fc8ff;width:22px;text-align:right;font-variant-numeric:tabular-nums}
+.extchip{position:absolute;left:14px;top:calc(84px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:6px;height:20px;padding:0 8px;background:rgba(8,12,10,.7);border-left:2px solid var(--khaki);font-family:var(--mech);font-size:10px;letter-spacing:1px;color:var(--khaki);pointer-events:none;text-shadow:none;white-space:nowrap}
+.extchip i{width:6px;height:6px;background:#8cf06e;box-shadow:0 0 6px #8cf06e}.extchip em{font-style:normal;color:#8cf06e;font-family:var(--body);letter-spacing:0}
+.extchip:empty{display:none}
+#bTgt{right:12px!important;bottom:auto!important;top:calc(142px + env(safe-area-inset-top,0px));width:124px;height:30px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;font-size:11px;letter-spacing:2px}
+.wbtn{position:absolute;width:92px;height:92px;bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+.wbtn svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.wbtn button{position:absolute;left:8px;top:8px;width:76px;height:76px;border-radius:50%;padding:0;background:rgba(14,19,17,.72);border:2px solid rgba(214,220,216,.5);color:#eef2ef;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;text-shadow:none}
+.wbtn .wl{font-family:var(--mech);font-size:9px;letter-spacing:1.5px;color:var(--khaki);font-weight:700}
+.wbtn b{font-family:var(--mech);font-size:19px;line-height:1.1;font-variant-numeric:tabular-nums}.wbtn b.sm{font-size:14px}
+.wbtn small{font-family:var(--disp);font-size:9px;color:#9aa6a0;max-width:66px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.wbtn.rl button{background:rgba(10,20,28,.8);border-color:#6fc8ff}.wbtn.rl b{color:#6fc8ff;font-size:12px;letter-spacing:1px}
+.wbtn.none{opacity:.35}
+.wbtn button.on{background:rgba(240,160,64,.45);border-color:#f0a040}
+#wL{right:114px}#wR{right:10px}#wS{right:62px;bottom:calc(108px + env(safe-area-inset-bottom,0px))}
+.jbtn{position:absolute;right:214px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:50px;height:58px}
+.jbtn button{position:absolute;inset:0;padding:0;border:0;background:#6fc8ff;clip-path:polygon(50% 0,100% 30%,100% 100%,0 100%,0 30%);touch-action:none}
+.jbtn .ji{position:absolute;inset:2px;background:rgba(10,22,30,.92);clip-path:polygon(50% 0,100% 30%,100% 100%,0 100%,0 30%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:7px;box-sizing:border-box;pointer-events:none;font-family:var(--mech);font-size:8px;font-weight:700;letter-spacing:1.5px;color:#6fc8ff;text-shadow:none}
+.jbtn button.on+.ji{background:rgba(111,200,255,.35)}
+@media (max-height:420px){#bTgt{top:calc(120px + env(safe-area-inset-top,0px));width:104px}.extchip{top:calc(80px + env(safe-area-inset-top,0px))}}
 /* メニュー */
 #menu{position:fixed;inset:0;z-index:20;background:rgba(4,6,5,.6)}
 #menu .drawer{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));box-sizing:border-box;background:#101513;border-left:2px solid var(--fire);display:flex;flex-direction:column;gap:8px;overflow-y:auto}
@@ -317,15 +349,17 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
   <div id="gstats"></div>
  </div>
  <div id="play" hidden>
-  <div class="gauges">
-   <span>装甲</span><div class="gauge" id="apG"><i id="apBar"></i></div><span class="num" id="apNum"></span>
-   <span>BOOST</span><div class="gauge" id="bsG"><i id="bsBar"></i></div><span class="num" id="bsNum"></span>
+  <div class="hudp" id="hudp">
+   <div class="hr1"><span class="hl">ARMOR</span><b id="apNum">0</b><small id="apMax">/ 0</small><span class="hpct" id="apPct">100%</span></div>
+   <div class="hcells big" id="apCells"></div>
+   <div class="hr2"><span class="hl bs">BOOST</span><div class="hcells thin" id="bsCells"></div><b class="bsn" id="bsNum">0</b></div>
   </div>
+  <div class="extchip" id="extChip"></div>
   <div id="modeBadge"></div>
   <button id="garage">ガレージ</button>
   <button id="camBtn">CAM: CHASE</button>
   <canvas id="map" width="124" height="124" aria-label="マップ"></canvas>
-  <button id="bTgt" aria-label="ターゲット変更">TARGET ▶</button>
+  <button id="bTgt" aria-label="ターゲット変更"><span>TARGET</span><span>▶▶</span></button>
   <div id="score"></div>
   <div id="reticle"></div>
   <div id="lock" hidden><span id="lockTxt"></span></div>
@@ -333,12 +367,10 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
   <div id="stickArea"><div id="stick"><div id="knob"></div></div>
    <div class="qb" data-d="u"></div><div class="qb" data-d="d"></div><div class="qb" data-d="l"></div><div class="qb" data-d="r"></div></div>
   <div id="lock2" hidden></div><div id="marks"></div><div id="guardMsg"></div>
-  <div class="pbtns">
-   <button class="pbtn" id="bS">肩<small id="nS"></small></button>
-   <button class="pbtn" id="bL">左手<small id="nL"></small></button>
-   <button class="pbtn" id="bR">右手<small id="nR"></small></button>
-   <button class="pbtn" id="bJ">跳躍</button>
-  </div>
+  <div class="wbtn" id="wS"><svg viewBox="0 0 92 92"></svg><button id="bS" aria-label="肩の兵装"><span class="wl">SHLDR</span><b id="cS"></b><small id="nS"></small></button></div>
+  <div class="wbtn" id="wL"><svg viewBox="0 0 92 92"></svg><button id="bL" aria-label="左手の兵装"><span class="wl">L-HAND</span><b id="cL"></b><small id="nL"></small></button></div>
+  <div class="wbtn" id="wR"><svg viewBox="0 0 92 92"></svg><button id="bR" aria-label="右手の兵装"><span class="wl">R-HAND</span><b id="cR"></b><small id="nR"></small></button></div>
+  <div class="jbtn"><button id="bJ" aria-label="跳躍"></button><div class="ji"><svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#6fc8ff" stroke-width="2.4"><path d="M2 9 L9 3 L16 9"/><path d="M2 13 L9 7 L16 13" opacity=".5"/></svg><span>JUMP</span></div></div>
   <div id="pcHelp">移動 WASD（同じキー2回で急加速）／ダッシュ Shift<br>跳躍 Space／右手 J・左クリック／左手 K・右クリック／肩 L<br>シールドはボタンを押している間だけ構える<br>視点 マウスドラッグ・Q E・← →／V で俯瞰と切替／Tab でターゲット変更<br>攻撃ボタンは長押しで弾が尽きるまで撃ち続ける</div>
  </div>
  <div id="err" hidden></div>
@@ -711,7 +743,7 @@ const SHOULDER={
 };
 const EXT={
  'none':{name:'なし',st:null,build(){return {}}},
- 'RD':{name:'レーダー',st:{kind:'補助',ammo:2,reload:20,wt:6,dur:8,note:'常時：ロック距離＋25m・角度拡大／発動：全敵の位置を8秒表示'},
+ 'RD':{name:'レーダー',st:{kind:'常時',wt:6,pass:{lockDeg:12,lockRange:25},note:'積んでいるだけで、ロックできる角度と距離が広がる'},
   // 背中のバックパックから片側にマストを立て、頭の横の高さに皿型アンテナ
   build(g){box(g,.9,.6,.32,Wp.body,0,.05,-.2);box(g,.92,.08,.34,Wp.warn,0,.3,-.2);box(g,.5,.3,.12,Wp.vent||Wp.frame,0,-.05,-.38);
    box(g,.14,1.5,.14,Wp.frame,.42,.95,-.3);box(g,.2,.12,.2,Wp.dark,.42,.4,-.3);
@@ -723,7 +755,7 @@ const EXT={
    const look=kf(c.u,[[0,0],[.3,.6],[.6,-.6],[1,0]]);
    return {w:env(c.u,.15,.8),headY:look,torsoY:look*.4,torsoX:-.05}}}},
 
- 'BT':{name:'追加ブースター',st:{kind:'補助',ammo:2,reload:12,wt:12,note:'急加速の2倍の距離を前方へ突進。ブーストを使わない'},
+ 'BT':{name:'追加ブースター',st:{kind:'常時',wt:12,pass:{dash:.15,qb:3},note:'積んでいるだけで、ダッシュが速く、急加速が遠くまで届く'},
   build(g){box(g,1.2,.35,.35,Wp.frame,0,0,-.1);const flames=[];
    [-1,1].forEach(s=>{cyl(g,.18,.26,.5,Wp.body,s*.42,0,-.35,Math.PI/2,0,8);cyl(g,.16,.16,.02,Wp.glow,s*.42,0,-.61,Math.PI/2,0,8);
     const f=cyl(g,.18,.02,1,Wp.glow,s*.42,0,-1.1,-Math.PI/2,0,6);f.scale.set(1,.01,1);flames.push(f)});return {flames}},
@@ -733,7 +765,7 @@ const EXT={
    return {w:1,boost:p,scroll:c.st.scr?kf(c.u,[[0,0],[.12,40],[.5,30],[.9,0]]):0,torsoX:kf(c.u,[[0,0],[.12,-.15],[.35,.3],[.9,0]])*(p>0?1:0),
     crouch:kf(c.u,[[0,0],[.1,.35],[.8,.2],[1,0]])*(c.st.fail?0:1),
     legs:{th:[.35,.35],kn:[.45,.45],w:c.st.fail?0:kf(c.u,[[0,0],[.15,1],[.75,1],[.95,0]])},arms:{x:.5,z:0,e:-.3,w:p}}},end(w){w.flames.forEach(f=>f.scale.set(1,.01,1))}}},
- 'IC':{name:'迎撃装置',st:{kind:'補助',ammo:2,reload:15,wt:10,dur:4,note:'4秒間、近づく敵弾を自動で撃ち落とす'},
+ 'IC':{name:'迎撃装置',st:{kind:'常時',wt:10,pass:{icInt:1.4,icR:14},note:'近づく敵弾を一定間隔で自動的に撃ち落とす'},
   build(g){box(g,.7,.3,.35,Wp.body,0,.35,-.1);const turrets=[];
    [-1,1].forEach(s=>{const t=grp(g,s*.25,.58,-.1);box(t,.16,.16,.16,Wp.frame,0,0,0);box(t,.04,.04,.35,Wp.metal,0,0,.2);t.muzzle=grp(t,0,0,.4);turrets.push(t)});return {turrets}},
   act:{name:'迎撃',dur:4,run(c){
@@ -774,14 +806,14 @@ Object.assign(SHOULDER,{
    const muzzle=grp(gun,0,.04,1.25);return {gun,muzzle}}},
 });
 Object.assign(EXT,{
- 'RD2':{...EXT.RD,st:{kind:'補助',ammo:3,reload:16,wt:9,dur:12,note:'常時：ロック距離＋25m・角度拡大／発動：全敵の位置を12秒表示'},
+ 'RD2':{...EXT.RD,st:{kind:'常時',wt:9,pass:{lockDeg:6,lockRange:45},note:'角度の広がりは小さいが、ロック距離が大きく伸びる'},
   // 2本の伸縮マストの上に横長のアンテナ
   build(g){box(g,.8,.5,.3,Wp.body,0,0,-.2);[-1,1].forEach(q=>{box(g,.1,1.7,.1,Wp.frame,q*.3,1.0,-.3);box(g,.16,.1,.16,Wp.dark,q*.3,.55,-.3)});
    const dish=grp(g,0,1.9,-.3);box(dish,1.3,.08,.14,Wp.metal,0,0,0);box(dish,.14,.16,.14,Wp.dark,.58,0,0);box(dish,.14,.16,.14,Wp.dark,-.58,0,0);box(dish,.2,.2,.2,Wp.frame,0,0,0);return {dish}}},
- 'BT2':{...EXT.BT,st:{kind:'補助',ammo:3,reload:10,wt:8,note:'小型の追加推進器。回数が多く軽い'},
+ 'BT2':{...EXT.BT,st:{kind:'常時',wt:8,pass:{boost:15,dash:.06},note:'ブースト容量が増え、ダッシュも少し速くなる'},
   build(g){box(g,.8,.3,.3,Wp.frame,0,0,-.1);cyl(g,.22,.3,.6,Wp.body,0,0,-.4,Math.PI/2,0,8);cyl(g,.2,.2,.02,Wp.glow,0,0,-.71,Math.PI/2,0,8);
    const f=cyl(g,.22,.02,1.2,Wp.glow,0,0,-1.3,-Math.PI/2,0,6);f.scale.set(1,.01,1);return {flames:[f]}}},
- 'IC2':{...EXT.IC,act:{...EXT.IC.act,dur:7},st:{kind:'補助',ammo:1,reload:20,wt:14,dur:7,note:'7秒間、近づく敵弾を自動で撃ち落とす（長時間型）'},
+ 'IC2':{...EXT.IC,act:{...EXT.IC.act,dur:7},st:{kind:'常時',wt:14,pass:{icInt:.8,icR:10},note:'範囲は狭いが、短い間隔で敵弾を撃ち落とし続ける'},
   build(g){box(g,.9,.36,.4,Wp.body,0,.35,-.1);box(g,.92,.06,.42,Wp.warn,0,.55,-.1);const turrets=[];
    [-1,1].forEach(s=>{const t=grp(g,s*.32,.66,-.1);cyl(t,.12,.14,.14,Wp.frame,0,0,0,0,0,8);box(t,.05,.05,.45,Wp.metal,.04,0,.24);box(t,.05,.05,.45,Wp.metal,-.04,0,.24);t.muzzle=grp(t,0,0,.5);turrets.push(t)});return {turrets}}},
 });
@@ -824,10 +856,10 @@ function statsFor(c){
  const weap=wOf(HAND,c.rHand)+wOf(HAND,c.lHand)+wOf(SHOULDER,c.rShoulder)+wOf(SHOULDER,c.lShoulder)+wOf(EXT,c.ext);
  const parts=hd.wt+co.wt+ar.wt+lg.wt,total=parts+weap,pen=total*WEIGHT_K,mob=Math.max(5,lg.mob-pen);
  const ranges=[HAND[c.rHand],HAND[c.lHand],SHOULDER[c.rShoulder],SHOULDER[c.lShoulder]].map(d=>d.st&&d.st.range||0);
- const radar=c.ext==='RD'||c.ext==='RD2';
- return {armor:co.armor+ar.armor+lg.armor,armorCore:co.armor,boost:co.boost,load:ar.load,weap,total,legMob:lg.mob,pen,mob,
-  walk:4+mob*.08,dash:12+mob*.15,qb:8+mob*.1,jump:.6+mob*.008,
-  lockRange:Math.max(40,...ranges)+(radar?25:0)+hd.lockAdd,lockDeg:hd.lockDeg+(radar?12:0),cone:(hd.lockDeg+(radar?12:0))*Math.PI/180,multi:hd.ability==='multi',over:weap>ar.load};
+ const px=(EXT[c.ext].st&&EXT[c.ext].st.pass)||{};
+ return {armor:co.armor+ar.armor+lg.armor,armorCore:co.armor,boost:co.boost+(px.boost||0),load:ar.load,icInt:px.icInt||0,icR:px.icR||0,weap,total,legMob:lg.mob,pen,mob,
+  walk:4+mob*.08,dash:(12+mob*.15)*(1+(px.dash||0)),qb:8+mob*.1+(px.qb||0),jump:.6+mob*.008,
+  lockRange:Math.max(40,...ranges)+(px.lockRange||0)+hd.lockAdd,lockDeg:hd.lockDeg+(px.lockDeg||0),cone:(hd.lockDeg+(px.lockDeg||0))*Math.PI/180,multi:hd.ability==='multi',over:weap>ar.load};
 }
 function calcStats(){SS=statsFor(cfg);renderGarage()}
 /* 弾数：兵装ごとに残弾とリロード残り時間を持つ。0になったときだけ自動でリロード */
@@ -874,9 +906,36 @@ function assemble(){
  buildMech(cfg);
  calcStats();resetAmmo();updateHUD();
 }
+/* ===== 出撃HUD ===== */
+const RSEG=10;
+// リング：10個の区切り（残弾）と、リロード用の円（進み具合）
+function buildRings(){['wS','wL','wR'].forEach(id=>{const svg=$(id).querySelector('svg');let h='';
+ for(let k=0;k<RSEG;k++){const g=.07,a0=-Math.PI/2+k*2*Math.PI/RSEG+g/2,a1=a0+2*Math.PI/RSEG-g,r=42;
+  h+=`<path data-k="${k}" d="M${46+r*Math.cos(a0)} ${46+r*Math.sin(a0)} A${r} ${r} 0 0 1 ${46+r*Math.cos(a1)} ${46+r*Math.sin(a1)}" fill="none" stroke="#2a332e" stroke-width="5"/>`}
+ h+=`<circle class="rl" cx="46" cy="46" r="42" fill="none" stroke="#6fc8ff" stroke-width="5" stroke-dasharray="0 264" transform="rotate(-90 46 46)" opacity="0"/>`;svg.innerHTML=h})}
+function buildCells(){$('apCells').innerHTML='<i></i>'.repeat(20);$('bsCells').innerHTML='<i></i>'.repeat(25)}
+const short=k=>{const id=cfg[k];return id==='none'?'':(PN[id]?PN[id][3]:id)};
 function updateHUD(){
- $('nR').textContent=HAND[cfg.rHand].name;$('nL').textContent=HAND[cfg.lHand].name;
- $('nS').textContent=[cfg.rShoulder,cfg.lShoulder].filter(k=>k!=='none').map(k=>SHOULDER[k].name).join('＋')||'なし';
+ $('nR').textContent=short('rHand')||'素手';$('nL').textContent=short('lHand')||'素手';
+ $('nS').textContent=[short('rShoulder'),short('lShoulder')].filter(Boolean).join('・')||'なし';
+ $('wS').classList.toggle('none',cfg.rShoulder==='none'&&cfg.lShoulder==='none');
+ const e=EXT[cfg.ext],px=(e.st&&e.st.pass)||{},fx=[];
+ if(px.lockDeg||px.lockRange)fx.push(`ロック ±${SS.lockDeg}° / ${SS.lockRange}m`);if(px.dash)fx.push(`ダッシュ +${Math.round(px.dash*100)}%`);if(px.qb)fx.push(`急加速 +${px.qb}m`);if(px.boost)fx.push(`容量 +${px.boost}`);if(px.icInt)fx.push(`迎撃 ${px.icInt}秒ごと`);
+ $('extChip').innerHTML=cfg.ext==='none'?'':`<i></i>EXT　${short('ext')} ${PN[cfg.ext][0]}<em>${fx.join('／')}</em>`;
+}
+let hudCache={};
+function setCells(el,n,cls){const key=el.id;if(hudCache[key]===n)return;hudCache[key]=n;[...el.children].forEach((c,i)=>c.classList.toggle('on',i<n))}
+// 1つの兵装（または両肩の合計）の残弾・リロードを、ボタンのリングと数字へ反映
+function setWeaponBtn(id,cid,keys){
+ const w=$(id),ks=keys.filter(k=>stOf(k)&&cfg[k]!=='none');let txt,seg=0,col='#f0a040',rl=-1;
+ if(!ks.length){txt='―'}
+ else{const inf=ks.some(k=>AM[k].ammo===INF);let am=0,mx=0;ks.forEach(k=>{const a=AM[k],st=stOf(k);if(a.rl>0)rl=Math.max(rl,1-a.rl/st.reload);if(a.ammo!==INF){am+=a.ammo;mx+=st.ammo}});
+  if(inf&&mx===0){txt='∞';seg=RSEG;col='#8cf06e'}else{txt=ks.map(k=>AM[k].rl>0?'':AM[k].ammo===INF?'∞':AM[k].ammo).filter(v=>v!=='').join('·')||'0';seg=Math.ceil(am/Math.max(1,mx)*RSEG)}}
+ const reloading=rl>=0&&!(ks.length>1&&ks.some(k=>AM[k].rl<=0&&AM[k].ammo>0));
+ const st=reloading?'R'+Math.round(rl*100):txt+'|'+seg+col;if(hudCache[id]===st)return;hudCache[id]=st;
+ w.classList.toggle('rl',reloading);const c=$(cid);c.textContent=reloading?'RELOAD':txt;c.classList.toggle('sm',txt.length>3);
+ const svg=w.querySelector('svg');svg.querySelectorAll('path').forEach((p,i)=>p.setAttribute('stroke',reloading?'#1d2a33':(i<seg?col:'#2a332e')));
+ const ci=svg.querySelector('.rl');ci.setAttribute('opacity',reloading?1:0);ci.setAttribute('stroke-dasharray',`${(reloading?rl:0)*264} 264`);
 }
 const endOf=d=>d.end||d.act?.end;
 function run(key,def,side=0){active[key]={def,sl:{side},t0:t,st:{},fired:new Set()}}
@@ -888,7 +947,7 @@ function trigger(key){
  if(active[key])endOf(def)?.(mech.weps[key]);
  run(key,def,sl.side);return true;
 }
-function fireShoulders(){const a=trigger('rShoulder'),b=trigger('lShoulder'),c=trigger('ext');return a||b||c}
+function fireShoulders(){const a=trigger('rShoulder'),b=trigger('lShoulder');return a||b}
 /* 手のボタン：シールドは押している間だけ構え、それ以外は押すと発動 */
 const GUARD={'-1':false,'1':false};
 // 長押し：押している間、弾が尽きるまで撃ち続ける（HOLD を毎フレーム見て再発動）
@@ -929,18 +988,18 @@ const DESC={
  'LG-01':'バランスの良い二脚。重量を抑えればよく走る。','LG-02':'装甲が厚く崩れにくい二脚。自重があり足は遅い。',
  'none':'何も装備しない。','RF':'扱いやすい主力の小銃。3点射で確実に削る。','MG':'威力は低いが連射で相手を止め続ける。',
  'BZ':'一撃が重い大砲。弾が遅く、当てるには距離が要る。','BL':'踏み込んで斬る近接兵装。弾切れがない。','SH':'正面の弾を防ぐ盾。押している間だけ構える。',
- 'MS':'6発を順に撃ち出す誘導弾。','RD':'積むだけで捕捉範囲が広がる索敵装置。','GC':'しゃがんで撃つ大口径砲。撃つ間は動けない。',
- 'BT':'前方へ一気に突進する追加推進器。','IC':'近づく敵弾を自動で撃ち落とす。',
+ 'MS':'6発を順に撃ち出す誘導弾。','RD':'背中に背負う索敵装置。ロックの角度と距離を広げる。','GC':'しゃがんで撃つ大口径砲。撃つ間は動けない。',
+ 'BT':'背中の追加推進器。ダッシュと急加速を強化する。','IC':'背中の小型砲台。近づく敵弾を自動で撃ち落とす。',
  'RF2':'長い銃身の狙撃型。一発が重く遠くまで届くが、弾数は少ない。','MG2':'3本の銃身を持つ重機関銃。威力は高いが重い。',
  'BZ2':'軽量の箱型ランチャー。威力は控えめだが、連射と弾数で補う。','BL2':'幅広の重いブレード。動きは同じでも一撃がとても重い。',
  'SH2':'小型の盾。防げる回数は少ないが、軽くて復帰が早い。','MS2':'大型弾2発を同時に撃つ。誘導は弱めだが爆発が大きい。',
- 'RD2':'背の高いアンテナ型。索敵の表示時間が長い。','GC2':'短砲身の軽量砲。威力は落ちるが弾数が多い。',
- 'BT2':'小型の推進器。使える回数が多く、とても軽い。','IC2':'長時間型の迎撃装置。使えるのは1回だが長く守る。'};
+ 'RD2':'2本マストの長距離型レーダー。ロック距離を大きく伸ばす。','GC2':'短砲身の軽量砲。威力は落ちるが弾数が多い。',
+ 'BT2':'小型の推進器。ブースト容量を補い、とても軽い。','IC2':'速射型の迎撃装置。範囲は狭いが撃ち落とす間隔が短い。'};
 const EN={'HD-01':'SENSOR HEAD','HD-02':'MONO-EYE HEAD','CR-01':'STANDARD CORE','CR-02':'HEAVY CORE','AR-01':'STANDARD ARMS','AR-02':'HEAVY ARMS',
  'LG-01':'MEDIUM BIPED','LG-02':'HEAVY BIPED','none':'EMPTY','RF':'RIFLE','MG':'MACHINE GUN','BZ':'BAZOOKA','BL':'BLADE','SH':'SHIELD',
  'MS':'MISSILE POD','RD':'RADAR','GC':'GRENADE CANNON','BT':'BOOSTER','IC':'INTERCEPTOR'};
 const SLOTINFO={head:['01','センサーと特殊能力'],core:['02','装甲の中心、ブーストの容量'],arms:['03','積める兵装の重さ（全兵装の合計）'],legs:['04','歩行・ダッシュ・急加速・跳躍の速さ'],
- rHand:['05','右手の兵装'],lHand:['06','左手の兵装'],rShoulder:['07','右肩の攻撃兵装（両肩同時に発動）'],lShoulder:['08','左肩の攻撃兵装（両肩同時に発動）'],ext:['09','背中の補助装備：索敵・推進・迎撃（肩と同時に発動）']};
+ rHand:['05','右手の兵装'],lHand:['06','左手の兵装'],rShoulder:['07','右肩の攻撃兵装（両肩同時に発動）'],lShoulder:['08','左肩の攻撃兵装（両肩同時に発動）'],ext:['09','背中の常時発動装備：積んでいるだけで効果がある']};
 const SLOTOF=k=>SLOTS.find(s=>s.key===k);
 
 /* 右パネルの状態 */
@@ -1041,6 +1100,15 @@ function renderSide(){
    part=rows.join('');
    const KEYS=(b.kind==='補助'||b.kind==='防御'||(!b.kind&&(a.kind==='補助'||a.kind==='防御')))?['使用回数','効果時間','リロード','重量']:['威力','射程','弾数','リロード','衝撃','重量'];
    brief=rows.filter(r=>KEYS.some(k=>r.includes(`class="k">${k}<`))).join('');
+  }
+  if(selSlot==='ext'){
+   const a=(cu.st&&cu.st.pass)||{},b=(cd.st&&cd.st.pass)||{},rows=[];
+   const pr=(k,lab,fmt)=>{if(a[k]||b[k])rows.push(cmpRow(lab,a[k]||0,b[k]||0,'hi',fmt))};
+   pr('lockDeg','ロック角度',v=>v?'+'+v+'°':'－');pr('lockRange','ロック距離',v=>v?'+'+v+'m':'－');
+   pr('dash','ダッシュ速度',v=>v?'+'+Math.round(v*100)+'%':'－');pr('qb','急加速',v=>v?'+'+v+'m':'－');pr('boost','ブースト容量',v=>v?'+'+v:'－');
+   if(a.icInt||b.icInt){rows.push(cmpRow('迎撃間隔',a.icInt||0,b.icInt||0,'lo',v=>v?v+'秒':'－'));rows.push(cmpRow('迎撃範囲',a.icR||0,b.icR||0,'hi',v=>v?v+'m':'－'))}
+   rows.push(cmpRow('重量',(cu.st&&cu.st.wt)||0,(cd.st&&cd.st.wt)||0,'lo'));
+   part=brief=rows.join('');
   }
   const whole=[cmpRow('装甲',SS.armor,P2.armor),cmpRow('機動',Math.round(SS.mob),Math.round(P2.mob)),cmpRow('ブースト容量',SS.boost,P2.boost),
    cmpRow('積載',`${SS.weap}/${SS.load}`,`${P2.weap}/${P2.load}`),cmpRow('総重量',SS.total,P2.total,'lo')].join('');
@@ -1383,11 +1451,12 @@ function setMode(m,training=false){
  P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;P.apMax=SS.armor;P.ap=P.apMax;P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=null;pinned=null;reveal=0;topYaw=topYawC=0;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
  $('modeBadge').textContent=TRAIN?'TRAINING ／ 試運転':'SORTIE ／ 演習';
- if(p){ENEMIES.forEach(placeEnemy);P.kills=0;say(TRAIN?'試運転開始':'演習開始',1.2)}
+ if(p){hudCache={};updateHUD();ENEMIES.forEach(placeEnemy);P.kills=0;say(TRAIN?'試運転開始':'演習開始',1.2)}
  else{view='overview';selSlot=null;renderGarage()}
  requestAnimationFrame(resize);resize();
 }
 $('garage').onclick=()=>setMode('garage');
+buildRings();buildCells();
 $('camBtn').onclick=()=>setCam(CAMMODE==='top'?'tps':'top');
 assemble();
 
@@ -1425,7 +1494,17 @@ addEventListener('resize',resize);resize();
 const B={tX:0,tY:0,hY:0,lift:0,arms:[{x:0,z:0,e:0},{x:0,z:0,e:0}],legs:[{th:0,kn:0,tz:0},{th:0,kn:0,tz:0}]};
 const _v=new THREE.Vector3(),SOLE=.24;let lastT=performance.now();
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let dustT=0,boostNow=0,lastGsh=0;
+let dustT=0,boostNow=0,lastGsh=0,icT=0;
+// EXTRA の常時発動：レーダーは回り続け、ブースターはブースト中に噴射、迎撃装置は首を振りつつ敵弾を撃ち落とす
+function tickPassive(dt){
+ const w=mech.weps.ext||{};
+ if(w.dish)w.dish.rotation.y+=dt*2.2;
+ if(w.flames&&w.flames.length&&w.flames[0].parent!==null)w.flames.forEach(f=>f.scale.set(1,.01+boostNow*(1.2+Math.random()*.5),1));
+ if(w.turrets){w.turrets.forEach((t,i)=>{t.rotation.y=Math.sin(t0p+i*2)*.7;t.rotation.x=-.25});t0p+=dt*1.3;
+  if(mode==='play'&&SS.icInt){icT-=dt;if(icT<=0){const b=interceptTarget(SS.icR);if(b){const t=w.turrets[(icN++)%w.turrets.length];
+   t.muzzle.getWorldPosition(_p);flash(t.muzzle,.2,0x9fe0ff);spawn(0x9fe0ff,.06,_p,{vel:b.m.position.clone().sub(_p).normalize().multiplyScalar(80),life:.12,len:6});spawn(0xffffff,.7,b.m.position,{life:.1});b.age=b.life;icT=SS.icInt}}}}
+}
+let t0p=0,icN=0;
 const lockEl=$('lock'),lockTxt=$('lockTxt');
 R.setAnimationLoop(()=>{
  const now=performance.now(),dt=Math.min((now-lastT)/1000,.05);lastT=now;t+=dt;
@@ -1518,6 +1597,7 @@ R.setAnimationLoop(()=>{
  m.bot.position.y=SOLE-minY+lift;
  const bs=1/(1+lift*.3);blob.scale.set(bs,bs,bs);blob.material.opacity=.45*bs;blob.position.x=m.bot.position.x;blob.position.z=m.bot.position.z;
  boostNow=L(boostNow,boost,Math.min(1,dt*12));
+ tickPassive(dt);
  m.flames.forEach(f=>f.scale.set(1,.01+boostNow*(1.3+Math.random()*.5),1));
  // カメラ
  if(mode==='play'){
@@ -1543,15 +1623,12 @@ R.setAnimationLoop(()=>{
  if(mode==='garage'){const gh=($('gstats').offsetHeight||100)+14;if(gh!==lastGsh){lastGsh=gh;W.style.setProperty('--gsh',gh+'px')}HL.opacity=.65+Math.sin(t*5)*.35;if(pvOn&&view==='slot'){pvSpin.rotation.y+=dt*.8;PR.render(PS,PC)}}
  // HUD
  if(mode==='play'){
-  $('apBar').style.width=(P.ap/P.apMax*100)+'%';$('apNum').textContent=Math.round(P.ap);
-  $('bsBar').style.width=(P.boost/SS.boost*100)+'%';$('bsNum').textContent=Math.round(P.boost);$('bsG').classList.toggle('low',P.boost<30);
+  {const ar=P.ap/P.apMax;$('apNum').textContent=Math.round(P.ap);$('apMax').textContent='/ '+P.apMax;$('apPct').textContent=Math.round(ar*100)+'%';
+   setCells($('apCells'),Math.ceil(ar*20),'');$('hudp').classList.toggle('dmg',ar<=.5&&ar>.25);$('hudp').classList.toggle('crit',ar<=.25);
+   setCells($('bsCells'),Math.ceil(P.boost/SS.boost*25),'');$('bsNum').textContent=Math.round(P.boost);$('hudp').classList.toggle('low',P.boost<30)}
   $('score').textContent=`撃破 ${P.kills}`;
   drawMap();
-  const ammoTxt=key=>{const a=AM[key],st=stOf(key);if(!st)return '';if(a.rl>0)return 'RELOAD';return a.ammo===INF?'∞':String(a.ammo)};
-  const btn=(id,keysArr,name)=>{const b=$(id);let rl=0,empty=true;keysArr.forEach(k=>{const a=AM[k],st=stOf(k);if(!st)return;if(a.rl>0)rl=Math.max(rl,1-a.rl/st.reload);else empty=false});
-   b.style.setProperty('--rl',rl?(rl*100)+'%':'0%');b.classList.toggle('empty',empty&&keysArr.some(k=>stOf(k)));
-   $(name).textContent=keysArr.filter(k=>stOf(k)).map(ammoTxt).join('・')||'なし'};
-  btn('bR',['rHand'],'nR');btn('bL',['lHand'],'nL');btn('bS',['rShoulder','lShoulder','ext'],'nS');
+  setWeaponBtn('wR','cR',['rHand']);setWeaponBtn('wL','cL',['lHand']);setWeaponBtn('wS','cS',['rShoulder','lShoulder']);
   $('guardMsg').textContent=(guarding(-1)||guarding(1))?'防御中':'';
   if(lockT2){lockT2.center(_q).project(C);const l2=$('lock2');if(_q.z<1){l2.hidden=false;l2.style.left=((_q.x+1)/2*100)+'%';l2.style.top=((1-_q.y)/2*100)+'%'}else l2.hidden=true}else $('lock2').hidden=true;
   const marks=$('marks');
