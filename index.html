@@ -204,6 +204,12 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .cells i.gu{outline:1px dashed var(--accent);outline-offset:-1px}.cells i.gd{opacity:.35}
 .gf{font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:var(--faint)}
 .gs .h,.gs .bar{display:none}
+.aPrm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.aP{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:baseline;gap:0 4px;min-width:0}
+.aP .aL{font-family:var(--mech);font-size:9px;font-weight:700;letter-spacing:.1em;color:#9fe6ee}
+.aP .aV{font-family:var(--mech);font-size:12px;font-weight:700;color:#eef2ef;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.aP .aV small{font-size:8px;color:var(--dim);font-weight:500}
+.aP .aB{grid-column:1/-1;height:6px;background:#18201c;margin-top:2px}.aP .aB i{display:block;height:100%;background:var(--accent)}
+.aP.hurt .aB i{background:#e0b040}.aP.dead .aL,.aP.dead .aV{color:var(--alert)}.aP.dead .aB{background:#3a1410;outline:1px solid var(--alert)}
 /* 兵装の階層リスト */
 .pitem.cat .t{color:var(--fire)}.pitem.hascur{border-color:#4f7c42}
 .pitem.catback{background:#141a17;border-color:#3a4540;border-left:3px solid var(--fire)}
@@ -255,8 +261,13 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .hcells.big{margin-top:4px}.hcells.big i{height:8px}.hcells.big i.on{background:#8cf06e}.hudp.dmg .hcells.big i.on{background:#f0c040}.hudp.crit .hcells.big i.on{background:#ff5a3c}
 .hr2{display:flex;align-items:center;gap:8px;margin-top:7px}.hcells.thin{flex:1;gap:1px}.hcells.thin i{height:4px;background:#16242c}.hcells.thin i.on{background:#6fc8ff}
 .hudp.low .hcells.thin i.on{background:#ff5a3c}
+.hsub{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin-top:6px}
+.hp2{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:5px}.hp2 .hl{font-size:8px;letter-spacing:1.5px}
+.hp2 b{font-size:10px;color:#cfd8d3;font-variant-numeric:tabular-nums;min-width:2.2em;text-align:right}
+.hcells.mid{gap:1px}.hcells.mid i{height:5px}.hcells.mid i.on{background:#8cf06e}.hp2.dmg .hcells.mid i.on{background:#f0c040}.hp2.crit .hcells.mid i.on{background:#ff5a3c}
+.hp2.dead .hl,.hp2.dead b{color:#ff5a3c}.hp2.dead .hcells.mid i{background:#3a1410}
 .bsn{font-size:11px;color:#6fc8ff;width:22px;text-align:right;font-variant-numeric:tabular-nums}
-.extchip{position:absolute;left:14px;top:calc(84px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:6px;height:20px;padding:0 8px;background:rgba(8,12,10,.7);border-left:2px solid var(--khaki);font-family:var(--mech);font-size:10px;letter-spacing:1px;color:var(--khaki);pointer-events:none;text-shadow:none;white-space:nowrap}
+.extchip{position:absolute;left:14px;top:calc(104px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:6px;height:20px;padding:0 8px;background:rgba(8,12,10,.7);border-left:2px solid var(--khaki);font-family:var(--mech);font-size:10px;letter-spacing:1px;color:var(--khaki);pointer-events:none;text-shadow:none;white-space:nowrap}
 .extchip i{width:6px;height:6px;background:#8cf06e;box-shadow:0 0 6px #8cf06e}.extchip em{font-style:normal;color:#8cf06e;font-family:var(--body);letter-spacing:0}
 .extchip:empty{display:none}
 #bTgt{right:12px!important;bottom:auto!important;top:calc(142px + env(safe-area-inset-top,0px));width:124px;height:30px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;font-size:11px;letter-spacing:2px}
@@ -274,7 +285,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .jbtn button{position:absolute;inset:0;box-sizing:border-box;margin:0;padding:0;border:0;background:#6fc8ff;clip-path:polygon(50% 0,100% 30%,100% 100%,0 100%,0 30%);touch-action:none}
 .jbtn .ji{position:absolute;inset:2px;background:rgba(10,22,30,.92);clip-path:polygon(50% 0,100% 30%,100% 100%,0 100%,0 30%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:7px;box-sizing:border-box;pointer-events:none;font-family:var(--mech);font-size:8px;font-weight:700;letter-spacing:1.5px;color:#6fc8ff;text-shadow:none}
 .jbtn button.on+.ji{background:rgba(111,200,255,.35)}
-@media (max-height:420px){#bTgt{top:calc(120px + env(safe-area-inset-top,0px));width:104px}.extchip{top:calc(80px + env(safe-area-inset-top,0px))}}
+@media (max-height:420px){#bTgt{top:calc(120px + env(safe-area-inset-top,0px));width:104px}.extchip{top:calc(100px + env(safe-area-inset-top,0px))}}
 /* メニュー */
 #menu{position:fixed;inset:0;z-index:20;background:rgba(4,6,5,.6)}
 #menu .drawer{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));box-sizing:border-box;background:#101513;border-left:2px solid var(--fire);display:flex;flex-direction:column;gap:8px;overflow-y:auto}
@@ -383,6 +394,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .rp{display:grid;grid-template-columns:4.2em minmax(0,1fr) auto;gap:4px 8px;align-items:center;padding:6px 10px;background:var(--panel2);border:1px solid var(--line);font-size:11px}
 .rp .k{font-weight:700;letter-spacing:.1em;color:#9fe6ee}.rp .st{color:var(--accent);font-size:10px}
 .rp .cells{grid-column:1/-1;height:7px}
+.rp.dead{border-color:#5a2014}.rp.dead .k,.rp.dead .st{color:var(--alert)}
 .rtot{display:flex;align-items:baseline;gap:8px;padding:6px 10px;background:var(--panel2);border:1px solid var(--line);border-top:2px solid var(--olive)}
 .rtot small{font-size:10px;color:var(--dim)}.rtot b{font-size:18px;color:#eef2ef;font-variant-numeric:tabular-nums}.rtot .g{flex:1}
 .tn{display:grid;grid-template-columns:4.2em minmax(0,1fr) auto;gap:2px 8px;align-items:center;padding:6px 10px;background:var(--panel2);border:1px solid var(--line);text-align:left;font-size:11px}
@@ -434,8 +446,9 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
  </div>
  <div id="play" hidden>
   <div class="hudp" id="hudp">
-   <div class="hr1"><span class="hl">ARMOR</span><b id="apNum">0</b><small id="apMax">/ 0</small><span class="hpct" id="apPct">100%</span></div>
+   <div class="hr1"><span class="hl">CORE</span><b id="apNum">0</b><small id="apMax">/ 0</small><span class="hpct" id="apPct">100%</span></div>
    <div class="hcells big" id="apCells"></div>
+   <div class="hsub"><div class="hp2" id="hpA"><span class="hl">ARMS</span><div class="hcells mid"></div><b>0</b></div><div class="hp2" id="hpL"><span class="hl">LEGS</span><div class="hcells mid"></div><b>0</b></div></div>
    <div class="hr2"><span class="hl bs">BOOST</span><div class="hcells thin" id="bsCells"></div><b class="bsn" id="bsNum">0</b></div>
   </div>
   <div class="extchip" id="extChip"></div>
@@ -756,7 +769,7 @@ function updateFX(dt){
    if(f.team==='p'){
     for(const e of ENEMIES){if(!e.alive)continue;if(e.center(_q).distanceTo(pos)<e.r+f.base+.4){hitEnemy(e,f.dmg,pos.clone(),f.imp);if(f.splash)splashAt(pos,f.splash,f.dmg,f.imp,e);f.age=f.life;break}}
     if(f.age<f.life&&pos.y<.05){if(f.splash)splashAt(pos,f.splash,f.dmg,f.imp);f.age=f.life}
-   }else if(f.team==='e'){playerCenter(_q);if(_q.distanceTo(pos)<2.0){hitPlayer(f.dmg,f.imp,pos);f.age=f.life}else if(pos.y<.05)f.age=f.life}
+   }else if(f.team==='e'){const by=mech.bot.position.y;if(Math.hypot(pos.x-P.pos.x,pos.z-P.pos.z)<1.9&&pos.y>by+.2&&pos.y<by+7.6){hitPlayer(f.dmg,f.imp,pos.clone());f.age=f.life}else if(pos.y<.05)f.age=f.life}
   }
   if(f.fade&&f.m.material.transparent)f.m.material.opacity=1-Math.min(1,k);
   if(f.age>=f.life){S.remove(f.m);f.m.material.dispose();if(f.m.geometry!==UB)f.m.geometry.dispose();FX.splice(i,1)}
@@ -929,7 +942,7 @@ Object.assign(EXT,{
   build(g){box(g,.9,.36,.4,Wp.body,0,.35,-.1);box(g,.92,.06,.42,Wp.warn,0,.55,-.1);const turrets=[];
    [-1,1].forEach(s=>{const t=grp(g,s*.32,.66,-.1);cyl(t,.12,.14,.14,Wp.frame,0,0,0,0,0,8);box(t,.05,.05,.45,Wp.metal,.04,0,.24);box(t,.05,.05,.45,Wp.metal,-.04,0,.24);t.muzzle=grp(t,0,0,.5);turrets.push(t)});return {turrets}}},
 });
-/* 基本動作：跳躍（高さは機動で変わる） */
+/* 基本動作：跳躍（高さは機動力で変わる） */
 const JUMP={name:'跳躍',act:{name:'跳躍',dur:2.2,run(c){const u=c.u,h=SS.jump;
  if(c.once('go',.2)){shake=.2;dust(1.2)}
  if(c.once('land',.86)){shake=.3;dust(1.6);onLand()}
@@ -958,8 +971,8 @@ const cfg={head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:
 const UPPER=1.25;
 
 /* ===== 機体性能 =====
- 装甲＝コア＋アーム＋レッグ／機動＝レッグの値−総重量×0.15／ブースト容量＝コア／積載＝アーム（全兵装の重量の上限）
- 機動が高いほど 歩行・ダッシュ・急加速・跳躍 が伸びる */
+ 装甲＝コア＋アーム＋レッグ／機動力＝レッグの値−総重量×0.15／ブースト容量＝コア／積載＝アーム（全兵装の重量の上限）
+ 機動力が高いほど 歩行・ダッシュ・急加速・跳躍 が伸びる */
 const WEIGHT_K=.15;
 let SS={};
 function wOf(cat,id){return cat[id].st?cat[id].st.wt:0}
@@ -1010,9 +1023,15 @@ function buildMech(c){
  const flames=[-1,1].map(s=>{const n=grp(torso,s*so.boost[0],so.boost[1],so.boost[2]);
   box(n,.3,.3,.3,M.frame,0,0,.1);cyl(n,.13,.18,.3,Wp.frame,0,0,-.1,Math.PI/2,0,8);cyl(n,.12,.12,.02,Wp.glow,0,0,-.26,Math.PI/2,0,8);
   const f=grp(n,0,0,-.27);f.rotation.x=-Math.PI/2-.35;cyl(f,.02,.15,1,Wp.glow,0,.5,0,0,0,6);f.scale.set(1,.01,1);return f});
- mech={bot,hip,torso,head,arms,legs,weps,flames,anchors};
+ mech={bot,hip,torso,head,arms,legs,weps,flames,anchors,cfgUsed:c};
+ tintDamage();
  if(mode==='play'){bot.position.set(P.pos.x,0,P.pos.z);bot.rotation.y=P.yaw}
  hlMech=null;
+}
+const DEAD_MAT=psMat(0x9a2418,{emissive:0x3a0804});
+function tintDamage(){if(!mech)return;const c=mech.cfgUsed||cfg;
+ PART_KEYS.forEach(k=>{const dead=mode==='play'&&P.hpMax[k]>1?P.hp[k]<=0:partNow(k,c)<=0;if(!dead)return;
+  slotMeshes(k).forEach(m=>{if(m.material!==DEAD_MAT&&!m.userData.hl){m.userData.mat0=m.material;m.material=DEAD_MAT}})});
 }
 function assemble(){
  buildMech(cfg);
@@ -1025,7 +1044,7 @@ function buildRings(){['wS','wL','wR'].forEach(id=>{const svg=$(id).querySelecto
  for(let k=0;k<RSEG;k++){const g=.07,a0=-Math.PI/2+k*2*Math.PI/RSEG+g/2,a1=a0+2*Math.PI/RSEG-g,r=42;
   h+=`<path data-k="${k}" d="M${46+r*Math.cos(a0)} ${46+r*Math.sin(a0)} A${r} ${r} 0 0 1 ${46+r*Math.cos(a1)} ${46+r*Math.sin(a1)}" fill="none" stroke="#2a332e" stroke-width="5"/>`}
  h+=`<circle class="rl" cx="46" cy="46" r="42" fill="none" stroke="#6fc8ff" stroke-width="5" stroke-dasharray="0 264" transform="rotate(-90 46 46)" opacity="0"/>`;svg.innerHTML=h})}
-function buildCells(){$('apCells').innerHTML='<i></i>'.repeat(20);$('bsCells').innerHTML='<i></i>'.repeat(25)}
+function buildCells(){$('apCells').innerHTML='<i></i>'.repeat(20);['hpA','hpL'].forEach(id=>$(id).querySelector('.hcells').innerHTML='<i></i>'.repeat(10));$('bsCells').innerHTML='<i></i>'.repeat(25)}
 const short=k=>{const id=cfg[k];return id==='none'?'':(PN[id]?PN[id][3]:id)};
 function updateHUD(){
  $('nR').textContent=short('rHand')||'素手';$('nL').textContent=short('lHand')||'素手';
@@ -1036,7 +1055,7 @@ function updateHUD(){
  $('extChip').innerHTML=cfg.ext==='none'?'':`<i></i>EXT　${short('ext')} ${PN[cfg.ext][0]}<em>${fx.join('／')}</em>`;
 }
 let hudCache={};
-function setCells(el,n,cls){const key=el.id;if(hudCache[key]===n)return;hudCache[key]=n;[...el.children].forEach((c,i)=>c.classList.toggle('on',i<n))}
+function setCells(el,n,cls){const key=el.id||el.parentNode.id;if(hudCache[key]===n)return;hudCache[key]=n;[...el.children].forEach((c,i)=>c.classList.toggle('on',i<n))}
 // 1つの兵装（または両肩の合計）の残弾・リロードを、ボタンのリングと数字へ反映
 function setWeaponBtn(id,cid,keys){
  const w=$(id),ks=keys.filter(k=>stOf(k)&&cfg[k]!=='none');let txt,seg=0,col='#f0a040',rl=-1;
@@ -1065,9 +1084,10 @@ const GUARD={'-1':false,'1':false};
 // 長押し：押している間、弾が尽きるまで撃ち続ける（HOLD を毎フレーム見て再発動）
 const HOLD={rHand:false,lHand:false,sh:false};
 function pressHand(side,down){const key=side<0?'rHand':'lHand';
+ if(mode==='play'&&P.hp.arms<=0){GUARD[side]=false;HOLD[key]=false;if(down)say('ARMS 損壊：使用不能',.6);return}
  if(HAND[cfg[key]].st.kind==='防御'&&mode==='play'){GUARD[side]=down;return}
  HOLD[key]=down&&mode==='play';if(down)trigger(key)}
-function pressShoulder(down){HOLD.sh=down&&mode==='play';if(down)fireShoulders()}
+function pressShoulder(down){if(mode==='play'&&P.hp.core<=0){HOLD.sh=false;return}HOLD.sh=down&&mode==='play';if(down)fireShoulders()}
 function tickHold(){
  ['rHand','lHand'].forEach(k=>{if(HOLD[k]&&!active[k])trigger(k)});
  // 肩は攻撃兵装だけ撃ち続ける（レーダーなどの補助は押した瞬間の1回だけ）
@@ -1075,6 +1095,7 @@ function tickHold(){
 }
 function jump(){
  if(active.jump)return;
+ if(mode==='play'&&P.hp.legs<=0){say('LEGS 損壊：跳躍不能',.6);return}
  if(mode==='play'){if(P.stun>0||P.boost<20){if(P.boost<20)say('BOOST 不足',.6);return}P.boost-=20;P.regen=.8}
  run('jump',JUMP);
 }
@@ -1126,10 +1147,10 @@ function syncPreviewMech(){
 }
 function renderHeader(){
  $('hWt').textContent=SS.total;const l=$('hLoad');l.textContent=`${SS.weap}/${SS.load}`;l.classList.toggle('over',SS.over);
- $('mSortie').disabled=SS.over;$('mTrain').disabled=SS.over;$('mWarn').textContent=SS.over?'積載オーバーのため出撃できません。兵装を見直してください':'';
+ const dead=partNow('core')<=0;$('mSortie').disabled=SS.over||dead;$('mTrain').disabled=SS.over;$('mWarn').textContent=SS.over?'積載オーバーのため出撃できません。兵装を見直してください':dead?'CORE が大破しています。SHOP の REPAIR で修理してください':'';
 }
 // 比較表の1行（better='hi'：大きいほど良い、'lo'：小さいほど良い）
-const KEN={'能力':'ABILITY','装甲':'ARMOR','ブースト容量':'BOOST CAP','積載':'LOAD','機動値':'MOB. RATING','機動':'MOBILITY','重量':'WEIGHT','総重量':'TOTAL WT','種類':'TYPE','使用回数':'USES','効果時間':'DURATION','リロード':'RELOAD','威力':'POWER','射程':'RANGE','範囲':'BLAST','同時発射':'SALVO','弾数':'AMMO','衝撃':'IMPACT','弾速':'VELOCITY','誘導':'HOMING','連射':'RATE','歩行速度':'WALK','ダッシュ速度':'DASH','急加速距離':'QUICK BOOST','ロック距離':'LOCK RANGE'};
+const KEN={'能力':'ABILITY','装甲':'ARMOR','ブースト容量':'BOOST CAP','積載':'LOAD','基本機動力':'BASE MOB.','機動力':'MOBILITY','重量':'WEIGHT','総重量':'TOTAL WT','種類':'TYPE','使用回数':'USES','効果時間':'DURATION','リロード':'RELOAD','威力':'POWER','射程':'RANGE','範囲':'BLAST','同時発射':'SALVO','弾数':'AMMO','衝撃':'IMPACT','弾速':'VELOCITY','誘導':'HOMING','連射':'RATE','歩行速度':'WALK','ダッシュ速度':'DASH','急加速距離':'QUICK BOOST','ロック距離':'LOCK RANGE'};
 const VEN={'射撃':'FIRE','近接':'MELEE','補助':'SUPPORT','防御':'DEFENSE','なし':'NONE','－':'—','弱':'LOW','中':'MID','強':'HIGH','多重ロック':'MULTI-LOCK','遠距離ロック':'LONG LOCK'};
 const RATEN={'1回／1秒':'1 / 1.0s','3点射／1.2秒':'3-RND BURST / 1.2s','12発／秒':'12 RND / s','1発／2秒':'1 / 2.0s','1回／1.3秒':'1 / 1.3s','押している間':'WHILE HELD','1斉射／2秒':'1 SALVO / 2.0s','1発／3秒':'1 / 3.0s'};
 const ven=v=>typeof v==='string'&&VEN[v]?VEN[v]:v;
@@ -1156,8 +1177,9 @@ function renderGStats(){
  const S2=P2||SS,lr=S2.weap/S2.load,lc=lr>1?'c-over':lr>.8?'c-warn':'c-load';
  const row=(code,val,unit,chip,bar,foot='')=>`<div class="gs"><div class="gh"><span class="gl">${code}</span><span class="gv">${val}<small>${unit}</small></span>${chip}</div>${bar}${foot?`<div class="gf">${foot}</div>`:''}</div>`;
  $('gstats').innerHTML=
-  row('装甲',SS.armor,'',dl(SS.armor,P2?.armor),cells(1400,[[SS.armorCore,'c-core'],[SS.armor-SS.armorCore,'c-sub']],P2?.armor),`コア ${SS.armorCore} ＋ アーム・レッグ ${SS.armor-SS.armorCore}`)+
-  row('機動',Math.round(SS.mob),'',dl(SS.mob,P2?.mob),cells(100,[[SS.mob,'c-mob'],[SS.pen,'c-pen']],P2?.mob),`レッグ +${SS.legMob} − 重量 ${Math.round(SS.pen)}（赤枠＝重さで失った分）`)+
+  `<div class="gs garm"><div class="gh"><span class="gl">装甲</span>${dl(SS.armor,P2?.armor)}</div><div class="parm">${PART_KEYS.map(k=>{const c2=P2?{...cfg,[selSlot]:cand}:cfg,mx=partMax(k,c2),nw=partNow(k,c2),r=nw/mx;
+    return `<div class="aP${nw<=0?' dead':r<=.5?' hurt':''}"><span class="aL">${PART_LABEL[k]}</span><span class="aV">${nw}<small>/${mx}</small></span><div class="aB"><i style="width:${r*100}%"></i></div></div>`}).join('')}</div></div>`+
+  row('機動力',Math.round(SS.mob),'',dl(SS.mob,P2?.mob),cells(100,[[SS.mob,'c-mob'],[SS.pen,'c-pen']],P2?.mob),`レッグ +${SS.legMob} − 重量 ${Math.round(SS.pen)}（赤枠＝重さで失った分）`)+
   row('ブースト容量',SS.boost,'',dl(SS.boost,P2?.boost),cells(130,[[SS.boost,'c-mob']],P2?.boost),'ダッシュ・跳躍・急加速で使う量')+
   row('積載',S2.weap,'/'+S2.load,P2&&(P2.weap!==SS.weap||P2.load!==SS.load)?`<span class="dchip ${P2.over?'dn':'up'}">${P2.weap-SS.weap>=0?'+':''}${P2.weap-SS.weap}</span>`:'',cells(S2.load,[[Math.min(S2.weap,S2.load),lc]]),lr>1?'積載オーバー：出撃できません':`兵装の重さ ${S2.weap} ／ 上限 ${S2.load}（${Math.round(lr*100)}%）`);
 }
@@ -1183,7 +1205,7 @@ function renderSide(){
    if(cu.armor!=null)rows.push(cmpRow('装甲',cu.armor,cd.armor));
    if(selSlot==='core')rows.push(cmpRow('ブースト容量',cu.boost,cd.boost));
    if(selSlot==='arms')rows.push(cmpRow('積載',cu.load,cd.load));
-   if(selSlot==='legs')rows.push(cmpRow('機動値',cu.mob,cd.mob));
+   if(selSlot==='legs')rows.push(cmpRow('基本機動力',cu.mob,cd.mob));
    rows.push(cmpRow('重量',cu.wt,cd.wt,'lo'));
    part=brief=rows.join('');
   }else{
@@ -1222,7 +1244,7 @@ function renderSide(){
    rows.push(cmpRow('重量',(cu.st&&cu.st.wt)||0,(cd.st&&cd.st.wt)||0,'lo'));
    part=brief=rows.join('');
   }
-  const whole=[cmpRow('装甲',SS.armor,P2.armor),cmpRow('機動',Math.round(SS.mob),Math.round(P2.mob)),cmpRow('ブースト容量',SS.boost,P2.boost),
+  const whole=[cmpRow('装甲',SS.armor,P2.armor),cmpRow('機動力',Math.round(SS.mob),Math.round(P2.mob)),cmpRow('ブースト容量',SS.boost,P2.boost),
    cmpRow('積載',`${SS.weap}/${SS.load}`,`${P2.weap}/${P2.load}`),cmpRow('総重量',SS.total,P2.total,'lo')].join('');
   const note=(cd.st&&cd.st.note)?`<p>${esc(cd.st.note)}</p>`:'';
   const catsOf=()=>{const m=new Map();items.forEach(id=>{const c=pn(selSlot,id)[0];if(!m.has(c))m.set(c,[]);m.get(c).push(id)});return m};
@@ -1357,7 +1379,7 @@ $('modalClose').onclick=closeModal;$('modal').addEventListener('click',e=>{if(e.
 addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});$('menuClose').onclick=()=>openMenu(false);
 menu.addEventListener('click',e=>{if(e.target===menu)openMenu(false)});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden)openMenu(false)});
-$('mSortie').onclick=()=>{if(!SS.over){openMenu(false);setMode('play',false)}};
+$('mSortie').onclick=()=>{if(!SS.over&&partNow('core')>0){openMenu(false);setMode('play',false)}};
 $('mTrain').onclick=()=>{if(!SS.over){openMenu(false);setMode('play',true)}};
 $('mConfig').onclick=()=>{openMenu(false);view='config';renderGarage()};
 $('btnPaint').onclick=()=>{view='paint';renderGarage()};
@@ -1374,15 +1396,22 @@ const PRICE={'HD-02':12000,'CR-02':18000,'AR-02':15000,'LG-02':16000,
  'RF2':9000,'MG2':8500,'BZ2':9800,'BL2':11000,'SH2':6000,'MS2':14000,'GC2':13000,'RD2':7000,'BT2':7500,'IC2':9000};
 const START_CREDIT=30000,REWARD={drone:800,turret:1200};
 const OWN=new Set(START_OWN);let CREDIT=START_CREDIT,shopVisits=0;
+/* 部位ダメージ：パーツそのものが受けた量（DMG[パーツID]）。出撃後も残り、修理（SHOP の REPAIR）でだけ戻る。
+   HEAD は装甲を持たないので対象外。CORE が0＝機体破壊（ゲームオーバー） */
+const DMG={},PART_KEYS=['core','arms','legs'],PART_LABEL={core:'CORE',arms:'ARMS',legs:'LEGS'};
+const partMax=(k,c=cfg)=>SLOTOF(k).cat[c[k]].armor;
+const partNow=(k,c=cfg)=>Math.max(0,partMax(k,c)-(DMG[c[k]]||0));
+const REPAIR_K=2; // 修理費：減った装甲1につき 2 CR
 function loadGame(){
  try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!d)return;
   (d.own||[]).forEach(id=>{if(PRICE[id])OWN.add(id)});
   if(typeof d.cr==='number'&&isFinite(d.cr))CREDIT=Math.max(0,Math.floor(d.cr));
   shopVisits=d.visits|0;
+  if(d.dmg)Object.entries(d.dmg).forEach(([k,v])=>{if(typeof v==='number'&&v>0)DMG[k]=v});
   if(d.cfg)SLOTS.forEach(sl=>{const v=d.cfg[sl.key];if(v&&sl.cat[v]&&(v==='none'||OWN.has(v)))cfg[sl.key]=v});
  }catch(e){}
 }
-function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({own:[...OWN],cr:CREDIT,cfg,visits:shopVisits}))}catch(e){}}
+function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG}))}catch(e){}}
 
 /* ===== SHOP ===== */
 const fmtCR=n=>Math.round(n).toLocaleString('ja-JP');
@@ -1399,7 +1428,7 @@ const CAT_TALK={
  HEAD:'ヘッドは機体の目です。数値よりも、<em>ロックの仕方</em>が変わるのが特徴でございます。',
  CORE:'コアは胴体です。装甲のほとんどと、<em>ブーストの容量</em>はここで決まります。',
  ARMS:'アームは腕です。<em>積める兵装の重さ</em>が変わります。重い武器を持つなら、まずここから。',
- LEGS:'レッグは脚です。歩く速さ、跳ぶ高さ……<em>機動</em>のもとになります。わたくしは転びやすいので、少しうらやましいです。',
+ LEGS:'レッグは脚です。歩く速さ、跳ぶ高さ……<em>機動力</em>のもとになります。わたくしは転びやすいので、少しうらやましいです。',
  RIFLE:'ライフルは素直な射撃武器です。<em>距離を選ばず</em>使えるので、迷ったらこれでございます。',
  'MACHINE GUN':'マシンガンは弾をたくさんばらまきます。<em>近い距離で押し切る</em>のに向いています。',
  BAZOOKA:'バズーカは重い一撃です。当てると相手が大きく<em>よろけます</em>。わたくしも一度よろけました。試し撃ちの流れ弾で。',
@@ -1597,8 +1626,8 @@ function talkCheck(){
  if(SS.over)L.push(['大変です、<em>積載オーバー</em>です！ このままでは出撃できません。軽い兵装にするか、積載の大きいアームにしてください。','panic']);
  else if(SS.weap/SS.load>.9)L.push(['積載がぎりぎりです。どこかで<em>軋む音</em>が……あ、わたくしの関節でした。','sorry']);
  else L.push(['積載にはまだ余裕があります（'+SS.weap+' ／ '+SS.load+'）。','normal']);
- if(SS.mob<30)L.push(['少々<em>重たい</em>ようです。機動が '+Math.round(SS.mob)+' まで落ちています。軽いレッグか、荷物を減らすのがよろしいかと。','normal']);
- else L.push(['足まわりは良好です。機動 '+Math.round(SS.mob)+'。わたくしより<strong>ずっと身軽</strong>でいらっしゃいます。','happy']);
+ if(SS.mob<30)L.push(['少々<em>重たい</em>ようです。機動力が '+Math.round(SS.mob)+' まで落ちています。軽いレッグか、荷物を減らすのがよろしいかと。','normal']);
+ else L.push(['足まわりは良好です。機動力 '+Math.round(SS.mob)+'。わたくしより<strong>ずっと身軽</strong>でいらっしゃいます。','happy']);
  talk(L,talkMenu());
 }
 
@@ -1636,7 +1665,7 @@ function renderShop(){
  const sl=slotOfItem(ssel),cur=cfg[sl],P2=statsFor({...cfg,[sl]:ssel});
  det.innerHTML=`<div class="sitems">${items}</div>
   <div class="scmp"><div class="sec">${SLOT_JA[sl]}（${esc(ENM(sl,cur).trim())}）との比較</div><div class="cmp">${shopRows(sl,cur,ssel)}</div>
-   <div class="sec">機体全体<span class="secj">現在 → 装備後</span></div><div class="cmp">${cmpRow('機動',Math.round(SS.mob),Math.round(P2.mob))}${cmpRow('積載',`${SS.weap}/${SS.load}`,`${P2.weap}/${P2.load}`)}${sl==='core'||sl==='arms'||sl==='legs'?cmpRow('装甲',SS.armor,P2.armor):''}</div></div>
+   <div class="sec">機体全体<span class="secj">現在 → 装備後</span></div><div class="cmp">${cmpRow('機動力',Math.round(SS.mob),Math.round(P2.mob))}${cmpRow('積載',`${SS.weap}/${SS.load}`,`${P2.weap}/${P2.load}`)}${sl==='core'||sl==='arms'||sl==='legs'?cmpRow('装甲',SS.armor,P2.armor):''}</div></div>
   <div class="sbuy">${OWN.has(ssel)?`<small>購入済み</small><span class="grow" style="flex:1"></span><button class="btn-eq cut" id="sEq" ${isEquipped(ssel)?'disabled':''}>${isEquipped(ssel)?'装備中':'装備する'}</button>`:
    `<small>価格</small><span class="pr">${fmtCR(PRICE[ssel])}<i>CR</i></span><span class="grow" style="flex:1"></span>${PRICE[ssel]>CREDIT?`<span class="lack">不足 −${fmtCR(PRICE[ssel]-CREDIT)} CR</span>`:'<button class="btn-main cut" id="sBuy">購入</button>'}`}</div>`;
  det.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{ssel=b.dataset.i;renderShop();explainItem(ssel)});
@@ -1646,7 +1675,7 @@ function renderShop(){
 /* メニューの切り替え：BUY（購入）／REPAIR（修理）／TUNE（改造）。修理と改造は画面だけ先に用意（中身は準備中） */
 function setSMode(m){smode=m;renderShop();
  if(m==='buy')talk([['どうぞ、ゆっくりご覧ください。右の棚から<em>種類</em>を選んでいただけます。','normal']]);
- if(m==='repair')talk([['修理でございますね。出撃で減った装甲は、<em>自然には戻りません</em>。こちらで直します。','normal'],['……と申し上げたいのですが、ただいま工具箱を整理中でして。もうしばらくお待ちください。','sorry']]);
+ if(m==='repair'){const t=Object.values(DMG).reduce((a,v)=>a+v,0);talk(t?[['修理でございますね。出撃で減った装甲は、<em>自然には戻りません</em>。こちらで直します。','normal'],[partNow('core')<=0?'……コアがひどい有様です。よくぞご無事で。いえ、ご無事なのはパイロット様で、機体はご無事ではありませんが。':'傷の具合を見ますと……修理費は <em>'+fmtCR(Math.ceil(t*REPAIR_K))+' CR</em> になります。','sorry']]:[['どこも傷んでおりません。<strong>完璧な状態</strong>です。わたくしより状態が良いくらいです。','happy']])}
  if(m==='tune')talk([['改造は、フレームの各パーツを<em>鍛え直す</em>作業です。わたくしの得意分野……になる予定です。','happy'],['どこを強くできるかは、ただいま<em>検討中</em>でございます。','normal']]);
 }
 function renderAlt(){
@@ -1654,15 +1683,19 @@ function renderAlt(){
  const bar=(v,max,cls)=>`<div class="cells" style="grid-template-columns:repeat(${N},minmax(0,1fr))">${Array.from({length:N},(_,i)=>`<i class="${i<Math.round(v/max*N)?cls:''}"></i>`).join('')}</div>`;
  if(smode==='repair'){
   $('sTitle').textContent='REPAIR';$('sSub').textContent='機体の修理';
-  const parts=[['CORE','core'],['ARMS','arms'],['LEGS','legs']].map(([lab,k])=>{const d=SLOTOF(k).cat[cfg[k]];return {lab,k,max:d.armor,now:d.armor}});
-  el.innerHTML=`<div class="rtot"><small>装甲</small><b>${SS.armor}</b><small>/ ${SS.armor}</small><span class="g"></span><small>損傷</small><b style="font-size:14px;color:var(--accent)">0%</b></div>
-   ${parts.map(p=>`<div class="rp"><span class="k">${p.lab}</span><span class="nm" style="font-family:var(--disp)">${esc(ENM(p.k,cfg[p.k]).trim())}</span><span class="st">損傷なし</span>${bar(p.now,p.max,'c-core')}</div>`).join('')}
-   <div class="snote">出撃で受けたダメージは装甲に残り、自動では回復しません。ここで費用を払って修理します。<span class="soon">準備中</span></div>
-   <div class="sbuy"><small>修理費</small><span class="pr">0<i>CR</i></span><span class="grow" style="flex:1"></span><button class="btn-main cut" disabled>修理する</button></div>`;
+  const total=Object.values(DMG).reduce((a,v)=>a+v,0),cost=Math.ceil(total*REPAIR_K),stored=Object.keys(DMG).filter(id=>!PART_KEYS.some(k=>cfg[k]===id)).reduce((a,id)=>a+DMG[id],0);
+  el.innerHTML=`<div class="rtot"><small>装甲 合計</small><b>${PART_KEYS.reduce((a,k)=>a+partNow(k),0)}</b><small>/ ${SS.armor}</small><span class="g"></span><small>修理する量</small><b style="font-size:14px;color:${total?'#f0c040':'var(--accent)'}">${total}</b></div>
+   ${PART_KEYS.map(k=>{const mx=partMax(k),nw=partNow(k),r=nw/mx;return `<div class="rp${nw<=0?' dead':''}"><span class="k">${PART_LABEL[k]}</span><span class="nm" style="font-family:var(--disp)">${esc(ENM(k,cfg[k]).trim())}</span><span class="st">${nw<=0?'損壊':nw<mx?nw+' / '+mx:'損傷なし'}</span>${bar(nw,mx,nw<=0?'c-over':r<=.5?'c-warn':'c-core')}</div>`}).join('')}
+   <div class="snote">出撃で受けたダメージは部位ごとに残り、自動では回復しません。CORE が0になると機体は破壊され、修理するまで SORTIE に出られません。${stored?`<br>倉庫のパーツの損傷 ${stored} も一緒に直します。`:''}</div>
+   <div class="sbuy"><small>修理費</small><span class="pr">${fmtCR(cost)}<i>CR</i></span><span class="grow" style="flex:1"></span>${!total?'<button class="btn-main cut" disabled>損傷なし</button>':cost>CREDIT?`<span class="lack">不足 −${fmtCR(cost-CREDIT)} CR</span>`:'<button class="btn-main cut" id="sRep">修理する</button>'}</div>`;
+  const rb=$('sRep');if(rb)rb.onclick=()=>{CREDIT-=cost;Object.keys(DMG).forEach(k=>delete DMG[k]);saveGame();buildMech(cfg);renderGarage();renderShop();
+   const m=$('sMoney');m.classList.add('flash');setTimeout(()=>m.classList.remove('flash'),600);
+   talk([['修理、承りました！ 装甲板を張り替えて……溶接して……','happy'],pick([['あつっ。……いえ、わたくしは熱くないのでした。','panic'],['あっ、溶接棒が<em>もう一本</em>……どこへ。','panic']]),['<strong>修理完了</strong>でございます。新品同様です。たぶん新品以上です。','happy']])};
+  const lk=el.querySelector('.lack');if(lk)lk.onclick=()=>talk([['修理費が <em>'+fmtCR(cost-CREDIT)+' CR</em> ほど足りないようです……。','sorry'],['TRAINING では報酬が出ませんので、SORTIE で稼いでいらしてください。お気をつけて。','normal']]);
  }else{
   $('sTitle').textContent='TUNE';$('sSub').textContent='フレームの改造';
   el.innerHTML=[['HEAD','head'],['CORE','core'],['ARMS','arms'],['LEGS','legs']].map(([lab,k])=>`<div class="tn"><span class="k">${lab}</span><span class="nm">${esc(ENM(k,cfg[k]).trim())}</span><span class="lv">LV 0</span><span class="slots"><i></i><i></i><i></i><i></i><i></i></span></div>`).join('')+
-   `<div class="snote">フレームのパーツを1つずつ強化します。強化できる項目（例：装甲、機動、積載など）は検討中です。<span class="soon">準備中</span></div>`;
+   `<div class="snote">フレームのパーツを1つずつ強化します。強化できる項目（例：装甲、機動力、積載など）は検討中です。<span class="soon">準備中</span></div>`;
  }
 }
 // 比較表（ガレージと同じ項目から、主要なものだけ）
@@ -1673,7 +1706,7 @@ function shopRows(sl,a,b){
   if(cb.armor!=null)R.push(cmpRow('装甲',ca.armor,cb.armor));
   if(sl==='core')R.push(cmpRow('ブースト容量',ca.boost,cb.boost));
   if(sl==='arms')R.push(cmpRow('積載',ca.load,cb.load));
-  if(sl==='legs')R.push(cmpRow('機動値',ca.mob,cb.mob));
+  if(sl==='legs')R.push(cmpRow('基本機動力',ca.mob,cb.mob));
   R.push(cmpRow('重量',ca.wt,cb.wt,'lo'));return R.join('');
  }
  const x=ca.st||{},y=cb.st||{};
@@ -1797,14 +1830,14 @@ function updateEnemies(dt){
   e.mat.emissive.setRGB(e.hit>0?1:0,e.hit>0?1:0,e.hit>0?1:0);e.hit-=dt;
   e.hpBar.scale.set(1.6*e.hp/e.max,.1,.1);e.hpBar.lookAt(C.position);
   if(e.stun<=0)e.cd-=dt;
-  if(e.cd<=0&&d<50&&P.ap>0&&!TRAIN){e.cd=2.2+Math.random()*2.2;
-   const from=e.center(new THREE.Vector3()),dir=playerCenter(new THREE.Vector3()).sub(from).normalize();
+  if(e.cd<=0&&d<50&&P.hp.core>0&&!TRAIN){e.cd=2.2+Math.random()*2.2;
+   const from=e.center(new THREE.Vector3()),aim=playerCenter(new THREE.Vector3()).add(new THREE.Vector3(-Math.cos(P.yaw),0,Math.sin(P.yaw)).multiplyScalar((Math.random()-.5)*3.4)).add(new THREE.Vector3(0,Math.random()*5.6-3.3,0)),dir=aim.sub(from).normalize();
    spawn(0xff5030,.3,from,{vel:dir.multiplyScalar(18),life:4,len:2.5,team:'e',dmg:e.type==='drone'?60:100,imp:e.type==='drone'?'D':'B'});spawn(0xff9060,.8,from,{life:.08})}
  });
 }
 
 /* ===== プレイヤー ===== */
-const P={pos:new THREE.Vector3(),vel:new THREE.Vector3(),yaw:0,ap:1000,apMax:1000,boost:100,regen:0,stun:0,qb:null,kills:0,down:0,air:false};
+const P={pos:new THREE.Vector3(),vel:new THREE.Vector3(),yaw:0,hp:{core:1,arms:1,legs:1},hpMax:{core:1,arms:1,legs:1},boost:100,regen:0,stun:0,qb:null,kills:0,down:0,air:false};
 let camYaw=0;
 function playerCenter(v){return v.set(P.pos.x,mech.bot.position.y+4,P.pos.z)}
 let msgT=0;function say(s,d=.8){$('msg').textContent=s;msgT=d}
@@ -1813,13 +1846,21 @@ function hitPlayer(dmg,imp,pos){if(P.down>0)return;
  const from=_d.copy(pos).sub(P.pos).setY(0).normalize(),front=from.x*Math.sin(P.yaw)+from.z*Math.cos(P.yaw);
  for(const sd of [-1,1]){const key=sd<0?'rHand':'lHand';
   if(guarding(sd)&&front>.2){ammoUse(key);spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});spawn(0xffffff,.6,pos,{life:.06});shake=Math.max(shake,.08);return}}
- P.ap=Math.max(0,P.ap-dmg);shake=Math.max(shake,.2);spawn(0xffffff,.8,pos,{life:.1});
- if(P.ap<=0){P.down=3;P.stun=3;say('機体大破',3);explode(playerCenter(new THREE.Vector3()),2.5);return}
+ // 当たった高さで部位を決める：腰より下＝LEGS、上半身の外側＝ARMS、中央＝CORE。0の部位に当たった分は CORE が受ける
+ const h=pos.y-mech.bot.position.y,rt=_q.set(-Math.cos(P.yaw),0,Math.sin(P.yaw)),lat=Math.abs((pos.x-P.pos.x)*rt.x+(pos.z-P.pos.z)*rt.z);
+ let zone=h<3.1?'legs':lat>1.15?'arms':'core',left=dmg;
+ if(zone!=='core'&&P.hp[zone]>0){const take=Math.min(left,P.hp[zone]);P.hp[zone]-=take;left-=take;if(P.hp[zone]<=0)say(zone==='arms'?'ARMS 損壊：手持ち兵装 使用不能':'LEGS 損壊：ダッシュ・急加速・跳躍 不能',1.6)}
+ if(left>0)P.hp.core=Math.max(0,P.hp.core-left);
+ PART_KEYS.forEach(k=>{DMG[cfg[k]]=P.hpMax[k]-P.hp[k];if(DMG[cfg[k]]<=0)delete DMG[cfg[k]]});saveGame();
+ shake=Math.max(shake,.2);spawn(0xffffff,.8,pos,{life:.1});
+ if(P.hp.core<=0){P.down=3.2;P.stun=4;say('CORE 大破',3);explode(playerCenter(new THREE.Vector3()),2.5);tintDamage();return}
+ if(P.hp[zone]<=0&&zone!=='core')tintDamage();
  const I=IMP[imp];if(I&&Math.random()<I.p){P.stun=Math.max(P.stun,I.st);say('被弾',.5);run('hit',STAGGER);P.vel.addScaledVector(from,-I.kb*4)}}
-function guarding(sd){const key=sd<0?'rHand':'lHand';return mode==='play'&&GUARD[sd]&&HAND[cfg[key]].st.kind==='防御'&&ammoReady(key)&&P.stun<=0}
+function guarding(sd){const key=sd<0?'rHand':'lHand';return mode==='play'&&P.hp.arms>0&&GUARD[sd]&&HAND[cfg[key]].st.kind==='防御'&&ammoReady(key)&&P.stun<=0}
 function onLand(){if(mode!=='play')return;P.stun=Math.max(P.stun,.4);say('着地硬直',.4)}
 function quickBoost(x,y,mult=1,free=false){ // x=右+ / y=前+ （画面基準）
  if(mode!=='play'||P.stun>0||(P.qb&&!free))return;
+ if(P.hp.legs<=0){if(!free)say('LEGS 損壊：急加速不能',.6);return}
  if(!free){if(P.boost<30){say('BOOST 不足',.6);return}P.boost-=30;P.regen=.8}
  const top=CAMMODE==='top',f=top?topF():new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw)),r=top?topR():new THREE.Vector3(-Math.cos(P.yaw),0,Math.sin(P.yaw));
  const dir=f.multiplyScalar(y).add(r.multiplyScalar(x));if(dir.lengthSq()<.01)dir.set(Math.sin(P.yaw),0,Math.cos(P.yaw));
@@ -1949,7 +1990,7 @@ function setMode(m,training=false){
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
  S.fog.near=p?40:12;S.fog.far=p?120:30;C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
- P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;P.apMax=SS.armor;P.ap=P.apMax;P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=null;pinned=null;reveal=0;topYaw=topYawC=0;GUARD[-1]=GUARD[1]=false;resetAmmo();
+ P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=null;pinned=null;reveal=0;topYaw=topYawC=0;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
  $('modeBadge').textContent=TRAIN?'TRAINING ／ 試運転':'SORTIE ／ 演習';
  if(p){hudCache={};updateHUD();ENEMIES.forEach(placeEnemy);P.kills=0;say(TRAIN?'試運転開始':'演習開始',1.2)}
@@ -2015,7 +2056,7 @@ R.setAnimationLoop(()=>{
  if(mode==='play'){
   const inp=readInput(dt);
   P.stun=Math.max(0,P.stun-dt);
-  if(P.down>0){P.down-=dt;if(P.down<=0){P.ap=P.apMax;P.boost=SS.boost;say('再起動',.8)}}
+  if(P.down>0){P.down-=dt;if(P.down<=0){setMode('garage');openModal(`<div class="shd"><span class="code">MISSION FAILED</span><span class="ttl">CORE 大破</span></div><div class="rule"></div><p class="note" style="margin:0">コアが破壊され、機体は回収されました。SHOP の REPAIR で修理するまで、SORTIE には出撃できません。</p>`)}}
   tickAmmo(dt);reveal=Math.max(0,reveal-dt);
   const guard=guarding(-1)||guarding(1),rooted=Object.values(active).some(a=>a.def.act.root);
   const can=P.stun<=0&&!rooted,air=!!active.jump;
@@ -2026,7 +2067,7 @@ R.setAnimationLoop(()=>{
   }else P.yaw+=Math.atan2(Math.sin(camYaw-P.yaw),Math.cos(camYaw-P.yaw))*Math.min(1,dt*(attacking?14:8));
   const f=top?topF():new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw)),r=top?topR():new THREE.Vector3(-Math.cos(P.yaw),0,Math.sin(P.yaw));
   const mag=Math.hypot(inp.x,inp.y);
-  const dashing=can&&!guard&&inp.dash&&mag>.1&&P.boost>0;
+  const dashing=can&&!guard&&inp.dash&&mag>.1&&P.boost>0&&P.hp.legs>0;
   if(dashing){P.boost=Math.max(0,P.boost-12*dt);P.regen=.6;if(P.boost<=0)say('BOOST 切れ',.6)}
   const sp=(dashing?SS.dash:SS.walk*(air?.9:1))*(guard?.5:1);
   const want=can?f.multiplyScalar(inp.y*sp).add(r.multiplyScalar(inp.x*sp)):new THREE.Vector3();
@@ -2124,8 +2165,10 @@ R.setAnimationLoop(()=>{
  if(mode==='garage'){const gh=($('gstats').offsetHeight||100)+14;if(gh!==lastGsh){lastGsh=gh;W.style.setProperty('--gsh',gh+'px')}HL.opacity=.65+Math.sin(t*5)*.35;if(pvOn&&view==='slot'){pvSpin.rotation.y+=dt*.8;PR.render(PS,PC)}}
  // HUD
  if(mode==='play'){
-  {const ar=P.ap/P.apMax;$('apNum').textContent=Math.round(P.ap);$('apMax').textContent='/ '+P.apMax;$('apPct').textContent=Math.round(ar*100)+'%';
+  {const ar=P.hp.core/P.hpMax.core;$('apNum').textContent=Math.round(P.hp.core);$('apMax').textContent='/ '+P.hpMax.core;$('apPct').textContent=Math.round(ar*100)+'%';
    setCells($('apCells'),Math.ceil(ar*20),'');$('hudp').classList.toggle('dmg',ar<=.5&&ar>.25);$('hudp').classList.toggle('crit',ar<=.25);
+   [['hpA','arms'],['hpL','legs']].forEach(([id,k])=>{const el=$(id),r=P.hp[k]/P.hpMax[k];el.querySelector('b').textContent=Math.round(P.hp[k]);
+    setCells(el.querySelector('.hcells'),Math.ceil(r*10),'');el.classList.toggle('dmg',r<=.5&&r>.25);el.classList.toggle('crit',r<=.25&&r>0);el.classList.toggle('dead',r<=0)});
    setCells($('bsCells'),Math.ceil(P.boost/SS.boost*25),'');$('bsNum').textContent=Math.round(P.boost);$('hudp').classList.toggle('low',P.boost<30)}
   $('score').textContent=`撃破 ${P.kills}`;
   drawMap();
