@@ -1,7 +1,7 @@
 {
   "id": "/mech-pwa/?app=jusoukitai",
-  "name": "重装機体",
-  "short_name": "重装機体",
+  "name": "重装操機",
+  "short_name": "重装操機",
   "description": "PS初期風の3Dロボアクション。パーツを組み替えて演習場で戦う",
   "start_url": "/mech-pwa/",
   "scope": "/mech-pwa/",
