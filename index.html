@@ -1088,9 +1088,9 @@ let SS={};
 function wOf(cat,id){return cat[id].st?cat[id].st.wt:0}
 function statsFor(c){
  const hd=HEADS[c.head],co=eff('core',c.core),ar=eff('arms',c.arms),lg=eff('legs',c.legs);
- const tLR=1+tMul('head',c.head,0),tLD=1+tMul('head',c.head,1),tWK=1-tMul('legs',c.legs,1);
+ const tLR=1+tMul('head',c.head,0),tLD=1+tMul('head',c.head,1);
  const weap=wOf(HAND,c.rHand)+wOf(HAND,c.lHand)+wOf(SHOULDER,c.rShoulder)+wOf(SHOULDER,c.lShoulder)+wOf(EXT,c.ext);
- const parts=hd.wt+co.wt+ar.wt+lg.wt,total=parts+weap,pen=total*WEIGHT_K*tWK,mob=Math.max(5,lg.mob-pen);
+ const parts=hd.wt+co.wt+ar.wt+lg.wt,total=parts+weap,pen=total*WEIGHT_K,mob=Math.max(5,lg.mob-pen);
  const ranges=[HAND[c.rHand],HAND[c.lHand],SHOULDER[c.rShoulder],SHOULDER[c.lShoulder]].map(d=>d.st&&d.st.range||0);
  const px=(EXT[c.ext].st&&EXT[c.ext].st.pass)||{};
  return {armor:co.armor+ar.armor+lg.armor,armorCore:co.armor,boost:co.boost+(px.boost||0),load:ar.load,icInt:px.icInt||0,icR:px.icR||0,weap,total,legMob:lg.mob,pen,mob,
@@ -1523,14 +1523,14 @@ const partMax=(k,c=cfg)=>eff(k,c[k]).armor;
 const partNow=(k,c=cfg)=>Math.max(0,partMax(k,c)-(DMG[c[k]]||0));
 const REPAIR_K=2; // 修理費：減った装甲1につき 2 CR
 /* 改造（TUNE）：フレームのパーツごとに2項目、それぞれ5段階。強化はパーツそのもの（TUNE[パーツID]=[項目1の段階,項目2の段階]）に残る。
-   伸びは元の値に対する％（累計）：＋10/25/45/70/100%。ロック角度と重量の影響だけは 0.4 倍（最大＋40%・−40%）。
+   伸びは元の値に対する％（累計）：＋10/25/45/70/100%。ロック角度だけは 0.4 倍（最大＋40%）。
    最終的に初期の約10倍＝新パーツで約5倍×改造で約2倍、の見積もり */
 const TUNE={},TUNE_STEP=[0,.10,.25,.45,.70,1.0],TUNE_COST=[.2,.4,.7,1.1,1.6],TUNE_BASE=8000;
 const TUNE_DEF={
  head:[{lab:'ロック距離',en:'LOCK RANGE',cap:1,desc:'ロックできる距離が伸びる'},{lab:'ロック角度',en:'LOCK ANGLE',cap:.4,desc:'ロックできる角度が広がる'}],
  core:[{lab:'装甲',en:'ARMOR',cap:1,desc:'コアの装甲が増える'},{lab:'ブースト容量',en:'BOOST',cap:1,desc:'ブーストを長く使える'}],
  arms:[{lab:'積載',en:'LOAD',cap:1,desc:'積める兵装の重さが増える'},{lab:'装甲',en:'ARMOR',cap:1,desc:'アームの装甲が増える'}],
- legs:[{lab:'基本機動力',en:'MOBILITY',cap:1,desc:'歩行・ダッシュ・急加速・跳躍が伸びる'},{lab:'重量の影響',en:'WEIGHT',cap:.4,desc:'重さで機動力が落ちる分を減らす'}]};
+ legs:[{lab:'基本機動力',en:'MOBILITY',cap:1,desc:'歩行・ダッシュ・急加速・跳躍が伸びる'},{lab:'装甲',en:'ARMOR',cap:1,desc:'レッグの装甲が増える'}]};
 const tLv=(id,i)=>(TUNE[id]||[0,0])[i]||0;
 const tMul=(slot,id,i)=>TUNE_STEP[tLv(id,i)]*TUNE_DEF[slot][i].cap;
 const tCost=(id,lv)=>Math.round((PRICE[id]||TUNE_BASE)*TUNE_COST[lv]/100)*100;
@@ -1538,7 +1538,7 @@ const tCost=(id,lv)=>Math.round((PRICE[id]||TUNE_BASE)*TUNE_COST[lv]/100)*100;
 function eff(slot,id){const b=SLOTOF(slot).cat[id];if(!b)return b;
  if(slot==='core')return {...b,armor:Math.round(b.armor*(1+tMul(slot,id,0))),boost:Math.round(b.boost*(1+tMul(slot,id,1)))};
  if(slot==='arms')return {...b,load:Math.round(b.load*(1+tMul(slot,id,0))),armor:Math.round(b.armor*(1+tMul(slot,id,1)))};
- if(slot==='legs')return {...b,mob:Math.round(b.mob*(1+tMul(slot,id,0)))};
+ if(slot==='legs')return {...b,mob:Math.round(b.mob*(1+tMul(slot,id,0))),armor:Math.round(b.armor*(1+tMul(slot,id,1)))};
  return b}
 function loadGame(){
  try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!d)return;
@@ -1881,7 +1881,7 @@ function renderAlt(){
   const id=cfg[tsel],def=TUNE_DEF[tsel];
   // 項目ごとの「今 → 次」の表示（機体全体の値で見せる）
   const show=(i,lv)=>{const T=TUNE[id]||(TUNE[id]=[0,0]),old=T[i];T[i]=lv;const S2=statsFor(cfg),pv=eff(tsel,id);T[i]=old;if(!T[0]&&!T[1])delete TUNE[id];
-   return [[S2.lockRange+'m'],['±'+S2.lockDeg+'°'],[pv.armor],[pv.boost],[pv.load],[pv.armor],[pv.mob],['×'+(WEIGHT_K*(1-TUNE_STEP[lv]*.4)).toFixed(3)]][({head:0,core:2,arms:4,legs:6})[tsel]+i][0]};
+   return [[S2.lockRange+'m'],['±'+S2.lockDeg+'°'],[pv.armor],[pv.boost],[pv.load],[pv.armor],[pv.mob],[pv.armor]][({head:0,core:2,arms:4,legs:6})[tsel]+i][0]};
   const card=i=>{const lv=tLv(id,i),d=def[i],max=lv>=5,c=max?0:tCost(id,lv);
    return `<div class="tcard"><div class="th"><span class="en">${d.en}</span><b>${d.lab}</b><span class="lvx">LV ${lv}<small>/5</small></span></div>
     <div class="pips">${[1,2,3,4,5].map(n=>`<i class="${n<=lv?'on':''}"></i>`).join('')}</div>
@@ -1892,7 +1892,7 @@ function renderAlt(){
    ${card(0)}${card(1)}
    <div class="tbtn"><button class="btn-sub" id="sEqm">装備を変更する</button></div>`;
   el.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tsel=b.dataset.t;renderShop();const k=tsel;
-   talk([[{head:'ヘッドは<em>ロックの距離と角度</em>を鍛えられます。目がよくなる、ということですね。わたくしも鍛えたいものです。',core:'コアは<em>装甲とブースト容量</em>です。コアが壊れると終わりですので、ここは大事でございます。',arms:'アームは<em>積載と装甲</em>です。重い兵装を持ちたいなら、積載から。',legs:'レッグは<em>基本機動力</em>と、<em>重量の影響</em>を減らす改造です。重い機体ほど、後者がよく効きます。'}[k],'normal']])});
+   talk([[{head:'ヘッドは<em>ロックの距離と角度</em>を鍛えられます。目がよくなる、ということですね。わたくしも鍛えたいものです。',core:'コアは<em>装甲とブースト容量</em>です。コアが壊れると終わりですので、ここは大事でございます。',arms:'アームは<em>積載と装甲</em>です。重い兵装を持ちたいなら、積載から。',legs:'レッグは<em>基本機動力</em>と<em>装甲</em>です。足が止まると狙われますので、どちらも大事でございます。'}[k],'normal']])});
   $('sEqm').onclick=()=>fadeTo(openEquipModal);
   el.querySelectorAll('.tup').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,lv=tLv(id,i),c=tCost(id,lv),d=def[i];
    $('sconfBox').innerHTML=`<div class="shd"><span class="code">TUNE</span><span class="ttl">${PART_LABEL[tsel]||'HEAD'} ${esc(ENM(tsel,id).trim())}</span></div><div class="rule"></div>
