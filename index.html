@@ -1429,7 +1429,7 @@ const SH3=(()=>{
   for(let j=0;j<5;j++){const w=.5+((i+j)%3)*.25,h=.4+((i*j)%2)*.3;box(shelf,w,h,.8,(i+j)%2?T.crate:T.part,-2.1+j*1.05,.96+i*1.5+h/2,0,0,(j%2)*.2,0)}}
  [-2.65,2.65].forEach(x=>box(shelf,.14,6.4,1.5,T.steel,x,3.2,0));
  // 奥：吊り下げ中の機体（ガレージと同じパーツで組む）
- const gantry=grp(root,-1.6,0,-4.4);
+ const gantry=grp(root,0.2,0,-4.6);
  box(gantry,7,.4,.4,T.steel,0,10.2,0);[-3.3,3.3].forEach(x=>{box(gantry,.4,10.4,.4,T.steel,x,5.2,0);box(gantry,.9,.2,.9,T.dark,x,.1,0)});
  box(gantry,.12,1.6,.12,T.dark,0,9.2,0);box(gantry,1.2,.3,.5,T.olive,0,8.3,0);
  const hung=grp(gantry,0,4.3,0);hung.scale.setScalar(1.05);
@@ -1521,7 +1521,7 @@ const SH3=(()=>{
  function size(){const el=$('sceneGL'),w=el.clientWidth||1,h=el.clientHeight||1;const rh=RES[res]?RES[res][1]*.8:h*Math.min(devicePixelRatio,2);
   r.setSize(Math.round(rh*w/h),Math.round(rh),false);cam.aspect=w/h;
   // ドールが右寄りに大きく入るように：横長ほど引いて、少し左を見る
-  const a=w/h;cam.position.set(2.2,5.0,6.8+Math.max(0,1.9-a)*2.2);cam.lookAt(2.6+Math.min(a,2.4)*.2,4.6,0);cam.updateProjectionMatrix()}
+  const a=w/h;cam.position.set(1.0,4.6,11.2+Math.max(0,1.9-a)*3.5);cam.lookAt(1.0+Math.min(a,2.4)*.15,4.0,0);cam.updateProjectionMatrix()}
  function loop(){if(!on)return;const now=performance.now(),dt=Math.min((now-last)/1000,.05);last=now;animate(dt);r.render(sc,cam);requestAnimationFrame(loop)}
  addEventListener('resize',()=>{if(on)size()});
  return {start(){if(on)return;on=true;last=performance.now();size();requestAnimationFrame(()=>{size();loop()})},stop(){on=false},mood:setMood3};
@@ -1595,14 +1595,14 @@ function renderShop(){
  $('sTitle').textContent=spath.length?spath[spath.length-1]:'PARTS DEPOT';
  $('sSub').textContent=[...spath.slice(0,-1),scat].filter(Boolean).length?(spath.join(' › ')+(scat?' › '+scat:'')):'';
  $('sCats').innerHTML=(spath.length?'<button data-back="1" class="back">◀ BACK</button>':'')+here.map(c=>{const n=nodeStock(c),leaf=!SHOP_TREE[c];
-  return `<button data-c="${c}" class="${c===scat?'on':''}${n?'':' none'}${leaf?'':' br'}">${c}<span>${n||'—'}${leaf?'':' ▶'}</span></button>`}).join('');
+  return `<button data-c="${c}" class="${c===scat?'on':''}${n?'':' none'}${leaf?'':' br'}">${c}${leaf?'':'<span>▶</span>'}</button>`}).join('');
  $('sCats').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{const c=b.dataset.c;
   if(SHOP_TREE[c]){spath=[...spath,c];scat=null;ssel=null;renderShop();return}
   scat=c;ssel=null;renderShop();
   const st=stockOf(scat);talk([[CAT_TALK[scat]||'',null]].concat(st.length?[]:[['……あいにく、この種類は<em>品切れ</em>です。申し訳ございません。','sorry']]))});
  const bk=$('sCats').querySelector('[data-back]');if(bk)bk.onclick=()=>{spath=spath.slice(0,-1);scat=null;ssel=null;renderShop()};
  const det=$('sDet');
- if(!scat){det.innerHTML=`<div class="sempty">${spath.length?'種類を選んでください。':'FRAME（フレーム）・WEAPONS（兵装）・EXTRA（背中の装備）から選んでください。'}<br>ボタンの数字は在庫の数です。</div>`;return}
+ if(!scat){det.innerHTML=`<div class="sempty">${spath.length?'種類を選んでください。':'FRAME（フレーム）・WEAPONS（兵装）・EXTRA（背中の装備）から選んでください。'}</div>`;return}
  if(!ssel){det.innerHTML=`<div class="sempty">この種類の在庫はありません。<br>（所持品はガレージで装備できます）</div>`;return}
  const items=stock.map(id=>{const sl=slotOfItem(id),ov=statsFor({...cfg,[sl]:id}).over,ng=PRICE[id]>CREDIT;
   return `<button class="sitem${id===ssel?' sel':''}" data-i="${id}"><span class="a"><small>${esc(pn(sl,id)[1]||scat)}</small><b>${esc(ENM(sl,id).trim())}</b></span><span class="p"><small class="${ng?'ng':ov?'ov':''}">${ng?'資金不足':ov?'過積載':'NEW'}</small><b>${fmtCR(PRICE[id])}</b></span></button>`}).join('');
