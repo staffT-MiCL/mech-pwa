@@ -204,12 +204,13 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .cells i.gu{outline:1px dashed var(--accent);outline-offset:-1px}.cells i.gd{opacity:.35}
 .gf{font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:var(--faint)}
 .gs .h,.gs .bar{display:none}
+.aC{grid-column:1/-1;height:7px;margin-top:2px}
 .aPrm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .aP{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:baseline;gap:0 4px;min-width:0}
 .aP .aL{font-family:var(--mech);font-size:9px;font-weight:700;letter-spacing:.1em;color:#9fe6ee}
 .aP .aV{font-family:var(--mech);font-size:12px;font-weight:700;color:#eef2ef;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.aP .aV small{font-size:8px;color:var(--dim);font-weight:500}
 .aP .aB{grid-column:1/-1;height:6px;background:#18201c;margin-top:2px}.aP .aB i{display:block;height:100%;background:var(--accent)}
-.aP.hurt .aB i{background:#e0b040}.aP.dead .aL,.aP.dead .aV{color:var(--alert)}.aP.dead .aB{background:#3a1410;outline:1px solid var(--alert)}
+.aP.hurt .aB i{background:#e0b040}.aP.dead .aL,.aP.dead .aV{color:var(--alert)}.aP.dead .aC i{background:#3a1410}
 /* 兵装の階層リスト */
 .pitem.cat .t{color:var(--fire)}.pitem.hascur{border-color:#4f7c42}
 .pitem.catback{background:#141a17;border-color:#3a4540;border-left:3px solid var(--fire)}
@@ -1221,7 +1222,7 @@ function renderGStats(){
  const row=(code,val,unit,chip,bar,foot='')=>`<div class="gs"><div class="gh"><span class="gl">${code}</span><span class="gv">${val}<small>${unit}</small></span>${chip}</div>${bar}${foot?`<div class="gf">${foot}</div>`:''}</div>`;
  $('gstats').innerHTML=
   `<div class="gs garm"><div class="gh"><span class="gl">装甲</span>${dl(SS.armor,P2?.armor)}</div><div class="parm">${PART_KEYS.map(k=>{const c2=P2?{...cfg,[selSlot]:cand}:cfg,mx=partMax(k,c2),nw=partNow(k,c2),r=nw/mx;
-    return `<div class="aP${nw<=0?' dead':r<=.5?' hurt':''}"><span class="aL">${PART_LABEL[k]}</span><span class="aV">${nw}<small>/${mx}</small></span><div class="aB"><i style="width:${r*100}%"></i></div></div>`}).join('')}</div></div>`+
+    return `<div class="aP${nw<=0?' dead':r<=.5?' hurt':''}"><span class="aL">${PART_LABEL[k]}</span><span class="aV">${nw}<small>/${mx}</small></span><div class="cells aC" style="grid-template-columns:repeat(20,minmax(0,1fr))">${Array.from({length:20},(_,i)=>`<i class="${i<Math.round(r*20)?(nw<=0?'':r<=.5?'c-warn':'c-core'):''}"></i>`).join('')}</div></div>`}).join('')}</div></div>`+
   row('機動力',Math.round(SS.mob),'',dl(SS.mob,P2?.mob),cells(100,[[SS.mob,'c-mob'],[SS.pen,'c-pen']],P2?.mob),`レッグ +${SS.legMob} − 重量 ${Math.round(SS.pen)}（赤枠＝重さで失った分）`)+
   row('ブースト容量',SS.boost,'',dl(SS.boost,P2?.boost),cells(130,[[SS.boost,'c-mob']],P2?.boost),'ダッシュ・跳躍・急加速で使う量')+
   row('積載',S2.weap,'/'+S2.load,P2&&(P2.weap!==SS.weap||P2.load!==SS.load)?`<span class="dchip ${P2.over?'dn':'up'}">${P2.weap-SS.weap>=0?'+':''}${P2.weap-SS.weap}</span>`:'',cells(S2.load,[[Math.min(S2.weap,S2.load),lc]]),lr>1?'積載オーバー：出撃できません':`兵装の重さ ${S2.weap} ／ 上限 ${S2.load}（${Math.round(lr*100)}%）`);
