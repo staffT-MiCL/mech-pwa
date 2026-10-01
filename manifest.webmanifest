@@ -6,7 +6,7 @@
   "start_url": "/mech-pwa/",
   "scope": "/mech-pwa/",
   "display": "fullscreen",
-  "orientation": "any",
+  "orientation": "landscape",
   "background_color": "#0a0c0b",
   "theme_color": "#0a0c0b",
   "lang": "ja",
