@@ -208,6 +208,22 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .pitem.cat .t{color:var(--fire)}.pitem.hascur{border-color:#4f7c42}
 .pitem.catback{background:#141a17;border-color:#3a4540;border-left:3px solid var(--fire)}
 .pitem.catback .pc{color:var(--fire)}.pitem.catback .n small{font-family:var(--body);font-size:10px;color:var(--dim);margin-left:4px}
+/* 種類の行 */
+.pitem.cat{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto}
+.pitem.cat .cn{font-family:var(--mech);font-weight:700;font-size:14px;letter-spacing:.1em;color:#eef2ef;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pitem.cat .cj{grid-row:2;font-size:10px;color:var(--dim);font-family:var(--body)}
+.pitem.cat .t{grid-row:1/3;grid-column:2}
+.pitem.ovw .n{color:var(--dim)}
+/* 部位ボタンの領域：性能パネルの上だけを使う（高さは JS で --gsh に設定） */
+#tagzone{position:absolute;left:0;right:0;top:0;bottom:var(--gsh,120px);pointer-events:none}
+#tags{position:absolute;inset:0}
+.tools{top:calc(53% + 20px)}
+@media (max-height:520px){
+ .ptag{width:86px;height:24px;font-size:10px;padding:0 6px}.ptag span{font-size:9px}
+ .tools{width:88px;left:calc(18% - 43px);top:calc(53% + 16px)}.tools button{height:22px;font-size:9px}
+ #gstats{gap:3px 12px;padding:5px 10px 4px}.gf{display:none}.gv{font-size:14px}.gl{font-size:11px!important}.cells{height:7px}
+ .pitem{height:36px}.pitem.cat .cn{font-size:13px}
+}
 /* メニュー */
 #menu{position:fixed;inset:0;z-index:20;background:rgba(4,6,5,.6)}
 #menu .drawer{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));box-sizing:border-box;background:#101513;border-left:2px solid var(--fire);display:flex;flex-direction:column;gap:8px;overflow-y:auto}
@@ -277,8 +293,8 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 </header>
 <div id="wrap">
  <div id="gui">
-  <div id="tags"></div>
-  <div class="tools"><button id="btnPaint">PAINT</button><button id="btnTrain">TRAINING</button><button id="btnView">VIEW</button></div>
+  <div id="tagzone"><div id="tags"></div>
+  <div class="tools"><button id="btnPaint">PAINT</button><button id="btnTrain">TRAINING</button><button id="btnView">VIEW</button></div></div>
   <div class="stamp"><b>HX-07</b><br>S/N 0417-A<br>LOT 07 / CLASS B</div>
   <div id="gstats"></div>
  </div>
@@ -904,7 +920,7 @@ const SLOTOF=k=>SLOTS.find(s=>s.key===k);
 /* 右パネルの状態 */
 let view='overview',selSlot=null,cand=null;
 let wcat=null; // 兵装の一覧で開いている種類（null＝種類の一覧）
-function openSlot(k){view='slot';selSlot=k;cand=cfg[k];wcat=SLOTOF(k).group==='W'?pn(k,cfg[k])[0]:null;renderGarage()}
+function openSlot(k){view='slot';selSlot=k;cand=cfg[k];wcat=null;renderGarage()}
 function renderGarage(){renderHeader();renderGStats();renderSide()}
 // ガレージでは、選択中（未装備）の装備を仮に組んだ見た目にする
 function syncPreviewMech(){
@@ -1006,27 +1022,27 @@ function renderSide(){
   const catsOf=()=>{const m=new Map();items.forEach(id=>{const c=pn(selSlot,id)[0];if(!m.has(c))m.set(c,[]);m.get(c).push(id)});return m};
   const CATS=sl.group==='W'?catsOf():null;
   const shown=sl.group==='W'&&wcat?CATS.get(wcat)||[]:items;
-  const catList=sl.group==='W'&&!wcat?[...CATS].map(([c,ids])=>{const has=ids.includes(cur),allOv=ids.every(id=>id!==cur&&statsFor({...cfg,[selSlot]:id}).over);
-    return `<button class="pitem cat${has?' hascur':''}" data-cat="${c}" ${allOv?'disabled':''}><span class="pc">${c}<small>${pn(selSlot,ids[0])[1]}</small></span><span class="n">${ids[0]==='none'?'装備を外す':ids.length+' 種類から選ぶ'}</span>${has?'<span class="t eq">装備中</span>':'<span class="t">▶</span>'}</button>`}).join(''):'';
+  const catList=sl.group==='W'&&!wcat?[...CATS].map(([c,ids])=>{const has=ids.includes(cur);
+    return `<button class="pitem cat${has?' hascur':''}" data-cat="${c}"><span class="cn">${c}</span><span class="cj">${ids[0]==='none'?'装備を外す':pn(selSlot,ids[0])[1]}</span>${has?'<span class="t eq">装備中</span>':'<span class="t">▶</span>'}</button>`}).join(''):'';
   const backRow=sl.group==='W'&&wcat?`<button class="pitem catback" id="catBack"><span class="pc">◀ 種類の一覧へ戻る</span><span class="n">${wcat} <small>${pn(selSlot,shown[0])[1]}</small></span><span class="t"></span></button>`:'';
   el.innerHTML=`<div class="shd"><span class="code">SLOT ${no}</span><span class="ttl en">${sl.label}</span><span class="sub">${sub}</span></div><div class="rule"></div>
   <div class="cols2"><div class="plist">${catList}${backRow}${(sl.group==='W'&&!wcat?[]:shown).map(id=>{const d=sl.cat[id],w=d.st?d.st.wt:d.wt;const s=id===cand,e=id===cur;
     const ov=!e&&statsFor({...cfg,[selSlot]:id}).over;
-    return `<button class="pitem${s?' sel':''}${ov?' ovw':''}" data-id="${id}" ${ov?'disabled':''}><span class="pc">${pn(selSlot,id)[0]}<small>${pn(selSlot,id)[1]}</small></span><span class="n">${esc(ENM(selSlot,id).trim())}</span>${e?'<span class="t eq">装備中</span>':ov?'<span class="t ov">重すぎ</span>':`<span class="t">重量${w||0}</span>`}</button>`}).join('')}
+    return `<button class="pitem${s?' sel':''}${ov?' ovw':''}" data-id="${id}"><span class="pc">${pn(selSlot,id)[0]}<small>${pn(selSlot,id)[1]}</small></span><span class="n">${esc(ENM(selSlot,id).trim())}</span>${e?'<span class="t eq">装備中</span>':ov?'<span class="t ov">重すぎ</span>':`<span class="t">重量${w||0}</span>`}</button>`}).join('')}
     ${sl.group==='W'?'':items.length<5?'<div class="pitem lock"><span class="pc">－</span><span class="n">未入手</span><span class="t"></span></div>':''}</div>
    <div class="detail"><div class="dtop">${sl.group==='W'&&cand!=='none'?'<div class="pv" id="pv"></div>':''}<div class="dtxt"><span class="en">${pn(selSlot,cand)[0]} ／ ${pn(selSlot,cand)[1]}</span><span class="nm">${esc(ENM(selSlot,cand).trim())}</span><p>${esc(DESC[cand]||'')}</p></div></div>
     <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${brief}</div>
-    <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur?'disabled':''}>${cand===cur?'装備中':'装備する'}</button><button class="btn-sub" id="more">詳しく見る</button><button class="btn-sub" id="back">戻る</button></div></div></div>`;
+    <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur||P2.over?'disabled':''}>${cand===cur?'装備中':P2.over?'重すぎて装備できない':'装備する'}</button><button class="btn-sub" id="more">詳しく見る</button><button class="btn-sub" id="back">戻る</button></div></div></div>`;
   $('more').onclick=()=>openModal(`<div class="shd"><span class="code">${pn(selSlot,cand)[0]} ／ ${pn(selSlot,cand)[1]}</span><span class="ttl">${esc(ENM(selSlot,cand).trim())}</span></div><div class="rule"></div>
    <p class="note" style="margin:0">${esc(DESC[cand]||'')}${cd.st&&cd.st.note?'<br>'+esc(cd.st.note):''}</p>
    <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${part}</div>
    <div class="sec">機体全体<span class="secj">現在 → 装備後</span></div><div class="cmp">${whole}${cmpRow('歩行速度',+SS.walk.toFixed(1),+P2.walk.toFixed(1))}${cmpRow('ダッシュ速度',+SS.dash.toFixed(1),+P2.dash.toFixed(1))}${cmpRow('急加速距離',+SS.qb.toFixed(1),+P2.qb.toFixed(1))}${cmpRow('ロック距離',SS.lockRange,P2.lockRange,'hi',v=>v+'m')}</div>
    ${P2.over?`<div class="warn-msg">この装備にすると積載を ${P2.weap-P2.load} 超えます（出撃不可）</div>`:''}`);
   el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{cand=b.dataset.id;renderGarage()});
-  el.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{wcat=b.dataset.cat;const ids=CATS.get(wcat);if(!ids.includes(cand))cand=ids.includes(cur)?cur:(ids.find(id=>!statsFor({...cfg,[selSlot]:id}).over)||ids[0]);renderGarage()});
+  el.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{wcat=b.dataset.cat;const ids=CATS.get(wcat);if(!ids.includes(cand))cand=ids.includes(cur)?cur:ids[0];renderGarage()});
   const cb=$('catBack');if(cb)cb.onclick=()=>{wcat=null;renderGarage()};
   const pv=$('pv');if(pv&&pv.appendChild){pv.appendChild(PR.domElement);setPreview(selSlot,cand)}else setPreview(null);
-  $('equip').onclick=()=>{cfg[selSlot]=cand;assemble()};
+  $('equip').onclick=()=>{if(statsFor({...cfg,[selSlot]:cand}).over)return;cfg[selSlot]=cand;assemble()};
   $('back').onclick=()=>{view='overview';selSlot=null;renderGarage()};
  }else if(view==='paint'){
   el.innerHTML=`<div class="shd"><span class="code">SYS</span><span class="ttl en">PAINT</span><span class="sub">フレームの色を変更します（兵装は変わりません）</span></div><div class="rule"></div>
@@ -1318,7 +1334,7 @@ addEventListener('resize',resize);resize();
 const B={tX:0,tY:0,hY:0,lift:0,arms:[{x:0,z:0,e:0},{x:0,z:0,e:0}],legs:[{th:0,kn:0,tz:0},{th:0,kn:0,tz:0}]};
 const _v=new THREE.Vector3(),SOLE=.24;let lastT=performance.now();
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let dustT=0,boostNow=0;
+let dustT=0,boostNow=0,lastGsh=0;
 const lockEl=$('lock'),lockTxt=$('lockTxt');
 R.setAnimationLoop(()=>{
  const now=performance.now(),dt=Math.min((now-lastT)/1000,.05);lastT=now;t+=dt;
@@ -1425,13 +1441,13 @@ R.setAnimationLoop(()=>{
    _v.set(P.pos.x-f.x*5.4,8.6+y,P.pos.z-f.z*5.4);C.position.lerp(_v,Math.min(1,dt*12));
    C.lookAt(P.pos.x+f.x*26,5.4+y*.7,P.pos.z+f.z*26);
   }
- }else{C.position.set(Math.sin(az)*dist*Math.cos(el2),3.4+Math.sin(el2)*dist,Math.cos(az)*dist*Math.cos(el2));C.lookAt(0,3.7,0)}
+ }else{C.position.set(Math.sin(az)*dist*Math.cos(el2),3.4+Math.sin(el2)*dist,Math.cos(az)*dist*Math.cos(el2));C.lookAt(0,2.4,0)}
  updateFX(dt);
  if(shake>0&&!reduce){C.position.x+=(Math.random()-.5)*shake;C.position.y+=(Math.random()-.5)*shake;shake*=.85;if(shake<.005)shake=0}
  Wp.glow.color.setHSL(.07,1,.5+Math.sin(t*6)*.08);
  Sk.lamp.color.setHSL(0,1,(Math.floor(t*2)%2)?.55:.18);
  R.render(S,C);
- if(mode==='garage'){HL.opacity=.65+Math.sin(t*5)*.35;if(pvOn&&view==='slot'){pvSpin.rotation.y+=dt*.8;PR.render(PS,PC)}}
+ if(mode==='garage'){const gh=($('gstats').offsetHeight||100)+14;if(gh!==lastGsh){lastGsh=gh;W.style.setProperty('--gsh',gh+'px')}HL.opacity=.65+Math.sin(t*5)*.35;if(pvOn&&view==='slot'){pvSpin.rotation.y+=dt*.8;PR.render(PS,PC)}}
  // HUD
  if(mode==='play'){
   $('apBar').style.width=(P.ap/P.apMax*100)+'%';$('apNum').textContent=Math.round(P.ap);
