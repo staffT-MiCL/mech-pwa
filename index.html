@@ -2702,18 +2702,22 @@ function buildOpScenes(){
  const amb=new THREE.AmbientLight(0x707a80,2),sun=new THREE.DirectionalLight(0xfff0d8,2.4);sun.position.set(-6,10,8);OS.add(amb,sun);
  const T=(c,l)=>psMat(0xffffff,{map:panel(c,l)});
  const ground=(col,size=160)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(size,size,16,16),psMat(col));m.rotation.x=-Math.PI/2;return m};
- const rnd=(a,b)=>a+Math.random()*(b-a);
+ let seed=0x0717;const rand=()=>{seed=(seed+0x6D2B79F5)|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+ const rnd=(a,b)=>a+rand()*(b-a);
+ // ARCHIVE 01 のカメラの通り道（xz）。この線から離れた所にだけ、がれき・板・建物を置く
+ const CAM1=[[-9,4],[-4,-2],[-7.5,-9],[-2,14]];
+ const clear1=(x,z,r)=>{for(let i=0;i<CAM1.length-1;i++){const [ax,az]=CAM1[i],[bx,bz]=CAM1[i+1],dx=bx-ax,dz=bz-az,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/(dx*dx+dz*dz)));if(Math.hypot(x-ax-dx*t,z-az-dz*t)<r)return false}return true};
  // 1) 旧戦役：灰色の廃墟と倒れたギア
  {const g=grp(OS);g.add(ground(0x3a3832));
   const wm=T('#4a4842','#2a2925');
-  for(let i=0;i<26;i++){const x=rnd(-40,40),z=rnd(-70,-8);if(Math.abs(x)<7&&z>-20)continue;const h=rnd(3,16);box(g,rnd(3,8),h,rnd(3,7),wm,x,h/2-rnd(0,1.5),z,rnd(-.12,.12),rnd(0,3),rnd(-.15,.15))}
+  for(let i=0;i<26;i++){const x=rnd(-40,40),z=rnd(-70,-8);if(Math.abs(x)<7&&z>-20)continue;if(!clear1(x,z,8))continue;const h=rnd(3,16);box(g,rnd(3,8),h,rnd(3,7),wm,x,h/2-rnd(0,1.5),z,rnd(-.12,.12),rnd(0,3),rnd(-.15,.15))}
   // 倒れた機体・残骸は必ず地面に接地させる（回したあとに最下点を地面へ合わせ、少しめり込ませる）
   const settle=(o,sink=.15)=>{o.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(o);o.position.y-=b.min.y+sink};
   const dark=(o,k)=>o.traverse(c=>{if(c.isMesh&&c.material.color){const m=c.material.clone();m.color.multiplyScalar(k);c.material=m}});
   const rub=[psMat(0x2e2c28),psMat(0x3a3832),psMat(0x45423b),psMat(0xffffff,{map:panel('#4a4842','#2a2925')})],rebar=psMat(0x5a4a3a);
   // 瓦礫：細かい破片・崩れたコンクリート板・突き出た鉄筋
-  for(let i=0;i<150;i++){const x=rnd(-22,22),z=rnd(-36,8);if(x>-12&&x<10&&z>-5&&z<7)continue;const r=box(g,rnd(.25,1.6),rnd(.15,.9),rnd(.25,1.6),rub[i%4],x,0,z,rnd(-.6,.6),rnd(0,3),rnd(-.6,.6));settle(r,.08)}
-  for(let i=0;i<22;i++){const x=rnd(-24,24),z=rnd(-40,-3);if(x>-14&&x<11&&z>-9)continue;const sl=box(g,rnd(2.5,6),rnd(.35,.6),rnd(2,4),rub[3],x,0,z,rnd(-.5,.5),rnd(0,3),rnd(-.45,.45));
+  for(let i=0;i<150;i++){const x=rnd(-22,22),z=rnd(-36,8);if(x>-12&&x<10&&z>-5&&z<7)continue;if(!clear1(x,z,3))continue;const r=box(g,rnd(.25,1.6),rnd(.15,.9),rnd(.25,1.6),rub[i%4],x,0,z,rnd(-.6,.6),rnd(0,3),rnd(-.6,.6));settle(r,.08)}
+  for(let i=0;i<22;i++){const x=rnd(-24,24),z=rnd(-40,-3);if(x>-14&&x<11&&z>-9)continue;if(!clear1(x,z,4.5))continue;const sl=box(g,rnd(2.5,6),rnd(.35,.6),rnd(2,4),rub[3],x,0,z,rnd(-.5,.5),rnd(0,3),rnd(-.45,.45));
    for(let k=0;k<3;k++)cyl(sl,.04,.04,rnd(1,2.2),rebar,rnd(-1,1),.6,rnd(-.8,.8),rnd(-.6,.6),rnd(-.6,.6),4);settle(sl,.2)}
   // ばらばらになったギア：頭・胴・両腕・脚・武器が別々に転がる（どれも地面に接地）
   const scatter=(c,cx,cz,sp,k,tn)=>{const tint=makeTint(OP_TINT[tn]),put=(o,x,z,rx,rz)=>{o.position.set(x,0,Math.min(z,-6.5));o.rotation.set(rx,rnd(0,6.3),rz);retint(o,tint);settle(o,.18);dark(o,k)};
@@ -2737,7 +2741,7 @@ function buildOpScenes(){
    sg.position.set(-3,0,-15);sg.rotation.y=.55;settle(sg,.08);dark(sg,.55)}
   // 壊れた無人機（ドローン・砲台）：傾いて地面に落ち、翼や砲身が折れている
   const dm=psMat(0xffffff,{map:panel('#5a2a22','#2a1410')}),dk=psMat(0x221d1a),ey=psMat(0x2a0e08);
-  [[-4,-6,.6,.3],[10,-8,-1.2,-.4],[-11,-13,2.2,.5],[4,-17,.9,-.6],[-2,-30,-.4,.4]].forEach(([x,z,ry,rz],i)=>{const d=grp(g,x,0,z);d.rotation.set(rnd(-.3,.3),ry,rz);
+  [[5,-5,.6,.3],[10,-8,-1.2,-.4],[-11,-13,2.2,.5],[4,-17,.9,-.6],[-2,-30,-.4,.4]].forEach(([x,z,ry,rz],i)=>{const d=grp(g,x,0,z);d.rotation.set(rnd(-.3,.3),ry,rz);
    box(d,1.4,.9,1.6,dm,0,0,0);box(d,.9,.3,.2,ey,0,.05,.8);box(d,.9,.12,.8,dk,1.0,.1,-.1,0,0,.3);if(i%2)box(d,.9,.12,.8,dk,-1.2,-.35,.2,.4,0,-1.1);
    cyl(d,.25,.3,.3,dk,.5,-.55,0);box(d,.3,.3,.3,dk,rnd(-1.5,1.5),-.4,rnd(1,1.6));settle(d,.2)});
   [[10,-12,.8],[-7,-18,-1.5]].forEach(([x,z,ry])=>{const tr=grp(g,x,0,z);tr.rotation.y=ry;cyl(tr,1.2,1.5,.8,dk,0,.4,0,0,0,8);
@@ -2757,7 +2761,8 @@ function buildOpScenes(){
     ;F.pl.intensity=24*F.sz*(.75+Math.sin(ft*13+F.ph)*.15+Math.random()*.1);
     F.sm.forEach(b2=>{b2.position.y+=dt*1.6*F.sz;if(b2.position.y>b2.userData.top)b2.position.y=0;b2.rotation.y+=dt*.2})});
    ED.forEach((p,i)=>{p[1]+=dt*p[3];p[0]+=Math.sin(ft+i)*dt*.4;if(p[1]>14)p[1]=0;emx.makeTranslation(p[0],p[1],p[2]);emb.setMatrixAt(i,emx)});emb.instanceMatrix.needsUpdate=true};
-  OSC.push({g,upd:fireUpd,bg:0x3a1a0e,fog:[8,72],amb:0x9a6048,from:[[-9,.5,5],[3,2.6,-10],.07,40],to:[[6.5,1.1,-2.5],[1.5,.8,-11],-.04,30]})}
+  OSC.push({g,upd:fireUpd,bg:0x3a1a0e,fog:[8,72],amb:0x9a6048,keys:[
+   [0,[-9,.6,4],[2,1.4,-10],.07,40],[.35,[-4,.8,-2],[2,1,-11],.04,34],[.6,[-7.5,2.4,-9],[-3,1.8,-15],-.05,36],[1,[-2,14,14],[2,0,-20],0,50]]})}
  // 2) 統治AI：白い配給都市と塔、シアンの紋章
  {const g=grp(OS);g.add(ground(0x7c868a));
   const wm=T('#c9d2d4','#7d8e92'),cy=new THREE.MeshBasicMaterial({color:0x6fd3e0});
@@ -2799,7 +2804,11 @@ function buildOpScenes(){
 }
 function opShowScene(i,dur){OSC.forEach((s,k)=>s.g.visible=k===i);const s=OSC[i];OS.background=new THREE.Color(s.bg);OS.fog=new THREE.Fog(s.bg,...s.fog);OS.userData.amb.color.setHex(s.amb);OP.sc=i;OP.t0=performance.now();OP.dur=dur}
 function opLoop(){if(!OP.on)return;requestAnimationFrame(opLoop);holoFrame();if(OP.sc<0||!OS)return;
- const s=OSC[OP.sc],u=Math.min(1,(performance.now()-OP.t0)/OP.dur),e=u*u*(3-2*u),V=(a,b)=>a.map((v,k)=>v+(b[k]-v)*e);
+ const s=OSC[OP.sc],u=Math.min(1,(performance.now()-OP.t0)/OP.dur);
+ if(s.keys){const K=s.keys;let i=0;while(i<K.length-2&&u>K[i+1][0])i++;const A=K[i],B=K[i+1],q=Math.min(1,Math.max(0,(u-A[0])/(B[0]-A[0]))),e=q*q*(3-2*q),V=(a,b)=>a.map((v,k)=>v+(b[k]-v)*e);
+  OC.position.set(...V(A[1],B[1]));OC.lookAt(...V(A[2],B[2]));const fv=A[4]+(B[4]-A[4])*e;if(Math.abs(OC.fov-fv)>.01){OC.fov=fv;OC.updateProjectionMatrix()}
+  OC.rotateZ(A[3]+(B[3]-A[3])*e);if(s.upd)s.upd(1/60);OR.render(OS,OC);return}
+ const e=u*u*(3-2*u),V=(a,b)=>a.map((v,k)=>v+(b[k]-v)*e);
  OC.position.set(...V(s.from[0],s.to[0]));OC.lookAt(...V(s.from[1],s.to[1]));
  const fv=s.from[3]+(s.to[3]-s.from[3])*e;if(Math.abs(OC.fov-fv)>.01){OC.fov=fv;OC.updateProjectionMatrix()}
  OC.rotateZ(s.from[2]+(s.to[2]-s.from[2])*e);if(s.upd)s.upd(1/60);OR.render(OS,OC)}
