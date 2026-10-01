@@ -224,6 +224,17 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
  #gstats{gap:3px 12px;padding:5px 10px 4px}.gf{display:none}.gv{font-size:14px}.gl{font-size:11px!important}.cells{height:7px}
  .pitem{height:36px}.pitem.cat .cn{font-size:13px}
 }
+/* ツールボタンは部位ボタンから離して左下に横並び（性能パネルの上） */
+.tools{left:10px!important;top:auto!important;bottom:8px;width:auto!important;flex-wrap:nowrap}
+.tools button{flex:0 0 auto;padding:0 10px}
+/* 出撃画面：右上マップ、ターゲット変更ボタン */
+#map{position:absolute;right:12px;top:calc(10px + env(safe-area-inset-top,0px));width:124px;height:124px;pointer-events:none;image-rendering:pixelated}
+#garage{right:148px!important}
+#camBtn{right:148px!important}
+#score{right:148px!important}
+#bTgt{position:absolute;right:65px;bottom:calc(214px + env(safe-area-inset-bottom,0px));width:88px;height:34px;padding:0;font-family:var(--mech);font-weight:700;font-size:11px;letter-spacing:.12em;background:rgba(20,24,22,.6);border:2px solid rgba(240,160,64,.7);color:var(--fire);touch-action:none;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+#bTgt.on{background:rgba(240,160,64,.55);color:#1a1006}
+@media (max-height:420px){#map{width:104px;height:104px}#garage,#camBtn,#score{right:128px!important}#bTgt{bottom:calc(208px + env(safe-area-inset-bottom,0px))}}
 /* メニュー */
 #menu{position:fixed;inset:0;z-index:20;background:rgba(4,6,5,.6)}
 #menu .drawer{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));box-sizing:border-box;background:#101513;border-left:2px solid var(--fire);display:flex;flex-direction:column;gap:8px;overflow-y:auto}
@@ -306,6 +317,8 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
   <div id="modeBadge"></div>
   <button id="garage">ガレージ</button>
   <button id="camBtn">CAM: CHASE</button>
+  <canvas id="map" width="124" height="124" aria-label="マップ"></canvas>
+  <button id="bTgt" aria-label="ターゲット変更">TARGET ▶</button>
   <div id="score"></div>
   <div id="reticle"></div>
   <div id="lock" hidden><span id="lockTxt"></span></div>
@@ -319,7 +332,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
    <button class="pbtn" id="bR">右手<small id="nR"></small></button>
    <button class="pbtn" id="bJ">跳躍</button>
   </div>
-  <div id="pcHelp">移動 WASD（同じキー2回で急加速）／ダッシュ Shift<br>跳躍 Space／右手 J・左クリック／左手 K・右クリック／肩 L<br>シールドはボタンを押している間だけ構える<br>視点 マウスドラッグ・Q E・← →／V で俯瞰と切替<br>攻撃ボタンは長押しで弾が尽きるまで撃ち続ける</div>
+  <div id="pcHelp">移動 WASD（同じキー2回で急加速）／ダッシュ Shift<br>跳躍 Space／右手 J・左クリック／左手 K・右クリック／肩 L<br>シールドはボタンを押している間だけ構える<br>視点 マウスドラッグ・Q E・← →／V で俯瞰と切替／Tab でターゲット変更<br>攻撃ボタンは長押しで弾が尽きるまで撃ち続ける</div>
  </div>
  <div id="err" hidden></div>
 </div>
@@ -1222,12 +1235,55 @@ function quickBoost(x,y,mult=1,free=false){ // x=右+ / y=前+ （画面基準�
  P.qb={dir:dir.normalize(),u:0,dist:SS.qb*mult};run('qb',QBA);shake=Math.max(shake,.12);
 }
 let lockT2=null,reveal=0;
+let pinned=null,lockCands=[];
+// ロック候補：追従視点＝照準の中心に近い順、俯瞰＝近い順。ターゲット変更で選んだ敵（pinned）は候補にいる間は優先
+/* マップ：追従＝自機中心・上が自機の向き／俯瞰＝カメラ中心・上が画面の奥、画面に映る範囲を台形で表示 */
+const MAPC=document.getElementById('map'),MG=MAPC.getContext('2d'),_rc=new THREE.Raycaster(),_gp=new THREE.Plane(new THREE.Vector3(0,1,0),0),_hit=new THREE.Vector3();
+function drawMap(){
+ const W0=MAPC.width,H0=MAPC.height,cx=W0/2,cy=H0/2,top=CAMMODE==='top',R=top?46:64,sc=(W0/2-6)/R;
+ const ox=top?camC.x:P.pos.x,oz=top?camC.z-6:P.pos.z;
+ // 地図座標へ：x＝右、y＝上
+ let fx,fz,rx,rz;if(top){fx=0;fz=-1;rx=1;rz=0}else{fx=Math.sin(P.yaw);fz=Math.cos(P.yaw);rx=-Math.cos(P.yaw);rz=Math.sin(P.yaw)}
+ const toM=(x,z)=>{const dx=x-ox,dz=z-oz;return [cx+(dx*rx+dz*rz)*sc,cy-(dx*fx+dz*fz)*sc]};
+ MG.clearRect(0,0,W0,H0);
+ MG.fillStyle='rgba(8,12,10,.78)';MG.beginPath();MG.moveTo(10,0);MG.lineTo(W0,0);MG.lineTo(W0,H0-10);MG.lineTo(W0-10,H0);MG.lineTo(0,H0);MG.lineTo(0,10);MG.closePath();MG.fill();
+ MG.save();MG.clip();
+ // 目盛り
+ MG.strokeStyle='rgba(91,107,58,.55)';MG.lineWidth=1;
+ for(let i=1;i<4;i++){MG.beginPath();MG.arc(cx,cy,(W0/2-6)*i/3,0,Math.PI*2);MG.stroke()}
+ MG.beginPath();MG.moveTo(cx,0);MG.lineTo(cx,H0);MG.moveTo(0,cy);MG.lineTo(W0,cy);MG.stroke();
+ // 演習場の外周
+ MG.strokeStyle='rgba(184,168,120,.6)';MG.beginPath();for(let i=0;i<=48;i++){const a=i/48*Math.PI*2,[x,y]=toM(Math.sin(a)*ARENA,Math.cos(a)*ARENA);i?MG.lineTo(x,y):MG.moveTo(x,y)}MG.stroke();
+ // 建物
+ MG.fillStyle='rgba(120,130,120,.35)';world.children.forEach(b=>{if(!b.isMesh||b.geometry.parameters.height<2)return;const [x,y]=toM(b.position.x,b.position.z);MG.fillRect(x-2,y-2,4,4)});
+ // 俯瞰：画面に映る地面の範囲
+ if(top){const pts=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([nx,ny])=>{_rc.setFromCamera({x:nx,y:ny},C);if(!_rc.ray.intersectPlane(_gp,_hit)){_hit.copy(_rc.ray.direction).setY(0).normalize().multiplyScalar(200).add(C.position)}return toM(_hit.x,_hit.z)});
+  MG.fillStyle='rgba(111,211,224,.08)';MG.strokeStyle='rgba(111,211,224,.6)';MG.beginPath();pts.forEach(([x,y],i)=>i?MG.lineTo(x,y):MG.moveTo(x,y));MG.closePath();MG.fill();MG.stroke()}
+ // 敵
+ ENEMIES.forEach(e=>{if(!e.alive)return;const [x,y]=toM(e.g.position.x,e.g.position.z);
+  const inR=Math.hypot(x-cx,y-cy)<W0/2-4;const X=inR?x:cx+(x-cx)/Math.hypot(x-cx,y-cy)*(W0/2-5),Y=inR?y:cy+(y-cy)/Math.hypot(x-cx,y-cy)*(W0/2-5);
+  MG.fillStyle=inR?'#ff5a3c':'rgba(255,90,60,.5)';if(e.type==='drone'){MG.beginPath();MG.moveTo(X,Y-3.5);MG.lineTo(X+3.5,Y+3);MG.lineTo(X-3.5,Y+3);MG.closePath();MG.fill()}else MG.fillRect(X-3,Y-3,6,6);
+  if(e===lockT){MG.strokeStyle='#f0a040';MG.lineWidth=1.5;MG.strokeRect(X-6,Y-6,12,12);MG.lineWidth=1}else if(e===lockT2){MG.strokeStyle='rgba(240,160,64,.6)';MG.setLineDash([2,2]);MG.strokeRect(X-6,Y-6,12,12);MG.setLineDash([])}});
+ // 自機（向きつきの三角）
+ {const [x,y]=toM(P.pos.x,P.pos.z),hx=Math.sin(P.yaw),hz=Math.cos(P.yaw),a=Math.atan2(hx*rx+hz*rz,hx*fx+hz*fz);
+  MG.save();MG.translate(x,y);MG.rotate(a);MG.fillStyle='#8cf06e';MG.beginPath();MG.moveTo(0,-6);MG.lineTo(4.5,5);MG.lineTo(0,2.5);MG.lineTo(-4.5,5);MG.closePath();MG.fill();MG.restore()}
+ MG.restore();
+ MG.strokeStyle='rgba(184,168,120,.7)';MG.lineWidth=1;MG.beginPath();MG.moveTo(10,.5);MG.lineTo(W0-.5,.5);MG.lineTo(W0-.5,H0-10);MG.lineTo(W0-10,H0-.5);MG.lineTo(.5,H0-.5);MG.lineTo(.5,10);MG.closePath();MG.stroke();
+ MG.fillStyle='rgba(184,168,120,.85)';MG.font='bold 8px monospace';MG.fillText(top?'MAP ▲N':'MAP ▲FWD',6,H0-4);MG.fillText(R*2+'m',W0-28,10);
+}
+function switchTarget(){
+ if(mode!=='play'||lockCands.length<2){if(mode==='play'&&!lockCands.length)say('ロック可能な敵なし',.6);return}
+ const i=lockCands.indexOf(lockT);pinned=lockCands[(i+1)%lockCands.length];lockT=pinned;
+ const b=$('bTgt');b.classList.add('on');setTimeout(()=>b.classList.remove('on'),150);
+}
 function updateLock(){
- const cone=CAMMODE==='top'?Math.PI:SS.cone,range=SS.lockRange,c=[];playerCenter(_p);
+ const top=CAMMODE==='top',cone=top?Math.PI:SS.cone,range=SS.lockRange,c=[];playerCenter(_p);
  ENEMIES.forEach(e=>{if(!e.alive)return;e.center(_q).sub(_p);const d=_q.length();if(d>range)return;
-  let a=Math.atan2(_q.x,_q.z)-camYaw;a=Math.atan2(Math.sin(a),Math.cos(a));const lim=e===lockT?cone*1.5:cone;
-  if(Math.abs(a)<lim)c.push([Math.abs(a),e])});
- c.sort((a,b)=>a[0]-b[0]);lockT=c[0]?c[0][1]:null;lockT2=SS.multi&&c[1]?c[1][1]:null;
+  let a=Math.atan2(_q.x,_q.z)-camYaw;a=Math.atan2(Math.sin(a),Math.cos(a));const lim=(e===lockT||e===pinned)?cone*1.6:cone;
+  if(Math.abs(a)<lim)c.push([top?d:Math.abs(a),e])});
+ c.sort((a,b)=>a[0]-b[0]);lockCands=c.map(x=>x[1]);
+ if(pinned&&!lockCands.includes(pinned))pinned=null;
+ lockT=pinned||lockCands[0]||null;const rest=lockCands.filter(e=>e!==lockT);lockT2=SS.multi&&rest[0]?rest[0]:null;
 }
 
 /* ===== 入力（スマホ：左で移動スティック／右でボタン・視点、PC：キーボード＋マウス） ===== */
@@ -1243,6 +1299,7 @@ addEventListener('keydown',e=>{
  keys.add(e.code);
  if(e.code==='Space'){e.preventDefault();jump()}
  if(e.code==='KeyV')setCam(CAMMODE==='top'?'tps':'top');
+ if(e.code==='Tab'){e.preventDefault();switchTarget()}
  if(e.code==='KeyJ')pressHand(-1,true);if(e.code==='KeyK')pressHand(1,true);if(e.code==='KeyL')pressShoulder(true);
 });
 addEventListener('keyup',e=>{keys.delete(e.code);if(e.code==='KeyJ')pressHand(-1,false);if(e.code==='KeyK')pressHand(1,false);if(e.code==='KeyL')pressShoulder(false)});
@@ -1283,7 +1340,7 @@ const release=e=>{
 play.addEventListener('pointerup',release);play.addEventListener('pointercancel',release);
 const hold=(id,fn,up)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();b.classList.add('on');fn()});
  const off=()=>{b.classList.remove('on');up&&up()};b.addEventListener('pointerup',off);b.addEventListener('pointerleave',off);b.addEventListener('pointercancel',off)};
-hold('bR',()=>pressHand(-1,true),()=>pressHand(-1,false));hold('bL',()=>pressHand(1,true),()=>pressHand(1,false));hold('bS',()=>pressShoulder(true),()=>pressShoulder(false));hold('bJ',jump);
+hold('bTgt',switchTarget);hold('bR',()=>pressHand(-1,true),()=>pressHand(-1,false));hold('bL',()=>pressHand(1,true),()=>pressHand(1,false));hold('bS',()=>pressShoulder(true),()=>pressShoulder(false));hold('bJ',jump);
 function readInput(dt){
  let x=IN.x,y=IN.y;
  if(keys.size){x=(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);y=(keys.has('KeyW')?1:0)-(keys.has('KeyS')?1:0);const l=Math.hypot(x,y);if(l>1){x/=l;y/=l}}
@@ -1301,7 +1358,7 @@ function setMode(m,training=false){
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
  S.fog.near=p?40:12;S.fog.far=p?120:30;C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
- P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;P.apMax=SS.armor;P.ap=P.apMax;P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=null;reveal=0;GUARD[-1]=GUARD[1]=false;resetAmmo();
+ P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;P.apMax=SS.armor;P.ap=P.apMax;P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=null;pinned=null;reveal=0;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
  $('modeBadge').textContent=TRAIN?'TRAINING ／ 試運転':'SORTIE ／ 演習';
  if(p){ENEMIES.forEach(placeEnemy);P.kills=0;say(TRAIN?'試運転開始':'演習開始',1.2)}
@@ -1356,7 +1413,7 @@ R.setAnimationLoop(()=>{
   const f=top?new THREE.Vector3(0,0,-1):new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw)),r=top?new THREE.Vector3(1,0,0):new THREE.Vector3(-Math.cos(P.yaw),0,Math.sin(P.yaw));
   const mag=Math.hypot(inp.x,inp.y);
   const dashing=can&&!guard&&inp.dash&&mag>.1&&P.boost>0;
-  if(dashing){P.boost=Math.max(0,P.boost-24*dt);P.regen=.6;if(P.boost<=0)say('BOOST 切れ',.6)}
+  if(dashing){P.boost=Math.max(0,P.boost-12*dt);P.regen=.6;if(P.boost<=0)say('BOOST 切れ',.6)}
   const sp=(dashing?SS.dash:SS.walk*(air?.9:1))*(guard?.5:1);
   const want=can?f.multiplyScalar(inp.y*sp).add(r.multiplyScalar(inp.x*sp)):new THREE.Vector3();
   P.vel.lerp(want,Math.min(1,dt*(dashing?4:6)));
@@ -1453,6 +1510,7 @@ R.setAnimationLoop(()=>{
   $('apBar').style.width=(P.ap/P.apMax*100)+'%';$('apNum').textContent=Math.round(P.ap);
   $('bsBar').style.width=(P.boost/SS.boost*100)+'%';$('bsNum').textContent=Math.round(P.boost);$('bsG').classList.toggle('low',P.boost<30);
   $('score').textContent=`撃破 ${P.kills}`;
+  drawMap();
   const ammoTxt=key=>{const a=AM[key],st=stOf(key);if(!st)return '';if(a.rl>0)return 'RELOAD';return a.ammo===INF?'∞':String(a.ammo)};
   const btn=(id,keysArr,name)=>{const b=$(id);let rl=0,empty=true;keysArr.forEach(k=>{const a=AM[k],st=stOf(k);if(!st)return;if(a.rl>0)rl=Math.max(rl,1-a.rl/st.reload);else empty=false});
    b.style.setProperty('--rl',rl?(rl*100)+'%':'0%');b.classList.toggle('empty',empty&&keysArr.some(k=>stOf(k)));
