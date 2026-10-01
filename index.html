@@ -243,6 +243,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .detail p.open{position:absolute;left:0;right:0;top:100%;z-index:6;display:block!important;-webkit-line-clamp:unset;overflow:visible;color:#eef2ef;font-size:12.5px;line-height:1.65;background:#0b100e;border:1px solid var(--fire);padding:8px 10px;box-shadow:0 6px 18px rgba(0,0,0,.6)}
 .detail p.open::after{content:"▲";position:static;display:block;text-align:right;margin-top:4px;bottom:auto}
 /* ===== 出撃HUD（リング式） ===== */
+#score{top:calc(84px + env(safe-area-inset-top,0px))!important}
 .gauges{display:none}
 .hudp{position:absolute;left:14px;top:calc(10px + env(safe-area-inset-top,0px));width:236px;padding:6px 10px 8px 12px;background:linear-gradient(90deg,rgba(8,12,10,.82),rgba(8,12,10,.3));border-left:2px solid #8cf06e;pointer-events:none;font-family:var(--mech);text-shadow:none}
 .hudp::before{content:"";position:absolute;left:-2px;top:-2px;width:10px;height:2px;background:#8cf06e}
@@ -261,7 +262,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #bTgt{right:12px!important;bottom:auto!important;top:calc(142px + env(safe-area-inset-top,0px));width:124px;height:30px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;font-size:11px;letter-spacing:2px}
 .wbtn{position:absolute;width:92px;height:92px;bottom:calc(18px + env(safe-area-inset-bottom,0px))}
 .wbtn svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.wbtn button{position:absolute;left:8px;top:8px;width:76px;height:76px;border-radius:50%;padding:0;background:rgba(14,19,17,.72);border:2px solid rgba(214,220,216,.5);color:#eef2ef;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;text-shadow:none}
+.wbtn button{position:absolute;left:8px;top:8px;width:76px;height:76px;box-sizing:border-box;margin:0;border-radius:50%;padding:0;background:rgba(14,19,17,.72);border:2px solid rgba(214,220,216,.5);color:#eef2ef;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;text-shadow:none}
 .wbtn .wl{font-family:var(--mech);font-size:9px;letter-spacing:1.5px;color:var(--khaki);font-weight:700}
 .wbtn b{font-family:var(--mech);font-size:19px;line-height:1.1;font-variant-numeric:tabular-nums}.wbtn b.sm{font-size:14px}
 .wbtn small{font-family:var(--disp);font-size:9px;color:#9aa6a0;max-width:66px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
@@ -270,7 +271,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .wbtn button.on{background:rgba(240,160,64,.45);border-color:#f0a040}
 #wL{right:114px}#wR{right:10px}#wS{right:62px;bottom:calc(108px + env(safe-area-inset-bottom,0px))}
 .jbtn{position:absolute;right:214px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:50px;height:58px}
-.jbtn button{position:absolute;inset:0;padding:0;border:0;background:#6fc8ff;clip-path:polygon(50% 0,100% 30%,100% 100%,0 100%,0 30%);touch-action:none}
+.jbtn button{position:absolute;inset:0;box-sizing:border-box;margin:0;padding:0;border:0;background:#6fc8ff;clip-path:polygon(50% 0,100% 30%,100% 100%,0 100%,0 30%);touch-action:none}
 .jbtn .ji{position:absolute;inset:2px;background:rgba(10,22,30,.92);clip-path:polygon(50% 0,100% 30%,100% 100%,0 100%,0 30%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:7px;box-sizing:border-box;pointer-events:none;font-family:var(--mech);font-size:8px;font-weight:700;letter-spacing:1.5px;color:#6fc8ff;text-shadow:none}
 .jbtn button.on+.ji{background:rgba(111,200,255,.35)}
 @media (max-height:420px){#bTgt{top:calc(120px + env(safe-area-inset-top,0px));width:104px}.extchip{top:calc(80px + env(safe-area-inset-top,0px))}}
@@ -322,7 +323,6 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .mark{position:absolute;width:0;height:0;margin:-6px 0 0 -6px;border:6px solid transparent;border-top:9px solid var(--alert);pointer-events:none}
 #guardMsg{position:absolute;left:50%;top:58%;transform:translateX(-50%);font-size:12px;color:#6fc8ff;pointer-events:none}
 .pbtn.on{background:rgba(240,160,64,.55);border-color:var(--fire)}
-#bR{right:0;top:56px}#bL{left:0;top:56px}#bS{left:56px;top:0}#bJ{left:56px;bottom:0;border-color:rgba(111,200,255,.6)}
 #pcHelp{position:absolute;left:16px;bottom:calc(14px + env(safe-area-inset-bottom,0px));font-size:11px;color:var(--dim);line-height:1.6;pointer-events:none;max-width:50%}
 @media (pointer:coarse){#pcHelp{display:none}}
 </style>
@@ -746,8 +746,8 @@ const EXT={
  'RD':{name:'レーダー',st:{kind:'常時',wt:6,pass:{lockDeg:12,lockRange:25},note:'積んでいるだけで、ロックできる角度と距離が広がる'},
   // 背中のバックパックから片側にマストを立て、頭の横の高さに皿型アンテナ
   build(g){box(g,.9,.6,.32,Wp.body,0,.05,-.2);box(g,.92,.08,.34,Wp.warn,0,.3,-.2);box(g,.5,.3,.12,Wp.vent||Wp.frame,0,-.05,-.38);
-   box(g,.14,1.5,.14,Wp.frame,.42,.95,-.3);box(g,.2,.12,.2,Wp.dark,.42,.4,-.3);
-   const dish=grp(g,.42,1.75,-.3);dish.rotation.x=-.35;cyl(dish,.42,.2,.08,Wp.metal,0,0,0,0,0,8);cyl(dish,.05,.05,.3,Wp.frame,0,.15,.05);return {dish}},
+   box(g,.14,1.1,.14,Wp.frame,.42,.75,-.36);box(g,.2,.12,.2,Wp.dark,.42,.4,-.36);
+   const dish=grp(g,.42,1.35,-.42);dish.rotation.x=-.35;cyl(dish,.3,.15,.07,Wp.metal,0,0,0,0,0,8);cyl(dish,.05,.05,.3,Wp.frame,0,.15,.05);return {dish}},
   act:{name:'索敵',dur:2.4,run(c){
    if(c.once('go',0)&&c.use())reveal=c.S.dur;
    c.w.dish.rotation.y+=c.dt*(c.u<.85?18:4);
