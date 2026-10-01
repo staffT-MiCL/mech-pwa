@@ -1147,7 +1147,7 @@ function jump(){
 /* ===== ガレージUI =====
  左：3D機体＋部位タグ（機体の各部位の位置に追従）＋性能バー
  右：情報パネル（概要／部位の装備選択と比較／塗装／コンフィグ） */
-let az=.35,el2=.12,dist=14,auto=false,pose=0,res=0,t=0,shake=0,TRAIN=false,CAMMODE='tps';
+let az=.35,el2=.16,dist=17.5,auto=false,pose=0,res=0,t=0,shake=0,TRAIN=false,CAMMODE='tps';
 const camC=new THREE.Vector3();
 let topYaw=0,topYawC=0; // 俯瞰カメラの向き（目標と表示中）
 const topF=()=>new THREE.Vector3(-Math.sin(topYawC),0,-Math.cos(topYawC)),topR=()=>new THREE.Vector3(Math.cos(topYawC),0,-Math.sin(topYawC));
@@ -1428,7 +1428,7 @@ $('mTrain').onclick=()=>{if(!SS.over){openMenu(false);setMode('play',true)}};
 $('mConfig').onclick=()=>{openMenu(false);view='config';renderGarage()};
 $('btnPaint').onclick=()=>{view='paint';renderGarage()};
 $('btnTrain').onclick=()=>{if(SS.over){view='overview';renderGarage()}else setMode('play',true)};
-$('btnView').onclick=()=>{az=.35;el2=.12;dist=14};
+$('btnView').onclick=()=>{az=.35;el2=.16;dist=17.5};
 $('uname').addEventListener('input',e=>{$('mUnit').textContent=e.target.value?e.target.value.toUpperCase():'UNIT-01'});
 applyColors();
 
@@ -1635,7 +1635,7 @@ const SH3=(()=>{
  function size(){const el=$('sceneGL'),w=el.clientWidth||1,h=el.clientHeight||1;const rh=RES[res]?RES[res][1]*.8:h*Math.min(devicePixelRatio,2);
   r.setSize(Math.round(rh*w/h),Math.round(rh),false);cam.aspect=w/h;
   // ドールが右寄りに大きく入るように：横長ほど引いて、少し左を見る
-  const a=w/h;cam.position.set(1.0,4.6,11.2+Math.max(0,1.9-a)*3.5);cam.lookAt(1.0+Math.min(a,2.4)*.15,4.0,0);cam.updateProjectionMatrix()}
+  const a=w/h;cam.position.set(1.5,4.7,9.8+Math.max(0,1.9-a)*3.2);cam.lookAt(1.4+Math.min(a,2.4)*.18,4.1,0);cam.updateProjectionMatrix()}
  function loop(){if(!on)return;const now=performance.now(),dt=Math.min((now-last)/1000,.05);last=now;animate(dt);r.render(sc,cam);requestAnimationFrame(loop)}
  addEventListener('resize',()=>{if(on)size()});
  return {start(){if(on)return;on=true;last=performance.now();size();requestAnimationFrame(()=>{size();loop()})},stop(){on=false},mood:setMood3};
