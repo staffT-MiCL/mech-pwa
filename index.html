@@ -1028,11 +1028,11 @@ function renderSide(){
   el.innerHTML=`<div class="shd"><span class="code">SLOT ${no}</span><span class="ttl en">${sl.label}</span><span class="sub">${sub}</span></div><div class="rule"></div>
   <div class="cols2"><div class="plist">${catList}${backRow}${(sl.group==='W'&&!wcat?[]:shown).map(id=>{const d=sl.cat[id],w=d.st?d.st.wt:d.wt;const s=id===cand,e=id===cur;
     const ov=!e&&statsFor({...cfg,[selSlot]:id}).over;
-    return `<button class="pitem${s?' sel':''}${ov?' ovw':''}" data-id="${id}"><span class="pc">${pn(selSlot,id)[0]}<small>${pn(selSlot,id)[1]}</small></span><span class="n">${esc(ENM(selSlot,id).trim())}</span>${e?'<span class="t eq">装備中</span>':ov?'<span class="t ov">重すぎ</span>':`<span class="t">重量${w||0}</span>`}</button>`}).join('')}
+    return `<button class="pitem${s?' sel':''}${ov?' ovw':''}" data-id="${id}"><span class="pc">${pn(selSlot,id)[0]}<small>${pn(selSlot,id)[1]}</small></span><span class="n">${esc(ENM(selSlot,id).trim())}</span>${e?'<span class="t eq">装備中</span>':ov?'<span class="t ov">過積載</span>':`<span class="t">重量${w||0}</span>`}</button>`}).join('')}
     ${sl.group==='W'?'':items.length<5?'<div class="pitem lock"><span class="pc">－</span><span class="n">未入手</span><span class="t"></span></div>':''}</div>
    <div class="detail"><div class="dtop">${sl.group==='W'&&cand!=='none'?'<div class="pv" id="pv"></div>':''}<div class="dtxt"><span class="en">${pn(selSlot,cand)[0]} ／ ${pn(selSlot,cand)[1]}</span><span class="nm">${esc(ENM(selSlot,cand).trim())}</span><p>${esc(DESC[cand]||'')}</p></div></div>
     <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${brief}</div>
-    <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur||P2.over?'disabled':''}>${cand===cur?'装備中':P2.over?'重すぎて装備できない':'装備する'}</button><button class="btn-sub" id="more">詳しく見る</button><button class="btn-sub" id="back">戻る</button></div></div></div>`;
+    <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur||P2.over?'disabled':''}>${cand===cur?'装備中':P2.over?'過積載のため装備不可':'装備する'}</button><button class="btn-sub" id="more">詳しく見る</button><button class="btn-sub" id="back">戻る</button></div></div></div>`;
   $('more').onclick=()=>openModal(`<div class="shd"><span class="code">${pn(selSlot,cand)[0]} ／ ${pn(selSlot,cand)[1]}</span><span class="ttl">${esc(ENM(selSlot,cand).trim())}</span></div><div class="rule"></div>
    <p class="note" style="margin:0">${esc(DESC[cand]||'')}${cd.st&&cd.st.note?'<br>'+esc(cd.st.note):''}</p>
    <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${part}</div>
