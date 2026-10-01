@@ -179,7 +179,11 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .pitem .n{font-family:var(--disp);font-size:13px;letter-spacing:.02em}
 .ptag{font-family:var(--mech);letter-spacing:.1em;font-weight:700}
 .ptag span{font-weight:500;letter-spacing:.04em}
-.specs{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:4px}
+.specs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.specs span:first-child{grid-column:span 2}
+.specs span{padding:3px 6px!important;min-width:0}.specs small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.specs b{font-size:13px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:1100px){#side .specs b{font-size:12px!important}}
+#side .note{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex-shrink:0}
+#side{overflow-y:auto!important}
 .specs span{display:flex;flex-direction:column;padding:4px 8px;background:var(--panel2);border-left:2px solid var(--olive)}
 .specs small{font-size:10px;color:var(--dim)}.specs b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}.specs i{font-style:normal;font-size:10px;color:var(--dim);margin-left:2px}
 .mitem .t.en{font-family:var(--mech);font-weight:700;letter-spacing:.16em;font-size:14px}
@@ -519,7 +523,7 @@ body.eqm #btnTrain{display:none}
 <body>
 <div id="app">
 <header id="hdr">
- <div class="logo"><span class="jp">重装操機</span><span class="en">GARAGE</span></div>
+ <div class="logo"><span class="en">GARAGE</span></div>
  <span class="sep"></span>
  <span class="tag">UNIT-01</span>
  <input id="uname" aria-label="機体名" maxlength="16" placeholder="UNIT NAME">
@@ -585,7 +589,7 @@ body.eqm #btnTrain{display:none}
 
 <div id="shop" hidden>
  <div class="shdr">
-  <div class="logo"><span class="jp">重装操機</span><span class="en">SHOP</span></div>
+  <div class="logo"><span class="en">SHOP</span></div>
   <span class="sep"></span><span class="tag loc">第7整備区画 ハンガー</span>
   <span class="grow"></span>
   <span class="money"><small>所持金</small><b id="sMoney"></b><i>CR</i></span>
