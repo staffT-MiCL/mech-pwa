@@ -29,7 +29,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--mech);overscroll-beh
 button{font-family:var(--mech);font-size:13px;background:#1a201d;color:var(--fg);border:1px solid var(--line);border-radius:0;padding:6px 11px;cursor:pointer}
 button:disabled{opacity:.35;cursor:default}
 button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--fire);outline-offset:2px}
-.cut{clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+.cut{clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)}
 #app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:40px minmax(0,1fr)}
 #app.play{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
 #app.play #hdr,#app.play #side{display:none}
@@ -96,7 +96,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .pitem.sel{background:#1f170b;border-color:var(--fire);color:#ffe2b8;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
 .pitem.sel .r{color:var(--fire)}
 .pitem.lock{border-style:dashed;color:var(--faint);background:transparent}
-.detail{padding:10px 12px;background:var(--panel2);border:1px solid var(--line);display:flex;flex-direction:column;gap:7px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
+.detail{padding:10px 12px;background:var(--panel2);border:1px solid var(--line);display:flex;flex-direction:column;gap:7px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
 .detail .en{font-family:var(--sten);font-size:11px;color:var(--fire);letter-spacing:2px}
 .detail .nm{font-family:var(--disp);font-size:17px;color:#eef2ef}
 .detail p{margin:0;font-size:11px;color:#9aa6a0;line-height:1.55;font-family:var(--body)}
@@ -155,7 +155,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #score{top:calc(84px + env(safe-area-inset-top,0px))}
 
 #modal{position:fixed;inset:0;z-index:25;background:rgba(4,6,5,.7);display:flex;align-items:center;justify-content:center;padding:12px}
-.mbox{width:min(560px,100%);max-height:100%;overflow:auto;background:var(--panel);border:1px solid var(--fire);padding:12px 14px;display:flex;flex-direction:column;gap:8px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
+.mbox{width:min(560px,100%);max-height:100%;overflow:auto;background:var(--panel);border:1px solid var(--fire);padding:12px 14px;display:flex;flex-direction:column;gap:8px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
 /* 装備ボタンを常に下端に */
 #side{height:100%;box-sizing:border-box}
 .cols2{align-items:stretch}
@@ -238,7 +238,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #garage{right:148px!important}
 #camBtn{right:148px!important}
 #score{right:148px!important}
-#bTgt{position:absolute;right:65px;bottom:calc(214px + env(safe-area-inset-bottom,0px));width:88px;height:34px;padding:0;font-family:var(--mech);font-weight:700;font-size:11px;letter-spacing:.12em;background:rgba(20,24,22,.6);border:2px solid rgba(240,160,64,.7);color:var(--fire);touch-action:none;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+#bTgt{position:absolute;right:65px;bottom:calc(214px + env(safe-area-inset-bottom,0px));width:88px;height:34px;padding:0;font-family:var(--mech);font-weight:700;font-size:11px;letter-spacing:.12em;background:rgba(20,24,22,.6);border:2px solid rgba(240,160,64,.7);color:var(--fire);touch-action:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)}
 #bTgt.on{background:rgba(240,160,64,.55);color:#1a1006}
 @media (max-height:420px){#map{width:104px;height:104px}#garage,#camBtn,#score{right:128px!important}#bTgt{bottom:calc(208px + env(safe-area-inset-bottom,0px))}}
 /* 説明文：タッチで全文 */
@@ -324,6 +324,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .qb[data-d=l]{left:0;top:82px;width:40px;height:36px;clip-path:polygon(0 50%,100% 0,100% 100%)}
 .qb[data-d=r]{right:0;top:82px;width:40px;height:36px;clip-path:polygon(0 0,100% 50%,0 100%)}
 @media (pointer:fine){#stickArea{display:none}}
+#stickArea.qblock .qb{opacity:.25}
 #knob{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(140,240,110,.35)}
 #stick.dash{border-color:rgba(111,200,255,.8)}#stick.dash #knob{background:rgba(111,200,255,.55)}
 .pbtns{position:absolute;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:186px;height:186px}
@@ -422,7 +423,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .sbuy .btn-main{flex:0 0 100px;height:34px}
 .sbuy .lack{flex:1;height:34px;display:flex;align-items:center;justify-content:center;border:1px solid #5a2014;color:#ff6a4c;font-size:11px;letter-spacing:1px}
 #sconf{position:fixed;inset:0;z-index:16;background:rgba(3,5,4,.72);display:flex;align-items:center;justify-content:center;padding:12px}
-#sconf .box{width:min(460px,100%);padding:16px 18px;background:var(--panel);border:1px solid var(--fire);display:flex;flex-direction:column;gap:10px;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px))}
+#sconf .box{width:min(460px,100%);padding:16px 18px;background:var(--panel);border:1px solid var(--fire);display:flex;flex-direction:column;gap:10px;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%)}
 #sconf .bal{display:grid;grid-template-columns:1fr auto;gap:5px 10px;font-size:12px;font-variant-numeric:tabular-nums}
 #sconf .bal span:nth-child(odd){color:var(--dim)}#sconf .bal span:nth-child(even){text-align:right}
 #sconf .bal .tot{border-top:1px solid var(--line);padding-top:5px}
@@ -430,6 +431,23 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #sconf .tgt>small{font-size:10px;color:var(--dim);letter-spacing:1px}
 #sconf .tgt button{height:28px;padding:0 12px;font-size:11px}#sconf .tgt button[aria-pressed=true]{background:#1f170b;border-color:var(--fire);color:#ffe2b8}
 #sconf .tgt .w{font-size:10px;color:#6a7670}
+.cut{position:relative}
+/* 斜めに切った角にも枠線を通す（枠のあるボタン用） */
+.cut::after{content:"";position:absolute;top:-1px;right:-1px;width:9px;height:9px;background:linear-gradient(225deg,transparent 5px,currentColor 5px,currentColor 6.4px,transparent 6.4px);pointer-events:none}
+.btn-main.cut::after{display:none}
+.mbox,#sconf .box{background:linear-gradient(225deg,transparent 9.6px,var(--fire) 9.6px,var(--fire) 10.9px,transparent 10.9px) top right/24px 24px no-repeat,var(--panel)}
+#sconf .box{background:linear-gradient(225deg,transparent 11px,var(--fire) 11px,var(--fire) 12.3px,transparent 12.3px) top right/26px 26px no-repeat,var(--panel)}
+.detail{background:linear-gradient(225deg,transparent 9.6px,var(--line) 9.6px,var(--line) 10.9px,transparent 10.9px) top right/24px 24px no-repeat,var(--panel2)}
+#bTgt{background:linear-gradient(225deg,transparent 4.6px,rgba(240,160,64,.7) 4.6px,rgba(240,160,64,.7) 6.4px,transparent 6.4px) top right/12px 12px no-repeat,rgba(20,24,22,.6)}
+#bTgt.on{background:rgba(240,160,64,.55)}
+/* ショップから開く装備変更：ガレージの画面をそのままモーダルとして重ねる */
+body.eqm::before{content:"";position:fixed;inset:0;background:rgba(3,5,4,.78);z-index:13}
+body.eqm #app{position:fixed;inset:calc(10px + env(safe-area-inset-top,0px)) 14px calc(10px + env(safe-area-inset-bottom,0px));height:auto;z-index:14;border:1px solid var(--fire);box-shadow:0 10px 40px rgba(0,0,0,.7)}
+body.eqm #menuBtn{display:none}
+#eqClose{display:none;height:28px;padding:0 12px;align-items:center;gap:6px;background:#1c1409;border:1px solid var(--fire);color:var(--fire);font-size:12px;font-weight:700;letter-spacing:.12em}
+body.eqm #eqClose{display:flex}
+body.eqm #btnTrain{display:none}
+.tbtn{margin-top:auto;display:flex;gap:8px;align-items:center}.tbtn .btn-main{flex:1}
 #sconf .acts{display:flex;gap:8px}#sconf .acts button{height:38px}
 #sconf .b2{flex:1;background:#1a201d;border:1px solid var(--fire);color:var(--fire);font-size:13px;letter-spacing:2px}
 @media (orientation:portrait){#shop{grid-template-columns:minmax(0,1fr);grid-template-rows:40px 50% minmax(0,1fr)}}
@@ -448,6 +466,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
  <span class="grow"></span>
  <span class="kv"><small>WEIGHT</small><b id="hWt"></b></span>
  <span class="kv"><small>LOAD</small><b id="hLoad"></b></span>
+ <button id="eqClose" aria-label="装備変更を終えてショップへ戻る">◀ SHOP へ戻る</button>
  <button id="menuBtn" class="cut" aria-haspopup="true"><svg width="14" height="12" viewBox="0 0 14 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 1h14M0 6h14M0 11h14"/></svg>MENU</button>
 </header>
 <div id="wrap">
@@ -1754,7 +1773,9 @@ function renderAlt(){
  }else{
   $('sTitle').textContent='TUNE';$('sSub').textContent='フレームの改造';
   el.innerHTML=[['HEAD','head'],['CORE','core'],['ARMS','arms'],['LEGS','legs']].map(([lab,k])=>`<div class="tn"><span class="k">${lab}</span><span class="nm">${esc(ENM(k,cfg[k]).trim())}</span><span class="lv">LV 0</span><span class="slots"><i></i><i></i><i></i><i></i><i></i></span></div>`).join('')+
-   `<div class="snote">フレームのパーツを1つずつ強化します。強化できる項目（例：装甲、機動力、積載など）は検討中です。<span class="soon">準備中</span></div>`;
+   `<div class="snote">フレームのパーツを1つずつ強化します。強化できる項目（例：装甲、機動力、積載など）は検討中です。<span class="soon">準備中</span></div>
+   <div class="tbtn"><button class="btn-main cut" id="sEqm">装備を変更する</button></div>`;
+  $('sEqm').onclick=openEquipModal;
  }
 }
 // 比較表（ガレージと同じ項目から、主要なものだけ）
@@ -1837,6 +1858,11 @@ function buy(id,equip){
  if(equip)talk([['お買い上げ、ありがとうございます！ '+nm+' を'+SLOT_JA[sl]+'に取り付けて……','happy'],oops,['装備は<strong>無事に完了</strong>しております。たぶん。','sorry']]);
  else talk([['お買い上げ、ありがとうございます！ '+nm+' はガレージの棚に置いておきますね。','happy'],['……あ、棚を間違えました。いえ、<strong>合っています</strong>。たぶん。','sorry']]);
 }
+/* 装備変更（TUNE から）：ガレージの画面を、ショップの上にモーダルとして開く */
+function openEquipModal(){stopShop3D();$('shop').hidden=true;document.body.classList.add('eqm');view='overview';selSlot=null;renderGarage();requestAnimationFrame(resize);resize()}
+function closeEquipModal(){if(!document.body.classList.contains('eqm'))return;document.body.classList.remove('eqm');view='overview';selSlot=null;renderGarage();resize();
+ $('shop').hidden=false;startShop3D();renderShop();talk([['装備の調子はいかがですか？ ……おお、よくお似合いです。機体に似合う、という言い方で合っていますよね？','happy']])}
+$('eqClose').onclick=closeEquipModal;
 function openShop(){
  openMenu(false);startShop3D();closeModal();$('shop').hidden=false;smode='buy';rview='equip';rsel=null;ramt=null;spath=[];scat=null;ssel=null;renderShop();setMood('normal');
  const first=shopVisits===0;shopVisits++;saveGame();
@@ -2002,7 +2028,8 @@ const qbEls=[...document.querySelectorAll('.qb')];
 play.addEventListener('contextmenu',e=>e.preventDefault());
 // スティックは左下に固定。上下左右の三角を押すか、スティックから指を滑らせるとその方向へ急加速
 function qbHit(x,y){for(const el of qbEls){const r=el.getBoundingClientRect();if(x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return el}return null}
-function qbEnter(el){if(el===qbIn)return;qbIn=el;if(el){el.classList.add('on');setTimeout(()=>el.classList.remove('on'),180);quickBoost(...QBDIR[el.dataset.d])}}
+let qbLock=false;
+function qbEnter(el){if(el===qbIn)return;qbIn=el;if(el){if(qbLock)return;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),180);quickBoost(...QBDIR[el.dataset.d])}}
 function stickMove(e){const r=stick.getBoundingClientRect();let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
  const l=Math.hypot(dx,dy),R0=50;if(l>R0){dx*=R0/l;dy*=R0/l}IN.x=dx/R0;IN.y=-dy/R0;knob.style.transform=`translate(${dx}px,${dy}px)`;
  qbEnter(qbHit(e.clientX,e.clientY))}
@@ -2022,7 +2049,7 @@ play.addEventListener('pointermove',e=>{
  else if(e.pointerId===camId){const dx=e.clientX-camX;camX=e.clientX;if(CAMMODE!=='top')camYaw-=dx*.006;else topYaw-=dx*.006;if(mouseDown)mouseDown.moved+=Math.abs(dx)}
 });
 const release=e=>{
- if(e.pointerId===stickId){stickId=null;qbIn=null;IN.x=IN.y=0;IN.stickDash=0;knob.style.transform='';stick.classList.remove('dash')}
+ if(e.pointerId===stickId){stickId=null;qbIn=null;qbLock=false;$('stickArea').classList.remove('qblock');IN.x=IN.y=0;IN.stickDash=0;knob.style.transform='';stick.classList.remove('dash')}
  if(e.pointerId===camId){camId=null;
   if(mouseDown&&mouseDown.side)pressHand(mouseDown.side,false);
   mouseDown=null}
@@ -2036,7 +2063,7 @@ function readInput(dt){
  if(keys.size){x=(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);y=(keys.has('KeyW')?1:0)-(keys.has('KeyS')?1:0);const l=Math.hypot(x,y);if(l>1){x/=l;y/=l}}
  const rot=((keys.has('KeyQ')||keys.has('ArrowLeft'))?1:0)-((keys.has('KeyE')||keys.has('ArrowRight'))?1:0);if(CAMMODE==='top')topYaw+=rot*dt*1.6;else camYaw+=rot*dt*2.2;
  // スティックを端まで倒し続けるとダッシュ
- if(stickId!==null){IN.stickDash=Math.hypot(IN.x,IN.y)>.9?IN.stickDash+dt:0;stick.classList.toggle('dash',IN.stickDash>.25)}
+ if(stickId!==null){const mg=Math.hypot(IN.x,IN.y);IN.stickDash=mg>.9?IN.stickDash+dt:0;stick.classList.toggle('dash',IN.stickDash>.25);if(IN.stickDash>.25)qbLock=true;else if(mg<.2)qbLock=false;$('stickArea').classList.toggle('qblock',qbLock)}
  return {x,y,dash:keys.has('ShiftLeft')||keys.has('ShiftRight')||IN.stickDash>.25};
 }
 
