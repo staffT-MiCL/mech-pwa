@@ -183,7 +183,8 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .specs span{display:flex;flex-direction:column;padding:4px 8px;background:var(--panel2);border-left:2px solid var(--olive)}
 .specs small{font-size:10px;color:var(--dim)}.specs b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}.specs i{font-style:normal;font-size:10px;color:var(--dim);margin-left:2px}
 .mitem .t.en{font-family:var(--mech);font-weight:700;letter-spacing:.16em;font-size:14px}
-.mitem .t.en small{display:block;font-family:var(--body);letter-spacing:0;font-weight:400}
+.mitem{min-height:52px}
+.mitem .t.en small{color:var(--dim);font-size:10px;margin-top:2px;display:block;font-family:var(--body);letter-spacing:0;font-weight:400}
 .tools button{font-family:var(--mech);font-weight:700;letter-spacing:.08em;font-size:10px}
 #gstats{gap:6px 16px;padding:8px 12px 7px;background:linear-gradient(180deg,rgba(14,19,17,.94),rgba(8,11,10,.94));border:1px solid #34403a;border-top:2px solid var(--olive)}
 #gstats::before{content:"STATUS";position:absolute;right:10px;top:-9px;padding:0 6px;background:#0b0e0d;font-family:var(--sten);font-size:10px;letter-spacing:3px;color:var(--khaki)}
@@ -310,11 +311,11 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
   <div class="mhd"><span>MAIN MENU</span><button id="menuClose" aria-label="閉じる" style="width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 12 12" stroke="#aeb8b3" stroke-width="2"><path d="M1 1l10 10M11 1L1 11"/></svg></button></div>
   <div style="height:1px;background:var(--line)"></div>
   <button class="mitem big" id="mSortie"><span class="no">01</span><span class="t en">SORTIE<br><small>演習場で標的機と戦う</small></span></button>
-  <button class="mitem" id="mTrain"><span class="no">02</span><span class="t en">TRAINING</span><small>反撃なしの試運転</small></button>
-  <button class="mitem" disabled><span class="no">03</span><span class="t en">MISSION</span><small>準備中</small></button>
-  <button class="mitem" disabled><span class="no">04</span><span class="t en">VERSUS</span><small>準備中</small></button>
-  <button class="mitem" disabled><span class="no">05</span><span class="t en">SHOP</span><small>準備中</small></button>
-  <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG</span><small>画質・表示・視点</small></button>
+  <button class="mitem" id="mTrain"><span class="no">02</span><span class="t en">TRAINING<br><small>攻撃してこない標的で操作を練習する</small></span></button>
+  <button class="mitem" disabled><span class="no">03</span><span class="t en">MISSION<br><small>任務を受けて戦う（準備中）</small></span></button>
+  <button class="mitem" disabled><span class="no">04</span><span class="t en">VERSUS<br><small>ほかのプレイヤーと対戦する（準備中）</small></span></button>
+  <button class="mitem" disabled><span class="no">05</span><span class="t en">SHOP<br><small>パーツや兵装を手に入れる（準備中）</small></span></button>
+  <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
   <div class="mfoot"><span id="mUnit">UNIT-01</span><span>VER 0.5</span></div>
  </div>
@@ -960,7 +961,7 @@ function renderSide(){
     ${items.length<5?'<div class="pitem lock"><span class="pc">－</span><span class="n">未入手</span><span class="t"></span></div>':''}</div>
    <div class="detail"><div class="dtop">${sl.group==='W'&&cand!=='none'?'<div class="pv" id="pv"></div>':''}<div class="dtxt"><span class="en">${pn(selSlot,cand)[0]} ／ ${pn(selSlot,cand)[1]}</span><span class="nm">${esc(ENM(selSlot,cand).trim())}</span><p>${esc(DESC[cand]||'')}</p></div></div>
     <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${brief}</div>
-    <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur?'disabled':''}>${cand===cur?'EQUIPPED':'EQUIP'}</button><button class="btn-sub" id="more">DETAIL</button><button class="btn-sub" id="back">BACK</button></div></div></div>`;
+    <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur?'disabled':''}>${cand===cur?'装備中':'装備する'}</button><button class="btn-sub" id="more">詳しく見る</button><button class="btn-sub" id="back">戻る</button></div></div></div>`;
   $('more').onclick=()=>openModal(`<div class="shd"><span class="code">${pn(selSlot,cand)[0]} ／ ${pn(selSlot,cand)[1]}</span><span class="ttl">${esc(ENM(selSlot,cand).trim())}</span></div><div class="rule"></div>
    <p class="note" style="margin:0">${esc(DESC[cand]||'')}${cd.st&&cd.st.note?'<br>'+esc(cd.st.note):''}</p>
    <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${part}</div>
