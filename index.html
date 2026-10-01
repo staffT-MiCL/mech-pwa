@@ -1743,8 +1743,13 @@ function renderAlt(){
   const doRepair=ids=>{const c=cost(ids);if(!c||c>CREDIT)return;CREDIT-=c;ids.forEach(id=>delete DMG[id]);ramt=null;saveGame();buildMech(cfg);renderGarage();renderShop();
    const m=$('sMoney');m.classList.add('flash');setTimeout(()=>m.classList.remove('flash'),600);
    talk([['修理、承りました！ 装甲板を張り替えて……溶接して……','happy'],pick([['あつっ。……いえ、わたくしは熱くないのでした。','panic'],['あっ、溶接棒が<em>もう一本</em>……どこへ。','panic'],['あっ、余ったネジが1本……。いえ、予備です。予備ということにいたしましょう。','panic']]),['<strong>修理完了</strong>でございます。新品同様です。たぶん新品以上です。','happy']])};
-  const rb=$('sRep');if(rb)rb.onclick=()=>fix(rsel,ramt);
-  const ra=$('sRepAll');if(ra)ra.onclick=()=>doRepair(allIds);
+  const ask=(title,rows,c,go)=>{$('sconfBox').innerHTML=`<div class="shd"><span class="code">REPAIR</span><span class="ttl">${title}</span></div><div class="rule"></div>
+   <div class="bal">${rows}<span>所持金</span><span>${fmtCR(CREDIT)} CR</span><span>修理費</span><span class="dn">− ${fmtCR(c)} CR</span><span class="tot">修理後</span><span class="tot"><b>${fmtCR(CREDIT-c)} CR</b></span></div>
+   <div class="acts"><button class="btn-main cut" id="cfEq">修理する</button><button class="btn-sub" id="cfNo" style="width:90px">やめる</button></div>`;
+   $('cfEq').onclick=()=>{closeConfirm();go()};$('cfNo').onclick=closeConfirm;$('sconf').hidden=false;$('cfNo').focus()};
+  const rb=$('sRep');if(rb)rb.onclick=()=>{const k=keyOf(rsel),amt=ramt;
+   ask(`${PART_LABEL[k]} ${esc(ENM(k,rsel).trim())} を修理`,`<span>装甲</span><span>${snw} → <b>${snw+amt}</b> / ${smx}</span>`,Math.ceil(amt*REPAIR_K),()=>fix(rsel,amt))};
+  const ra=$('sRepAll');if(ra)ra.onclick=()=>ask('すべての損傷を修理',allIds.map(id=>{const k=keyOf(id);return `<span>${PART_LABEL[k]} ${esc(ENM(k,id).trim())}${PART_KEYS.some(q=>cfg[q]===id)?'':'（所持品）'}</span><span>＋${DMG[id]}</span>`}).join(''),cAll,()=>doRepair(allIds));
   const lk=el.querySelector('.lack');if(lk)lk.onclick=()=>talk([['所持金が足りず、少しも直せないようです……。','sorry'],['TRAINING では報酬が出ませんので、SORTIE で稼いでいらしてください。お気をつけて。','normal']]);
  }else{
   $('sTitle').textContent='TUNE';$('sSub').textContent='フレームの改造';
@@ -2179,7 +2184,7 @@ R.setAnimationLoop(()=>{
  // 損壊した部位の姿勢（出撃中のみ）：ARMS＝両腕がだらりと下がる／LEGS＝膝を曲げて腰を落とす／CORE＝前のめりに崩れて膝をつく
  if(mode==='play'){
   if(P.hp.arms<=0||P.hp.core<=0)armF.forEach((f,i)=>mixArm(f,{x:.18,z:m.arms[i].s*.06,e:-.05},.92));
-  if(P.hp.legs<=0){crouch=Math.max(crouch,.38);tX+=.06;legF.forEach((f,i)=>{f.kn+=.15})}
+  if(P.hp.legs<=0){tX+=.06;if(!walk)crouch=Math.max(crouch,.32)}
   if(P.hp.core<=0){const d=Math.min(1,(3.2-P.down)/.8);crouch=Math.max(crouch,d);tX=L(tX,.75,d);hY=L(hY,.4,d)}
  }
  // 3) 書き込み
