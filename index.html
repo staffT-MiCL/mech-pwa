@@ -186,7 +186,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .mitem{min-height:52px}
 .mitem .t.en small{color:var(--dim);font-size:10px;margin-top:2px;display:block;font-family:var(--body);letter-spacing:0;font-weight:400}
 .tools button{font-family:var(--mech);font-weight:700;letter-spacing:.08em;font-size:10px}
-#gstats{gap:6px 16px;padding:8px 12px 7px;background:linear-gradient(180deg,rgba(14,19,17,.94),rgba(8,11,10,.94));border:1px solid #34403a;border-top:2px solid var(--olive)}
+#gstats{gap:4px 14px;padding:6px 10px 6px;background:linear-gradient(180deg,rgba(14,19,17,.94),rgba(8,11,10,.94));border:1px solid #34403a;border-top:2px solid var(--olive)}
 #gstats::before{content:"STATUS";position:absolute;right:10px;top:-9px;padding:0 6px;background:#0b0e0d;font-family:var(--sten);font-size:10px;letter-spacing:3px;color:var(--khaki)}
 .gs{gap:3px}
 .gh{display:flex;align-items:baseline;gap:8px}
@@ -204,8 +204,10 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .cells i.gu{outline:1px dashed var(--accent);outline-offset:-1px}.cells i.gd{opacity:.35}
 .gf{font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:var(--faint)}
 .gs .h,.gs .bar{display:none}
+#gstats .gf{display:none}#gstats .gv{font-size:15px}#gstats .gh{gap:6px}#gstats .cells{height:7px}
+.garm{grid-column:1/-1}.garm .gh{margin-bottom:1px}
 .aC{grid-column:1/-1;height:7px;margin-top:2px}
-.aPrm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.parm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 8px}
 .aP{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:baseline;gap:0 4px;min-width:0}
 .aP .aL{font-family:var(--mech);font-size:9px;font-weight:700;letter-spacing:.1em;color:#9fe6ee}
 .aP .aV{font-family:var(--mech);font-size:12px;font-weight:700;color:#eef2ef;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.aP .aV small{font-size:8px;color:var(--dim);font-weight:500}
@@ -303,7 +305,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #loading .lbox{width:min(420px,80vw);display:flex;flex-direction:column;gap:10px}
 #loading .lhd{display:flex;align-items:baseline;justify-content:space-between;font-family:var(--mech);font-size:13px;font-weight:700;letter-spacing:.4em;color:var(--fire)}
 #loading .lhd b{font-weight:700;letter-spacing:.1em;color:#eef2ef;font-variant-numeric:tabular-nums}
-#loading .lbar{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:3px;height:12px}
+#loading .lbar{display:grid;gap:2px;height:12px}
 #loading .lbar i{background:#18201c;transform:skewX(-24deg)}#loading .lbar i.on{background:var(--accent);box-shadow:0 0 5px rgba(140,240,110,.5)}
 #loading .llog{min-height:4.8em;font-family:var(--mech);font-size:11px;line-height:1.6;letter-spacing:.08em;color:#6f8a76}
 #loading .llog div:last-child{color:var(--accent)}
@@ -1129,7 +1131,7 @@ function buildMech(c){
   box(n,.3,.3,.3,M.frame,0,0,.1);cyl(n,.13,.18,.3,Wp.frame,0,0,-.1,Math.PI/2,0,8);cyl(n,.12,.12,.02,Wp.glow,0,0,-.26,Math.PI/2,0,8);
   const f=grp(n,0,0,-.27);f.rotation.x=-Math.PI/2-.35;cyl(f,.02,.15,1,Wp.glow,0,.5,0,0,0,6);f.scale.set(1,.01,1);return f});
  mech={bot,hip,torso,head,arms,legs,weps,flames,anchors,cfgUsed:c};
- tintDamage();
+ tintDamage();if(camAuto&&mode==='garage')requestAnimationFrame(()=>fitGarageCam());
  if(mode==='play'){bot.position.set(P.pos.x,0,P.pos.z);bot.rotation.y=P.yaw}
  hlMech=null;
 }
@@ -1209,6 +1211,7 @@ function jump(){
 /* ===== ガレージUI =====
  左：3D機体＋部位タグ（機体の各部位の位置に追従）＋性能バー
  右：情報パネル（概要／部位の装備選択と比較／塗装／コンフィグ） */
+let camTY=3.6,camAuto=true,lastGsh=0;
 let az=.35,el2=.16,dist=17.5,auto=false,pose=0,res=0,t=0,shake=0,TRAIN=false,CAMMODE='tps';
 const camC=new THREE.Vector3();
 let topYaw=0,topYawC=0; // 俯瞰カメラの向き（目標と表示中）
@@ -1497,7 +1500,7 @@ $('mTrain').onclick=()=>{if(!SS.over){openMenu(false);fadeTo(()=>setMode('play',
 $('mConfig').onclick=()=>{openMenu(false);view='config';renderGarage()};
 $('btnPaint').onclick=()=>{view='paint';renderGarage()};
 $('btnTrain').onclick=()=>{if(SS.over){view='overview';renderGarage()}else fadeTo(()=>setMode('play',true),'TRAINING')};
-$('btnView').onclick=()=>{az=.35;el2=.16;dist=17.5};
+$('btnView').onclick=()=>{az=.35;el2=.16;camAuto=true;fitGarageCam()};
 $('uname').addEventListener('input',e=>{$('mUnit').textContent=e.target.value?e.target.value.toUpperCase():'UNIT-01'});
 applyColors();
 
@@ -2235,6 +2238,7 @@ function setMode(m,training=false){
  $('modeBadge').textContent=TRAIN?'TRAINING ／ 試運転':'SORTIE ／ 演習';
  if(p){untintDamage();hudCache={};updateHUD();ENEMIES.forEach(placeEnemy);P.kills=0;say(TRAIN?'試運転開始':'演習開始',1.2)}
  else{view='overview';selSlot=null;renderGarage();tintDamage()}
+ applyGarageView();
  requestAnimationFrame(resize);resize();
 }
 $('garage').onclick=()=>fadeTo(()=>setMode('garage'),'GARAGE');
@@ -2261,12 +2265,23 @@ const up=e=>{
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;
  if(pts.size===2){const [a,b]=[...pts.values()];p.x=e.clientX;p.y=e.clientY;const d=Math.hypot(a.x-b.x,a.y-b.y);
-  if(pinch0)dist=Math.max(6,Math.min(22,dist*(pinch0/d)));pinch0=d;return;}
+  if(pinch0){dist=Math.max(6,Math.min(30,dist*(pinch0/d)));camAuto=false}pinch0=d;return;}
  az-=(e.clientX-p.x)*.008;el2=Math.max(-.2,Math.min(.9,el2+(e.clientY-p.y)*.005));p.x=e.clientX;p.y=e.clientY});
-cv.addEventListener('wheel',e=>{if(mode!=='garage')return;e.preventDefault();dist=Math.max(6,Math.min(22,dist+e.deltaY*.01))},{passive:false});
+cv.addEventListener('wheel',e=>{if(mode!=='garage')return;e.preventDefault();dist=Math.max(6,Math.min(30,dist+e.deltaY*.01));camAuto=false},{passive:false});
+/* ガレージのカメラ合わせ：
+   ・見る窓を下へずらし（setViewOffset）、ステータス欄に隠れない範囲の中央に機体が来るようにする
+   ・機体の大きさ（バウンディングボックス）から、全身がその範囲に大きく収まる距離を求める（斜めの角度はそのまま）
+   ・ホイールやピンチで寄せ引きしたら自動合わせは止め、VIEW ボタンで戻す */
+function applyGarageView(){const w=W.clientWidth||1,h=W.clientHeight||1;
+ if(mode==='garage'){C.setViewOffset(w,h,0,Math.round((lastGsh||0)*.5),w,h)}else C.clearViewOffset();C.updateProjectionMatrix()}
+function fitGarageCam(){if(!mech||mode!=='garage')return;const w=W.clientWidth||1,h=W.clientHeight||1,vis=Math.max(.35,(h-(lastGsh||0)-12)/h);
+ mech.bot.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(mech.bot),sz=b.getSize(new THREE.Vector3());
+ camTY=(b.min.y+b.max.y)/2;const t=Math.tan(C.fov*Math.PI/360),aspV=w/(h*vis);
+ const dH=sz.y*1.04/(2*t*vis),dW=Math.max(sz.x,sz.z)*.9/(2*t*aspV);
+ dist=Math.max(8,Math.min(30,Math.max(dH,dW)+Math.max(sz.x,sz.z)*.15))}
 function resize(){const w=W.clientWidth,h=W.clientHeight||1;let rw,rh;
  if(RES[res]){rh=RES[res][1];rw=Math.round(rh*w/h);}else{const d=Math.min(devicePixelRatio,2);rw=w*d;rh=h*d;}
- R.setSize(rw,rh,false);snap.value.set(rw,rh);C.aspect=w/h;C.updateProjectionMatrix();}
+ R.setSize(rw,rh,false);snap.value.set(rw,rh);C.aspect=w/h;C.updateProjectionMatrix();applyGarageView();if(camAuto)fitGarageCam()}
 addEventListener('resize',resize);resize();
 
 /* ===== メインループ =====
@@ -2276,7 +2291,7 @@ addEventListener('resize',resize);resize();
 const B={tX:0,tY:0,hY:0,lift:0,arms:[{x:0,z:0,e:0},{x:0,z:0,e:0}],legs:[{th:0,kn:0,tz:0},{th:0,kn:0,tz:0}]};
 const _v=new THREE.Vector3(),SOLE=.24;let lastT=performance.now();
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let dustT=0,boostNow=0,lastGsh=0,icT=0;
+let dustT=0,boostNow=0,icT=0;
 // EXTRA の常時発動：レーダーは回り続け、ブースターはブースト中に噴射、迎撃装置は首を振りつつ敵弾を撃ち落とす
 function tickPassive(dt){
  const w=mech.weps.ext||{};
@@ -2402,13 +2417,13 @@ R.setAnimationLoop(()=>{
    _v.set(P.pos.x-f.x*5.4,8.6+y,P.pos.z-f.z*5.4);C.position.lerp(_v,Math.min(1,dt*12));
    C.lookAt(P.pos.x+f.x*26,5.4+y*.7,P.pos.z+f.z*26);
   }
- }else{C.position.set(Math.sin(az)*dist*Math.cos(el2),3.4+Math.sin(el2)*dist,Math.cos(az)*dist*Math.cos(el2));C.lookAt(0,2.4,0)}
+ }else{C.position.set(Math.sin(az)*dist*Math.cos(el2),camTY+Math.sin(el2)*dist,Math.cos(az)*dist*Math.cos(el2));C.lookAt(0,camTY,0)}
  updateFX(dt);
  if(shake>0&&!reduce){C.position.x+=(Math.random()-.5)*shake;C.position.y+=(Math.random()-.5)*shake;shake*=.85;if(shake<.005)shake=0}
  Wp.glow.color.setHSL(.07,1,.5+Math.sin(t*6)*.08);
  Sk.lamp.color.setHSL(0,1,(Math.floor(t*2)%2)?.55:.18);
  R.render(S,C);
- if(mode==='garage'){const gh=($('gstats').offsetHeight||100)+14;if(gh!==lastGsh){lastGsh=gh;W.style.setProperty('--gsh',gh+'px')}HL.opacity=.65+Math.sin(t*5)*.35;if(pvOn&&view==='slot'){pvSpin.rotation.y+=dt*.8;PR.render(PS,PC)}}
+ if(mode==='garage'){const gh=($('gstats').offsetHeight||100)+14;if(gh!==lastGsh){const first=!lastGsh;lastGsh=gh;W.style.setProperty('--gsh',gh+'px');applyGarageView();if(first||camAuto)fitGarageCam()}HL.opacity=.65+Math.sin(t*5)*.35;if(pvOn&&view==='slot'){pvSpin.rotation.y+=dt*.8;PR.render(PS,PC)}}
  // HUD
  if(mode==='play'){
   {const ar=P.hp.core/P.hpMax.core;$('apNum').textContent=Math.round(P.hp.core);$('apMax').textContent='/ '+P.hpMax.core;$('apPct').textContent=Math.round(ar*100)+'%';
@@ -2446,13 +2461,16 @@ function titleLoop(){if(!TT.on)return;TT.ang+=.0026;const r=19;TC.position.set(M
 /* ローディング演出：約1.6秒。終わったら fn（画面の準備）を実行して幕を上げる。
    NEW GAME はこのあとにオープニングを入れる予定（playOpening はいまは何もしない） */
 function playOpening(next){next()}
-function loadingTo(fn,lines){const L=$('loading'),bar=$('lBar'),log=$('lLog'),pct=$('lPct');
- bar.innerHTML='<i></i>'.repeat(24);log.innerHTML='';pct.textContent='0%';L.hidden=false;TT.on=false;
- const steps=[0,3,7,8,12,16,17,21,24];let i=0;
- const tick=()=>{const n=steps[i];bar.querySelectorAll('i').forEach((e,k)=>e.classList.toggle('on',k<n));pct.textContent=Math.round(n/24*100)+'%';
-  const ln=lines[Math.min(lines.length-1,Math.floor(i/steps.length*lines.length))];if(ln&&log.lastChild?.textContent!==ln){const d=document.createElement('div');d.textContent=ln;log.appendChild(d);while(log.children.length>3)log.firstChild.remove()}
-  if(++i<steps.length)setTimeout(tick,120+Math.random()*120);else setTimeout(()=>{fn();const f=$('fade');f.classList.add('on');L.hidden=true;requestAnimationFrame(()=>requestAnimationFrame(()=>f.classList.remove('on')))},260)};
- tick()}
+function loadingTo(fn,lines){const L=$('loading'),bar=$('lBar'),log=$('lLog'),pct=$('lPct'),N=40;
+ bar.style.gridTemplateColumns=`repeat(${N},minmax(0,1fr))`;bar.innerHTML='<i></i>'.repeat(N);log.innerHTML='';pct.textContent='0%';L.hidden=false;TT.on=false;
+ const cells=[...bar.children],DUR=1700,t0=performance.now();let shown=-1,li=-1;
+ // 進み方：ゆるやかに加速→途中で一瞬ためる→最後まで（なめらかに増える）
+ const ease=u=>u<.55?.62*Math.pow(u/.55,1.15):u<.68?.62+.06*((u-.55)/.13):.68+.32*(1-Math.pow(1-(u-.68)/.32,2));
+ const step=now=>{const u=Math.min(1,(now-t0)/DUR),p=ease(u),n=Math.round(p*N);
+  if(n!==shown){cells.forEach((e,k)=>e.classList.toggle('on',k<n));shown=n}pct.textContent=Math.round(p*100)+'%';
+  const k=Math.min(lines.length-1,Math.floor(p*lines.length));if(k!==li){li=k;const d=document.createElement('div');d.textContent=lines[k];log.appendChild(d);while(log.children.length>3)log.firstChild.remove()}
+  if(u<1)requestAnimationFrame(step);else setTimeout(()=>{fn();const f=$('fade');f.classList.add('on');L.hidden=true;requestAnimationFrame(()=>requestAnimationFrame(()=>f.classList.remove('on')))},220)};
+ requestAnimationFrame(step)}
 const LOAD_CON=['> SAVE DATA ............ FOUND','> N-07 CONTROL UNIT .... ONLINE','> FRAME LINK ........... OK','> HANGAR 07 ............ READY'];
 const LOAD_NEW=['> NEW OPERATOR ......... REGISTERED','> N-07 CONTROL UNIT .... BOOTING','> FRAME LINK ........... OK','> HANGAR 07 ............ READY'];
 const hasSave=()=>{try{return !!localStorage.getItem(SAVE_KEY)}catch(e){return false}};
