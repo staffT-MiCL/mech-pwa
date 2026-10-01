@@ -204,6 +204,10 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .cells i.gu{outline:1px dashed var(--accent);outline-offset:-1px}.cells i.gd{opacity:.35}
 .gf{font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:var(--faint)}
 .gs .h,.gs .bar{display:none}
+/* 兵装の階層リスト */
+.pitem.cat .t{color:var(--fire)}.pitem.hascur{border-color:#4f7c42}
+.pitem.catback{background:#141a17;border-color:#3a4540;border-left:3px solid var(--fire)}
+.pitem.catback .pc{color:var(--fire)}.pitem.catback .n small{font-family:var(--body);font-size:10px;color:var(--dim);margin-left:4px}
 /* メニュー */
 #menu{position:fixed;inset:0;z-index:20;background:rgba(4,6,5,.6)}
 #menu .drawer{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));box-sizing:border-box;background:#101513;border-left:2px solid var(--fire);display:flex;flex-direction:column;gap:8px;overflow-y:auto}
@@ -702,6 +706,45 @@ const EXT={
     else{flash(t.muzzle,.18,0x9fe0ff);shoot(t.muzzle,{size:.05,speed:55,color:0x9fe0ff})}}
    return {w:env(c.u,.05,.9),headY:Math.sin(c.u*28)*.2,crouch:.1}}},end(w){w.turrets.forEach(t=>t.rotation.set(0,0,0))}},
 };
+/* ===== 兵装バリエーション（各種類2つ目）=====
+ 動き（act）は同じ種類の兵装と共通。性能（st）と見た目（build）だけ変える。build は act が使う部品（muzzle など）を同じ名前で返す */
+Object.assign(HAND,{
+ 'RF2':{...HAND.RF,st:{kind:'射撃',dmg:260,range:85,area:0,rate:'3点射／1.6秒',count:1,ammo:18,reload:4,wt:16,imp:'B',spd:90,hom:'なし'},
+  build(g){box(g,.18,.7,.26,Wp.dark,0,-.35,0);box(g,.06,2.0,.06,Wp.metal,0,-1.55,0);box(g,.1,.42,.12,Wp.frame,0,-.6,.2);cyl(g,.06,.06,.3,Wp.dark,0,-.55,.3,0,0,6);
+   box(g,.14,.2,.14,Wp.frame,0,-2.6,0);box(g,.08,.4,.22,Wp.body,0,-.2,-.2);const muzzle=grp(g,0,-2.72,0);muzzle.rotation.x=Math.PI/2;return {muzzle}}},
+ 'MG2':{...HAND.MG,st:{kind:'射撃',dmg:65,range:35,area:0,rate:'12発／秒',count:1,ammo:120,reload:6,wt:24,imp:'B',spd:55,hom:'なし'},
+  build(g){box(g,.3,.8,.34,Wp.frame,0,-.4,0);box(g,.36,.42,.36,Wp.body,0,-.35,.26);
+   [[-.07,0],[.07,0],[0,.1]].forEach(([x,z])=>cyl(g,.045,.045,1.2,Wp.metal,x,-1.2,z,0,0,6));cyl(g,.16,.16,.08,Wp.dark,0,-1.0,.03,0,0,8);cyl(g,.16,.16,.08,Wp.dark,0,-1.6,.03,0,0,8);
+   const muzzle=grp(g,0,-1.85,.03);muzzle.rotation.x=Math.PI/2;return {muzzle}}},
+ 'BZ2':{...HAND.BZ,st:{kind:'射撃',dmg:380,range:45,area:3,rate:'1発／1.4秒',count:1,ammo:10,reload:4,wt:20,imp:'A',spd:26,hom:'なし'},
+  build(g){box(g,.28,1.3,.32,Wp.body,0,-.6,.1);box(g,.3,.12,.34,Wp.warn,0,-.25,.1);box(g,.32,.22,.36,Wp.frame,0,-1.3,.1);box(g,.32,.2,.36,Wp.frame,0,.1,.1);
+   box(g,.12,.3,.14,Wp.dark,0,-.3,-.12);box(g,.06,.3,.06,Wp.metal,.12,-.75,.3);const muzzle=grp(g,0,-1.45,.1);muzzle.rotation.x=Math.PI/2;return {muzzle}}},
+ 'BL2':{...HAND.BL,st:{kind:'近接',dmg:1000,range:8,area:0,rate:'1回／1.3秒',count:1,ammo:INF,reload:0,wt:15,imp:'S',spd:0,hom:'－'},
+  build(g){box(g,.34,.6,.4,Wp.body,0,-.3,0);box(g,.4,.12,.44,Wp.frame,0,-.06,0);box(g,.24,.16,.24,Wp.warn,0,-.62,0);
+   const blade=box(g,.1,1.5,.32,Wp.glow,0,-1.35,0);const muzzle=grp(g,0,-2.0,0);muzzle.rotation.x=Math.PI/2;return {muzzle,blade}}},
+ 'SH2':{...HAND.SH,st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:3,reload:4,wt:6,imp:'なし',spd:0,hom:'－',note:'正面の弾を防ぐ。回数は少ないが復帰が早い'},
+  build(g){const p=grp(g,0,-.4,-.3);box(p,.7,1.0,.1,Wp.body,0,0,0);box(p,.74,.1,.14,Wp.warn,0,.42,0);box(p,.5,.06,.14,Wp.metal,0,-.1,-.02);
+   box(g,.18,.4,.18,Wp.frame,0,-.25,-.15);return {plate:p}}},
+});
+Object.assign(SHOULDER,{
+ 'MS2':{...SHOULDER.MS,st:{kind:'射撃',dmg:420,range:80,area:4,rate:'1斉射／2.5秒',count:2,ammo:8,reload:7,wt:24,imp:'A',spd:22,hom:'中'},
+  build(g){const pod=grp(g,0,.32,0);pod.rotation.x=-.25;box(pod,.7,.42,1.1,Wp.body,0,0,0);box(pod,.72,.06,1.1,Wp.warn,0,.24,0);
+   const cells=[-1,1].map(s=>{cyl(pod,.13,.13,.06,Wp.dark,s*.17,0,.56,Math.PI/2,0,8);return grp(pod,s*.17,0,.6)});return {cells}}},
+ 'RD2':{...SHOULDER.RD,st:{kind:'補助',ammo:3,reload:16,wt:9,dur:12,note:'常時：ロック距離＋25m・範囲拡大／発動：全敵の位置を12秒表示'},
+  build(g){box(g,.14,.8,.14,Wp.frame,0,.4,-.1);box(g,.3,.12,.3,Wp.body,0,.1,-.1);const dish=grp(g,0,.85,-.1);
+   box(dish,.9,.08,.12,Wp.metal,0,0,0);box(dish,.12,.14,.12,Wp.dark,.4,0,0);box(dish,.12,.14,.12,Wp.dark,-.4,0,0);return {dish}}},
+ 'GC2':{...SHOULDER.GC,st:{kind:'射撃',dmg:560,range:55,area:5,rate:'1発／2.4秒',count:1,ammo:6,reload:6,wt:26,imp:'S',spd:30,hom:'なし',note:'しゃがんで撃つ（発射中は移動不可）'},
+  build(g){const gun=grp(g,0,.3,0);box(gun,.5,.4,.7,Wp.body,0,0,-.1);box(gun,.24,.24,1.0,Wp.metal,0,.04,.6);box(gun,.32,.32,.16,Wp.frame,0,.04,1.12);box(gun,.52,.06,.7,Wp.warn,0,.22,-.1);
+   const muzzle=grp(gun,0,.04,1.25);return {gun,muzzle}}},
+});
+Object.assign(EXT,{
+ 'BT2':{...EXT.BT,st:{kind:'補助',ammo:3,reload:10,wt:8,note:'小型の追加推進器。回数が多く軽い'},
+  build(g){box(g,.8,.3,.3,Wp.frame,0,0,-.1);cyl(g,.22,.3,.6,Wp.body,0,0,-.4,Math.PI/2,0,8);cyl(g,.2,.2,.02,Wp.glow,0,0,-.71,Math.PI/2,0,8);
+   const f=cyl(g,.22,.02,1.2,Wp.glow,0,0,-1.3,-Math.PI/2,0,6);f.scale.set(1,.01,1);return {flames:[f]}}},
+ 'IC2':{...EXT.IC,act:{...EXT.IC.act,dur:7},st:{kind:'補助',ammo:1,reload:20,wt:14,dur:7,note:'7秒間、近づく敵弾を自動で撃ち落とす（長時間型）'},
+  build(g){box(g,.9,.36,.4,Wp.body,0,.35,-.1);box(g,.92,.06,.42,Wp.warn,0,.55,-.1);const turrets=[];
+   [-1,1].forEach(s=>{const t=grp(g,s*.32,.66,-.1);cyl(t,.12,.14,.14,Wp.frame,0,0,0,0,0,8);box(t,.05,.05,.45,Wp.metal,.04,0,.24);box(t,.05,.05,.45,Wp.metal,-.04,0,.24);t.muzzle=grp(t,0,0,.5);turrets.push(t)});return {turrets}}},
+});
 /* 基本動作：跳躍（高さは機動で変わる） */
 const JUMP={name:'跳躍',act:{name:'跳躍',dur:2.2,run(c){const u=c.u,h=SS.jump;
  if(c.once('go',.2)){shake=.2;dust(1.2)}
@@ -845,7 +888,12 @@ const DESC={
  'none':'何も装備しない。','RF':'扱いやすい主力の小銃。3点射で確実に削る。','MG':'威力は低いが連射で相手を止め続ける。',
  'BZ':'一撃が重い大砲。弾が遅く、当てるには距離が要る。','BL':'踏み込んで斬る近接兵装。弾切れがない。','SH':'正面の弾を防ぐ盾。押している間だけ構える。',
  'MS':'6発を順に撃ち出す誘導弾。','RD':'積むだけで捕捉範囲が広がる索敵装置。','GC':'しゃがんで撃つ大口径砲。撃つ間は動けない。',
- 'BT':'前方へ一気に突進する追加推進器。','IC':'近づく敵弾を自動で撃ち落とす。'};
+ 'BT':'前方へ一気に突進する追加推進器。','IC':'近づく敵弾を自動で撃ち落とす。',
+ 'RF2':'長い銃身の狙撃型。一発が重く遠くまで届くが、弾数は少ない。','MG2':'3本の銃身を持つ重機関銃。威力は高いが重い。',
+ 'BZ2':'軽量の箱型ランチャー。威力は控えめだが、連射と弾数で補う。','BL2':'幅広の重いブレード。動きは同じでも一撃がとても重い。',
+ 'SH2':'小型の盾。防げる回数は少ないが、軽くて復帰が早い。','MS2':'大型弾2発を同時に撃つ。誘導は弱めだが爆発が大きい。',
+ 'RD2':'背の高いアンテナ型。索敵の表示時間が長い。','GC2':'短砲身の軽量砲。威力は落ちるが弾数が多い。',
+ 'BT2':'小型の推進器。使える回数が多く、とても軽い。','IC2':'長時間型の迎撃装置。使えるのは1回だが長く守る。'};
 const EN={'HD-01':'SENSOR HEAD','HD-02':'MONO-EYE HEAD','CR-01':'STANDARD CORE','CR-02':'HEAVY CORE','AR-01':'STANDARD ARMS','AR-02':'HEAVY ARMS',
  'LG-01':'MEDIUM BIPED','LG-02':'HEAVY BIPED','none':'EMPTY','RF':'RIFLE','MG':'MACHINE GUN','BZ':'BAZOOKA','BL':'BLADE','SH':'SHIELD',
  'MS':'MISSILE POD','RD':'RADAR','GC':'GRENADE CANNON','BT':'BOOSTER','IC':'INTERCEPTOR'};
@@ -855,7 +903,8 @@ const SLOTOF=k=>SLOTS.find(s=>s.key===k);
 
 /* 右パネルの状態 */
 let view='overview',selSlot=null,cand=null;
-function openSlot(k){view='slot';selSlot=k;cand=cfg[k];renderGarage()}
+let wcat=null; // 兵装の一覧で開いている種類（null＝種類の一覧）
+function openSlot(k){view='slot';selSlot=k;cand=cfg[k];wcat=SLOTOF(k).group==='W'?pn(k,cfg[k])[0]:null;renderGarage()}
 function renderGarage(){renderHeader();renderGStats();renderSide()}
 // ガレージでは、選択中（未装備）の装備を仮に組んだ見た目にする
 function syncPreviewMech(){
@@ -954,11 +1003,17 @@ function renderSide(){
   const whole=[cmpRow('装甲',SS.armor,P2.armor),cmpRow('機動',Math.round(SS.mob),Math.round(P2.mob)),cmpRow('ブースト容量',SS.boost,P2.boost),
    cmpRow('積載',`${SS.weap}/${SS.load}`,`${P2.weap}/${P2.load}`),cmpRow('総重量',SS.total,P2.total,'lo')].join('');
   const note=(cd.st&&cd.st.note)?`<p>${esc(cd.st.note)}</p>`:'';
+  const catsOf=()=>{const m=new Map();items.forEach(id=>{const c=pn(selSlot,id)[0];if(!m.has(c))m.set(c,[]);m.get(c).push(id)});return m};
+  const CATS=sl.group==='W'?catsOf():null;
+  const shown=sl.group==='W'&&wcat?CATS.get(wcat)||[]:items;
+  const catList=sl.group==='W'&&!wcat?[...CATS].map(([c,ids])=>{const has=ids.includes(cur),allOv=ids.every(id=>id!==cur&&statsFor({...cfg,[selSlot]:id}).over);
+    return `<button class="pitem cat${has?' hascur':''}" data-cat="${c}" ${allOv?'disabled':''}><span class="pc">${c}<small>${pn(selSlot,ids[0])[1]}</small></span><span class="n">${ids[0]==='none'?'装備を外す':ids.length+' 種類から選ぶ'}</span>${has?'<span class="t eq">装備中</span>':'<span class="t">▶</span>'}</button>`}).join(''):'';
+  const backRow=sl.group==='W'&&wcat?`<button class="pitem catback" id="catBack"><span class="pc">◀ 種類の一覧へ戻る</span><span class="n">${wcat} <small>${pn(selSlot,shown[0])[1]}</small></span><span class="t"></span></button>`:'';
   el.innerHTML=`<div class="shd"><span class="code">SLOT ${no}</span><span class="ttl en">${sl.label}</span><span class="sub">${sub}</span></div><div class="rule"></div>
-  <div class="cols2"><div class="plist">${items.map(id=>{const d=sl.cat[id],w=d.st?d.st.wt:d.wt;const s=id===cand,e=id===cur;
+  <div class="cols2"><div class="plist">${catList}${backRow}${(sl.group==='W'&&!wcat?[]:shown).map(id=>{const d=sl.cat[id],w=d.st?d.st.wt:d.wt;const s=id===cand,e=id===cur;
     const ov=!e&&statsFor({...cfg,[selSlot]:id}).over;
     return `<button class="pitem${s?' sel':''}${ov?' ovw':''}" data-id="${id}" ${ov?'disabled':''}><span class="pc">${pn(selSlot,id)[0]}<small>${pn(selSlot,id)[1]}</small></span><span class="n">${esc(ENM(selSlot,id).trim())}</span>${e?'<span class="t eq">装備中</span>':ov?'<span class="t ov">重すぎ</span>':`<span class="t">重量${w||0}</span>`}</button>`}).join('')}
-    ${items.length<5?'<div class="pitem lock"><span class="pc">－</span><span class="n">未入手</span><span class="t"></span></div>':''}</div>
+    ${sl.group==='W'?'':items.length<5?'<div class="pitem lock"><span class="pc">－</span><span class="n">未入手</span><span class="t"></span></div>':''}</div>
    <div class="detail"><div class="dtop">${sl.group==='W'&&cand!=='none'?'<div class="pv" id="pv"></div>':''}<div class="dtxt"><span class="en">${pn(selSlot,cand)[0]} ／ ${pn(selSlot,cand)[1]}</span><span class="nm">${esc(ENM(selSlot,cand).trim())}</span><p>${esc(DESC[cand]||'')}</p></div></div>
     <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${brief}</div>
     <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur?'disabled':''}>${cand===cur?'装備中':'装備する'}</button><button class="btn-sub" id="more">詳しく見る</button><button class="btn-sub" id="back">戻る</button></div></div></div>`;
@@ -968,6 +1023,8 @@ function renderSide(){
    <div class="sec">機体全体<span class="secj">現在 → 装備後</span></div><div class="cmp">${whole}${cmpRow('歩行速度',+SS.walk.toFixed(1),+P2.walk.toFixed(1))}${cmpRow('ダッシュ速度',+SS.dash.toFixed(1),+P2.dash.toFixed(1))}${cmpRow('急加速距離',+SS.qb.toFixed(1),+P2.qb.toFixed(1))}${cmpRow('ロック距離',SS.lockRange,P2.lockRange,'hi',v=>v+'m')}</div>
    ${P2.over?`<div class="warn-msg">この装備にすると積載を ${P2.weap-P2.load} 超えます（出撃不可）</div>`:''}`);
   el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{cand=b.dataset.id;renderGarage()});
+  el.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{wcat=b.dataset.cat;const ids=CATS.get(wcat);if(!ids.includes(cand))cand=ids.includes(cur)?cur:(ids.find(id=>!statsFor({...cfg,[selSlot]:id}).over)||ids[0]);renderGarage()});
+  const cb=$('catBack');if(cb)cb.onclick=()=>{wcat=null;renderGarage()};
   const pv=$('pv');if(pv&&pv.appendChild){pv.appendChild(PR.domElement);setPreview(selSlot,cand)}else setPreview(null);
   $('equip').onclick=()=>{cfg[selSlot]=cand;assemble()};
   $('back').onclick=()=>{view='overview';selSlot=null;renderGarage()};
@@ -1005,7 +1062,11 @@ const PN={
  'RF':['RIFLE','ライフル','','WR-07A'],'MG':['MACHINE GUN','マシンガン','','WM-12'],'BZ':['BAZOOKA','バズーカ','','WB-40'],
  'BL':['BLADE','ブレード','','WL-03'],'SH':['SHIELD','シールド','','WS-08'],
  'MS':['MISSILE','ミサイル','','SM-6X'],'RD':['RADAR','レーダー','','SR-02'],'GC':['CANNON','グレネード砲','','SG-90'],
- 'BT':['BOOSTER','追加ブースター','','XB-15'],'IC':['INTERCEPTOR','迎撃装置','','XI-04']};
+ 'BT':['BOOSTER','追加ブースター','','XB-15'],'IC':['INTERCEPTOR','迎撃装置','','XI-04'],
+ 'RF2':['RIFLE','ライフル','','WR-11S'],'MG2':['MACHINE GUN','マシンガン','','WM-20H'],'BZ2':['BAZOOKA','バズーカ','','WB-25L'],
+ 'BL2':['BLADE','ブレード','','WL-07H'],'SH2':['SHIELD','シールド','','WS-03L'],
+ 'MS2':['MISSILE','ミサイル','','SM-2H'],'RD2':['RADAR','レーダー','','SR-05W'],'GC2':['CANNON','グレネード砲','','SG-60'],
+ 'BT2':['BOOSTER','追加ブースター','','XB-08'],'IC2':['INTERCEPTOR','迎撃装置','','XI-09']};
 const pn=(slot,id)=>id==='none'?(SLOTOF(slot).cat===HAND?['NONE','','','素手（武器なし）']:['NONE','','','装備なし']):(PN[id]||['','',id,SLOTOF(slot).cat[id].name]);
 const ENM=(slot,id)=>{const p=pn(slot,id);return (p[2]?p[2]+' ':'')+p[3]};
 
