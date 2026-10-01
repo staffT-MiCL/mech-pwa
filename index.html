@@ -238,10 +238,10 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 /* 説明文：タッチで全文 */
 .dtop{position:relative}
 .detail p.more{cursor:pointer}
-.detail p.more::after{content:"全文 ▼";position:absolute;right:0;bottom:-15px;font-family:var(--body);font-size:10px;color:var(--fire);background:var(--panel2);padding:0 2px}
+.detail p.more::after{content:"▼";position:absolute;right:0;bottom:-15px;font-family:var(--body);font-size:10px;color:var(--fire);background:var(--panel2);padding:0 2px}
 .dtxt{position:relative}
 .detail p.open{position:absolute;left:0;right:0;top:100%;z-index:6;display:block!important;-webkit-line-clamp:unset;overflow:visible;color:#eef2ef;font-size:12.5px;line-height:1.65;background:#0b100e;border:1px solid var(--fire);padding:8px 10px;box-shadow:0 6px 18px rgba(0,0,0,.6)}
-.detail p.open::after{content:"閉じる ▲";position:static;display:block;text-align:right;margin-top:4px;bottom:auto}
+.detail p.open::after{content:"▲";position:static;display:block;text-align:right;margin-top:4px;bottom:auto}
 /* メニュー */
 #menu{position:fixed;inset:0;z-index:20;background:rgba(4,6,5,.6)}
 #menu .drawer{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));box-sizing:border-box;background:#101513;border-left:2px solid var(--fire);display:flex;flex-direction:column;gap:8px;overflow-y:auto}
@@ -1394,9 +1394,17 @@ assemble();
 /* ===== 視点（ガレージ） ===== */
 const pts=new Map();let pinch0=0;const cv=R.domElement;
 let tap0=null;
+// タッチした位置の部位を調べる（兵装→ヘッド→アーム→レッグ→コアの順で優先）
+const _pick=new THREE.Raycaster();
+function pickSlot(x,y){
+ const r=cv.getBoundingClientRect();_pick.setFromCamera({x:(x-r.left)/r.width*2-1,y:-(y-r.top)/r.height*2+1},C);
+ const order=['rHand','lHand','rShoulder','lShoulder','ext','head','arms','legs','core'],own=new Map();
+ order.forEach(k=>slotMeshes(k).forEach(m=>{if(!own.has(m))own.set(m,k)}));
+ const hit=_pick.intersectObjects([...own.keys()],false)[0];return hit?own.get(hit.object):null;
+}
 cv.addEventListener('pointerdown',e=>{if(mode!=='garage')return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});tap0={x:e.clientX,y:e.clientY,t:performance.now(),multi:pts.size>1};cv.setPointerCapture(e.pointerId)});
 const up=e=>{
- if(mode==='garage'&&tap0&&!tap0.multi&&pts.size===1&&e.type==='pointerup'&&Math.hypot(e.clientX-tap0.x,e.clientY-tap0.y)<8&&performance.now()-tap0.t<350&&view!=='overview'){view='overview';selSlot=null;renderGarage()}
+ if(mode==='garage'&&tap0&&!tap0.multi&&pts.size===1&&e.type==='pointerup'&&Math.hypot(e.clientX-tap0.x,e.clientY-tap0.y)<8&&performance.now()-tap0.t<350){const k=pickSlot(e.clientX,e.clientY);if(k)openSlot(k);else if(view!=='overview'){view='overview';selSlot=null;renderGarage()}}
  if(pts.size>1&&tap0)tap0.multi=true;
  pts.delete(e.pointerId);pinch0=0;if(!pts.size)tap0=null};
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
