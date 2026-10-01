@@ -325,6 +325,75 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .pbtn.on{background:rgba(240,160,64,.55);border-color:var(--fire)}
 #pcHelp{position:absolute;left:16px;bottom:calc(14px + env(safe-area-inset-bottom,0px));font-size:11px;color:var(--dim);line-height:1.6;pointer-events:none;max-width:50%}
 @media (pointer:coarse){#pcHelp{display:none}}
+
+/* ===== SHOP：左（上＝整備工場と店主、下＝セリフ）を大きく、右（在庫と比較）をやや小さく ===== */
+#shop{position:fixed;inset:0;z-index:15;background:var(--bg);display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-rows:40px minmax(0,1fr);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
+#shop .shdr{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:0 12px;background:#101513;border-bottom:1px solid var(--line);min-width:0}
+#shop .money{display:flex;align-items:baseline;gap:6px;white-space:nowrap}#shop .money small{font-size:10px;color:var(--dim);letter-spacing:1px}
+#shop .money b{font-size:15px;font-variant-numeric:tabular-nums;color:#eef2ef}#shop .money i{font-style:normal;font-size:10px;color:var(--khaki)}
+#shop .money b.flash{color:var(--accent)}
+#shopL{display:grid;grid-template-rows:minmax(0,1fr) clamp(128px,36%,190px);min-height:0;min-width:0;border-right:1px solid var(--line)}
+#scene{position:relative;overflow:hidden;min-height:0;border-bottom:1px solid var(--line);background:#0d1110}
+#scene .bg{position:absolute;inset:0;width:100%;height:100%}
+#scene .kp{position:absolute;right:7%;bottom:1%;height:94%;aspect-ratio:150/250;animation:kbob 3.2s ease-in-out infinite}
+#scene .kp svg{width:100%;height:100%;display:block}
+@keyframes kbob{0%,100%{transform:translateY(0)}50%{transform:translateY(1.2%)}}
+#scene::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.24) 0 1px,transparent 1px 3px)}
+.kp .eye{transition:transform .25s}
+.kp .mk{display:none}
+.kp.happy .mk-h,.kp.panic .mk-p,.kp.sorry .mk-s{display:inline}
+.kp.panic .eye{transform:translateX(9px)}.kp.sorry .eye{transform:translate(-6px,3px)}
+.kp.panic{animation:kshake .18s linear 5}
+@keyframes kshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-1.5%)}75%{transform:translateX(1.5%)}}
+.kp.talking .lens{animation:klens .16s steps(2) infinite}@keyframes klens{50%{opacity:.55}}
+.opcard{position:absolute;left:12px;top:12px;padding:7px 10px;background:rgba(10,14,13,.84);border:1px solid var(--line);display:flex;flex-direction:column;gap:2px;z-index:1}
+.opcard .r{font-size:10px;color:var(--khaki);letter-spacing:3px}.opcard .n{font-family:var(--disp);font-size:15px;color:#eef2ef}
+.opcard .d{font-size:10px;color:var(--dim)}.opcard .st{display:flex;gap:6px;align-items:center;font-size:10px;color:var(--cyan)}.opcard .st::before{content:"";width:6px;height:6px;background:currentColor}
+.opcard .st.p{color:var(--fire)}
+#tbox{position:relative;margin:8px 10px 10px;min-height:0;padding:14px 14px 10px;background:rgba(12,16,15,.95);border:1px solid var(--line);display:flex;gap:12px;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+#tbox .nm{position:absolute;left:12px;top:-1px;height:16px;padding:0 8px;background:var(--olive);color:#e8ecd8;font-size:10px;letter-spacing:2px;display:flex;align-items:center}
+#ttext{flex:1;min-width:0;overflow:auto;font-family:var(--disp);font-size:13.5px;line-height:1.65;color:#e6ebe7;padding-top:3px;cursor:pointer}
+#ttext em{font-style:normal;color:var(--fire)}#ttext strong{font-weight:400;color:var(--accent)}
+#tnext{position:absolute;right:12px;bottom:8px;color:var(--fire);font-size:10px;animation:kblink .8s steps(2) infinite}@keyframes kblink{50%{opacity:0}}
+#tchoice{display:flex;flex-direction:column;gap:4px;justify-content:flex-end;flex:0 0 auto}
+#tchoice.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:min(260px,48%);align-content:end}
+#tchoice button{min-height:28px;padding:0 10px;text-align:left;background:#121816;border:1px solid #3a4540;color:#aeb8b3;font-size:11px;white-space:nowrap}
+#tchoice button:first-child{background:#1f170b;border-color:var(--fire);color:#ffe2b8}
+#tchoice button:first-child::before{content:"▶ "}
+#shopR{min-height:0;min-width:0;background:var(--panel);padding:8px 12px 10px;display:flex;flex-direction:column;gap:6px}
+#shopR .body{flex:1;min-height:0;display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px}
+.scats{display:flex;flex-direction:column;gap:2px;overflow:auto;min-height:0}
+.scats button{min-height:20px;height:20px;flex:0 0 auto;padding:0 8px;display:flex;justify-content:space-between;align-items:center;background:transparent;border:1px solid #202a26;color:#aeb8b3;font-size:10px}
+.scats button.on{background:var(--fire);border-color:var(--fire);color:#1a1006;font-weight:700}
+.scats button span{font-size:9px;opacity:.7}.scats button.none{color:var(--faint)}
+.scats .gap{height:4px;flex:0 0 auto}
+.sdet{display:flex;flex-direction:column;gap:5px;min-height:0;min-width:0}
+.sitems{display:flex;flex-direction:column;gap:5px}
+.sitem{height:40px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;gap:6px;background:var(--panel2);border:1px solid var(--line);text-align:left}
+.sitem .a{display:flex;flex-direction:column;gap:1px;min-width:0}.sitem .a small{font-size:10px;color:var(--dim)}.sitem .a b{font-family:var(--disp);font-size:12px;font-weight:400}
+.sitem .p{display:flex;flex-direction:column;align-items:flex-end;gap:1px}.sitem .p small{font-size:9px;color:var(--fire)}.sitem .p b{font-size:12px}
+.sitem .p small.ov{color:#ff6a4c}.sitem .p small.ng{color:#ff6a4c}
+.sitem.sel{background:#1f170b;border-color:var(--fire);color:#ffe2b8;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}.sitem.sel .a small{color:var(--fire)}
+.sempty{padding:14px 10px;border:1px dashed var(--line);color:var(--faint);font-size:11px;font-family:var(--disp)}
+.scmp{flex:1;min-height:0;overflow:auto;padding:6px 10px;background:var(--panel2);border:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.scmp .sec{margin:0}.scmp .cmp{gap:2px;grid-template-columns:minmax(0,1fr)!important;display:grid}
+.sbuy{display:flex;align-items:center;gap:8px;height:34px;flex:0 0 auto}
+.sbuy small{font-size:10px;color:var(--dim)}.sbuy .pr{font-size:18px;font-weight:700;color:#eef2ef;font-variant-numeric:tabular-nums}.sbuy .pr i{font-style:normal;font-size:10px;color:var(--khaki);margin-left:3px}
+.sbuy .btn-main{flex:0 0 100px;height:34px}
+.sbuy .lack{flex:1;height:34px;display:flex;align-items:center;justify-content:center;border:1px solid #5a2014;color:#ff6a4c;font-size:11px;letter-spacing:1px}
+#sconf{position:fixed;inset:0;z-index:16;background:rgba(3,5,4,.72);display:flex;align-items:center;justify-content:center;padding:12px}
+#sconf .box{width:min(460px,100%);padding:16px 18px;background:var(--panel);border:1px solid var(--fire);display:flex;flex-direction:column;gap:10px;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px))}
+#sconf .bal{display:grid;grid-template-columns:1fr auto;gap:5px 10px;font-size:12px;font-variant-numeric:tabular-nums}
+#sconf .bal span:nth-child(odd){color:var(--dim)}#sconf .bal span:nth-child(even){text-align:right}
+#sconf .bal .tot{border-top:1px solid var(--line);padding-top:5px}
+#sconf .tgt{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11px}
+#sconf .tgt>small{font-size:10px;color:var(--dim);letter-spacing:1px}
+#sconf .tgt button{height:28px;padding:0 12px;font-size:11px}#sconf .tgt button[aria-pressed=true]{background:#1f170b;border-color:var(--fire);color:#ffe2b8}
+#sconf .tgt .w{font-size:10px;color:#6a7670}
+#sconf .acts{display:flex;gap:8px}#sconf .acts button{height:38px}
+#sconf .b2{flex:1;background:#1a201d;border:1px solid var(--fire);color:var(--fire);font-size:13px;letter-spacing:2px}
+@media (orientation:portrait){#shop{grid-template-columns:minmax(0,1fr);grid-template-rows:40px 50% minmax(0,1fr)}}
+@media (max-width:700px){#shop .loc{display:none}}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=DotGothic16&family=M+PLUS+1p:wght@400;700&family=Stardos+Stencil:wght@400;700&display=swap">
 
@@ -386,13 +455,58 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
   <button class="mitem" id="mTrain"><span class="no">02</span><span class="t en">TRAINING<br><small>攻撃してこない標的で操作を練習する</small></span></button>
   <button class="mitem" disabled><span class="no">03</span><span class="t en">MISSION<br><small>任務を受けて戦う（準備中）</small></span></button>
   <button class="mitem" disabled><span class="no">04</span><span class="t en">VERSUS<br><small>ほかのプレイヤーと対戦する（準備中）</small></span></button>
-  <button class="mitem" disabled><span class="no">05</span><span class="t en">SHOP<br><small>パーツや兵装を手に入れる（準備中）</small></span></button>
+  <button class="mitem" id="mShop"><span class="no">05</span><span class="t en">SHOP<br><small>パーツや兵装を買う</small></span></button>
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
   <div class="mfoot"><span id="mUnit">UNIT-01</span><span>VER 0.5</span></div>
  </div>
 </div>
 
+
+<div id="shop" hidden>
+ <div class="shdr">
+  <div class="logo"><span class="jp">重装機体</span><span class="en">SHOP</span></div>
+  <span class="sep"></span><span class="tag loc">第7整備区画 ハンガー</span>
+  <span class="grow"></span>
+  <span class="money"><small>所持金</small><b id="sMoney"></b><i>CR</i></span>
+  <button class="btn-sub" id="sExit" style="height:28px">GARAGE へ</button>
+ </div>
+ <div id="shopL">
+  <div id="scene">
+   <svg class="bg" viewBox="0 0 560 236" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="560" height="236" fill="#0d1110"/><polygon points="0,0 560,0 560,42 0,66" fill="#141a18"/><g stroke="#232d29" stroke-width="3" fill="none"><path d="M0 66 L560 42"/><path d="M60 0 L40 64"/><path d="M214 0 L204 57"/><path d="M437 0 L431 47"/><path d="M40 64 L204 0 M204 57 L437 0"/></g><rect x="0" y="66" width="560" height="123" fill="#101614"/><rect x="17" y="80" width="168" height="94" fill="#121a17" stroke="#24302b"/><rect x="23" y="102" width="156" height="3" fill="#1b2420"/><rect x="23" y="124" width="156" height="3" fill="#1b2420"/><rect x="23" y="146" width="156" height="3" fill="#1b2420"/><rect x="23" y="168" width="156" height="3" fill="#1b2420"/><rect x="23" y="90" width="14" height="10" fill="#3a4433"/><rect x="49" y="90" width="18" height="10" fill="#3a4433"/><rect x="75" y="90" width="22" height="10" fill="#3a4433"/><rect x="101" y="90" width="14" height="10" fill="#3a4433"/><rect x="127" y="90" width="18" height="10" fill="#3a4433"/><rect x="153" y="90" width="22" height="10" fill="#3a4433"/><rect x="23" y="112" width="18" height="10" fill="#3a4433"/><rect x="49" y="112" width="22" height="12" fill="#3a4433"/><rect x="75" y="112" width="14" height="10" fill="#3a4433"/><rect x="101" y="112" width="18" height="12" fill="#3a4433"/><rect x="127" y="112" width="22" height="10" fill="#3a4433"/><rect x="153" y="112" width="14" height="12" fill="#3a4433"/><rect x="23" y="134" width="22" height="10" fill="#3a4433"/><rect x="49" y="134" width="14" height="10" fill="#3a4433"/><rect x="75" y="134" width="18" height="10" fill="#3a4433"/><rect x="101" y="134" width="22" height="10" fill="#3a4433"/><rect x="127" y="134" width="14" height="10" fill="#3a4433"/><rect x="153" y="134" width="18" height="10" fill="#3a4433"/><rect x="23" y="156" width="14" height="10" fill="#3a4433"/><rect x="49" y="156" width="18" height="12" fill="#3a4433"/><rect x="75" y="156" width="22" height="10" fill="#3a4433"/><rect x="101" y="156" width="14" height="12" fill="#3a4433"/><rect x="127" y="156" width="18" height="10" fill="#3a4433"/><rect x="153" y="156" width="22" height="12" fill="#3a4433"/><g transform="translate(258 16)"><rect x="-4" y="0" width="8" height="50" fill="#2a3430"/><rect x="-46" y="47" width="92" height="10" fill="#3a4433"/><line x1="-30" y1="57" x2="-30" y2="99" stroke="#55604f" stroke-width="2"/><line x1="30" y1="57" x2="30" y2="99" stroke="#55604f" stroke-width="2"/><g opacity=".85"><rect x="-42" y="99" width="84" height="26" fill="#2c3530"/><rect x="-36" y="125" width="72" height="38" fill="#252d29"/><rect x="-14" y="81" width="28" height="18" fill="#2f3833"/><rect x="-10" y="87" width="20" height="3" fill="#4d6b3a"/><rect x="-60" y="101" width="16" height="50" fill="#222a26"/><rect x="44" y="101" width="16" height="50" fill="#222a26"/></g></g><rect x="0" y="189" width="560" height="47" fill="#0a0d0c"/><g stroke="#1c2522" stroke-width="1"><line x1="0" y1="189" x2="-168" y2="236"/><line x1="40" y1="189" x2="-104" y2="236"/><line x1="80" y1="189" x2="-40" y2="236"/><line x1="120" y1="189" x2="24" y2="236"/><line x1="160" y1="189" x2="88" y2="236"/><line x1="200" y1="189" x2="152" y2="236"/><line x1="240" y1="189" x2="216" y2="236"/><line x1="280" y1="189" x2="280" y2="236"/><line x1="320" y1="189" x2="344" y2="236"/><line x1="360" y1="189" x2="408" y2="236"/><line x1="400" y1="189" x2="472" y2="236"/><line x1="440" y1="189" x2="536" y2="236"/><line x1="480" y1="189" x2="600" y2="236"/><line x1="520" y1="189" x2="664" y2="236"/><line x1="560" y1="189" x2="728" y2="236"/><line x1="0" y1="208" x2="560" y2="208"/></g><rect x="0" y="187" width="560" height="2" fill="#5b6b3a"/><rect x="34" y="194" width="58" height="22" fill="#2a2f22"/><rect x="38" y="186" width="30" height="8" fill="#3a4433"/><text x="548" y="57" text-anchor="end" font-family="Chakra Petch,monospace" font-size="11" fill="#b8a878" opacity=".45" letter-spacing="3">HANGAR 07 / PARTS DEPOT</text><rect x="336" y="12" width="60" height="5" fill="#f0a040" opacity=".55"/><rect x="406" y="12" width="20" height="5" fill="#6fd3e0" opacity=".45"/></svg>
+   <div class="opcard"><span class="r">OPERATOR</span><span class="n">D-06 ドール</span><span class="d">整備管理AI ／ 部品倉庫担当</span><span class="st" id="sState">応答中</span></div>
+   <div class="kp" id="keeper"><svg viewBox="0 0 150 250" aria-label="店主ロボ D-06">
+<rect x="61" y="58" width="28" height="12" fill="#3b423d"/><g fill="#4a4f45"><rect x="66" y="60" width="4" height="10"/><rect x="74" y="60" width="4" height="10"/><rect x="82" y="60" width="4" height="10"/></g>
+<polygon points="52,14 98,14 104,30 100,54 86,62 64,62 50,54 46,30" fill="#8e9690"/><polygon points="52,14 98,14 96,22 54,22" fill="#a7aea8"/>
+<polygon points="50,30 100,30 98,42 52,42" fill="#0b0f0e"/><rect class="lens" x="58" y="34" width="34" height="4" fill="#6fd3e0"/><rect class="eye" x="70" y="34" width="10" height="4" fill="#e6fbff"/>
+<rect x="64" y="48" width="22" height="2" fill="#5a625c"/><rect x="64" y="52" width="22" height="2" fill="#5a625c"/>
+<rect x="100" y="24" width="6" height="22" fill="#5b6b3a"/><rect x="104" y="4" width="2" height="22" fill="#9aa0a6"/><rect x="102" y="2" width="6" height="3" fill="#f0a040"/>
+<polygon points="34,72 116,72 110,128 40,128" fill="#737a80"/><polygon points="44,78 106,78 102,96 48,96" fill="#5f666b"/>
+<rect x="68" y="82" width="14" height="10" fill="#17191b"/><rect x="71" y="85" width="8" height="4" fill="#8cf06e"/>
+<polygon points="20,70 42,70 40,86 22,90" fill="#5b6b3a"/><polygon points="108,70 130,70 128,90 110,86" fill="#5b6b3a"/>
+<rect x="22" y="90" width="12" height="44" fill="#3b423d"/><circle cx="28" cy="136" r="6" fill="#25282c"/><rect x="21" y="140" width="14" height="40" fill="#8e9690"/><polygon points="20,180 36,180 38,194 30,198 22,194" fill="#4a4f45"/>
+<rect x="116" y="90" width="12" height="40" fill="#3b423d"/><circle cx="122" cy="132" r="6" fill="#25282c"/><polygon points="118,136 130,134 108,166 98,160" fill="#8e9690"/><polygon points="92,154 108,160 104,172 90,170" fill="#4a4f45"/>
+<rect x="78" y="146" width="22" height="7" fill="#9aa0a6" transform="rotate(-25 89 150)"/>
+<rect x="56" y="128" width="38" height="14" fill="#25282c"/>
+<polygon points="44,108 106,108 112,214 38,214" fill="#8a7d58"/><polygon points="44,108 106,108 104,120 46,120" fill="#a19470"/>
+<rect x="58" y="140" width="34" height="22" fill="#776b4a"/><rect x="62" y="144" width="26" height="2" fill="#5e5439"/>
+<text x="75" y="186" text-anchor="middle" font-family="Chakra Petch,monospace" font-size="9" fill="#5e5439" letter-spacing="1">D-06</text>
+<rect x="54" y="214" width="16" height="22" fill="#5f666b"/><rect x="80" y="214" width="16" height="22" fill="#5f666b"/>
+<polygon points="48,236 72,236 74,246 46,246" fill="#3b423d"/><polygon points="78,236 102,236 104,246 76,246" fill="#3b423d"/>
+<g class="mk mk-h" stroke="#8cf06e" stroke-width="3" fill="none"><path d="M108 18 L113 8 L118 18"/><path d="M122 26 L127 16 L132 26"/></g>
+<g class="mk mk-p"><path d="M112 22 L120 14 M116 32 L126 27 M30 10 L33 20" stroke="#f0a040" stroke-width="3"/><text x="122" y="16" font-family="Chakra Petch" font-size="15" font-weight="700" fill="#f0a040">!?</text>
+<rect x="8" y="232" width="9" height="4" fill="#9aa0a6" transform="rotate(30 12 234)"/><circle cx="24" cy="240" r="2.5" fill="#737a80"/></g>
+<g class="mk mk-s" fill="#6fd3e0"><rect x="112" y="40" width="3" height="8"/><rect x="118" y="44" width="3" height="10"/><rect x="124" y="40" width="3" height="7"/></g>
+</svg></div>
+  </div>
+  <div id="tbox"><span class="nm">D-06 ドール</span><div id="ttext" aria-live="polite"></div><div id="tchoice"></div><span id="tnext" hidden>▼</span></div>
+ </div>
+ <div id="shopR">
+  <div class="shd"><span class="code">BUY</span><span class="ttl en" id="sTitle">在庫一覧</span><span class="sub" id="sSub"></span></div><div class="rule"></div>
+  <div class="body"><div class="scats" id="sCats"></div><div class="sdet" id="sDet"></div></div>
+ </div>
+</div>
+<div id="sconf" hidden><div class="box" role="dialog" aria-label="購入の確認" id="sconfBox"></div></div>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -1061,7 +1175,7 @@ function renderSide(){
   el.querySelectorAll('[data-slot]').forEach(b=>b.onclick=()=>openSlot(b.dataset.slot));
  }else if(view==='slot'){
   const sl=SLOTOF(selSlot),cur=cfg[selSlot],[no,sub]=SLOTINFO[selSlot];
-  const items=Object.keys(sl.cat);
+  const items=Object.keys(sl.cat).filter(id=>id==='none'||OWN.has(id));
   const cd=sl.cat[cand],cu=sl.cat[cur];
   const P2=statsFor({...cfg,[selSlot]:cand});
   let part='',brief='';
@@ -1123,7 +1237,7 @@ function renderSide(){
   <div class="cols2"><div class="plist">${catList}${backRow}${(sl.group==='W'&&!wcat?[]:shown).map(id=>{const d=sl.cat[id],w=d.st?d.st.wt:d.wt;const s=id===cand,e=id===cur;
     const ov=!e&&statsFor({...cfg,[selSlot]:id}).over;
     return `<button class="pitem${s?' sel':''}${ov?' ovw':''}" data-id="${id}"><span class="pc">${pn(selSlot,id)[0]}<small>${pn(selSlot,id)[1]}</small></span><span class="n">${esc(ENM(selSlot,id).trim())}</span>${e?'<span class="t eq">装備中</span>':ov?'<span class="t ov">過積載</span>':`<span class="t">重量${w||0}</span>`}</button>`}).join('')}
-    ${sl.group==='W'?'':items.length<5?'<div class="pitem lock"><span class="pc">－</span><span class="n">未入手</span><span class="t"></span></div>':''}</div>
+    ${sl.group==='W'?'':items.length<5?'<div class="pitem lock"><span class="pc">－</span><span class="n">未入手（SHOP で購入）</span><span class="t"></span></div>':''}</div>
    <div class="detail"><div class="dtop">${sl.group==='W'&&cand!=='none'?'<div class="pv" id="pv"></div>':''}<div class="dtxt"><span class="en">${pn(selSlot,cand)[0]} ／ ${pn(selSlot,cand)[1]}</span><span class="nm">${esc(ENM(selSlot,cand).trim())}</span><p>${esc(DESC[cand]||'')}</p></div></div>
     <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${brief}</div>
     <div class="acts"><button class="btn-main cut" id="equip" ${cand===cur||P2.over?'disabled':''}>${cand===cur?'装備中':P2.over?'過積載のため装備不可':'装備する'}</button><button class="btn-sub" id="more">詳しく見る</button><button class="btn-sub" id="back">戻る</button></div></div></div>`;
@@ -1137,7 +1251,7 @@ function renderSide(){
   el.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{wcat=b.dataset.cat;const ids=CATS.get(wcat);if(!ids.includes(cand))cand=ids.includes(cur)?cur:ids[0];renderGarage()});
   const cb=$('catBack');if(cb)cb.onclick=()=>{wcat=null;renderGarage()};
   const pv=$('pv');if(pv&&pv.appendChild){pv.appendChild(PR.domElement);setPreview(selSlot,cand)}else setPreview(null);
-  $('equip').onclick=()=>{if(statsFor({...cfg,[selSlot]:cand}).over)return;cfg[selSlot]=cand;assemble()};
+  $('equip').onclick=()=>{if(statsFor({...cfg,[selSlot]:cand}).over)return;cfg[selSlot]=cand;assemble();saveGame()};
   $('back').onclick=()=>{view='overview';selSlot=null;renderGarage()};
  }else if(view==='paint'){
   el.innerHTML=`<div class="shd"><span class="code">SYS</span><span class="ttl en">PAINT</span><span class="sub">フレームの色を変更します（兵装は変わりません）</span></div><div class="rule"></div>
@@ -1254,6 +1368,204 @@ $('btnView').onclick=()=>{az=.35;el2=.12;dist=14};
 $('uname').addEventListener('input',e=>{$('mUnit').textContent=e.target.value?e.target.value.toUpperCase():'UNIT-01'});
 applyColors();
 
+/* ===== 所持品・所持金（端末に保存） =====
+ 最初から持っているのは各種類の1つ目。2つ目以降は SHOP で買う。お金は SORTIE で標的機を倒すと入る */
+const SAVE_KEY='mech-pwa-save-1';
+const START_OWN=['HD-01','CR-01','AR-01','LG-01','RF','MG','BZ','BL','SH','MS','GC','RD','BT','IC'];
+const PRICE={'HD-02':12000,'CR-02':18000,'AR-02':15000,'LG-02':16000,
+ 'RF2':9000,'MG2':8500,'BZ2':9800,'BL2':11000,'SH2':6000,'MS2':14000,'GC2':13000,'RD2':7000,'BT2':7500,'IC2':9000};
+const START_CREDIT=30000,REWARD={drone:800,turret:1200};
+const OWN=new Set(START_OWN);let CREDIT=START_CREDIT,shopVisits=0;
+function loadGame(){
+ try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!d)return;
+  (d.own||[]).forEach(id=>{if(PRICE[id])OWN.add(id)});
+  if(typeof d.cr==='number'&&isFinite(d.cr))CREDIT=Math.max(0,Math.floor(d.cr));
+  shopVisits=d.visits|0;
+  if(d.cfg)SLOTS.forEach(sl=>{const v=d.cfg[sl.key];if(v&&sl.cat[v]&&(v==='none'||OWN.has(v)))cfg[sl.key]=v});
+ }catch(e){}
+}
+function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({own:[...OWN],cr:CREDIT,cfg,visits:shopVisits}))}catch(e){}}
+
+/* ===== SHOP ===== */
+const fmtCR=n=>Math.round(n).toLocaleString('ja-JP');
+// 装備品がどの部位に付くか（手・肩は右を基準に比べる）
+function slotOfItem(id){return HEADS[id]?'head':CORES[id]?'core':ARMS[id]?'arms':LEGS[id]?'legs':HAND[id]?'rHand':SHOULDER[id]?'rShoulder':'ext'}
+const FRAME_CAT={head:'HEAD',core:'CORE',arms:'ARMS',legs:'LEGS'};
+function shopCatOf(id){const sl=slotOfItem(id);return FRAME_CAT[sl]||pn(sl,id)[0]}
+const SHOP_CATS=(()=>{const out=[];Object.keys(PN).forEach(id=>{const c=shopCatOf(id);if(!out.includes(c))out.push(c)});return out})();
+const stockOf=c=>Object.keys(PRICE).filter(id=>shopCatOf(id)===c&&!OWN.has(id));
+// 種類ごとの店主の説明
+const CAT_TALK={
+ HEAD:'ヘッドは機体の目です。数値よりも、<em>ロックの仕方</em>が変わるのが特徴でございます。',
+ CORE:'コアは胴体です。装甲のほとんどと、<em>ブーストの容量</em>はここで決まります。',
+ ARMS:'アームは腕です。<em>積める兵装の重さ</em>が変わります。重い武器を持つなら、まずここから。',
+ LEGS:'レッグは脚です。歩く速さ、跳ぶ高さ……<em>機動</em>のもとになります。わたくしは転びやすいので、少しうらやましいです。',
+ RIFLE:'ライフルは素直な射撃武器です。<em>距離を選ばず</em>使えるので、迷ったらこれでございます。',
+ 'MACHINE GUN':'マシンガンは弾をたくさんばらまきます。<em>近い距離で押し切る</em>のに向いています。',
+ BAZOOKA:'バズーカは重い一撃です。当てると相手が大きく<em>よろけます</em>。わたくしも一度よろけました。試し撃ちの流れ弾で。',
+ BLADE:'ブレードは近接武器です。弾が<em>尽きない</em>のが自慢でございます。',
+ SHIELD:'シールドは押している間だけ構えます。<em>正面の弾</em>を防ぎます。後ろからは……防げません。',
+ MISSILE:'ミサイルは肩の兵装です。<em>追いかけて</em>当たります。両肩同時に撃ちますので、ご注意を。',
+ CANNON:'グレネード砲は<em>しゃがんで</em>撃つ大砲です。撃っている間は動けません。わたくしの昼寝と同じですね。',
+ RADAR:'レーダーは背中に積むだけで効きます。<em>ロックできる範囲</em>が広がります。',
+ BOOSTER:'追加ブースターも積むだけで効きます。<em>ダッシュ</em>や急加速が伸びます。',
+ INTERCEPTOR:'迎撃装置は、近づく敵弾を<em>自動で撃ち落とします</em>。わたくしより働き者です。',
+};
+const SLOT_JA={head:'ヘッド',core:'コア',arms:'アーム',legs:'レッグ',rHand:'右手',lHand:'左手',rShoulder:'右肩',lShoulder:'左肩',ext:'背中'};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+let scat=null,ssel=null,talkQ=[],talkChoices=null,typing=null,stgt=null;
+const keeper=$('keeper');
+function setMood(m){keeper.classList.remove('happy','panic','sorry');void keeper.offsetWidth;if(m&&m!=='normal')keeper.classList.add(m);
+ const st=$('sState');st.textContent=m==='panic'?'動揺しています':m==='sorry'?'恐縮しています':m==='happy'?'上機嫌':'応答中';st.classList.toggle('p',m==='panic')}
+/* セリフ：lines は [文, 表情] の並び。文の中は <em>強調</em> と <strong>良い知らせ</strong> だけ使う。
+   1文字ずつ表示し、文字欄を押すと早送り→次の文へ。最後の文のあとに choices（[ラベル, 処理]）を出す */
+function talk(lines,choices=null){talkQ=lines.map(l=>Array.isArray(l)?l:[l,null]);talkChoices=choices;nextLine()}
+let curLine="",typingDone=null;
+function nextLine(){
+ const ch=$('tchoice');ch.innerHTML='';ch.className='';clearInterval(typing);typing=null;
+ if(!talkQ.length){$('tnext').hidden=true;keeper.classList.remove('talking');showChoices();return}
+ const [txt,mood]=talkQ.shift();if(mood)setMood(mood);curLine=txt;
+ // タグと文字に分け、文字だけを1つずつ足していく（文の中身はこのファイルで書いたものだけ）
+ const parts=txt.split(/(<\/?(?:em|strong)>)/).filter(Boolean),total=parts.reduce((a,p)=>a+(p[0]==='<'?0:p.length),0);
+ const el=$('ttext');let n=0;keeper.classList.add('talking');$('tnext').hidden=true;
+ const draw=k=>{let out='',left=k;for(const p of parts){if(p[0]==='<'){out+=p;continue}out+=p.slice(0,Math.max(0,left));left-=p.length}el.innerHTML=out};
+ const done=()=>{clearInterval(typing);typing=null;el.innerHTML=curLine;keeper.classList.remove('talking');if(talkQ.length)$('tnext').hidden=false;else nextLine()};
+ draw(0);typingDone=done;typing=setInterval(()=>{draw(++n);if(n>=total)done()},28);
+}
+function showChoices(){const ch=$('tchoice');ch.innerHTML='';const list=talkChoices||defaultChoices();
+ ch.className=list.length>4?'grid':'';
+ list.forEach(([lab,fn])=>{const b=document.createElement('button');b.textContent=lab;b.onclick=fn;ch.appendChild(b)})}
+// 文字欄を押す：表示中なら早送り、表示し終えていれば次の文へ
+
+$('ttext').onclick=()=>{if(typing&&typingDone){typingDone()}else if(talkQ.length)nextLine()};
+
+function defaultChoices(){return [['品物を見る',()=>{talk([['どうぞ、ゆっくりご覧ください。右の棚から<em>種類</em>を選んでいただけます。','normal']])}],['話を聞く',openTalk],['ガレージへ戻る',closeShop]]}
+function openTalk(){talk([['お話ですか！ 喜んで。わたくし、おしゃべりは得意でして。……あ、いえ、得意だと<em>思っております</em>。','happy']],[
+ ['おすすめを聞く',talkRecommend],['機体を見てもらう',talkCheck],['お金の稼ぎ方',()=>talk([['報酬は、<em>SORTIE</em> で標的機を倒すと入ります。ドローンは '+fmtCR(REWARD.drone)+' CR、砲台は '+fmtCR(REWARD.turret)+' CR です。','normal'],['TRAINING では入りませんので、ご注意を。わたくしも以前、練習で張り切って一銭にもなりませんでした。','sorry']],talkMenu())],
+ ['あなたについて',()=>talk([['わたくしは整備管理AI、<em>D-06</em>。読みはドールでございます。もともとは在庫を数えるために作られました。','normal'],['数えるのは得意です。<em>数え直す</em>のも、とても得意です。','happy']],talkMenu())],
+ ['この種類について',()=>talk([[CAT_TALK[scat]||'どの種類のお話をしましょう？ 右の棚で選んでいただければ、ご説明いたします。','normal']],talkMenu())],
+ ['戻る',()=>talk([['はい、いつでもどうぞ。','normal']])]])}
+const talkMenu=()=>[['ほかの話を聞く',openTalk],['品物を見る',()=>talk([['どうぞ、ごゆっくり。','normal']])],['ガレージへ戻る',closeShop]];
+function talkRecommend(){
+ const left=Object.keys(PRICE).filter(id=>!OWN.has(id));
+ if(!left.length)return talk([['なんと、在庫がすべて<strong>売り切れ</strong>です！ パイロット様のおかげです。','happy'],['次の入荷まで、わたくしは棚を磨いております。','normal']],talkMenu());
+ const ok=left.filter(id=>PRICE[id]<=CREDIT&&!statsFor({...cfg,[slotOfItem(id)]:id}).over);
+ if(!ok.length){const c=left.reduce((a,b)=>PRICE[a]<PRICE[b]?a:b);
+  return talk([['いまの所持金でお勧めできるものが……ございません。申し訳ありません。','sorry'],['いちばんお手頃なのは <em>'+esc(ENM(slotOfItem(c),c).trim())+'</em>（'+fmtCR(PRICE[c])+' CR）です。SORTIE で少し稼いでいらしてください。','normal']],talkMenu())}
+ const id=pick(ok),sl=slotOfItem(id),cat=shopCatOf(id);
+ scat=cat;ssel=id;renderShop();
+ talk([['わたくしのおすすめは、こちらの <em>'+esc(ENM(sl,id).trim())+'</em> です。','happy'],[(DESC[id]?esc(DESC[id]):CAT_TALK[cat]),'normal'],['いまの機体にも積めますし、お値段も '+fmtCR(PRICE[id])+' CR。……計算は合っているはずです。','normal']],talkMenu());
+}
+function talkCheck(){
+ const L=[];
+ if(SS.over)L.push(['大変です、<em>積載オーバー</em>です！ このままでは出撃できません。軽い兵装にするか、積載の大きいアームにしてください。','panic']);
+ else if(SS.weap/SS.load>.9)L.push(['積載がぎりぎりです。どこかで<em>軋む音</em>が……あ、わたくしの関節でした。','sorry']);
+ else L.push(['積載にはまだ余裕があります（'+SS.weap+' ／ '+SS.load+'）。','normal']);
+ if(SS.mob<30)L.push(['少々<em>重たい</em>ようです。機動が '+Math.round(SS.mob)+' まで落ちています。軽いレッグか、荷物を減らすのがよろしいかと。','normal']);
+ else L.push(['足まわりは良好です。機動 '+Math.round(SS.mob)+'。わたくしより<strong>ずっと身軽</strong>でいらっしゃいます。','happy']);
+ talk(L,talkMenu());
+}
+
+function renderShop(){
+ $('sMoney').textContent=fmtCR(CREDIT);
+ if(!scat)scat=SHOP_CATS.find(c=>stockOf(c).length)||SHOP_CATS[0];
+ const stock=stockOf(scat);if(!stock.includes(ssel))ssel=stock[0]||null;
+ const isF=!!Object.values(FRAME_CAT).find(v=>v===scat);
+ $('sTitle').textContent=scat;$('sSub').textContent=isF?'フレーム':(ssel?pn(slotOfItem(ssel),ssel)[1]:'');
+ $('sCats').innerHTML=SHOP_CATS.map((c,i)=>{const n=stockOf(c).length;return (i===4?'<div class="gap"></div>':'')+`<button data-c="${c}" class="${c===scat?'on':''}${n?'':' none'}">${c==='MACHINE GUN'?'MG':c}<span>${n||'—'}</span></button>`}).join('');
+ $('sCats').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{scat=b.dataset.c;ssel=null;renderShop();
+  const st=stockOf(scat);talk([[CAT_TALK[scat]||'',null]].concat(st.length?[]:[['……あいにく、この種類は<em>品切れ</em>です。申し訳ございません。','sorry']]))});
+ const det=$('sDet');
+ if(!ssel){det.innerHTML=`<div class="sempty">この種類の在庫はありません。<br>（所持品はガレージで装備できます）</div>`;return}
+ const items=stock.map(id=>{const sl=slotOfItem(id),ov=statsFor({...cfg,[sl]:id}).over,ng=PRICE[id]>CREDIT;
+  return `<button class="sitem${id===ssel?' sel':''}" data-i="${id}"><span class="a"><small>${esc(pn(sl,id)[1]||scat)}</small><b>${esc(ENM(sl,id).trim())}</b></span><span class="p"><small class="${ng?'ng':ov?'ov':''}">${ng?'資金不足':ov?'過積載':'NEW'}</small><b>${fmtCR(PRICE[id])}</b></span></button>`}).join('');
+ const sl=slotOfItem(ssel),cur=cfg[sl],P2=statsFor({...cfg,[sl]:ssel});
+ det.innerHTML=`<div class="sitems">${items}</div>
+  <div class="scmp"><div class="sec">${SLOT_JA[sl]}（${esc(ENM(sl,cur).trim())}）との比較</div><div class="cmp">${shopRows(sl,cur,ssel)}</div>
+   <div class="sec">機体全体<span class="secj">現在 → 装備後</span></div><div class="cmp">${cmpRow('機動',Math.round(SS.mob),Math.round(P2.mob))}${cmpRow('積載',`${SS.weap}/${SS.load}`,`${P2.weap}/${P2.load}`)}${sl==='core'||sl==='arms'||sl==='legs'?cmpRow('装甲',SS.armor,P2.armor):''}</div></div>
+  <div class="sbuy"><small>価格</small><span class="pr">${fmtCR(PRICE[ssel])}<i>CR</i></span><span class="grow" style="flex:1"></span>${PRICE[ssel]>CREDIT?`<span class="lack">不足 −${fmtCR(PRICE[ssel]-CREDIT)} CR</span>`:'<button class="btn-main cut" id="sBuy">購入</button>'}</div>`;
+ det.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{ssel=b.dataset.i;renderShop();explainItem(ssel)});
+ const bb=$('sBuy');if(bb)bb.onclick=()=>openConfirm(ssel);
+ else det.querySelector('.lack').onclick=()=>talk([['大変申し上げにくいのですが……所持金が <em>'+fmtCR(PRICE[ssel]-CREDIT)+' CR</em> ほど足りないようです。','sorry'],['計算は3回確かめました。4回目もしましょうか？','normal']]);
+}
+// 比較表（ガレージと同じ項目から、主要なものだけ）
+function shopRows(sl,a,b){
+ const ca=SLOTOF(sl).cat[a],cb=SLOTOF(sl).cat[b],R=[];
+ if(FRAME_CAT[sl]){
+  if(sl==='head'){R.push(cmpRow('能力',ca.abName,cb.abName));R.push(cmpRow('ロック角度',ca.lockDeg,cb.lockDeg,'hi',v=>'±'+v+'°'));R.push(cmpRow('ロック距離',ca.lockAdd,cb.lockAdd,'hi',v=>'+'+v+'m'))}
+  if(cb.armor!=null)R.push(cmpRow('装甲',ca.armor,cb.armor));
+  if(sl==='core')R.push(cmpRow('ブースト容量',ca.boost,cb.boost));
+  if(sl==='arms')R.push(cmpRow('積載',ca.load,cb.load));
+  if(sl==='legs')R.push(cmpRow('機動値',ca.mob,cb.mob));
+  R.push(cmpRow('重量',ca.wt,cb.wt,'lo'));return R.join('');
+ }
+ const x=ca.st||{},y=cb.st||{};
+ if(sl==='ext'){const p=x.pass||{},q=y.pass||{};const pr=(k,lab,f)=>{if(p[k]||q[k])R.push(cmpRow(lab,p[k]||0,q[k]||0,'hi',f))};
+  pr('lockDeg','ロック角度',v=>v?'+'+v+'°':'－');pr('lockRange','ロック距離',v=>v?'+'+v+'m':'－');pr('dash','ダッシュ速度',v=>v?'+'+Math.round(v*100)+'%':'－');pr('qb','急加速',v=>v?'+'+v+'m':'－');pr('boost','ブースト容量',v=>v?'+'+v:'－');
+  if(p.icInt||q.icInt){R.push(cmpRow('迎撃間隔',p.icInt||0,q.icInt||0,'lo',v=>v?v+'秒':'－'));R.push(cmpRow('迎撃範囲',p.icR||0,q.icR||0,'hi',v=>v?v+'m':'－'))}
+  R.push(cmpRow('重量',x.wt||0,y.wt||0,'lo'));return R.join('')}
+ if(y.kind==='防御'){R.push(cmpRow('使用回数',x.ammo??0,y.ammo??0,'hi',R0));R.push(cmpRow('リロード',x.reload||0,y.reload||0,'lo',v=>v?v+'秒':'－'))}
+ else{R.push(cmpRow('威力',x.dmg||0,y.dmg||0));R.push(cmpRow('射程',x.range||0,y.range||0,'hi',v=>v+'m'));R.push(cmpRow('弾数',x.ammo??0,y.ammo??0,'hi',R0));R.push(cmpRow('衝撃',x.imp||'－',y.imp||'－'))}
+ R.push(cmpRow('重量',x.wt||0,y.wt||0,'lo'));return R.join('');
+}
+// 品物を選んだときの説明（いまの装備と比べて、いちばん目立つ違いをひとこと）
+function explainItem(id){
+ const sl=slotOfItem(id),cur=cfg[sl],a=SLOTOF(sl).cat[cur],b=SLOTOF(sl).cat[id],nm=esc(ENM(sl,id).trim());
+ const L=[[`<em>${nm}</em> ですね。${DESC[id]?esc(DESC[id]):''}`,'normal']];
+ const x=a.st||a,y=b.st||b;let hint='';
+ if(y.dmg&&x.dmg&&y.dmg!==x.dmg)hint=y.dmg>x.dmg?'いまの装備より<strong>威力が上</strong>です。':'威力は少し落ちますが、';
+ if(y.range&&x.range&&y.range>x.range)hint+='届く距離は<strong>ずっと長い</strong>です。';
+ if(!hint&&y.wt!=null&&x.wt!=null)hint=y.wt<x.wt?'いまの装備より<strong>軽い</strong>のが利点です。':y.wt>x.wt?'少し重くなりますので、積載にお気をつけください。':'';
+ if(hint)L.push([hint,'normal']);
+ const P2=statsFor({...cfg,[sl]:id});
+ if(P2.over)L.push(['あの……これを積むと積載が <em>'+(P2.weap-P2.load)+'</em> 超えてしまいます。買うことはできますが、すぐには装備できません。','sorry']);
+ if(PRICE[id]>CREDIT)L.push(['それと、所持金が <em>'+fmtCR(PRICE[id]-CREDIT)+' CR</em> 足りません。……いえ、責めているわけでは。','sorry']);
+ talk(L);
+}
+/* 購入の確認（モーダル）：手と肩は付ける側を選べる */
+function openConfirm(id){
+ const base=slotOfItem(id);stgt=base;
+ const sides=base==='rHand'?['rHand','lHand']:base==='rShoulder'?['rShoulder','lShoulder']:[base];
+ const draw=()=>{const P2=statsFor({...cfg,[stgt]:id}),old=cfg[stgt],after=CREDIT-PRICE[id];
+  $('sconfBox').innerHTML=`<div class="shd"><span class="code">CONFIRM</span><span class="ttl">${esc(ENM(base,id).trim())} を購入</span></div><div class="rule"></div>
+  <div class="bal"><span>所持金</span><span>${fmtCR(CREDIT)} CR</span><span>価格</span><span class="dn">− ${fmtCR(PRICE[id])} CR</span><span class="tot">購入後</span><span class="tot"><b>${fmtCR(after)} CR</b></span></div>
+  <div class="tgt"><small>装備先</small>${sides.map(k=>`<button class="btn-sub" data-t="${k}" aria-pressed="${k===stgt}">${SLOTOF(k).label}</button>`).join('')}<span class="w">${old==='none'?'いまは空き':esc(ENM(stgt,old).trim())+' は倉庫へ'}</span></div>
+  ${P2.over?`<div class="warn-msg">装備すると積載を ${P2.weap-P2.load} 超えるため、いまは購入のみできます</div>`:''}
+  <div class="acts"><button class="btn-main cut" id="cfEq" ${P2.over?'disabled':''}>購入して装備</button><button class="b2" id="cfBuy">購入のみ</button><button class="btn-sub" id="cfNo" style="width:80px">やめる</button></div>`;
+  $('sconfBox').querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{stgt=b.dataset.t;draw()});
+  $('cfEq').onclick=()=>buy(id,true);$('cfBuy').onclick=()=>buy(id,false);$('cfNo').onclick=closeConfirm;
+ };
+ draw();$('sconf').hidden=false;$('cfNo').focus();
+}
+function closeConfirm(){$('sconf').hidden=true}
+$('sconf').addEventListener('click',e=>{if(e.target.id==='sconf')closeConfirm()});
+function buy(id,equip){
+ if(OWN.has(id)||PRICE[id]>CREDIT)return closeConfirm();
+ const sl=stgt,nm=esc(ENM(sl,id).trim());
+ if(equip&&statsFor({...cfg,[sl]:id}).over)equip=false;
+ CREDIT-=PRICE[id];OWN.add(id);
+ if(equip){cfg[sl]=id;assemble();renderGarage()}else renderGarage();
+ saveGame();closeConfirm();
+ const m=$('sMoney');m.classList.add('flash');setTimeout(()=>m.classList.remove('flash'),600);
+ ssel=null;renderShop();
+ const oops=pick([
+  ['あっ。ああっ、<em>ネジが</em>！ し、失礼しました。','panic'],
+  ['あっ、工具を逆さまに……！ い、いえ、これで合っています。','panic'],
+  ['……あれ？ 右と左、どちらでしたっけ。あ、伝票に書いてありました。','panic']]);
+ if(equip)talk([['お買い上げ、ありがとうございます！ '+nm+' を'+SLOT_JA[sl]+'に取り付けて……','happy'],oops,['装備は<strong>無事に完了</strong>しております。たぶん。','sorry']]);
+ else talk([['お買い上げ、ありがとうございます！ '+nm+' はガレージの棚に置いておきますね。','happy'],['……あ、棚を間違えました。いえ、<strong>合っています</strong>。たぶん。','sorry']]);
+}
+function openShop(){
+ openMenu(false);closeModal();$('shop').hidden=false;scat=null;ssel=null;renderShop();setMood('normal');
+ const first=shopVisits===0;shopVisits++;saveGame();
+ if(first)talk([['ようこそ、パイロット様！ 第7整備区画の部品倉庫へ。わたくし、整備管理AIの <em>D-06</em>、ドールと申します。','happy'],['こちらでは、ガレージにない部品や兵装をお売りしております。品ぞろえは万全です。……<em>たぶん</em>万全です。','normal']]);
+ else talk([pick([['おかえりなさいませ、パイロット様！ 今日はどの部品をお探しでしょう？','happy'],['あ、パイロット様！ ちょうど棚を拭いていたところです。拭くたびに部品を<em>落とす</em>のですが。','sorry'],['いらっしゃいませ。本日も在庫は数えておきました。<em>4回</em>ほど。','normal']])]);
+}
+function closeShop(){clearInterval(typing);typing=null;closeConfirm();$('shop').hidden=true;view='overview';selSlot=null;renderGarage()}
+$('mShop').onclick=openShop;$('sExit').onclick=closeShop;
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sconf').hidden)closeConfirm()});
+
 /* ===== 演習場：地面・建物・標的機 ===== */
 const gt=tex(g=>{for(let i=0;i<16;i++)for(let j=0;j<16;j++){g.fillStyle=((i>>3)+(j>>3))%2?'#2c302d':'#252926';g.fillRect(i,j,1,1)}g.fillStyle='#343a35';g.fillRect(0,0,16,1);g.fillRect(0,0,1,16)});
 gt.wrapS=gt.wrapT=THREE.RepeatWrapping;gt.repeat.set(34,34);
@@ -1285,7 +1597,7 @@ for(let i=0;i<4;i++)makeEnemy('drone');for(let i=0;i<3;i++)makeEnemy('turret');
 const IMP={S:{st:.8,kb:4,p:1},A:{st:.6,kb:2.5,p:1},B:{st:.45,kb:1.5,p:1},C:{st:.35,kb:.8,p:.5},D:{st:.3,kb:.4,p:.25}};
 function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;e.hp-=dmg;e.hit=.08;spawn(0xffffff,.5,pos,{life:.08});
  const I=IMP[imp];if(I&&Math.random()<I.p){e.stun=Math.max(e.stun,I.st);e.kb.copy(e.g.position).sub(P.pos).setY(0).normalize().multiplyScalar(I.kb*3)}
- if(e.hp<=0){e.alive=false;e.g.visible=false;e.respawn=5;P.kills++;explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
+ if(e.hp<=0){e.alive=false;e.g.visible=false;e.respawn=5;P.kills++;if(!TRAIN){const rw=e.type==='drone'?REWARD.drone:REWARD.turret;CREDIT+=rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
 function updateEnemies(dt){
  ENEMIES.forEach(e=>{
   if(!e.alive){e.respawn-=dt;if(e.respawn<=0)placeEnemy(e);return}
@@ -1456,7 +1768,7 @@ function setMode(m,training=false){
  requestAnimationFrame(resize);resize();
 }
 $('garage').onclick=()=>setMode('garage');
-buildRings();buildCells();
+loadGame();buildRings();buildCells();
 $('camBtn').onclick=()=>setCam(CAMMODE==='top'?'tps':'top');
 assemble();
 
