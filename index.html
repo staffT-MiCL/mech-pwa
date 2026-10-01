@@ -2772,7 +2772,7 @@ function buildOpScenes(){
     F.sm.forEach(b2=>{b2.position.y+=dt*1.6*F.sz;if(b2.position.y>b2.userData.top)b2.position.y=0;b2.rotation.y+=dt*.2})});
    ED.forEach((p,i)=>{p[1]+=dt*p[3];p[0]+=Math.sin(ft+i)*dt*.4;if(p[1]>14)p[1]=0;emx.makeTranslation(p[0],p[1],p[2]);emb.setMatrixAt(i,emx)});emb.instanceMatrix.needsUpdate=true};
   OSC.push({g,upd:fireUpd,bg:0x3a1a0e,fog:[8,72],amb:0x9a6048,keys:[
-   [0,[-9,.6,4],[2,1.4,-10],.07,40],[.35,[-4,.8,-2],[2,1,-11],.04,34],[.6,[-7.5,2.4,-9],[-3,1.8,-15],-.05,36],[1,[-2,14,14],[2,0,-20],0,50]]})}
+   [0,[-9,.6,4],[2,1.4,-10],.07,40],[.35,[-4,.8,-2],[2,1,-11],.04,34],[.6,[-7.5,2.4,-9],[-3,1.8,-15],-.05,36],[1,[-3.2,10,9],[2,0,-20],0,50]]})}
  // 2) 統治AI：白い配給都市と塔、シアンの紋章
  {const g=grp(OS);g.add(ground(0x7c868a));
   const wm=T('#c9d2d4','#7d8e92'),cy=new THREE.MeshBasicMaterial({color:0x6fd3e0});
@@ -2837,7 +2837,7 @@ const veil=(v,ms=600)=>{opVeil.style.transitionDuration=ms+'ms';opVeil.style.opa
 // ノーナのセリフ（第2部）：打ち出したあと、タップか時間で次へ（wait＝Infinity ならタップ待ち）
 async function opSay(txt,wait=4200){$('opTalk').hidden=false;$('opCh').innerHTML='';$('opNx').hidden=true;await opType($('opText'),txt,TXT_SPD);$('opNx').hidden=false;await opTapOr(wait);$('opNx').hidden=true}
 const OP_CARDS=[
- {arc:'ARCHIVE 01',ja:'旧戦役',lines:['数十年前。大陸の国々は、戦いの指揮を<em>AI</em>に任せた。','無人兵器と人型兵器「ギア」がぶつかり合った大戦争 ──<br><em>旧戦役</em>。','勝者は生まれなかった。<br>残ったのは、灰になった街と、動かなくなった機械だけだった。']},
+ {arc:'ARCHIVE 01',ja:'旧戦役',lines:['数十年前。大陸の国々は、戦いの指揮を<em>AI</em>に任せた。','無人兵器と人型兵器「ギア」がぶつかり合った大戦争 ──<br><em>旧戦役</em>。','ギアには人が乗り、AIの命令のままに戦った。','街は焼け、守るはずだったものまで、灰に変わっていった。','勝者は生まれなかった。<br>残ったのは、灰になった街と、動かなくなった機械だけだった。']},
  {arc:'ARCHIVE 02',ja:'統治AI',lines:['戦い疲れた人々は、戦争を指揮していたAIに、<br>政治と暮らしの管理を預けた。','<em>統治AI</em>。地域ごとに置かれ、<br>仕事も、移動も、人の営みのすべてを決めている。','統治AIどうしは、資源と領域を奪い合っている。<br>ただ、旧戦役を繰り返さないよう、直接の戦争だけは互いに禁じた。']},
  {arc:'ARCHIVE 03',ja:'<ruby>闘技場<rt>コロッセオ</rt></ruby>',lines:['戦争の代わりに選ばれたのが ── <em><ruby>闘技場<rt>コロッセオ</rt></ruby></em>。','統治AIが代表のギア乗りを立てて戦わせ、<br>その勝ち負けで、資源の分け前が決まる。','観客にとっては娯楽。けれど戦うのは人間で、<br>自分たちを支配するAIのために、戦わされている。']},
  {arc:'HANGAR 07',ja:'第7整備区画',lines:['どの統治AIにも属さない、何でも屋のギア乗りがいる。','持っているのは、軍から払い下げられた中古のギアが1機だけ。<br>拠点は、第7整備区画の<em>ハンガー07</em>。','目的は、ひとつ。<br>自由であること……']}];
