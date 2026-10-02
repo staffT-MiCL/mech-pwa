@@ -1064,6 +1064,8 @@ function mountExt(g){ // 背面ハードポイント
   [-1,1].forEach(r=>cyl(g,.045,.045,.07,Sk.bolt,q*.58,r*.26,-.25,Math.PI/2));box(g,.1,.1,.1,Sk.lamp,q*.58,.42,-.08)});
  return grp(g,0,0,-.12);
 }
+// ブースターの噴射炎：噴射口（x,y,z）を根元に、後ろ（−Z）へ伸びる円すい。scale.y で長さが変わり、0 に近いと噴射口の中に隠れる
+function flameAt(g,x,y,z,r,len){const pv=grp(g,x,y,z);pv.rotation.x=-Math.PI/2;cyl(pv,.02,r,len,Wp.glow,0,len/2,0,0,0,6);pv.scale.set(1,.01,1);return pv}
 function mountHand(hand){ // 手首の武器ラッチ
  box(hand,.4,.08,.4,Sk.hazard,0,-.24,0);[-1,1].forEach(q=>cyl(hand,.035,.035,.06,Sk.bolt,q*.2,-.24,.12,Math.PI/2));
  return grp(hand,0,-.3,.05);
@@ -1351,7 +1353,7 @@ const EXT={
  'BT':{name:'追加ブースター',st:{kind:'常時',wt:12,pass:{dash:.15,qb:3},note:'積んでいるだけで、ダッシュが速く、急加速が遠くまで届く'},
   build(g){box(g,1.2,.35,.35,Wp.frame,0,0,-.1);const flames=[];
    [-1,1].forEach(s=>{cyl(g,.18,.26,.5,Wp.body,s*.42,0,-.35,Math.PI/2,0,8);cyl(g,.16,.16,.02,Wp.glow,s*.42,0,-.61,Math.PI/2,0,8);
-    const f=cyl(g,.18,.02,1,Wp.glow,s*.42,0,-1.1,-Math.PI/2,0,6);f.scale.set(1,.01,1);flames.push(f)});return {flames}},
+    flames.push(flameAt(g,s*.42,0,-.62,.18,1))});return {flames}},
   act:{name:'突進',dur:1.0,run(c){
    if(c.once('go',.08)){if(c.use()){if(mode==='play')quickBoost(0,1,2,true);else c.st.scr=1;shake=.2;dust(1.4)}else c.st.fail=1}
    const p=c.st.fail?0:kf(c.u,[[0,0],[.1,1],[.5,1],[.75,0]]);c.w.flames.forEach(f=>f.scale.set(1,.01+p*(1.4+Math.random()*.6),1));
@@ -1405,7 +1407,7 @@ Object.assign(EXT,{
    const dish=grp(g,0,1.9,-.3);box(dish,1.3,.08,.14,Wp.metal,0,0,0);box(dish,.14,.16,.14,Wp.dark,.58,0,0);box(dish,.14,.16,.14,Wp.dark,-.58,0,0);box(dish,.2,.2,.2,Wp.frame,0,0,0);return {dish}}},
  'BT2':{...EXT.BT,st:{kind:'常時',wt:8,pass:{boost:15,dash:.06},note:'ブースト容量が増え、ダッシュも少し速くなる'},
   build(g){box(g,.8,.3,.3,Wp.frame,0,0,-.1);cyl(g,.22,.3,.6,Wp.body,0,0,-.4,Math.PI/2,0,8);cyl(g,.2,.2,.02,Wp.glow,0,0,-.71,Math.PI/2,0,8);
-   const f=cyl(g,.22,.02,1.2,Wp.glow,0,0,-1.3,-Math.PI/2,0,6);f.scale.set(1,.01,1);return {flames:[f]}}},
+   return {flames:[flameAt(g,0,0,-.72,.2,1.2)]}}},
  'IC2':{...EXT.IC,act:{...EXT.IC.act,dur:7},st:{kind:'常時',wt:14,pass:{icInt:.8,icR:10},note:'範囲は狭いが、短い間隔で敵弾を撃ち落とし続ける'},
   build(g){box(g,.9,.36,.4,Wp.body,0,.35,-.1);box(g,.92,.06,.42,Wp.warn,0,.55,-.1);const turrets=[];
    [-1,1].forEach(s=>{const t=grp(g,s*.32,.66,-.1);cyl(t,.12,.14,.14,Wp.frame,0,0,0,0,0,8);box(t,.05,.05,.45,Wp.metal,.04,0,.24);box(t,.05,.05,.45,Wp.metal,-.04,0,.24);t.muzzle=grp(t,0,0,.5);turrets.push(t)});return {turrets}}},
@@ -3250,6 +3252,10 @@ addEventListener('resize',resize);resize();
  2) 移動モードから基本の関節角 B を作り、実行中のアクションで上書き
  3) 関節に書き込み、足裏の接地補正、カメラ */
 const B={tX:0,tY:0,hY:0,lift:0,arms:[{x:0,z:0,e:0},{x:0,z:0,e:0}],legs:[{th:0,kn:0,tz:0},{th:0,kn:0,tz:0}]};
+// 腕・手の武器が地面に刺さらないように：腕（肩から先）のいちばん低い点が地面＋0.25m より下なら、肩を前へ少しずつ持ち上げる。余裕ができたらゆっくり戻す
+const _ab=new THREE.Box3();
+function armGroundFix(m,dt){m.bot.updateMatrixWorld(true);m.arms.forEach((a,i)=>{_ab.setFromObject(a.sh);const lim=SOLE+.25,lo=_ab.min.y;
+ if(lo<lim)m.armLift[i]=Math.max(-1.3,m.armLift[i]-Math.min(.15,(lim-lo)*.3+.01));else if(lo>lim+.35)m.armLift[i]=Math.min(0,m.armLift[i]+dt*.8)})}
 const _v=new THREE.Vector3(),SOLE=.24;let lastT=performance.now();
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let dustT=0,boostNow=0,icT=0;
@@ -3323,7 +3329,7 @@ R.setAnimationLoop(()=>{
  B.tX=L(B.tX,dash?.3:walk?0:br,k);B.tY=L(B.tY,0,k);B.hY=L(B.hY,dash||walk||mode==='play'?0:Math.sin(t*.5)*.1,k);
  B.lift=L(B.lift,dash?.2+Math.sin(t*9)*.03:0,Math.min(1,dt*6));
  m.arms.forEach((a,i)=>{const b=B.arms[i],sw=walk?(a.s===wk.lead?1:-1)*(wk.u-.5)*.5:0;
-  b.x=L(b.x,dash?-.55:sw,k);b.z=L(b.z,a.s*(dash?.12:.08),k);b.e=L(b.e,dash?-.95:walk?-.35:-.15,k)});
+  b.x=L(b.x,dash?-.55:-.28+sw*.35,k);b.z=L(b.z,a.s*(dash?.12:.12),k);b.e=L(b.e,dash?-.95:walk?-.92:-.82,k)});
  m.legs.forEach((l,i)=>{const b=B.legs[i];let th=0,kn=0;
   if(walk){if(l.s===wk.lead){th=L(.35,-.45,wk.u);kn=Math.sin(Math.PI*wk.u)+.05}else{th=L(-.45,.35,wk.u);kn=.05+wk.land*.25}}
   if(dash){th=.15;kn=.35}
@@ -3358,7 +3364,8 @@ R.setAnimationLoop(()=>{
  }
  // 3) 書き込み
  m.torso.rotation.set(tX,tY,0);m.head.rotation.y=hY;
- m.arms.forEach((a,i)=>{a.sh.rotation.set(armF[i].x,0,armF[i].z);a.el.rotation.x=armF[i].e});
+ if(!m.armLift)m.armLift=[0,0];
+ m.arms.forEach((a,i)=>{a.sh.rotation.set(armF[i].x+m.armLift[i],0,armF[i].z);a.el.rotation.x=armF[i].e});
  m.legs.forEach((l,i)=>{const b=legF[i];
   l.th.rotation.x=L(b.th,-.8,crouch);l.kn.rotation.x=L(b.kn,1.55,crouch);l.th.rotation.z=b.tz;
   l.ft.rotation.x=-(l.th.rotation.x+l.kn.rotation.x);l.ft.rotation.z=-l.th.rotation.z});
@@ -3370,6 +3377,7 @@ R.setAnimationLoop(()=>{
  m.bot.position.y=0;m.bot.updateMatrixWorld(true);
  let minY=Infinity;m.legs.forEach(l=>{l.ft.getWorldPosition(_v);minY=Math.min(minY,_v.y)});
  m.bot.position.y=SOLE-minY+lift;
+ armGroundFix(m,dt);
  const bs=1/(1+lift*.3);blob.scale.set(bs,bs,bs);blob.material.opacity=.45*bs;blob.position.x=m.bot.position.x;blob.position.z=m.bot.position.z;
  boostNow=L(boostNow,boost,Math.min(1,dt*12));
  tickPassive(dt);
