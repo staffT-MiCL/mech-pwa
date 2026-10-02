@@ -742,7 +742,7 @@ body.eqm #mailBox{display:none}
 #visit .vdim{opacity:0;transition:opacity .3s}#vTalk{opacity:0;transform:translateY(12px);transition:opacity .3s ease .5s,transform .3s ease-out .5s}
 #visit.in .vdim,#visit.in #vImg,#visit.in #vTalk{opacity:1}#visit.in #vImg{transform:translate(-50%,0)}#visit.in #vTalk{transform:none}
 #visit.out .vdim{transition-delay:.3s}#visit.out #vImg{transition-delay:.12s,.12s,.12s}#visit.out #vTalk{transition-delay:0s}
-#vSkip{position:absolute;right:8px;top:-11px;height:20px;padding:0 8px;background:#0a0e0d;border:1px solid #4a5550;color:#9aa6a0;font-family:var(--mech);font-size:10px;letter-spacing:.14em;cursor:pointer}
+#vSkip{position:fixed;right:14px;top:50px;z-index:6;height:32px;padding:0 14px;background:rgba(10,14,13,.92);border:1px solid #6a7570;color:#cfd8d3;font-family:var(--mech);font-size:12px;font-weight:700;letter-spacing:.16em;cursor:pointer;opacity:0;transition:opacity .3s .5s}#visit.in #vSkip{opacity:1}#visit.out #vSkip{transition-delay:0s}
 #vImg.dim{filter:brightness(.4) saturate(.7)!important}
 #vCh{position:absolute;right:12px;bottom:calc(var(--gsh,120px) + 8px);display:flex;flex-direction:row;gap:6px;animation:vchIn .25s ease-out}@keyframes vchIn{from{opacity:0;transform:translateY(6px)}}#vCh:empty{display:none}
 #vCh button{height:30px;padding:0 14px;font-family:var(--disp);font-size:12px;background:rgba(14,18,17,.92);border:1px solid #3a4540;color:#aeb8b3}
@@ -807,7 +807,7 @@ body.eqm #visit{display:none}
   <div id="gstats"></div>
   <div id="mailBox" class="mc14" hidden role="dialog" aria-label="メール"></div>
   <div id="visit" hidden role="dialog" aria-label="来訪"><div class="vdim"></div><img id="vImg" alt=""><div id="vCh"></div>
-   <div id="vTalk"><span class="nm" id="vNm"></span><span class="ci" id="vCi" hidden>CUT IN</span><div id="vTx"></div><span id="vNx" hidden>▼</span><button type="button" id="vSkip" hidden>SKIP ×</button></div></div>
+   <div id="vTalk"><span class="nm" id="vNm"></span><span class="ci" id="vCi" hidden>CUT IN</span><div id="vTx"></div><span id="vNx" hidden>▼</span></div><button type="button" id="vSkip" hidden>SKIP ▶▶</button></div>
   <div id="nonaBox" hidden role="status" aria-live="polite"><span class="nm">N-07 ノーナ</span><div id="nbText"></div><span id="nbNext" hidden>▼</span></div>
  </div>
  <div id="play" hidden>
@@ -2582,6 +2582,7 @@ const MLIST=[
   obj:'荷車を配給所まで守りぬく',fail:'荷車の破壊 ／ CORE 大破',enemyJa:'ドローン（3回に分けて襲来）',
   desc:'回収品を売り歩く行商人オットーの荷車を、旧街道の先の西配給所まで護衛する。積み荷の半分は、ドールの部品倉庫行き。',
   brief:['荷車は一定の速さで進みます。止めることはできません。','無人機は3回に分けて、道の両側から来るはずです。荷車から離れすぎないでください。','……荷車が壊れると、ドールさんが泣きます。たぶん。'],
+  after:{ok:'助かるよ！ 荷車の支度をして待ってる。旧街道の入口で落ち合おう。',later:'そうかい……。まあ、急ぎじゃない。気が向いたら声をかけてくれ。'},
   talk:[['c','あんたがハンガー07のギア乗りかい。回収品を売り歩いてる、オットーってもんだ。'],['c','旧街道を抜けて、西の配給所まで荷車を運びたいんだ。最近、無人機がうろついててね……護衛を頼めないか？'],
    ['d','ちょ、ちょっとお待ちを！ その荷車、もしや当倉庫に納める部品も積んでおられます？'],['c','お、ドールの旦那か。そうさ、半分はあんたのとこ行きだ。'],
    ['d','でしたらぜひ、ぜひ丁寧に！ ○○様、どうかよろしくお願いいたします！'],['n','旧街道は見通しが悪い地形です。荷車の速さに合わせる必要がありますね。……お受けになりますか、○○。']]},
@@ -2658,7 +2659,7 @@ const V_SP={c:d=>[d.client||d.from,'#d8a35a',false],n:()=>['N-07 ノーナ','#6f
 function visitPlay(id,replay){const d=MDEF[id];if(!d||!d.talk)return;mailClose();nbClose();VS.d=d;clearTimeout(VS.t);
  const img=$('vImg');img.src=d.img;img.style.filter=d.imgF||'';img.alt=d.from;img.classList.remove('dim');
  const v=$('visit');$('vCh').innerHTML='';$('vTx').textContent='';$('vNm').textContent='';$('vCi').hidden=true;$('vNx').hidden=true;$('vSkip').hidden=!replay;
- v.classList.remove('in','out');v.style.setProperty('--vc',V_SP[d.talk[0][0]](d)[1]);v.hidden=false;document.body.classList.add('visiting');VS.q=d.talk.slice();VS.busy=true;
+ v.classList.remove('in','out');v.style.setProperty('--vc',V_SP[d.talk[0][0]](d)[1]);v.hidden=false;document.body.classList.add('visiting');VS.q=d.talk.slice();VS.fin=null;VS.busy=true;
  void v.offsetWidth;v.classList.add('in');VS.t=setTimeout(()=>{VS.busy=false;visitNext()},700)}
 function visitNext(){clearInterval(VS.iv);VS.iv=null;
  if(!VS.q.length){visitChoices();return}
@@ -2667,15 +2668,17 @@ function visitNext(){clearInterval(VS.iv);VS.iv=null;
  requestAnimationFrame(()=>{ci.style.left=(12+$('vNm').offsetWidth)+'px'});
  $('vImg').classList.toggle('dim',sp!=='c');$('vNx').hidden=true;
  const el=$('vTx');let n=0;
- VS.done=()=>{clearInterval(VS.iv);VS.iv=null;el.textContent=txt;if(VS.q.length)$('vNx').hidden=false;else visitChoices()};
+ VS.done=()=>{clearInterval(VS.iv);VS.iv=null;el.textContent=txt;if(VS.q.length||VS.fin)$('vNx').hidden=false;else visitChoices()};
  el.textContent='';VS.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);if(n>=txt.length)VS.done()},TXT_SPD)}
-function visitChoices(){const ch=$('vCh');if(ch.childElementCount)return;const d=VS.d;
- [['依頼を受ける',()=>{visitEnd();openBoard(d.id)}],['考えておく',()=>{visitEnd();nonaSay([['依頼一覧に入れておきました。MENU の <em>MISSION</em> から、いつでも確認できます。']])}]]
+function visitChoices(){const ch=$('vCh');if(ch.childElementCount||VS.fin)return;const d=VS.d;
+ const ok=()=>{visitEnd();openBoard(d.id)},later=()=>{visitEnd();nonaSay([['依頼一覧に入れておきました。MENU の <em>MISSION</em> から、いつでも確認できます。']])};
+ const pick=(key,fn)=>{ch.innerHTML='';const a=d.after&&d.after[key];if(!a){fn();return}VS.fin=fn;VS.q=[['c',a]];visitNext()};
+ [['依頼を受ける',()=>pick('ok',ok)],['考えておく',()=>pick('later',later)]]
   .forEach(([lab,fn])=>{const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=e=>{e.stopPropagation();fn()};ch.appendChild(b)})}
-function visitEnd(){clearInterval(VS.iv);VS.iv=null;clearTimeout(VS.t);const d=VS.d,v=$('visit');$('vCh').innerHTML='';VS.q=[];VS.busy=true;
+function visitEnd(){clearInterval(VS.iv);VS.iv=null;clearTimeout(VS.t);const d=VS.d,v=$('visit');VS.fin=null;$('vCh').innerHTML='';VS.q=[];VS.busy=true;
  v.classList.add('out');v.classList.remove('in');VS.t=setTimeout(()=>{v.hidden=true;v.classList.remove('out');VS.busy=false},650);document.body.classList.remove('visiting');
  if(d&&MIS[d.id]){MIS[d.id].read=true;saveGame()}VS.d=null}
-$('vTalk').addEventListener('click',()=>{if(VS.busy)return;if(VS.iv)VS.done();else if(VS.q.length)visitNext()});
+$('vTalk').addEventListener('click',()=>{if(VS.busy)return;if(VS.iv)VS.done();else if(VS.q.length)visitNext();else if(VS.fin){const f=VS.fin;VS.fin=null;f()}});
 $('vSkip').addEventListener('click',e=>{e.stopPropagation();const d=VS.d;if(!d||VS.busy)return;visitEnd();openBoard(d.id)});
 
 /* ----- 依頼一覧・ブリーフィング・結果（#mis）----- */
@@ -2690,7 +2693,7 @@ function renderBoard(sel){
  const row=d=>{const m=MIS[d.id],st=!m.clear?(!m.read?'<small class="nw">NEW</small>':'<small>未達成</small>'):'<small class="cl">CLEARED</small>';
   return `<button class="mrow${d.id===misSel?' sel':''}" data-id="${d.id}"><span class="mtag ${d.kind}">${d.kind==='mail'?'MAIL':'VISIT'}</span><span class="nm"><b>${d.title}</b><small>${d.from}</small></span><span class="rw">${st}${fmtCR(d.reward)} CR</span></button>`};
  const stOpen=story&&story.ready&&cl>=norm.length&&MIS[story.id]&&MIS[story.id].got;
- const sRow=story?(stOpen?row(story):`<div class="mrow lk"><span class="star">★</span><span class="nm"><b>？？？</b><small>通常依頼をすべて達成すると届きます</small></span><span class="pips">${norm.map((d,i)=>`<i class="${i<cl?'on':''}"></i>`).join('')}</span></div>`):'';
+ const sRow=stOpen?row(story):'';
  const olds=Object.keys(CHAPTERS).map(Number).filter(c=>c<CH).map(c=>`<div class="chh old"><b>▸ CHAPTER ${c}</b><span>${CHAPTERS[c]}</span><small>CLEAR ・ 再挑戦可</small></div>`).join('');
  const d=MDEF[misSel];
  const det=d?`<div class="mdbox mc14"><span class="fr ${d.kind}">${d.kind==='mail'?'MAIL':'VISIT'} ／ ${d.from}</span><span class="nmt">${d.title}</span>
