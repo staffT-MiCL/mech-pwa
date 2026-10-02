@@ -65,7 +65,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .ptag span{font-size:9px;opacity:.75;overflow:hidden;text-overflow:ellipsis}
 .ptag.f{background:rgba(12,23,24,.88);border:1px solid #2d6068;color:#9fe6ee}
 .ptag.w{background:rgba(22,18,11,.88);border:1px solid #6a4a20;color:#f0c080}
-.ptag.on{background:var(--fire);border-color:var(--fire);color:#1a1006;font-weight:700}
+.ptag.on{background:#8cf06e;border-color:#8cf06e;color:#0b140a;font-weight:700;box-shadow:0 0 8px rgba(140,240,110,.45)}
 .ptag.on span{opacity:1}
 .tools{position:absolute;left:calc(18% - 50px);top:calc(53% + 22px);display:flex;flex-wrap:wrap;gap:4px;width:104px;pointer-events:auto}
 .tools button{flex:1 1 44px;padding:0 4px}
@@ -222,8 +222,9 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .aP.hurt .aB i{background:#e0b040}.aP.dead .aL,.aP.dead .aV{color:var(--alert)}.aP.dead .aC i{background:#3a1410}
 /* 兵装の階層リスト */
 .pitem.cat .t{color:var(--fire)}.pitem.hascur{border-color:#4f7c42}
-.pitem.catback{background:#141a17;border-color:#3a4540;border-left:3px solid var(--fire)}
-.pitem.catback .pc{color:var(--fire)}.pitem.catback .n small{font-family:var(--body);font-size:10px;color:var(--dim);margin-left:4px}
+.catback{display:flex;align-items:baseline;gap:6px;width:100%;height:24px;padding:0 2px;background:none;border:0;border-bottom:1px solid #3a4540;text-align:left;flex-shrink:0;margin-bottom:2px;cursor:pointer}
+.catback .bk{font-family:var(--mech);font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--fire)}.catback .sl{color:#4a5550;font-size:11px}.catback .cn{font-family:var(--mech);font-size:12px;font-weight:700;letter-spacing:.1em;color:#eef2ef}.catback small{font-size:10px;color:var(--dim)}
+.catback:hover .bk,.catback:focus-visible .bk{text-decoration:underline}
 /* 種類の行 */
 .pitem.cat{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto}
 .pitem.cat .cn{font-family:var(--mech);font-weight:700;font-size:14px;letter-spacing:.1em;color:#eef2ef;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1695,7 +1696,7 @@ function renderSide(){
   const shown=sl.group==='W'&&wcat?CATS.get(wcat)||[]:items;
   const catList=sl.group==='W'&&!wcat?[...CATS].map(([c,ids])=>{const has=ids.includes(cur);
     return `<button class="pitem cat${has?' hascur':''}" data-cat="${c}"><span class="cn">${c}</span><span class="cj">${ids[0]==='none'?'装備を外す':pn(selSlot,ids[0])[1]}</span>${has?'<span class="t eq">装備中</span>':'<span class="t">▶</span>'}</button>`}).join(''):'';
-  const backRow=sl.group==='W'&&wcat?`<button class="pitem catback" id="catBack"><span class="pc">◀ 種類の一覧へ戻る</span><span class="n">${wcat} <small>${pn(selSlot,shown[0])[1]}</small></span><span class="t"></span></button>`:'';
+  const backRow=sl.group==='W'&&wcat?`<button class="catback" id="catBack"><span class="bk">◀ 種類一覧</span><span class="sl">／</span><span class="cn">${wcat}</span><small>${pn(selSlot,shown[0])[1]}</small></button>`:'';
   el.innerHTML=`<div class="shd"><span class="code">SLOT ${no}</span><span class="ttl en">${sl.label}</span><span class="sub">${sub}</span></div><div class="rule"></div>
   <div class="cols2"><div class="plist">${catList}${backRow}${(sl.group==='W'&&!wcat?[]:shown).map(id=>{const d=sl.cat[id],w=d.st?d.st.wt:d.wt;const s=id===cand,e=id===cur;
     const ov=!e&&statsFor({...cfg,[selSlot]:id}).over;
@@ -1711,8 +1712,8 @@ function renderSide(){
    ${P2.over?`<div class="warn-msg">この装備にすると積載を ${P2.weap-P2.load} 超えます（出撃不可）</div>`:''}`);
   el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{cand=b.dataset.id;renderGarage()});
   el.querySelectorAll('.detail p').forEach(setupTicker);
-  el.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{wcat=b.dataset.cat;const ids=CATS.get(wcat);if(!ids.includes(cand))cand=ids.includes(cur)?cur:ids[0];renderGarage()});
-  const cb=$('catBack');if(cb)cb.onclick=()=>{wcat=null;renderGarage()};
+  el.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{wcat=b.dataset.cat;const ids=CATS.get(wcat);cand=ids.includes(cur)?cur:ids[0];renderGarage()});
+  const cb=$('catBack');if(cb)cb.onclick=()=>{wcat=null;cand=cur;renderGarage()};
   const pv=$('pv');if(pv&&pv.appendChild){pv.appendChild(PR.domElement);setPreview(selSlot,cand)}else setPreview(null);
   $('equip').onclick=()=>{if(statsFor({...cfg,[selSlot]:cand}).over)return;cfg[selSlot]=cand;assemble();saveGame()};
   $('back').onclick=()=>{view='overview';selSlot=null;renderGarage()};
@@ -1765,8 +1766,8 @@ Object.keys(TAGPOS).forEach(k=>{const sl=SLOTOF(k),b=document.createElement('but
  b.style.left=TAGPOS[k][0]+'%';b.style.top=TAGPOS[k][1]+'%';b.onclick=()=>openSlot(k);$('tags').appendChild(b);tagEls[k]=b});
 function updateTagsState(){Object.entries(tagEls).forEach(([k,b])=>{const d=SLOTOF(k).cat[cfg[k]];b.querySelector('span').textContent=pn(k,cfg[k])[3];b.classList.toggle('on',view==='slot'&&selSlot===k)})}
 function updateTags(){}
-// 強調表示：その部位のポリゴンに橙色のワイヤーフレームを重ねて点滅させる
-const HL=new THREE.LineBasicMaterial({color:0xffb040,transparent:true});const EDGES=new WeakMap();
+// 強調表示：その部位のポリゴンに黄緑のワイヤーフレームを重ねて点滅させる（部位ボタンの選択中と同じ色）
+const HL=new THREE.LineBasicMaterial({color:0x8cf06e,transparent:true});const EDGES=new WeakMap();
 let hlMeshes=[],hlSlot=null,hlMech=null;
 function slotMeshes(k){
  const m=mech,out=[],A=m.anchors,skip=new Set([A.rHand,A.lHand]);
