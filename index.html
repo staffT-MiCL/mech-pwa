@@ -730,7 +730,7 @@ input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:d
 .detail .cmp{overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .detail .cmp,.scmp{scrollbar-width:none;-ms-overflow-style:none}.detail .cmp::-webkit-scrollbar,.scmp::-webkit-scrollbar{display:none;width:0;height:0}
 .detail,.sdet{position:relative}
-.smore{position:absolute;z-index:2;pointer-events:none;font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:.14em;color:var(--fire);text-shadow:0 0 6px rgba(0,0,0,.9);animation:kblink 1s steps(2) infinite}
+.smore{position:absolute;z-index:2;pointer-events:none;font-family:var(--mech);font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--fire);text-shadow:0 0 6px rgba(0,0,0,.9);animation:kblink 1s steps(2) infinite}
 .smore[hidden]{display:none}
 @media (prefers-reduced-motion:reduce){.smore{animation:none}}
 .detail .cmp.more,.scmp.more{-webkit-mask-image:linear-gradient(#000 calc(100% - 22px),transparent);mask-image:linear-gradient(#000 calc(100% - 22px),transparent)}
@@ -1982,7 +1982,7 @@ document.addEventListener('contextmenu',e=>{if(!e.target.closest('input,textarea
 document.addEventListener('selectstart',e=>{if(!e.target.closest||!e.target.closest('input,textarea'))e.preventDefault()});
 // 続きがある欄（スクロールできる性能表）は下端をぼかす
 function scrollHints(root){if(!root)return;root.querySelectorAll('.detail .cmp,.scmp').forEach(el=>{
- let mk=el._mk;if(!mk||!mk.isConnected){mk=el._mk=document.createElement('span');mk.className='smore';mk.textContent='▼ MORE';el.after(mk)}
+ let mk=el._mk;if(!mk||!mk.isConnected){mk=el._mk=document.createElement('span');mk.className='smore';mk.textContent='▼';el.after(mk)}
  const f=()=>{const more=el.scrollHeight-el.clientHeight-el.scrollTop>4;el.classList.toggle('more',more);mk.hidden=!more;
   if(more){mk.style.left=(el.offsetLeft+(el.offsetWidth-mk.offsetWidth)/2)+'px';mk.style.top=(el.offsetTop+el.offsetHeight-14)+'px'}};
  if(!el._sh){el._sh=1;el.addEventListener('scroll',f,{passive:true})}f()})}
@@ -2116,10 +2116,12 @@ const tLv=(id,i)=>(TUNE[id]||[0,0])[i]||0;
 const tMul=(slot,id,i)=>TUNE_STEP[tLv(id,i)]*TUNE_DEF[slot][i].cap;
 const tCost=(id,lv)=>Math.round((PRICE[id]||TUNE_BASE)*TUNE_COST[lv]/100)*100;
 // 改造を反映したパーツの値（HEAD のロック、LEGS の重量の影響は statsFor で反映）
+// 改造後の装甲は1の位を切り上げて10単位にする（浮動小数の誤差は丸めてから）
+const ARC=v=>Math.ceil(Math.round(v*1000)/10000)*10;
 function eff(slot,id){const b=SLOTOF(slot).cat[id];if(!b)return b;
- if(slot==='core')return {...b,armor:Math.round(b.armor*(1+tMul(slot,id,0))),boost:Math.round(b.boost*(1+tMul(slot,id,1)))};
- if(slot==='arms')return {...b,load:Math.round(b.load*(1+tMul(slot,id,0))),armor:Math.round(b.armor*(1+tMul(slot,id,1)))};
- if(slot==='legs')return {...b,mob:Math.round(b.mob*(1+tMul(slot,id,0))),armor:Math.round(b.armor*(1+tMul(slot,id,1)))};
+ if(slot==='core')return {...b,armor:ARC(b.armor*(1+tMul(slot,id,0))),boost:Math.round(b.boost*(1+tMul(slot,id,1)))};
+ if(slot==='arms')return {...b,load:Math.round(b.load*(1+tMul(slot,id,0))),armor:ARC(b.armor*(1+tMul(slot,id,1)))};
+ if(slot==='legs')return {...b,mob:Math.round(b.mob*(1+tMul(slot,id,0))),armor:ARC(b.armor*(1+tMul(slot,id,1)))};
  return b}
 function loadGame(){
  try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!d)return;
