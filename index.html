@@ -1726,7 +1726,7 @@ function renderSide(){
   const shown=sl.group==='W'&&wcat?CATS.get(wcat)||[]:items;
   const catList=sl.group==='W'&&!wcat?[...CATS].map(([c,ids])=>{const has=ids.includes(cur);
     return `<button class="pitem cat${has?' hascur':''}" data-cat="${c}"><span class="cn">${c}</span><span class="cj">${ids[0]==='none'?'装備を外す':pn(selSlot,ids[0])[1]}</span>${has?'<span class="t eq">装備中</span>':'<span class="t">▶</span>'}</button>`}).join(''):'';
-  const backRow=sl.group==='W'&&wcat?`<button class="catback" id="catBack"><span class="bk">◀ 種類一覧</span><span class="sl">／</span><span class="cn">${wcat}</span><small>${pn(selSlot,shown[0])[1]}</small></button>`:'';
+  const backRow=sl.group==='W'&&wcat?`<button class="catback" id="catBack"><span class="bk">◀ 種類一覧</span></button>`:'';
   el.innerHTML=`<div class="shd"><span class="code">SLOT ${no}</span><span class="ttl en">${sl.label}</span><span class="sub">${sub}</span></div><div class="rule"></div>
   <div class="cols2"><div class="plist">${catList}${backRow}${(sl.group==='W'&&!wcat?[]:shown).map(id=>{const d=sl.cat[id],w=d.st?d.st.wt:d.wt;const s=id===cand,e=id===cur;
     const ov=!e&&statsFor({...cfg,[selSlot]:id}).over;
@@ -1752,8 +1752,8 @@ function renderSide(){
   <div class="sec">PRESET</div><div class="swatches">${Object.keys(PRESETS).map(n=>`<button data-p="${n}">${n}</button>`).join('')}</div>
   <div class="sec">CUSTOM</div><div class="colrow">${COLOR_KEYS.map(([k,n])=>`<label><input type="color" id="c-${k}" value="${COL[k]}">${n}</label>`).join('')}</div>
   <div class="acts"><button class="btn-sub" id="back">BACK</button></div>`;
-  el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{Object.assign(COL,PRESETS[b.dataset.p]);applyColors();renderSide()});
-  COLOR_KEYS.forEach(([k])=>{$('c-'+k).oninput=e=>{COL[k]=e.target.value;applyColors()}});
+  el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{Object.assign(COL,PRESETS[b.dataset.p]);applyColors();saveGame();renderSide()});
+  let colT=null;COLOR_KEYS.forEach(([k])=>{const ip=$('c-'+k);ip.oninput=e=>{COL[k]=e.target.value;applyColors();clearTimeout(colT);colT=setTimeout(saveGame,500)};ip.onchange=e=>{COL[k]=e.target.value;applyColors();clearTimeout(colT);saveGame()}});
   $('back').onclick=()=>{view='overview';renderGarage()};
  }else if(view==='config'){
   el.innerHTML=`<div class="shd"><span class="code">SYS</span><span class="ttl en">CONFIG</span></div><div class="rule"></div>
@@ -1762,9 +1762,9 @@ function renderSide(){
   <div class="sec">CAMERA</div><div class="seg"><button data-cam="tps" aria-pressed="${CAMMODE==='tps'}">CHASE</button><button data-cam="top" aria-pressed="${CAMMODE==='top'}">OVERHEAD</button></div>
   <div class="note">240p が初代プレイステーションに近い見た目です。動作が重いときも 240p にしてください。</div>
   <div class="acts"><button class="btn-sub" id="back">BACK</button></div>`;
-  el.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{res=+b.dataset.r;resize();renderSide()});
-  $('cJit').onclick=()=>{jitOn.value=1-jitOn.value;renderSide()};
-  el.querySelectorAll('[data-cam]').forEach(b=>b.onclick=()=>{setCam(b.dataset.cam);renderSide()});
+  el.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{res=+b.dataset.r;saveCfg();resize();renderSide()});
+  $('cJit').onclick=()=>{jitOn.value=1-jitOn.value;saveCfg();renderSide()};
+  el.querySelectorAll('[data-cam]').forEach(b=>b.onclick=()=>{setCam(b.dataset.cam);saveCfg();renderSide()});
   $('back').onclick=()=>{view='overview';renderGarage()};
  }
  if(view!=='slot')setPreview(null);
@@ -1920,11 +1920,18 @@ function loadGame(){
   if(d.tune)Object.entries(d.tune).forEach(([k,v])=>{if(Array.isArray(v))TUNE[k]=[Math.min(5,v[0]|0),Math.min(5,v[1]|0)]});
   if(d.dmg)Object.entries(d.dmg).forEach(([k,v])=>{if(typeof v==='number'&&v>0)DMG[k]=v});
   if(typeof d.cls==='string'&&CLASSES.includes(d.cls))CLS=d.cls;if((d.ch|0)>0)CH=d.ch|0;
-  if(d.mis)Object.entries(d.mis).forEach(([k,v])=>{if(MDEF[k]&&v&&typeof v==='object')MIS[k]={got:!!v.got,read:!!v.read,clear:!!v.clear,n:v.n|0,t:+v.t||0,best:+v.best||0}});
+  if(d.col&&typeof d.col==='object'){Object.keys(COL).forEach(k=>{if(typeof d.col[k]==='string'&&/^#[0-9a-f]{6}$/i.test(d.col[k]))COL[k]=d.col[k]});applyColors()}
+  if(d.mis)Object.entries(d.mis).forEach(([k,v])=>{if(!MDEF[k]&&v&&typeof v==='object'){MIS_X[k]=v;return}if(MDEF[k]&&v&&typeof v==='object')MIS[k]={got:!!v.got,read:!!v.read,clear:!!v.clear,n:v.n|0,t:+v.t||0,best:+v.best||0}});
   if(d.cfg)SLOTS.forEach(sl=>{const v=d.cfg[sl.key];if(v&&sl.cat[v]&&(v==='none'||OWN.has(v)))cfg[sl.key]=v});
  }catch(e){}
 }
-function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG,tune:TUNE,pilot:PILOT,tut:TUT,fire:FIRE,tsel:TSEL,ttut:TTUT,cls:CLS,ch:CH,mis:MIS}))}catch(e){}}
+// MIS_X：いまの版が知らない依頼の記録（古い版・新しい版のどちらで起動しても消さずに残す）
+const MIS_X={};
+function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG,tune:TUNE,pilot:PILOT,tut:TUT,fire:FIRE,tsel:TSEL,ttut:TTUT,cls:CLS,ch:CH,mis:{...MIS_X,...MIS},col:COL}))}catch(e){}}
+// CONFIG（画質・頂点のゆれ・視点）は本体のセーブとは別に保存（NEW GAME でも消えない）
+const CFG_KEY='mech-pwa-config';
+function saveCfg(){try{localStorage.setItem(CFG_KEY,JSON.stringify({res,jit:jitOn.value,cam:CAMMODE}))}catch(e){}}
+function loadCfg(){try{const d=JSON.parse(localStorage.getItem(CFG_KEY)||'null');if(!d)return;if([0,1,2].includes(d.res))res=d.res;if(d.jit===0||d.jit===1)jitOn.value=d.jit;if(d.cam==='top'||d.cam==='tps')setCam(d.cam)}catch(e){}}
 
 /* ===== SHOP ===== */
 const fmtCR=n=>Math.round(n).toLocaleString('ja-JP');
@@ -3167,7 +3174,7 @@ function pauseSet(on){if(mode!=='play'||(RUN&&RUN.leaving)||fading){on=false}
   $('pzAb').textContent=RUN?'撤退する（失敗）':'ガレージへ戻る';$('pzCam').textContent='視点：'+(CAMMODE==='top'?'OVERHEAD':'CHASE')}}
 $('pauseBtn').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();pauseSet(true)});
 $('pzGo').onclick=()=>pauseSet(false);
-$('pzCam').onclick=()=>{setCam(CAMMODE==='top'?'tps':'top');$('pzCam').textContent='視点：'+(CAMMODE==='top'?'OVERHEAD':'CHASE')};
+$('pzCam').onclick=()=>{setCam(CAMMODE==='top'?'tps':'top');saveCfg();$('pzCam').textContent='視点：'+(CAMMODE==='top'?'OVERHEAD':'CHASE')};
 $('pzAb').onclick=()=>{pauseSet(false);if(RUN)misAbort();else fadeTo(()=>setMode('garage'),'GARAGE')};
 $('pause').addEventListener('pointerdown',e=>e.stopPropagation());
 addEventListener('keydown',e=>{if(e.key==='Escape'&&mode==='play'){e.preventDefault();pauseSet(!PAUSED)}});
@@ -3196,8 +3203,8 @@ function setMode(m,training=false,mis=null,tt=false){
  requestAnimationFrame(resize);resize();
 }
 $('garage').onclick=()=>{if(RUN){misAbort();return}fadeTo(()=>setMode('garage'),'GARAGE')};
-loadGame();buildRings();buildCells();
-$('camBtn').onclick=()=>setCam(CAMMODE==='top'?'tps':'top');
+loadGame();loadCfg();buildRings();buildCells();
+$('camBtn').onclick=()=>{setCam(CAMMODE==='top'?'tps':'top');saveCfg()};
 assemble();
 
 /* ===== 視点（ガレージ） ===== */
@@ -3884,7 +3891,7 @@ const hasSave=()=>{try{return !!localStorage.getItem(SAVE_KEY)}catch(e){return f
 function showTitle(){const t=$('title');t.hidden=false;TT.on=true;titleSize();titleLoop();
  const sv=hasSave();$('tCon').disabled=!sv;$('tConSub').textContent=sv?fmtCR(CREDIT)+' CR':'NO DATA';$('tNew').focus()}
 function resetGame(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}
- OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();TTUT=0;CLS='E';CH=1;Object.keys(MIS).forEach(k=>delete MIS[k]);mailClose();
+ OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();TTUT=0;CLS='E';CH=1;Object.keys(MIS_X).forEach(k=>delete MIS_X[k]);Object.assign(COL,PRESETS['STANDARD']);applyColors();Object.keys(MIS).forEach(k=>delete MIS[k]);mailClose();
  Object.keys(DMG).forEach(k=>delete DMG[k]);Object.keys(TUNE).forEach(k=>delete TUNE[k]);Object.assign(cfg,DEFAULT_CFG);assemble()}
 function hideTitle(){TT.on=false;$('title').hidden=true;$('title').querySelectorAll('.tmodal').forEach(m=>m.remove());view='overview';selSlot=null;renderGarage();resize()}
 addEventListener('resize',()=>{if(TT.on)titleSize()});
