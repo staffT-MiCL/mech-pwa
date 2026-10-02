@@ -2172,6 +2172,47 @@ const SND=(()=>{
   youthF(){cv(592,'sine',3200,.04,.045)},youthM(){cv(328,'triangle',2400,.04,.05)},
   adultF(){cv(479,'triangle',2800,.03,.055)},adultM(){cv(189,'sawtooth',1700,.025,.065)},
  };
+const sat=()=>{const g=A.createGain();g.gain.value=1.15;return g};
+function shimmer(t,d,base,dur=1,peak=.08){[1,1.5,2,3].forEach((m,i)=>osc('sine',base*m,t,dur,d,{a:.005,r:dur,peak:peak/(i+1)}))}
+// ---- BGM（第3回）：場面ごとの曲。切り替えは1.2秒のクロスフェード ----
+const N=m=>440*Math.pow(2,(m-69)/12);
+let cur=null,curName=null;
+function duck(bus,t,depth=.35,rel=.22){if(!bus)return;bus.gain.cancelScheduledValues(t);bus.gain.setValueAtTime(depth,t);bus.gain.linearRampToValueAtTime(1,t+rel);}
+function makeSong(def){
+  const g=A.createGain();g.gain.value=0;g.connect(BGM);
+  const pb=A.createGain();pb.connect(g); // ducked bus for pads/bass
+  let step=0,next=T()+.1,alive=true,I=0;const spb=60/def.bpm/4;
+  const st={g,set:v=>I=v};
+  (function tick(){if(!alive)return;while(next<T()+.2){def.play(step,next,g,spb,I,pb);step++;next+=spb;}setTimeout(tick,25);})();
+  st.stop=()=>{alive=false;};return st;
+}
+function supersaw(t,notes,dur,dst,{v=.03,cut=1800,cut2,a,r}={}){const f=A.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(cut,t);if(cut2)f.frequency.linearRampToValueAtTime(cut2,t+dur);f.Q.value=.8;f.connect(dst);notes.forEach(n=>[-14,0,14].forEach((dt,i)=>osc('sawtooth',N(n),t,dur,f,{a:a??dur*.25,h:dur*.35,r:r??dur*.4,peak:v*1.4,detune:dt})));}
+function kick(t,d,v=1){const s=sat(2);s.connect(d);osc('sine',160,t,.45,s,{f2:42,fT:.09,peak:v});snap(t,d,{f:4000,peak:.35*v,dur:.008});}
+function clap(t,d,v=1){[0,.012,.024].forEach(o=>noise(t+o,o<.02?.02:.18,d,{type:'bandpass',f:1500,q:.9,peak:.45*v}));noise(t,.3,d,{type:'highpass',f:5000,peak:.08*v});}
+function hat(t,d,v=1,open=false){noise(t,open?.18:.035,d,{type:'highpass',f:9000,peak:.16*v});}
+function sub808(t,n,dur,d,v=.5){const s=sat(1.8);s.connect(d);osc('sine',N(n),t,dur,s,{a:.005,h:dur*.6,r:dur*.4,peak:v});}
+function pluck(t,n,dur,d,v=.06,pan=0){const f=A.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(5000,t);f.frequency.exponentialRampToValueAtTime(400,t+dur);f.Q.value=3;const p=A.createStereoPanner();p.pan.value=pan;f.connect(p).connect(d);[-8,8].forEach(dt=>osc('sawtooth',N(n),t,dur,f,{peak:v,detune:dt}));}
+function riser(t,dur,d,v=.2){noise(t,dur,d,{type:'bandpass',f:300,f2:8000,q:2,a:dur*.95,r:dur*.05,peak:v});}
+function impact(t,d,v=.8){const s=sat(3);s.connect(d);osc('sine',80,t,1.5,s,{f2:30,peak:v});noise(t,1.5,d,{type:'lowpass',f:3000,f2:80,peak:.5*v});}
+
+const SONGS={
+ title:{bpm:72,rev:0.32,dly:.2,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,ch=[[50,57,62,65],[46,53,58,62],[48,55,60,63],[45,52,57,60]][bar];if(s%16===0){supersaw(t,ch,b*16.5,pb,{v:.018,cut:600,cut2:1400});osc('sine',N(ch[0]-24),t,b*16,pb,{a:1,h:b*10,r:2,peak:.35});}if(s===0)impact(t,d,.6);if(s%32===8)[0,7,12].forEach((x,i)=>osc('sine',N(ch[0]+24+x),t+i*b*2,3,d,{peak:.05,pan:(i-1)*.6}));if(s%64===60)riser(t-b*12,b*12,d,.08);}},
+ garage:{bpm:88,rev:0.2,dly:.3,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[45,41,43,40][bar];if(s%16===0)supersaw(t,[root+12,root+15,root+19,root+22],b*16,pb,{v:.012,cut:900});if(s%8===0){kick(t,d,.55);duck(pb,t,.55);}if(s%16===8)clap(t,d,.35);if(s%4===2)hat(t,d,.35);if(s%16===0||s%16===10)sub808(t,root-24,b*5,pb,.35);const arp=[0,7,12,15,19,15,12,7];if(s%2===0)pluck(t,root+24+arp[(s/2)%8],b*2,d,.035,((s/2)%2?-.4:.4));}},
+ shop:{bpm:98,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[60,65,57,67][bar],q=[[0,4,7,11],[0,4,7,9],[0,3,7,10],[0,4,7,10]][bar];t+=(s%2)?b*.14:0;if(s%16===0)supersaw(t,q.map(x=>root+x),b*16,pb,{v:.01,cut:2800});if(s%4===0){kick(t,d,.5);duck(pb,t,.55,.15);}if(s%8===4)clap(t,d,.45);if(s%4===2)hat(t,d,.4);if(s%16===14)hat(t,d,.3,true);if(s%4===2)sub808(t,root-24,b*1.2,pb,.28);if(s%16===14)sub808(t,root-17,b,pb,.22);const mel=[[12,-1,16,19,-1,24,-1,19,21,-1,19,16,-1,14,12,-1],[12,-1,16,19,-1,21,23,24,-1,23,21,19,-1,16,-1,-1]][Math.floor(s/64)%2];const m=mel[s%16];if(m>=0){osc('triangle',N(root+m),t,b*1.4,d,{a:.004,r:b*1.4,peak:.07});osc('sine',N(root+m+12),t,b*.6,d,{peak:.025});}if(s%2===0)pluck(t,root+12+q[(s/2)%4],b,d,.02,((s/2)%2?-.35:.35));if(s%32===31)osc('sine',N(root+31),t,b*2,d,{peak:.04,f2:N(root+36)});}},
+ sortie:{bpm:132,rev:0.1,dly:.15,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[40,40,43,38][bar];if(s%4===0){kick(t,d,1);duck(pb,t,.3);}if(s%8===4)clap(t,d,.8);hat(t,d,s%2?.55:.25);if(s%16===14)hat(t,d,.5,true);const bl=[0,0,12,0,0,10,0,7,0,0,12,0,15,0,12,10];const f=A.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(1800,t);f.frequency.exponentialRampToValueAtTime(220,t+b*.9);f.Q.value=6;f.connect(pb);osc('sawtooth',N(root-12+bl[s%16]),t,b*.9,f,{peak:.16});if(s%4===0)sub808(t,root-24,b*3,pb,.35);if(s%32===0)supersaw(t,[root+12,root+15,root+19],b*32,pb,{v:.012,cut:700,cut2:2400});const ld=[24,-1,22,24,-1,27,-1,26,24,-1,22,-1,19,-1,22,-1];if(Math.floor(s/64)%2===1&&ld[s%16]>=0)pluck(t,root+12+ld[s%16],b*2,d,.035,.2);if(s%64===48)riser(t,b*16,d,.12);}},
+ boss:{bpm:146,rev:0.12,dly:.12,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[38,38,39,36][bar];if(s%4===0||s%16===10){kick(t,d,1.15);duck(pb,t,.25);}if(s%8===4)clap(t,d,1);hat(t,d,s%2?.6:.3);const bl=[0,0,12,0,1,0,13,0];const sh=sat(5);sh.connect(pb);const f=A.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(2400,t);f.frequency.exponentialRampToValueAtTime(300,t+b);f.Q.value=7;f.connect(sh);[-10,10].forEach(dt=>osc('sawtooth',N(root-12+bl[s%8]),t,b*.95,f,{peak:.09,detune:dt}));if(s%8===0)sub808(t,root-24,b*6,pb,.4);if(s%32===0)supersaw(t,[root+12,root+13,root+19],b*32,pb,{v:.013,cut:900,cut2:3000});if(s%16===8)osc('sawtooth',N(root+36),t,b*6,d,{f2:N(root+35),peak:.02,pan:.5});if(I){if(s%2===0)pluck(t,root+24+[0,3,7,8,12,8,7,3][(s/2)%8],b*1.8,d,.04,((s/2)%2?-.5:.5));if(s%16===0)supersaw(t,[root+24,root+27,root+31],b*16,d,{v:.01,cut:3500});}}},
+ win:{bpm:96,rev:0.28,dly:.3,play(s,t,d,b,I,pb){if(s===0){impact(t,d,.7);[55,59,62,67].forEach((n,i)=>pluck(t+i*b,n+12,b*8,d,.05,(i-1.5)*.4));}if(s===8){supersaw(t,[55,59,62,67,71],b*24,pb,{v:.02,cut:1200,cut2:4000});osc('sine',N(31),t,b*24,pb,{peak:.45});shimmer(t,d,N(79),3,.1);}if(s>=40){const bar=Math.floor(s/16)%2,root=[43,48][bar];if(s%16===8)supersaw(t,[root+12,root+16,root+19],b*16,pb,{v:.01,cut:1200});if(s%16===8)sub808(t,root-12,b*8,pb,.25);if(s%4===0)pluck(t,root+24+[0,4,7,11][(s/4)%4],b*3,d,.025,.3);}}},
+ lose:{bpm:76,rev:0.32,dly:.2,play(s,t,d,b,I,pb){if(s===0){impact(t,d,.5);[62,58,55,50].forEach((n,i)=>pluck(t+i*b*3,n,b*6,d,.04,(i%2?-.4:.4)));}if(s===12){supersaw(t,[38,41,45,50],b*28,pb,{v:.02,cut:500,cut2:250});osc('sine',N(26),t,b*28,pb,{peak:.45});}if(s>=44&&s%32===12){supersaw(t,[38,41,46],b*32,pb,{v:.012,cut:500});osc('sine',N(26),t,b*32,pb,{a:1,peak:.3});}}},
+};
+function playBGM(name){if(!A||name===curName)return;
+  if(cur){const c=cur;c.g.gain.cancelScheduledValues(0);c.g.gain.setValueAtTime(c.g.gain.value,T());c.g.gain.linearRampToValueAtTime(0,T()+1.2);setTimeout(()=>{c.stop();c.g.disconnect();},1400);}
+  
+  cur=makeSong(SONGS[name]);curName=name;cur.g.gain.linearRampToValueAtTime(1,T()+1.2);
+}
+
+function bgmI(v){if(cur)cur.set(v)}
+ function bgmPause(on){if(!A)return;BGM.gain.setTargetAtTime((SNDV.bgm/10*.6)*(on?.3:1),T(),.1)}
+ function bgmStop(){if(!cur)return;const c=cur;cur=null;curName=null;c.g.gain.setTargetAtTime(0,T(),.3);setTimeout(()=>{c.stop();c.g.disconnect()},1500)}
  function play(name,o={}){const f=S[name];if(!f||!A)return;const d=out(o.g??.4,o);if(d)f(d,T(),o.size)}
  // 続く音：ダッシュの噴射と、近いドローン（最大3機）の飛行音。毎フレーム呼ぶ
  const LP={dash:null,hum:[]};
@@ -2190,7 +2231,7 @@ const SND=(()=>{
  // 文字送りの音：2文字に1回
  function blip(voice,n){if(!A||n%2!==1)return;(VOICE[voice]||VOICE.nona)()}
  document.addEventListener('visibilitychange',()=>{if(!A)return;if(document.visibilityState==='visible')A.resume().catch(()=>{});else A.suspend().catch(()=>{})});
- return {init,apply,play,blip,dash,hum,stopLoops,get ctx(){return A},_:{out,osc,noise,snap,sub,jit,env,T:()=>T()}};
+ return {init,apply,play,blip,dash,hum,stopLoops,bgm:playBGM,bgmI,bgmPause,bgmStop,get ctx(){return A},_:{out,osc,noise,snap,sub,jit,env,T:()=>T()}};
 })();
 // ボタンの音：押したボタンの種類で鳴らし分ける（戻る・閉じる＝キャンセル、出撃・購入・決定など＝決定、ほか＝クリック）
 const SND_CANCEL=/^(◀|BACK|閉じる|やめる|戻る|キャンセル|考えておく|入力し直す|いいえ)|◀ |BACK$/,SND_DECIDE=/SORTIE|出撃|購入|装備する|REGISTER|はい|修理する|強化|依頼を受ける|適用|削除して始める|START|NEW GAME|CONTINUE|BRIEFING ▶|GARAGE ▶|再開/;
@@ -2407,13 +2448,13 @@ function showChoices(){const ch=$('tchoice');ch.innerHTML='';if(typeof talkChoic
 
 $('ttext').onclick=()=>{if(typing&&typingDone){typingDone()}else if(talkQ.length)nextLine()};
 
-function defaultChoices(){return [['品物を買う',()=>setSMode('buy')],['機体を修理する',()=>setSMode('repair')],['パーツを改造する',()=>setSMode('tune')],['話を聞く',openTalk],['ガレージへ戻る',()=>fadeTo(closeShop,'GARAGE')]]}
+function defaultChoices(){return [['品物を買う',()=>setSMode('buy')],['機体を修理する',()=>setSMode('repair')],['パーツを改造する',()=>setSMode('tune')],['話を聞く',openTalk],['ガレージへ戻る',leaveShop]]}
 function openTalk(){talk([['お話ですか！ 喜んで。わたくし、おしゃべりは得意でして。……あ、いえ、得意だと<em>思っております</em>。','happy']],[
  ['おすすめを聞く',talkRecommend],['機体を見てもらう',talkCheck],['お金の稼ぎ方',()=>talk([['報酬は、<em>TRAINING</em> を<em>攻撃あり</em>にして標的機を倒すと入ります。ドローンは '+fmtCR(REWARD.drone)+' CR、砲台は '+fmtCR(REWARD.turret)+' CR です。','normal'],['攻撃なしでは入りませんので、ご注意を。わたくしも以前、練習で張り切って一銭にもなりませんでした。','sorry']],talkMenu())],
  ['あなたについて',()=>talk([['わたくしは整備管理AI、<em>D-06</em>。読みはドールでございます。もともとは在庫を数えるために作られました。','normal'],['数えるのは得意です。<em>数え直す</em>のも、とても得意です。','happy']],talkMenu())],
  ['この種類について',()=>talk([[CAT_TALK[scat]||'どの種類のお話をしましょう？ 右の棚で選んでいただければ、ご説明いたします。','normal']],talkMenu())],
  ['戻る',()=>talk([['はい、いつでもどうぞ。','normal']])]])}
-const talkMenu=()=>[['ほかの話を聞く',openTalk],['品物を買う',()=>setSMode('buy')],['ガレージへ戻る',()=>fadeTo(closeShop,'GARAGE')]];
+const talkMenu=()=>[['ほかの話を聞く',openTalk],['品物を買う',()=>setSMode('buy')],['ガレージへ戻る',leaveShop]];
 function talkRecommend(){
  const left=Object.keys(PRICE).filter(id=>!OWN.has(id));
  if(!left.length)return talk([['なんと、在庫がすべて<strong>売り切れ</strong>です！ '+SAMA()+'のおかげです。','happy'],['次の入荷まで、わたくしは棚を磨いております。','normal']],talkMenu());
@@ -2657,15 +2698,20 @@ function closeEquipModal(){if(!document.body.classList.contains('eqm'))return;do
  $('shop').hidden=false;startShop3D();renderShop();talk([['装備の調子はいかがですか？ ……おお、よくお似合いです。機体に似合う、という言い方で合っていますよね？','happy']])}
 $('eqClose').onclick=()=>fadeTo(closeEquipModal,'SHOP');
 function openShop(){
- openMenu(false);startShop3D();closeModal();$('shop').hidden=false;smode='buy';rview='equip';rsel=null;ramt=null;spath=[];scat=null;ssel=null;renderShop();setMood('normal');
+ openMenu(false);startShop3D();closeModal();$('shop').hidden=false;SND.bgm('shop');smode='buy';rview='equip';rsel=null;ramt=null;spath=[];scat=null;ssel=null;renderShop();setMood('normal');
  if(TUT!=='done'){shopVisits++;saveGame();return firstShop()}
  const first=shopVisits===0;shopVisits++;const ci=CLASSES.indexOf(CLS),newArr=!first&&ci>SHOPCLS&&Object.values(ITEM_CLS).includes(CLS);SHOPCLS=Math.max(SHOPCLS,ci);saveGame();
  if(newArr)return talk([['あっ、'+SAMA()+'！ 新しい部品が入荷いたしました！ 旧軍の<em>制式部品</em>、VANGUARD 03 です。','happy'],['……どこから流れてきたのかは、聞かないでくださいませ。登録等級が上がると、仕入れられる品も増えるのです。','sorry'],['フレームも兵装も、棚に並べておきました。ゆっくりご覧くださいませ。','normal']]);
  if(first)talk([['ようこそ、'+SAMA()+'！ 第7整備区画の部品倉庫へ。わたくし、整備管理AIの <em>D-06</em>、ドールと申します。','happy'],['こちらでは、ガレージにない部品や兵装をお売りしております。品ぞろえは万全です。……<em>たぶん</em>万全です。','normal']]);
  else talk([pick([['おかえりなさいませ、'+SAMA()+'！ 今日はどの部品をお探しでしょう？','happy'],['あ、'+SAMA()+'！ ちょうど棚を拭いていたところです。拭くたびに部品を<em>落とす</em>のですが。','sorry'],['いらっしゃいませ。本日も在庫は数えておきました。<em>4回</em>ほど。','normal']])]);
 }
-function closeShop(kind){stopShop3D();clearInterval(typing);typing=null;closeConfirm();$('shop').hidden=true;$('shop').classList.remove('walk','greet');view='overview';selSlot=null;renderGarage();garageGreet(typeof kind==='string'?kind:'shop')}
-$('mShop').onclick=()=>{openMenu(false);fadeTo(openShop,'SHOP')};$('sExit').onclick=()=>fadeTo(closeShop,'GARAGE');
+// SHOP からガレージへ戻る：最後にドールの見送りのひとこと
+let leaving=false;
+function leaveShop(){if(leaving)return;leaving=true;$('tchoice').innerHTML='';
+ talk([[pick(['またのお越しを、心よりお待ちしております、'+SAMA()+'！','いってらっしゃいませ、'+SAMA()+'。またいつでもお立ち寄りくださいね。','お気をつけて。……次にいらっしゃるまでに、棚を数え直しておきます！']),'happy']],
+  ()=>setTimeout(()=>fadeTo(()=>{leaving=false;closeShop()},'GARAGE'),900))}
+function closeShop(kind){stopShop3D();SND.bgm('garage');clearInterval(typing);typing=null;closeConfirm();$('shop').hidden=true;$('shop').classList.remove('walk','greet');view='overview';selSlot=null;renderGarage();garageGreet(typeof kind==='string'?kind:'shop')}
+$('mShop').onclick=()=>{openMenu(false);fadeTo(openShop,'SHOP')};$('sExit').onclick=leaveShop;
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sconf').hidden)closeConfirm()});
 
 /* ===== 演習場：地面・建物・標的機 ===== */
@@ -3365,7 +3411,7 @@ function truckHit(dmg,pos){const T=RUN.tr;if(!T||T.hp<=0||RUN.ok)return;if(DBG.i
 // ボス戦：上部の HP バー、増援（HP 2/3・1/3）、撃破で成功
 function bossMisTick(dt){const B=RUN.boss,d=RUN.def,k=Math.max(0,B.hp/B.max);
  $('escHp').style.width=(100*k)+'%';$('escHp').classList.toggle('lo',k<.35);$('escD').textContent=Math.ceil(k*100)+'%';
- const need=k<=1/3?2:k<=2/3?1:0;while(RUN.rf<need&&B.alive){d.reinf[RUN.rf].forEach(misSpawn);RUN.rf++;comm(d.comm.add,2.2)}
+ const need=k<=1/3?2:k<=2/3?1:0;if(k<=1/3)SND.bgmI(1);while(RUN.rf<need&&B.alive){d.reinf[RUN.rf].forEach(misSpawn);RUN.rf++;comm(d.comm.add,2.2)}
  if(!RUN.halfSaid&&k<=.5&&B.alive){RUN.halfSaid=true;comm(d.comm.half,2.2)}
  if(!B.alive&&!RUN.ok&&P.down<=0){RUN.ok=true;RUN.endT=6.2;B.line.visible=B.glow.visible=false;
   ENEMIES.forEach(e=>{if(e!==B&&!e.off&&e.alive){e.alive=false;e.g.visible=false;explode(e.center(new THREE.Vector3()),1.4)}});
@@ -3399,7 +3445,7 @@ function misFinish(ok,reason=''){if(!RUN||RUN.leaving||fading)return;RUN.leaving
   saveGame();setMode('garage');renderResult(r)},'DEBRIEF')}
 const KILL_JA={drone:'ドローン',turret:'砲台',boss:'大型無人砲台'};
 const fmtT=t=>{t=Math.max(0,Math.round(t));return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')};
-function renderResult(r){const d=r.def;
+function renderResult(r){const d=r.def;SND.bgm(r.ok?'win':'lose');
  const dm=PART_KEYS.map(k=>{const mx=partMax(k),nw=partNow(k),v=nw/mx,c=nw<=0?'':v<=.2?'c-over':v<=.5?'c-warn':'c-core';
   return `<div class="rd${nw<=0?' dead':''}"><span class="aL">${PART_LABEL[k]}</span><span class="aV">${nw}<small>/${mx}</small></span><div class="cells" style="grid-template-columns:repeat(20,minmax(0,1fr))">${Array.from({length:20},(_,i)=>`<i class="${i<Math.round(v*20)?c:''}"></i>`).join('')}</div></div>`}).join('');
  const kl=Object.entries(r.kills||{}).filter(([,n])=>n>0).map(([k,n])=>`${KILL_JA[k]||k} ×${n}`).join(' ／ ')||'なし';
@@ -3410,7 +3456,7 @@ function renderResult(r){const d=r.def;
   <div class="rgrid"><div class="rbox" data-h="REWARD"><div class="rmoney"><span>依頼報酬</span><span>${r.ok?fmtCR(r.reward)+' CR':'— CR'}</span><span>撃破</span><span>${fmtCR(r.earned)} CR</span><span class="kl">${kl}</span><span class="tl">合計</span><span class="tv">+${fmtCR(r.reward+r.earned)} CR</span></div></div>
    <div class="rbox" data-h="DAMAGE"><div class="rdl">${dm}</div><span class="rnote">損傷は持ち帰りです。修理は SHOP の REPAIR で。</span></div></div>
   <div class="rbot"><div class="btalk"><span class="nm">N-07 ノーナ</span><div class="tx">${nameIn(r.ok?d.res.ok:d.res.ng)}</div></div><button class="btn-main" id="rGo">GARAGE ▶</button></div></div>`;
- misEl.hidden=false;$('rGo').onclick=()=>fadeTo(()=>{hideMis();garageGreet('mission',{ok:r.ok,def:d})},'GARAGE')}
+ misEl.hidden=false;$('rGo').onclick=()=>fadeTo(()=>{hideMis();SND.bgm('garage');garageGreet('mission',{ok:r.ok,def:d})},'GARAGE')}
 
 /* ----- 初回 TRAINING のチュートリアル（TTUT：次に行う項目 0〜10、TT_N で完了。途中で撤退したら続きから）-----
  設定は固定（敵の攻撃なし・STANDARD・演習場）。ノーナが通信の帯で1項目ずつ教え、指示された操作をすると次へ。
@@ -3452,7 +3498,7 @@ function ttEvt(ev,src){const i=TTS.step;if(TTS.busy||i<0)return;
 /* ----- ポーズ（TRAINING・MISSION 共通）：時間を止め、再開・視点・撤退を選ぶ。撤退は MISSION なら失敗として結果へ、TRAINING はガレージへ ----- */
 let PAUSED=false;
 function pauseSet(on){if(mode!=='play'||(RUN&&RUN.leaving)||fading){on=false}
- PAUSED=on;$('pause').hidden=!on;if(on)SND.stopLoops();if(on){HOLD.rHand=HOLD.lHand=HOLD.sh=false;GUARD[-1]=GUARD[1]=false;keys.clear();IN.x=IN.y=0;
+ PAUSED=on;$('pause').hidden=!on;if(on)SND.stopLoops();SND.bgmPause(on);if(on){HOLD.rHand=HOLD.lHand=HOLD.sh=false;GUARD[-1]=GUARD[1]=false;keys.clear();IN.x=IN.y=0;
   $('pzSub').textContent=RUN?'MISSION '+RUN.def.id+' ／ '+RUN.def.title:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';
   $('pzAb').textContent=RUN?'撤退する（失敗）':'ガレージへ戻る';$('pzCam').textContent='視点：'+(CAMMODE==='top'?'OVERHEAD':'CHASE')}}
 $('pauseBtn').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();pauseSet(true)});
@@ -3471,6 +3517,7 @@ function setMode(m,training=false,mis=null,tt=false){
  mode=m;const p=m==='play';TRAIN=p&&training;
  if(p){selSlot=null;view='overview';highlight(null)}
  if(p&&builtKey!==JSON.stringify(cfg))buildMech(cfg);
+ if(p)SND.bgm(RUN&&RUN.def.boss?'boss':'sortie');else if(!wasMis)SND.bgm('garage');
  $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';FAC.visible=p&&!!RUN&&RUN.def.field==='factory';gnd.visible=!ROAD.visible&&!RUINS.visible&&!FAC.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}dock.visible=!p;
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
@@ -4180,12 +4227,12 @@ function loadingTo(fn,lines){const L=$('loading'),bar=$('lBar'),log=$('lLog'),pc
 const LOAD_CON=['> SAVE DATA ............ FOUND','> N-07 CONTROL UNIT .... ONLINE','> FRAME LINK ........... OK','> HANGAR 07 ............ READY'];
 const LOAD_NEW=['> NEW OPERATOR ......... PENDING','> N-07 CONTROL UNIT .... BOOTING','> FRAME LINK ........... OK','> HANGAR 07 ............ READY'];
 const hasSave=()=>{try{return !!localStorage.getItem(SAVE_KEY)}catch(e){return false}};
-function showTitle(){const t=$('title');t.hidden=false;TT.on=true;titleSize();titleLoop();
+function showTitle(){const t=$('title');t.hidden=false;SND.bgm('title');TT.on=true;titleSize();titleLoop();
  const sv=hasSave();$('tCon').disabled=!sv;$('tConSub').textContent=sv?fmtCR(CREDIT)+' CR':'NO DATA';$('tNew').focus()}
 function resetGame(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}
  OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();TTUT=0;CLS='E';CH=1;SHOPCLS=0;Object.keys(MIS_X).forEach(k=>delete MIS_X[k]);Object.assign(COL,PRESETS['STANDARD']);applyColors();Object.keys(MIS).forEach(k=>delete MIS[k]);mailClose();
  Object.keys(DMG).forEach(k=>delete DMG[k]);Object.keys(TUNE).forEach(k=>delete TUNE[k]);Object.assign(cfg,DEFAULT_CFG);assemble()}
-function hideTitle(){TT.on=false;$('title').hidden=true;$('title').querySelectorAll('.tmodal').forEach(m=>m.remove());view='overview';selSlot=null;renderGarage();resize()}
+function hideTitle(){TT.on=false;SND.bgm('garage');$('title').hidden=true;$('title').querySelectorAll('.tmodal').forEach(m=>m.remove());view='overview';selSlot=null;renderGarage();resize()}
 addEventListener('resize',()=>{if(TT.on)titleSize()});
 $('tCon').onclick=()=>{if(hasSave())loadingTo(()=>{if(!PILOT)playNameEntry(hideTitle);else{hideTitle();garageGreet(TUT!=='done'?'intro':'continue')}},LOAD_CON)};
 $('tNew').onclick=()=>{
