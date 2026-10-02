@@ -2346,7 +2346,7 @@ let dockSpot=null;
  const cone2=new THREE.Mesh(new THREE.CylinderGeometry(.6,4.0,15.8,20,1,true),coneM);cone2.position.set(0,8.05,0);dock.add(cone2);
  dockSpot=new THREE.SpotLight(0xfff4e0,11,34,.42,.6,1.2);dockSpot.position.set(0,15.8,0);dockSpot.target.position.set(0,0,0);dock.add(dockSpot);dock.add(dockSpot.target);
 }
-const ENEMIES=[];
+const ENEMIES=[],SHADOW_G=new THREE.CircleGeometry(1.8,8);
 function makeEnemy(type){
  const g=grp(S),mat=psMat(0xffffff,{map:panel('#8a3a2c','#3a1812')}),dk=psMat(0x2a2320),eye=new THREE.MeshBasicMaterial({color:0xff4020});
  const e={type,g,mat,alive:true,hp:0,max:type==='drone'?600:1000,stun:0,kb:new THREE.Vector3(),r:type==='drone'?1.3:1.6,cd:2+Math.random()*2,ang:Math.random()*6,home:new THREE.Vector3(),hit:0,respawn:0,head:null,
@@ -2355,6 +2355,8 @@ function makeEnemy(type){
  else{cyl(g,1.2,1.5,.8,dk,0,.4,0,0,0,8);const h=grp(g,0,1.5,0);box(h,1.6,1.1,1.6,mat,0,0,0);box(h,.8,.2,.1,eye,0,.15,.82);
   [-1,1].forEach(s=>box(h,.18,.18,1.6,dk,s*.35,-.1,1.4));e.head=h}
  e.hpBar=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0x8cf06e}));e.hpBar.position.y=type==='drone'?1.2:3;g.add(e.hpBar);
+ // 飛んでいる敵（ドローン）は真下の地面に影を落とす（位置と高さを分かりやすくする）
+ if(type==='drone'){e.shadow=new THREE.Mesh(SHADOW_G,new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.42,depthWrite:false}));e.shadow.rotation.x=-Math.PI/2;e.shadow.position.y=.04;e.shadow.visible=false;S.add(e.shadow)}
  ENEMIES.push(e);e.alive=false;g.visible=false;e.off=true;return e;
 }
 function placeEnemy(e){const a=Math.random()*Math.PI*2,r=22+Math.random()*40;
@@ -2367,11 +2369,13 @@ function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;e.hp-=dmg;e.hit=.08;spawn(0x
  if(e.hp<=0){e.alive=false;e.g.visible=false;e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN){const rw=e.type==='drone'?REWARD.drone:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
 function updateEnemies(dt){
  ENEMIES.forEach(e=>{
+  if(e.shadow)e.shadow.visible=e.alive&&!e.off;
   if(e.off)return;
   if(!e.alive){if(RUN)return;e.respawn-=dt;if(e.respawn<=0)placeEnemy(e);return}
   const to=_q.copy(P.pos).sub(e.g.position);to.y=0;const d=to.length(),yaw=Math.atan2(to.x,to.z);
   e.stun=Math.max(0,e.stun-dt);e.home.addScaledVector(e.kb,dt);e.kb.multiplyScalar(Math.max(0,1-dt*5));
-  if(e.type==='drone'){if(e.stun<=0)e.ang+=dt*.35;e.g.position.set(e.home.x+Math.sin(e.ang)*8,6+Math.sin(t*1.3+e.ang)*.6,e.home.z+Math.cos(e.ang)*8);e.g.rotation.y=yaw;e.g.rotation.z=e.stun>0?Math.sin(t*40)*.2:0}
+  if(e.type==='drone'){if(e.stun<=0)e.ang+=dt*.35;e.g.position.set(e.home.x+Math.sin(e.ang)*8,6+Math.sin(t*1.3+e.ang)*.6,e.home.z+Math.cos(e.ang)*8);e.g.rotation.y=yaw;e.g.rotation.z=e.stun>0?Math.sin(t*40)*.2:0;
+   const sh=e.shadow,hh=e.g.position.y,k=Math.max(.55,1-hh*.05);sh.position.x=e.g.position.x;sh.position.z=e.g.position.z;sh.scale.setScalar(k);sh.material.opacity=.62*k}
   else e.head.rotation.y=L(e.head.rotation.y,yaw,Math.min(1,dt*2));
   e.mat.emissive.setRGB(e.hit>0?1:0,e.hit>0?1:0,e.hit>0?1:0);e.hit-=dt;
   e.hpBar.scale.set(1.6*e.hp/e.max,.1,.1);e.hpBar.lookAt(C.position);
@@ -2765,7 +2769,7 @@ function setMode(m,training=false,mis=null,tt=false){
  $('modeBadge').textContent=TRT?'TRAINING ／ TUTORIAL':RUN?'MISSION '+RUN.def.id:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';$('garage').textContent=RUN?'撤退':'ガレージ';$('comm').hidden=true;
  if(p){untintDamage();hudCache={};updateHUD();P.kills=0;P.earned=0;
   if(RUN)misStartEnemies();else{ENEMIES.forEach(e=>{if(e.tr){e.off=false;placeEnemy(e)}else{e.off=true;e.alive=false;e.g.visible=false}});say(TRT?'TUTORIAL':TRAIN?'演習開始（攻撃なし）':'演習開始（攻撃あり）',1.2);if(TRT)ttStart()}}
- else{ENEMIES.forEach(e=>{e.off=true;e.alive=false;e.g.visible=false});view='overview';selSlot=null;renderGarage();tintDamage();ttClear();if(wasPlay&&!wasMis)garageGreet(wasTT&&TTUT>=TT_N?'ttdone':'train',{fire:wasFire,earned,tt:wasTT})}
+ else{ENEMIES.forEach(e=>{e.off=true;e.alive=false;e.g.visible=false;if(e.shadow)e.shadow.visible=false});view='overview';selSlot=null;renderGarage();tintDamage();ttClear();if(wasPlay&&!wasMis)garageGreet(wasTT&&TTUT>=TT_N?'ttdone':'train',{fire:wasFire,earned,tt:wasTT})}
  applyGarageView();
  requestAnimationFrame(resize);resize();
 }
