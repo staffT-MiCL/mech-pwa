@@ -3032,8 +3032,12 @@ function goFull(){const d=document.documentElement,rq=d.requestFullscreen||d.web
  try{const p=rq.call(d,{navigationUI:'hide'});p&&p.then?p.then(lockLandscape,lockLandscape):lockLandscape()}catch(e){lockLandscape()}}
 $('bootBtn').onclick=()=>{
  try{const AC=window.AudioContext||window.webkitAudioContext;if(AC){AUDIO.ctx=AUDIO.ctx||new AC();AUDIO.ctx.resume();bootBeep()}}catch(e){}
- goFull();document.body.classList.add('started');startGame();
+ goFull();wakeOn();document.body.classList.add('started');startGame();
  const b=$('boot');b.classList.add('out');setTimeout(()=>b.remove(),500)};
+/* スリープ止め（Screen Wake Lock）：ゲームを開いている間だけ画面を消さない。別アプリから戻ったらかけ直す。未対応の端末では何もしない */
+const WAKE={lock:null,want:false};
+async function wakeOn(){WAKE.want=true;try{if('wakeLock' in navigator&&!WAKE.lock&&document.visibilityState==='visible'){WAKE.lock=await navigator.wakeLock.request('screen');WAKE.lock.addEventListener('release',()=>{WAKE.lock=null})}}catch(e){WAKE.lock=null}}
+document.addEventListener('visibilitychange',()=>{if(WAKE.want&&document.visibilityState==='visible')wakeOn()});
 // 全画面から戻ったあとでも、画面に触れたらもう一度横向きに固定を試みる
 document.addEventListener('fullscreenchange',()=>{if(document.fullscreenElement)lockLandscape()});
 $('bootBtn').focus()
