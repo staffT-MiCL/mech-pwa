@@ -731,6 +731,22 @@ body.eqm #mailBox{display:none}
 #comm.ok b{background:rgba(140,240,110,.55);color:#0b1408}
 .tth{animation:tthl .7s ease-in-out infinite alternate}@keyframes tthl{from{filter:none}to{filter:drop-shadow(0 0 6px #6fd3e0) brightness(1.5)}}
 #comm span{font-family:var(--disp);font-size:13px;color:#cfeff4;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 来訪（VISIT）：機体エリアを暗くして依頼人のイラストを重ね、下にセリフ欄。ノーナ・ドールは CUT IN で割り込む */
+#visit{position:absolute;inset:0;z-index:5;pointer-events:auto;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#visit .vdim{position:absolute;inset:0;background:rgba(5,7,6,.66);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+#vImg{position:absolute;left:14px;bottom:calc(var(--gsh,120px) + 2px);height:calc(100% - var(--gsh,120px) - 10px);width:auto;max-width:58%;object-fit:contain;object-position:bottom left;transition:filter .2s}
+#vImg.dim{filter:brightness(.4) saturate(.7)!important}
+#vCh{position:absolute;right:12px;bottom:calc(var(--gsh,120px) + 12px);display:flex;flex-direction:column;gap:6px;width:min(186px,38%)}#vCh:empty{display:none}
+#vCh button{height:36px;font-family:var(--disp);font-size:13px;background:rgba(14,18,17,.92);border:1px solid #3a4540;color:#aeb8b3}
+#vCh button:first-child{background:var(--fire);border:0;color:#1a1006;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
+#vTalk{position:absolute;left:8px;right:8px;bottom:8px;height:calc(var(--gsh,120px) - 4px);min-height:74px;box-sizing:border-box;padding:16px 14px 10px;background:#0a0e0d;border:1px solid #34403a;border-top:2px solid var(--vc,#d8a35a);cursor:pointer}
+#vTalk .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:var(--vc,#d8a35a);color:#0b0e0d;font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:2px;display:flex;align-items:center}
+#vTalk .ci{position:absolute;left:auto;top:-9px;margin-left:8px;height:16px;padding:0 6px;border:1px solid var(--vc);background:#0a0e0d;color:var(--vc);font-family:var(--mech);font-size:9px;letter-spacing:.14em;display:flex;align-items:center}
+#vTx{font-family:var(--disp);font-size:13.5px;line-height:1.65;color:#e6ebe7;overflow:auto;height:100%}
+#vNx{position:absolute;right:12px;bottom:6px;color:var(--vc);font-size:10px;animation:kblink .8s steps(2) infinite}
+body.visiting #side{opacity:.25;pointer-events:none}body.visiting #menuBtn,body.visiting #mailBtn{pointer-events:none;opacity:.4}
+body.eqm #visit{display:none}
+.bmp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:14px;color:#3f6f74;letter-spacing:.2em}
 /* メールボックス */
 #mailBox .mlx{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:4px}
 .mrw{display:grid;grid-template-columns:12px minmax(0,9em) minmax(0,1fr) auto auto;gap:8px;align-items:center;height:36px;padding:0 10px;background:rgba(14,30,32,.9);border:1px solid #2d6068;color:#eef2ef;text-align:left;font-family:var(--disp);font-size:13px}
@@ -782,6 +798,8 @@ body.eqm #mailBox{display:none}
   <div class="tools"><button id="btnPaint">PAINT</button><button id="btnTrain">TRAINING</button><button id="btnView">VIEW</button></div></div>
   <div id="gstats"></div>
   <div id="mailBox" class="mc14" hidden role="dialog" aria-label="メール"></div>
+  <div id="visit" hidden role="dialog" aria-label="来訪"><div class="vdim"></div><img id="vImg" alt=""><div id="vCh"></div>
+   <div id="vTalk"><span class="nm" id="vNm"></span><span class="ci" id="vCi" hidden>CUT IN</span><div id="vTx"></div><span id="vNx" hidden>▼</span></div></div>
   <div id="nonaBox" hidden role="status" aria-live="polite"><span class="nm">N-07 ノーナ</span><div id="nbText"></div><span id="nbNext" hidden>▼</span></div>
  </div>
  <div id="play" hidden>
@@ -829,7 +847,7 @@ body.eqm #mailBox{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.8</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9</span></div>
  </div>
 </div>
 
@@ -873,7 +891,7 @@ body.eqm #mailBox{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver">VER 0.8</div>
+ <div class="tver">VER 0.9</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -2552,7 +2570,13 @@ const MLIST=[
   comm:{start:'敵影6。散開しています。',last:'残り1機です。',clear:'敵影なし。全機の撃破を確認しました。帰還します。'},
   res:{ok:'お疲れさまでした。管理局からの返信は……ありませんね。報酬だけは届いています。',ng:'撤退します。損傷の確認を。'},
   enemies:[{type:'drone',x:-14,z:26},{type:'drone',x:12,z:24},{type:'drone',x:-4,z:44},{type:'drone',x:20,z:44},{type:'drone',x:-26,z:40},{type:'drone',x:6,z:56}]},
- {id:'1-2',ch:1,kind:'visit',ready:false,title:'荷車の護衛',from:'行商人 リョウイチ',reward:9000,field:'road',fieldJa:'旧街道'},
+ {id:'1-2',ch:1,kind:'visit',ready:false,title:'荷車の護衛',from:'行商人 オットー',client:'オットー',img:'img/clients/client-merchant-otto.png',imgF:'',reward:9000,field:'road',fieldJa:'旧街道',
+  obj:'荷車を配給所まで守りぬく',fail:'荷車の破壊 ／ CORE 大破',enemyJa:'ドローン（3回に分けて襲来）',
+  desc:'回収品を売り歩く行商人オットーの荷車を、旧街道の先の西配給所まで護衛する。積み荷の半分は、ドールの部品倉庫行き。',
+  brief:['荷車は一定の速さで進みます。止めることはできません。','無人機は3回に分けて、道の両側から来るはずです。荷車から離れすぎないでください。','……荷車が壊れると、ドールさんが泣きます。たぶん。'],
+  talk:[['c','あんたがハンガー07のギア乗りかい。回収品を売り歩いてる、オットーってもんだ。'],['c','旧街道を抜けて、西の配給所まで荷車を運びたいんだ。最近、無人機がうろついててね……護衛を頼めないか？'],
+   ['d','ちょ、ちょっとお待ちを！ その荷車、もしや当倉庫に納める部品も積んでおられます？'],['c','お、ドールの旦那か。そうさ、半分はあんたのとこ行きだ。'],
+   ['d','でしたらぜひ、ぜひ丁寧に！ ○○様、どうかよろしくお願いいたします！'],['n','旧街道は見通しが悪い地形です。荷車の速さに合わせる必要がありますね。……お受けになりますか、○○。']]},
  {id:'1-3',ch:1,kind:'mail',ready:false,title:'給水塔の砲台撤去',from:'西配給所 補修班',reward:8000,field:'factory',fieldJa:'放棄工場'},
  {id:'1-S',ch:1,kind:'visit',story:true,ready:false,title:'動き出した残骸',from:'元整備兵 ヴァルター',reward:15000,field:'ruins',fieldJa:'旧戦役の廃墟'}];
 const MDEF=Object.fromEntries(MLIST.map(d=>[d.id,d]));
@@ -2592,7 +2616,8 @@ const unreadMail=()=>MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got&&
 // ガレージに入ったときに新しい依頼を届ける。1-1：チュートリアル後、TRAINING から戻ったとき（または CONTINUE で再開したとき）
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
  const d=MDEF['1-1'];if(d.ready&&!MIS[d.id]&&TTUT>=TT_N&&['train','continue','mission','ttdone'].includes(kind)){MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)}
- if(out.length){saveGame();misHeader();$('mailBtn').classList.add('new')}return out}
+ const v=MDEF['1-2'];if(!MIS[v.id]&&MIS['1-1']&&MIS['1-1'].clear&&['train','continue','mission','shop','ttdone'].includes(kind)){MIS[v.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(v)}
+ if(out.length){saveGame();misHeader();if(out.some(d=>d.kind==='mail'))$('mailBtn').classList.add('new')}return out}
 function misHeader(){const u=unreadMail().length,got=anyGot();
  $('hCls').textContent='CLASS '+CLS;$('hCh').textContent='CH.'+CH;
  const mb=$('mailBtn');mb.hidden=TUT!=='done'||!gotMails().length;$('mailN').textContent=u;$('mailN').hidden=!u;if(!u)mb.classList.remove('new');
@@ -2616,6 +2641,29 @@ function mailOpen(id){const d=MDEF[id];if(!d)return;
 function mailClose(){const b=$('mailBox');if(b.hidden)return;b.hidden=true;nbClose()}
 $('mailBtn').onclick=()=>{if(TUT!=='done')return;if(!$('mailBox').hidden)mailClose();else mailList()};
 
+/* ----- 来訪（VISIT）：依頼人がハンガーを訪ねてくる。def.talk＝[['c'|'n'|'d', 文], ...]（c＝依頼人、n＝ノーナ、d＝ドールの通信）
+ 最後に［依頼を受ける］（依頼一覧を開く）／［考えておく］。どちらでも依頼は一覧に残り、一覧から［会話を見返す］で見直せる ----- */
+const VS={q:[],iv:null,done:null,d:null};
+const V_SP={c:d=>[d.client||d.from,'#d8a35a',false],n:()=>['N-07 ノーナ','#6fd3e0',true],d:()=>['D-06 ドール（通信）','#8cf06e',true]};
+function visitPlay(id){const d=MDEF[id];if(!d||!d.talk)return;mailClose();nbClose();VS.d=d;
+ const img=$('vImg');img.src=d.img;img.style.filter=d.imgF||'';img.alt=d.from;
+ $('vCh').innerHTML='';$('visit').hidden=false;document.body.classList.add('visiting');VS.q=d.talk.slice();visitNext()}
+function visitNext(){clearInterval(VS.iv);VS.iv=null;
+ if(!VS.q.length){visitChoices();return}
+ const [sp,raw]=VS.q.shift(),[nm,col,cut]=V_SP[sp](VS.d),txt=raw.replace(/○○様/g,esc(PILOT||'操縦者')+'様').replace(/○○/g,esc(PILOT||'操縦者'));
+ const v=$('visit');v.style.setProperty('--vc',col);$('vNm').textContent=nm;const ci=$('vCi');ci.hidden=!cut;
+ requestAnimationFrame(()=>{ci.style.left=(12+$('vNm').offsetWidth)+'px'});
+ $('vImg').classList.toggle('dim',sp!=='c');$('vNx').hidden=true;
+ const el=$('vTx');let n=0;
+ VS.done=()=>{clearInterval(VS.iv);VS.iv=null;el.textContent=txt;if(VS.q.length)$('vNx').hidden=false;else visitChoices()};
+ el.textContent='';VS.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);if(n>=txt.length)VS.done()},TXT_SPD)}
+function visitChoices(){const ch=$('vCh');if(ch.childElementCount)return;const d=VS.d;
+ [['依頼を受ける',()=>{visitEnd();openBoard(d.id)}],['考えておく',()=>{visitEnd();nonaSay([['依頼一覧に入れておきました。MENU の <em>MISSION</em> から、いつでも確認できます。']])}]]
+  .forEach(([lab,fn])=>{const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=e=>{e.stopPropagation();fn()};ch.appendChild(b)})}
+function visitEnd(){clearInterval(VS.iv);VS.iv=null;const d=VS.d;$('visit').hidden=true;document.body.classList.remove('visiting');$('vCh').innerHTML='';
+ if(d&&MIS[d.id]){MIS[d.id].read=true;saveGame()}VS.d=null}
+$('vTalk').addEventListener('click',()=>{if(VS.iv)VS.done();else if(VS.q.length)visitNext()});
+
 /* ----- 依頼一覧・ブリーフィング・結果（#mis）----- */
 const misEl=$('mis');let misSel=null,bTalk=null;
 function misHead(code,title,sub,back){return `<div class="xhd"><span class="logo"><span class="en">${code}</span></span><span class="sep"></span><span class="t">${title}</span>${sub?`<span class="s">${sub}</span>`:''}<span class="grow"></span>
@@ -2625,7 +2673,7 @@ function openBoard(sel){fadeTo(()=>{mailClose();nbClose();renderBoard(sel)},'MIS
 function renderBoard(sel){
  const list=MLIST.filter(d=>d.ch===CH&&!d.story&&MIS[d.id]&&MIS[d.id].got),story=MLIST.find(d=>d.ch===CH&&d.story),norm=chNormals(CH),cl=chCleared(CH);
  misSel=sel&&MIS[sel]&&MIS[sel].got?sel:(misSel&&MDEF[misSel]&&MIS[misSel]&&MIS[misSel].got?misSel:(list[0]||{}).id);
- const row=d=>{const m=MIS[d.id],st=!m.clear?(d.kind==='mail'&&!m.read?'<small class="nw">NEW</small>':'<small>未達成</small>'):'<small class="cl">CLEARED</small>';
+ const row=d=>{const m=MIS[d.id],st=!m.clear?(!m.read?'<small class="nw">NEW</small>':'<small>未達成</small>'):'<small class="cl">CLEARED</small>';
   return `<button class="mrow${d.id===misSel?' sel':''}" data-id="${d.id}"><span class="mtag ${d.kind}">${d.kind==='mail'?'MAIL':'VISIT'}</span><span class="nm"><b>${d.title}</b><small>${d.from}</small></span><span class="rw">${st}${fmtCR(d.reward)} CR</span></button>`};
  const stOpen=story&&story.ready&&cl>=norm.length&&MIS[story.id]&&MIS[story.id].got;
  const sRow=story?(stOpen?row(story):`<div class="mrow lk"><span class="star">★</span><span class="nm"><b>？？？</b><small>通常依頼をすべて達成すると届きます</small></span><span class="pips">${norm.map((d,i)=>`<i class="${i<cl?'on':''}"></i>`).join('')}</span></div>`):'';
@@ -2634,13 +2682,13 @@ function renderBoard(sel){
  const det=d?`<div class="mdbox mc14"><span class="fr ${d.kind}">${d.kind==='mail'?'MAIL':'VISIT'} ／ ${d.from}</span><span class="nmt">${d.title}</span>
    <div class="kvg"><span>目的</span><span>${d.obj}</span><span>地形</span><span>${d.fieldJa}</span><span>予想される敵</span><span>${d.enemyJa}</span><span>報酬</span><span class="cr">${fmtCR(d.reward)} CR</span>${MIS[d.id].n?`<span>クリア</span><span>${MIS[d.id].n} 回（再挑戦できます）</span>`:''}</div>
    <div class="ds">${d.desc}</div>
-   <div class="acts"><button class="btn-main" id="misBrief">BRIEFING ▶</button>${d.kind==='mail'?'<button class="btn-sub" id="misMail" style="width:120px">メールを読む</button>':''}</div></div>`
+   <div class="acts"><button class="btn-main" id="misBrief">BRIEFING ▶</button>${d.kind==='visit'?'<button class="btn-sub" id="misVisit" style="width:120px">会話を見返す</button>':''}${d.kind==='mail'?'<button class="btn-sub" id="misMail" style="width:120px">メールを読む</button>':''}</div></div>`
   :`<div class="mdbox mc14"><span class="ds" style="border:0">届いている依頼はありません。</span></div>`;
  misEl.innerHTML=misHead('MISSION','第7区画管理局 依頼端末','','◀ GARAGE')+`<div class="mbd"><div class="mlist"><div class="chh"><b>CHAPTER ${CH}</b><span>${CHAPTERS[CH]||''}</span></div>${list.map(row).join('')}${sRow}${olds}</div><div class="mdet">${det}</div></div>`;
  misEl.hidden=false;
  misEl.querySelectorAll('.mrow[data-id]').forEach(b=>b.onclick=()=>renderBoard(b.dataset.id));
  $('misBack').onclick=()=>fadeTo(()=>{hideMis();garageGreet('board')},'GARAGE');
- if(d){$('misBrief').onclick=()=>renderBrief(d.id);const mm=$('misMail');if(mm)mm.onclick=()=>fadeTo(()=>{hideMis();mailOpen(d.id)},'GARAGE')}
+ if(d){$('misBrief').onclick=()=>renderBrief(d.id);const mv=$('misVisit');if(mv)mv.onclick=()=>fadeTo(()=>{hideMis();visitPlay(d.id)},'GARAGE');const mm=$('misMail');if(mm)mm.onclick=()=>fadeTo(()=>{hideMis();mailOpen(d.id)},'GARAGE')}
 }
 // ブリーフィングの地図（上＝出撃時の正面 +Z）
 function briefMap(d){const s=[];
@@ -2652,12 +2700,12 @@ function briefMap(d){const s=[];
  s.push(`<path d="M0 -4l3 6h-6z" fill="#8cf06e"/><text x="0" y="8" fill="#8cf06e" font-size="3.6" text-anchor="middle" font-family="Chakra Petch,monospace" letter-spacing=".4">START</text>`);
  return `<svg viewBox="-64 -64 128 128" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
 function renderBrief(id){const d=MDEF[id];misSel=id;
- const dead=partNow('core')<=0,blocked=SS.over||dead;
+ const dead=partNow('core')<=0,blocked=SS.over||dead||!d.ready;
  misEl.innerHTML=misHead('BRIEFING',d.title,`CH.${d.ch} ／ ${d.from}`,'')+`<div class="mbr">
-  <div class="bmap"><span class="lb">FIELD ／ ${d.fieldJa}</span>${briefMap(d)}</div>
+  <div class="bmap"><span class="lb">FIELD ／ ${d.fieldJa}</span>${d.ready?briefMap(d):'<div class="bmp">地形データ 準備中</div>'}</div>
   <div class="bobj mc14"><span class="h">OBJECTIVE</span><span class="o">${d.obj}</span>
    <div class="kvg"><span>失敗条件</span><span class="ng">${d.fail}</span><span>地形</span><span>${d.fieldJa}</span><span>予想される敵</span><span>${d.enemyJa}</span><span>報酬</span><span class="cr">${fmtCR(d.reward)} CR</span></div>
-   ${blocked?`<div class="warn-msg">${SS.over?'積載オーバーのため出撃できません。':'CORE が大破しています。SHOP の REPAIR で修理してください。'}</div>`:''}
+   ${blocked?`<div class="warn-msg">${!d.ready?'この依頼の出撃は準備中です（地形を作成中）。':SS.over?'積載オーバーのため出撃できません。':'CORE が大破しています。SHOP の REPAIR で修理してください。'}</div>`:''}
    <span class="nt">損傷は持ち帰ります（修理は SHOP）。撃破でも CR が入ります。</span></div>
   <div class="btalk" id="bTalk"><span class="nm">N-07 ノーナ</span><div class="tx" id="bTx"></div><span class="nx" id="bNx" hidden>▼</span></div>
   <div class="bact"><button class="btn-main" id="bGo" ${blocked?'disabled':''}>SORTIE ▶ 出撃</button><div class="row"><button class="btn-sub" id="bChk">機体を確認</button><button class="btn-sub" id="bNo">やめる</button></div></div></div>`;
@@ -3025,7 +3073,9 @@ function garageGreet(kind,info={}){
  }else if(kind==='board'||kind==='check')L=kind==='check'?[['機体の確認ですね。準備ができたら、MENU の <em>MISSION</em> から出撃できます。']]:[];
  else{const dmg=PART_KEYS.some(k=>partNow(k)<partMax(k));L=[[dmg?'おかえりなさい、'+N+'。前回の損傷が残っています。修理は SHOP でどうぞ。':'おかえりなさい、'+N+'。本機に異常はありません。']]}
  if(SS.over)L.push(['積載が上限を超えています。このままでは出撃できません。']);
- const nm=misDeliver(kind);if(nm.length)L.push(['……通信です。'+nm.map(d=>d.from).join('、')+'から、メールが届いています。ヘッダーの <em>MAIL</em> からお読みください。']);
+ const nm=misDeliver(kind),nmail=nm.filter(d=>d.kind==='mail'),nvis=nm.find(d=>d.kind==='visit');
+ if(nmail.length)L.push(['……通信です。'+nmail.map(d=>d.from).join('、')+'から、メールが届いています。ヘッダーの <em>MAIL</em> からお読みください。']);
+ if(nvis){setTimeout(()=>visitPlay(nvis.id),700);return}
  if(L.length)nonaSay(L);
 }
 
