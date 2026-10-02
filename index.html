@@ -2407,23 +2407,38 @@ const ENEMIES=[],SHADOW_G=new THREE.CircleGeometry(1.8,8);
 /* 大型無人砲台（★1-S のボス）：台座＋ゆっくり旋回する砲塔。正面の装甲は厚く（被ダメージ 1/4）、背面の冷却口は 1.5倍。
  3連射（威力45）と、約15秒ごとの主砲（2秒の予告：砲口が光り赤い線が出る→威力150の太い弾） */
 function makeBoss(){
- const g=grp(S),mat=psMat(0xffffff,{map:panel('#7a3a2a','#3a1a12')}),dk=psMat(0x2a2320),arm=psMat(0xffffff,{map:panel('#4a4038','#24201a')}),vent=new THREE.MeshBasicMaterial({color:0xff4020}),eye=new THREE.MeshBasicMaterial({color:0xff4020});
- box(g,8,2.2,8,dk,0,1.1,0);cyl(g,3.6,4,1,arm,0,2.6,0,0,0,10);[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>box(g,1.4,1.6,1.4,arm,a*3.6,.8,b*3.6));
- const h=grp(g,0,4.3,0);box(h,5,2.6,5.6,mat,0,0,0);box(h,5.6,3,.7,arm,0,0,3);box(h,4.2,.4,4.2,dk,0,1.5,-.4);box(h,1.6,.3,.12,eye,0,.6,3.37);
- const brl=grp(h,0,.2,3.4);cyl(brl,.55,.7,6.4,dk,0,0,3.2,Math.PI/2,0,8);cyl(brl,.8,.8,1,arm,0,0,.4,Math.PI/2,0,8);const mz=cyl(brl,.62,.62,.3,dk,0,0,6.4,Math.PI/2,0,8);
- [-1,1].forEach(sg=>{box(h,.5,.5,2.2,dk,sg*2.1,-.6,3.6);box(h,.3,1.2,3.4,vent,sg*2.53,.1,-.6)});
- box(h,3.4,1.4,.3,vent,0,.2,-2.85);for(let i=0;i<4;i++)box(h,3.6,.12,.36,dk,0,-.35+i*.36,-2.95);
- const line=new THREE.Mesh(new THREE.BoxGeometry(.18,.18,90),new THREE.MeshBasicMaterial({color:0xff3020,transparent:true,opacity:.6,depthWrite:false}));line.position.set(0,.2,9.8+45);line.visible=false;h.add(line);
- const glow=new THREE.Mesh(new THREE.SphereGeometry(.9,8,6),new THREE.MeshBasicMaterial({color:0xff6030,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}));glow.position.set(0,.2,9.9);glow.visible=false;h.add(glow);
- const e={type:'boss',g,mat,alive:false,hp:0,max:12000,stun:0,kb:new THREE.Vector3(),r:4.6,cd:4,ang:0,home:new THREE.Vector3(),hit:0,respawn:0,head:h,line,glow,mzl:grp(h,0,.2,10),mc:9,chg:0,bq:0,bt:0,front:0,
-  center(v){return v.copy(g.position).add(new THREE.Vector3(0,3.6,0))}};
+ // 正面＝灰白の鋼のくさび形装甲（黄黒の警告縞・赤い単眼・主砲）／側面＝赤錆の本体に光る冷却フィンと配管／背面＝大きく光る冷却口（弱点）
+ const g=grp(S),mat=psMat(0xffffff,{map:panel('#6a2e22','#2e140e')}),dk=psMat(0x221d1a),steel=psMat(0xffffff,{map:panel('#b8bcb4','#7a7e78')}),pipe=psMat(0x3a3430),
+  hz=psMat(0xffffff,{map:stripes('#d8b020','#1a1a14')}),eye=new THREE.MeshBasicMaterial({color:0xff3020}),ventM=new THREE.MeshBasicMaterial({color:0xff7a20}),ventB=new THREE.MeshBasicMaterial({color:0xffa040});
+ // 台座（正面側の足元に赤い三角）
+ box(g,13,3,13,dk,0,1.5,0);cyl(g,6,6.6,1.4,pipe,0,3.6,0,0,0,12);[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>box(g,2.2,2.6,2.2,mat,a*5.9,1.3,b*5.9));
+ const tri=new THREE.Mesh(new THREE.CircleGeometry(1.6,3),new THREE.MeshBasicMaterial({color:0xc02020}));tri.rotation.set(-Math.PI/2,0,Math.PI/2);tri.position.set(0,3.02,6.3);g.add(tri);
+ const h=grp(g,0,7,0);
+ // 本体（赤錆）
+ box(h,8,4.2,9,mat,0,0,-.4);box(h,6.6,.6,7.4,dk,0,2.4,-.8);
+ // 正面のくさび形装甲（本体より一回り大きい）
+ const fa=grp(h,0,0,4.4);box(fa,9.6,5.2,1.2,steel,0,0,0,-.22,0,0);[-1,1].forEach(sg=>box(fa,2.4,5,1.1,steel,sg*5.2,0,-.9,-.22,-sg*.6,0));
+ box(fa,9.8,.5,1.3,hz,0,2.7,-.55,-.22,0,0);box(fa,9.8,.5,1.3,hz,0,-2.6,.55,-.22,0,0);
+ box(fa,2.6,1,.4,dk,0,1.4,.55,-.22,0,0);box(fa,1.8,.5,.3,eye,0,1.4,.78,-.22,0,0);
+ // 主砲
+ const brl=grp(h,0,-.4,5);cyl(brl,.9,1.15,10,dk,0,0,5,Math.PI/2,0,8);cyl(brl,1.35,1.35,1.6,pipe,0,0,.6,Math.PI/2,0,8);cyl(brl,1,1,.5,dk,0,0,10,Math.PI/2,0,8);
+ // 側面：光る冷却フィンと配管
+ const vents=[ventM,ventB];
+ [-1,1].forEach(sg=>{for(let i=0;i<5;i++)box(h,.3,2.8,.5,ventM,sg*4.05,.1,2.2-i*1.4);for(let i=0;i<5;i++)box(h,.5,3.2,.25,dk,sg*4.2,.1,1.5-i*1.4);
+  cyl(h,.3,.3,8,pipe,sg*4.4,-1.8,-.6,Math.PI/2,0,6);cyl(h,.22,.22,6,pipe,sg*4.4,1.8,-1,Math.PI/2,0,6)});
+ // 背面：大きな冷却口（弱点）
+ box(h,6.4,3.4,.4,ventB,0,0,-4.95);for(let i=0;i<6;i++)box(h,6.8,.22,.5,dk,0,-1.5+i*.6,-5.1);box(h,7.4,4,.3,pipe,0,0,-4.75);
+ const line=new THREE.Mesh(new THREE.BoxGeometry(.28,.28,110),new THREE.MeshBasicMaterial({color:0xff3020,transparent:true,opacity:.6,depthWrite:false}));line.position.set(0,-.4,15.4+55);line.visible=false;h.add(line);
+ const glow=new THREE.Mesh(new THREE.SphereGeometry(1.4,8,6),new THREE.MeshBasicMaterial({color:0xff6030,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}));glow.position.set(0,-.4,15.5);glow.visible=false;h.add(glow);
+ const e={type:'boss',g,mat,alive:false,hp:0,max:12000,stun:0,kb:new THREE.Vector3(),r:7,cd:4,ang:0,home:new THREE.Vector3(),hit:0,respawn:0,head:h,line,glow,mzl:grp(h,0,-.4,15.6),mc:9,chg:0,bq:0,bt:0,front:0,vents,
+  center(v){return v.copy(g.position).add(new THREE.Vector3(0,6.4,0))}};
  e.hpBar=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0xff6a4c}));e.hpBar.visible=false;g.add(e.hpBar);
  ENEMIES.push(e);g.visible=false;e.off=true;return e}
 // ボスへのダメージ：当たった向きで倍率を変える（正面 1/4・側面 1・背面 1.5）
 function bossDmg(e,dmg,pos){const yw=e.g.rotation.y+e.head.rotation.y,fx=Math.sin(yw),fz=Math.cos(yw),dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z,l=Math.hypot(dx,dz)||1,dot=(dx*fx+dz*fz)/l;
- if(dot>.55){spawn(0xffd080,.5,pos,{life:.12,grow:.6});spawn(0xffffff,.25,pos,{life:.05});e.front++;if(RUN&&e.front===6&&RUN.def.comm.front)comm(RUN.def.comm.front,2.4);return dmg*.25}
- if(dot<-.5){spawn(0xff6030,.9,pos,{life:.14});return dmg*1.5}return dmg}
-function bossTick(e,dt,d,yaw){const T=e.head;
+ if(dot>.55){spawn(0xffffff,.9,pos,{life:.1,grow:1.2});spawn(0xd8f0ff,.35,pos,{life:.18,grow:2.2});e.front++;if(RUN&&e.front===6&&RUN.def.comm.front)comm(RUN.def.comm.front,2.4);return dmg*.25}
+ if(dot<-.5){spawn(0xff6030,1.4,pos,{life:.16,grow:.8});return dmg*1.5}spawn(0xff9040,1,pos,{life:.12});return dmg}
+function bossTick(e,dt,d,yaw){const T=e.head;{const q=.75+.25*Math.sin(t*7)+Math.random()*.08;e.vents[0].color.setRGB(q,q*.45,.1);e.vents[1].color.setRGB(1,.6*q,.2*q)}
  e.mat.emissive.setRGB(e.hit>0?1:0,e.hit>0?.6:0,e.hit>0?.4:0);e.hit-=dt;
  if(e.chg<=0){let dy=yaw-(e.g.rotation.y+T.rotation.y);dy=Math.atan2(Math.sin(dy),Math.cos(dy));T.rotation.y+=Math.max(-.38*dt,Math.min(.38*dt,dy))}
  if(TRAIN||P.hp.core<=0)return;
@@ -2456,7 +2471,7 @@ const IMP={S:{st:.8,kb:4,p:1},A:{st:.6,kb:2.5,p:1},B:{st:.45,kb:1.5,p:1},C:{st:.
 let HITSRC=null;
 function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(e.type==='boss')dmg=bossDmg(e,dmg,pos);e.hp-=dmg;e.hit=.08;spawn(0xffffff,.5,pos,{life:.08});
  const I=e.type==='boss'?null:IMP[imp];if(I&&Math.random()<I.p){e.stun=Math.max(e.stun,I.st);e.kb.copy(e.g.position).sub(P.pos).setY(0).normalize().multiplyScalar(I.kb*3)}
- if(e.hp<=0){e.alive=false;e.g.visible=e.type==='boss';if(e.type==='boss'){e.head.rotation.x=.16;e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a)}e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN){const rw=e.type==='drone'?REWARD.drone:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
+ if(e.hp<=0){e.alive=false;e.g.visible=e.type==='boss';if(e.type==='boss'){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.head.rotation.x=.08;e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a)}e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN){const rw=e.type==='drone'?REWARD.drone:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
 function updateEnemies(dt){
  ENEMIES.forEach(e=>{
   if(e.shadow)e.shadow.visible=e.alive&&!e.off;
@@ -2671,7 +2686,7 @@ const MLIST=[
   comm:{start:'目標を確認。……識別信号が出ています。旧軍の、指揮系統の信号です。',charge:'主砲の充填を確認。射線から外れてください。',front:'正面の装甲は厚いです。側面へ。',add:'ドローンの増援です。',half:'目標の損傷、半分を超えました。',clear:'目標、停止。……',clear2:'いま、何か……いえ、帰還しましょう。'},
   res:{ok:'お疲れさまでした。ヴァルターさんから「……礼を言う」と、短い通信がありました。',ng:'撤退します。あの砲台、正面からでは厳しいですね。'},
   start:{x:0,z:-36},boss:true,
-  enemies:[{type:'boss',x:0,z:4},{type:'drone',x:-16,z:8},{type:'drone',x:16,z:10},{type:'drone',x:0,z:-10}],
+  enemies:[{type:'boss',x:0,z:4},{type:'drone',x:-16,z:8},{type:'drone',x:16,z:10},{type:'drone',x:0,z:-16}],
   reinf:[[{type:'drone',x:-18,z:-4},{type:'drone',x:18,z:-2},{type:'drone',x:0,z:22}],[{type:'drone',x:-12,z:-14},{type:'drone',x:14,z:-12},{type:'drone',x:-20,z:16}]],
   after:{ok:'……頼んだぞ。あれの装甲は、正面からじゃ抜けん。',later:'急がせる気はない。だが、あれは待ってくれんぞ。'},
   talk:[['c','……ほう。払い下げのHX系か。まだ動くのが残っていたとはな。'],['c','ヴァルターだ。旧戦役じゃ、ギアの整備をやっていた。いまは廃墟のそばで、拾い物をして暮らしている。'],
@@ -2772,7 +2787,8 @@ const isRoad=()=>RUN&&RUN.def.field==='road';
 const fieldR=()=>RUN&&RUN.def.field==='city'?CITY_R:RUN&&RUN.def.field==='ruins'?RUINS_R:ARENA;
 const fieldG=()=>RUN&&RUN.def.field==='city'?CITY:isRoad()?ROAD:RUN&&RUN.def.field==='ruins'?RUINS:world;
 function clampField(v){if(isRoad()){v.z=Math.max(ROAD_Z0,Math.min(ROAD_Z1,v.z));const c=roadX(v.z);v.x=Math.max(c-ROAD_W,Math.min(c+ROAD_W,v.x));return}
- const pl=Math.hypot(v.x,v.z),FR=fieldR();if(pl>FR){v.x*=FR/pl;v.z*=FR/pl}}
+ const pl=Math.hypot(v.x,v.z),FR=fieldR();if(pl>FR){v.x*=FR/pl;v.z*=FR/pl}
+ if(RUN&&RUN.boss){const bp=RUN.boss.g.position,dx=v.x-bp.x,dz=v.z-bp.z,l=Math.hypot(dx,dz);if(l<8.2&&l>.01){v.x=bp.x+dx/l*8.2;v.z=bp.z+dz/l*8.2}}}
 
 /* ----- 進行 ----- */
 const chNormals=c=>MLIST.filter(d=>d.ch===c&&!d.story);
@@ -3048,6 +3064,7 @@ function setMode(m,training=false,mis=null,tt=false){
  const wasPlay=mode==='play',wasFire=wasPlay&&!TRAIN,earned=P.earned||0,wasMis=!!RUN;
  if(m==='play')RUN=mis;else RUN=null;
  mode=m;const p=m==='play';TRAIN=p&&training;
+ if(p){selSlot=null;view='overview';highlight(null)}
  if(p&&builtKey!==JSON.stringify(cfg))buildMech(cfg);
  $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';gnd.visible=!ROAD.visible&&!RUINS.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}dock.visible=!p;
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
