@@ -727,7 +727,12 @@ body.eqm #mailBox{display:none}
 .tsep{font-style:normal;color:var(--faint);margin:0 .5em}.tplus{color:#6fd3e0!important;font-family:var(--mech);font-weight:700;margin-left:6px}
 body,#app,#shop,#mis,#menu,#modal,#sconf,#title,#op,#play{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
-.detail .cmp{overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.detail .cmp{overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.detail .cmp,.scmp{scrollbar-width:none;-ms-overflow-style:none}.detail .cmp::-webkit-scrollbar,.scmp::-webkit-scrollbar{display:none;width:0;height:0}
+.detail,.sdet{position:relative}
+.smore{position:absolute;z-index:2;pointer-events:none;font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:.14em;color:var(--fire);text-shadow:0 0 6px rgba(0,0,0,.9);animation:kblink 1s steps(2) infinite}
+.smore[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){.smore{animation:none}}
 .detail .cmp.more,.scmp.more{-webkit-mask-image:linear-gradient(#000 calc(100% - 22px),transparent);mask-image:linear-gradient(#000 calc(100% - 22px),transparent)}
 .kv.cr b{font-size:14px;color:#eef2ef;min-width:4.5em;text-align:right}.kv.cr b.up,#sMoney.up{color:var(--accent);text-shadow:0 0 8px rgba(140,240,110,.6)}.kv.cr b.dn,#sMoney.dn{color:#ffb070;text-shadow:0 0 8px rgba(240,160,64,.5)}
 #clsBand{position:fixed;left:0;right:0;top:50%;height:78px;margin-top:-39px;z-index:40;pointer-events:none;display:flex;align-items:center;justify-content:center;gap:22px;background:linear-gradient(90deg,transparent,rgba(10,8,4,.94) 18%,rgba(10,8,4,.94) 82%,transparent);border-top:1px solid #c9a24a;border-bottom:1px solid #c9a24a;transform:scaleY(0);transition:transform .25s}
@@ -1976,7 +1981,11 @@ function extraRows(slot,id){let h='';if(id&&id!=='none')h+=`<div class="c w trt"
 document.addEventListener('contextmenu',e=>{if(!e.target.closest('input,textarea'))e.preventDefault()});
 document.addEventListener('selectstart',e=>{if(!e.target.closest||!e.target.closest('input,textarea'))e.preventDefault()});
 // 続きがある欄（スクロールできる性能表）は下端をぼかす
-function scrollHints(root){if(!root)return;root.querySelectorAll('.detail .cmp,.scmp').forEach(el=>{const f=()=>el.classList.toggle('more',el.scrollHeight-el.clientHeight-el.scrollTop>4);if(!el._sh){el._sh=1;el.addEventListener('scroll',f,{passive:true})}f()})}
+function scrollHints(root){if(!root)return;root.querySelectorAll('.detail .cmp,.scmp').forEach(el=>{
+ let mk=el._mk;if(!mk||!mk.isConnected){mk=el._mk=document.createElement('span');mk.className='smore';mk.textContent='▼ MORE';el.after(mk)}
+ const f=()=>{const more=el.scrollHeight-el.clientHeight-el.scrollTop>4;el.classList.toggle('more',more);mk.hidden=!more;
+  if(more){mk.style.left=(el.offsetLeft+(el.offsetWidth-mk.offsetWidth)/2)+'px';mk.style.top=(el.offsetTop+el.offsetHeight-14)+'px'}};
+ if(!el._sh){el._sh=1;el.addEventListener('scroll',f,{passive:true})}f()})}
 const fitSoon=root=>requestAnimationFrame(()=>{fitText(root);scrollHints(root)});
 const ENM=(slot,id)=>{const p=pn(slot,id);return (p[2]?p[2]+' ':'')+p[3]};
 
