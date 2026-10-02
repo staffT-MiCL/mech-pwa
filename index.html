@@ -713,6 +713,7 @@ body.eqm #mailBox{display:none}
 .mtag.story{background:#b81c2c;color:#fff;letter-spacing:.06em}
 .mdbox.st{border-color:#b81c2c;background:linear-gradient(180deg,rgba(120,16,24,.28),transparent 60%)}.mdbox.st .fr{color:#ff7a86!important}.mdbox.st .nmt{color:#fff}.mdbox.st .btn-main{background:#c8202e;color:#fff}
 .mnone{padding:14px 10px;font-family:var(--disp);font-size:12px;color:#6a7a76}
+#side .seg.vol{display:flex;align-items:center;gap:8px}#side .seg.vol .vl{width:38px;font-size:12px;opacity:.8}#side .seg.vol .vv{min-width:22px;text-align:center;font-variant-numeric:tabular-nums}#side .seg.vol button{width:34px;flex:none;padding-left:0;padding-right:0}#side .seg.vol .vl+button{margin-left:-2px}#side .seg.vol .mu{width:auto;padding:0 12px;margin-left:auto}#side .seg.vol .vl:not(:first-child){margin-left:10px}
 #clsBand{position:fixed;left:0;right:0;top:50%;height:78px;margin-top:-39px;z-index:40;pointer-events:none;display:flex;align-items:center;justify-content:center;gap:22px;background:linear-gradient(90deg,transparent,rgba(10,8,4,.94) 18%,rgba(10,8,4,.94) 82%,transparent);border-top:1px solid #c9a24a;border-bottom:1px solid #c9a24a;transform:scaleY(0);transition:transform .25s}
 #clsBand.on{transform:scaleY(1)}#clsBand b{font-family:var(--sten);font-size:30px;letter-spacing:.3em;color:#e8c25a;text-shadow:0 0 12px rgba(232,194,90,.5);transform:translateX(-60vw);opacity:0;transition:transform .5s cubic-bezier(.2,.8,.2,1) .2s,opacity .3s .2s}
 #clsBand span{font-family:var(--mech);font-size:22px;letter-spacing:.2em;color:#fff0c8;transform:translateX(60vw);opacity:0;transition:transform .5s cubic-bezier(.2,.8,.2,1) .35s,opacity .3s .35s}#clsBand span i{font-style:normal;color:#e8c25a;margin:0 .4em}
@@ -1769,10 +1770,13 @@ function renderSide(){
   <div class="sec">RESOLUTION</div><div class="seg">${['240p','480p','HIGH'].map((n,i)=>`<button data-r="${i}" aria-pressed="${res===i}">${n}</button>`).join('')}</div>
   <div class="sec">DISPLAY</div><div class="seg"><button id="cJit" aria-pressed="${jitOn.value===1}">VERTEX JITTER</button></div>
   <div class="sec">CAMERA</div><div class="seg"><button data-cam="tps" aria-pressed="${CAMMODE==='tps'}">CHASE</button><button data-cam="top" aria-pressed="${CAMMODE==='top'}">OVERHEAD</button></div>
+  <div class="sec">SOUND</div><div class="seg vol">${['bgm','se'].map(k=>`<span class="vl en">${k.toUpperCase()}</span><button data-vol="${k}" data-d="-1" aria-label="${k} を下げる">−</button><span class="vv en">${SNDV[k]}</span><button data-vol="${k}" data-d="1" aria-label="${k} を上げる">＋</button>`).join('')}<button id="cMute" class="mu" aria-pressed="${SNDV.mute}">MUTE</button></div>
   <div class="note">240p が初代プレイステーションに近い見た目です。動作が重いときも 240p にしてください。</div>
   <div class="acts"><button class="btn-sub" id="back">BACK</button></div>`;
   el.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{res=+b.dataset.r;saveCfg();resize();renderSide()});
   $('cJit').onclick=()=>{jitOn.value=1-jitOn.value;saveCfg();renderSide()};
+  el.querySelectorAll('[data-vol]').forEach(b=>b.onclick=()=>{const k=b.dataset.vol;SNDV[k]=Math.max(0,Math.min(10,SNDV[k]+(+b.dataset.d)));SND.apply();saveCfg();renderSide();if(k==='se')SND.play('click')});
+  $('cMute').onclick=()=>{SNDV.mute=!SNDV.mute;SND.apply();saveCfg();renderSide()};
   el.querySelectorAll('[data-cam]').forEach(b=>b.onclick=()=>{setCam(b.dataset.cam);saveCfg();renderSide()});
   $('back').onclick=()=>{view='overview';renderGarage()};
  }
@@ -2006,7 +2010,7 @@ function openMenu(o){clearTimeout(menuT);
  else if(!menu.hidden){menu.classList.remove('open');menuT=setTimeout(()=>{menu.hidden=true},260)}}
 /* 画面切り替え：黒い幕を降ろしてから fn を実行し、幕を上げる */
 let fading=false;
-function fadeTo(fn,label=''){if(fading)return;fading=true;const f=$('fade');$('fadeTxt').textContent=label;f.classList.add('on');
+function fadeTo(fn,label=''){if(fading)return;fading=true;SND.play('wipe',{g:.35});const f=$('fade');$('fadeTxt').textContent=label;f.classList.add('on');
  setTimeout(()=>{try{fn()}finally{requestAnimationFrame(()=>requestAnimationFrame(()=>{f.classList.remove('on');setTimeout(()=>{fading=false},230)}))}},240)}
 $('menuBtn').onclick=()=>openMenu(true);
 // ブリーフィングの［機体を確認］から来たとき：ヘッダーの MENU を［◀ BRIEFING］に置き換える
@@ -2084,8 +2088,69 @@ const MIS_X={};
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG,tune:TUNE,pilot:PILOT,tut:TUT,fire:FIRE,tsel:TSEL,ttut:TTUT,cls:CLS,ch:CH,mis:{...MIS_X,...MIS},col:COL,shopcls:SHOPCLS}))}catch(e){}}
 // CONFIG（画質・頂点のゆれ・視点）は本体のセーブとは別に保存（NEW GAME でも消えない）
 const CFG_KEY='mech-pwa-config';
-function saveCfg(){try{localStorage.setItem(CFG_KEY,JSON.stringify({res,jit:jitOn.value,cam:CAMMODE}))}catch(e){}}
-function loadCfg(){try{const d=JSON.parse(localStorage.getItem(CFG_KEY)||'null');if(!d)return;if([0,1,2].includes(d.res))res=d.res;if(d.jit===0||d.jit===1)jitOn.value=d.jit;if(d.cam==='top'||d.cam==='tps')setCam(d.cam)}catch(e){}}
+// 音量（BGM・SE は 0〜10）とミュート。CONFIG と同じキーに保存
+const SNDV={bgm:6,se:8,mute:false};
+/* ===== 音（Web Audio API で合成。音声ファイルは使わない）=====
+ 系統：master → [bgm, se]。残響・ディレイ・歪み回路は使わない（処理落ちとノイズ対策）。
+ SE は同時に最大20。超えた分は鳴らさない。距離で音量と高音を下げる（10m まで等倍→60m で約1割）。
+ 文字送りは2文字に1回（SND.blip）。声は nona／doll と、依頼人6種（childF/childM/youthF/youthM/adultF/adultM） */
+const SND=(()=>{
+ let A=null,M,BGM,SE,NB,VO=0;const VMAX=20;
+ const T=()=>A.currentTime,jit=(v,p=.04)=>v*(1+(Math.random()*2-1)*p);
+ function init(){if(A||!AUDIO.ctx)return;A=AUDIO.ctx;
+  const ls=A.createBiquadFilter();ls.type='lowshelf';ls.frequency.value=90;ls.gain.value=3;
+  const air=A.createBiquadFilter();air.type='highshelf';air.frequency.value=9000;air.gain.value=2;
+  const glue=A.createDynamicsCompressor();glue.threshold.value=-18;glue.ratio.value=2.5;glue.attack.value=.01;glue.release.value=.15;glue.knee.value=8;
+  const lim=A.createDynamicsCompressor();lim.threshold.value=-1.5;lim.ratio.value=12;lim.attack.value=.003;lim.release.value=.1;lim.knee.value=3;
+  M=A.createGain();BGM=A.createGain();SE=A.createGain();BGM.connect(ls);SE.connect(ls);ls.connect(air).connect(glue).connect(lim).connect(M).connect(A.destination);
+  NB=A.createBuffer(1,A.sampleRate*2,A.sampleRate);const nd=NB.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
+  apply()}
+ function apply(){if(!A)return;const t=T();M.gain.setTargetAtTime(SNDV.mute?0:.85,t,.03);BGM.gain.setTargetAtTime(SNDV.bgm/10*.6,t,.05);SE.gain.setTargetAtTime(SNDV.se/10,t,.03)}
+ // 1回分の出口（音量・距離・左右）。上限を超えたら null
+ function out(g=1,{pan=0,dist=0}={}){if(!A||SNDV.mute||!SNDV.se)return null;if(VO>=VMAX)return null;VO++;setTimeout(()=>VO--,600);
+  const far=dist>10,n=A.createGain();n.gain.value=g*(far?Math.max(.08,1-(dist-10)/50*.92):1);let h=n;
+  if(far){const lp=A.createBiquadFilter();lp.type='lowpass';lp.frequency.value=Math.max(1200,16000-dist*230);n.connect(lp);h=lp}
+  if(pan){const p=A.createStereoPanner();p.pan.value=pan;h.connect(p);h=p}h.connect(SE);return n}
+ function env(g,t,a,h,r,pk=1){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(pk,t+a);g.gain.setValueAtTime(pk,t+a+h);g.gain.exponentialRampToValueAtTime(.0001,t+a+h+r)}
+ function osc(type,f,t,dur,d,{a=.002,h=0,r=dur,peak=1,f2,fT,detune=0}={}){const o=A.createOscillator();o.type=type;o.frequency.setValueAtTime(f,t);o.detune.value=detune;if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+(fT||dur));
+  const g=A.createGain();env(g,t,a,h,r,peak);o.connect(g).connect(d);o.start(t);o.stop(t+a+h+r+.05);return o}
+ function noise(t,dur,d,{type='bandpass',f=1000,f2,q=1,a=.002,h=0,r=dur,peak=1}={}){const s=A.createBufferSource();s.buffer=NB;s.loop=true;
+  const fl=A.createBiquadFilter();fl.type=type;fl.frequency.setValueAtTime(f,t);fl.Q.value=q;if(f2)fl.frequency.exponentialRampToValueAtTime(f2,t+a+h+r);
+  const g=A.createGain();env(g,t,a,h,r,peak);s.connect(fl).connect(g).connect(d);s.start(t,Math.random());s.stop(t+a+h+r+.05);return s}
+ const snap=(t,d,{f=6000,peak=.7,dur=.012}={})=>noise(t,dur,d,{type:'highpass',f,peak,r:dur});
+ const sub=(t,f1,f2,dur,d,peak=1)=>osc('sine',f1,t,dur,d,{f2,fT:dur*.4,peak});
+ const cv=(f0,wave,form,wob,len)=>{const d=out(.2);if(!d)return;const t=T(),f=jit(f0,wob);osc(wave,f,t,len,d,{peak:.8});osc('sine',f*2,t,len*.6,d,{peak:.25});noise(t,len*.5,d,{f:form,q:5,peak:.18})};
+ const S={
+  click(d,t){osc('sine',jit(3200,.02),t,.025,d,{peak:.5});snap(t,d,{f:8000,peak:.25,dur:.006});osc('sine',1600,t,.04,d,{peak:.2})},
+  decide(d,t){osc('sine',1046,t,.12,d,{peak:.5});osc('sine',1568,t+.06,.25,d,{peak:.5});osc('triangle',3136,t+.06,.2,d,{peak:.12});snap(t,d,{peak:.2})},
+  cancel(d,t){osc('sine',1174,t,.07,d,{peak:.45});osc('sine',784,t+.05,.16,d,{f2:700,peak:.45})},
+  deny(d,t){[0,.09].forEach(o=>{osc('sine',180,t+o,.08,d,{peak:.6});osc('square',90,t+o,.08,d,{peak:.08})})},
+  wipe(d,t){noise(t,.45,d,{type:'bandpass',f:300,f2:9000,q:1.2,a:.3,r:.15,peak:.5});sub(t+.4,90,35,.5,d,.6);snap(t+.42,d,{peak:.35})},
+  mail(d,t){[1318,1760,2637].forEach((f,i)=>{osc('sine',f,t+i*.08,.35,d,{peak:.5});osc('triangle',f*2,t+i*.08,.08,d,{peak:.08})})},
+  visit(d,t){[[880,0],[659,.38]].forEach(([f,o])=>{osc('sine',f,t+o,1.4,d,{peak:.55});osc('sine',f*2.01,t+o,.8,d,{peak:.12});osc('sine',f*3.98,t+o,.3,d,{peak:.05})})},
+  unlock(d,t){[784,1175,1568].forEach((f,i)=>osc('sine',f,t+i*.07,.5,d,{peak:.35}));snap(t,d,{peak:.3})},
+  classup(d,t){noise(t,.6,d,{type:'bandpass',f:400,f2:10000,q:2,a:.55,r:.05,peak:.45});sub(t+.6,120,40,1.4,d,.9);snap(t+.6,d,{peak:.6});[392,587,784,1175].forEach(f=>[-12,12].forEach(dt=>osc('sawtooth',f,t+.6,2.4,d,{a:.01,h:.5,r:1.9,peak:.06,detune:dt})));[1,1.5,2].forEach((m,i)=>osc('sine',1568*m,t+.6,2,d,{a:.005,peak:.1/(i+1)}))},
+  comm(d,t){noise(t,.06,d,{type:'bandpass',f:2400,q:2,peak:.5});osc('sine',1760,t+.06,.05,d,{peak:.35});osc('sine',2637,t+.11,.12,d,{peak:.35})},
+ };
+ const VOICE={
+  nona(){const d=out(.16);if(!d)return;const t=T();osc('sine',jit(2100,.015),t,.03,d);osc('sine',4200,t,.015,d,{peak:.25})},
+  doll(){const d=out(.15);if(!d)return;const t=T(),f=jit(950,.1);osc('triangle',f,t,.04,d,{f2:f*1.25});osc('sine',f*3,t,.02,d,{peak:.2})},
+  childF(){cv(907,'sine',4200,.07,.04)},childM(){cv(706,'triangle',3600,.07,.04)},
+  youthF(){cv(592,'sine',3200,.04,.045)},youthM(){cv(328,'triangle',2400,.04,.05)},
+  adultF(){cv(479,'triangle',2800,.03,.055)},adultM(){cv(189,'sawtooth',1700,.025,.065)},
+ };
+ function play(name,o={}){const f=S[name];if(!f||!A)return;const d=out(o.g??.4,o);if(d)f(d,T())}
+ // 文字送りの音：2文字に1回
+ function blip(voice,n){if(!A||n%2!==1)return;(VOICE[voice]||VOICE.nona)()}
+ document.addEventListener('visibilitychange',()=>{if(!A)return;if(document.visibilityState==='visible')A.resume().catch(()=>{});else A.suspend().catch(()=>{})});
+ return {init,apply,play,blip,get ctx(){return A},_:{out,osc,noise,snap,sub,jit,env,T:()=>T()}};
+})();
+// ボタンの音：押したボタンの種類で鳴らし分ける（戻る・閉じる＝キャンセル、出撃・購入・決定など＝決定、ほか＝クリック）
+const SND_CANCEL=/^(◀|BACK|閉じる|やめる|戻る|キャンセル|考えておく|入力し直す|いいえ)|◀ |BACK$/,SND_DECIDE=/SORTIE|出撃|購入|装備する|REGISTER|はい|修理する|強化|依頼を受ける|適用|削除して始める|START|NEW GAME|CONTINUE|BRIEFING ▶|GARAGE ▶|再開/;
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled||b.id==='bootBtn')return;const tx=(b.textContent||'').trim();
+ SND.play(SND_CANCEL.test(tx)?'cancel':SND_DECIDE.test(tx)?'decide':'click',{g:.35})},true);
+function saveCfg(){try{localStorage.setItem(CFG_KEY,JSON.stringify({res,jit:jitOn.value,cam:CAMMODE,bgm:SNDV.bgm,se:SNDV.se,mute:SNDV.mute}))}catch(e){}}
+function loadCfg(){try{const d=JSON.parse(localStorage.getItem(CFG_KEY)||'null');if(!d)return;if([0,1,2].includes(d.res))res=d.res;if(d.jit===0||d.jit===1)jitOn.value=d.jit;if(d.cam==='top'||d.cam==='tps')setCam(d.cam);if(d.bgm>=0&&d.bgm<=10)SNDV.bgm=d.bgm;if(d.se>=0&&d.se<=10)SNDV.se=d.se;SNDV.mute=!!d.mute}catch(e){}}
 
 /* ===== SHOP ===== */
 const fmtCR=n=>Math.round(n).toLocaleString('ja-JP');
@@ -2286,7 +2351,7 @@ function nextLine(){
  const el=$('ttext');let n=0;keeper.classList.toggle('talking',!nona);$('tnext').hidden=true;
  const draw=k=>{let out='',left=k;for(const p of parts){if(p.startsWith('<ruby')){if(left>0)out+=p;left-=1;continue}if(p[0]==='<'){out+=p;continue}out+=p.slice(0,Math.max(0,left));left-=p.length}el.innerHTML=out};
  const done=()=>{clearInterval(typing);typing=null;el.innerHTML=curLine;keeper.classList.remove('talking');if(talkQ.length)$('tnext').hidden=false;else nextLine()};
- draw(0);typingDone=done;typing=setInterval(()=>{draw(++n);if(n>=total)done()},TXT_SPD);
+ draw(0);typingDone=done;typing=setInterval(()=>{draw(++n);SND.blip(nona?'nona':'doll',n);if(n>=total)done()},TXT_SPD);
 }
 function showChoices(){const ch=$('tchoice');ch.innerHTML='';if(typeof talkChoices==='function'){const f=talkChoices;talkChoices=null;return f()}const list=talkChoices||defaultChoices();
  ch.className=list.length>4?'grid':'';
@@ -2880,7 +2945,7 @@ const MLIST=[
   comm:{start:'敵影6。散開しています。',last:'残り1機です。',clear:'敵影なし。全機の撃破を確認しました。帰還します。'},
   res:{ok:'お疲れさまでした。管理局からの返信は……ありませんね。報酬だけは届いています。',ng:'撤退します。損傷の確認を。'},
   enemies:[{type:'drone',x:-14,z:26},{type:'drone',x:12,z:24},{type:'drone',x:-4,z:44},{type:'drone',x:20,z:44},{type:'drone',x:-26,z:40},{type:'drone',x:6,z:56}]},
- {id:'1-2',ch:1,kind:'visit',ready:true,need:['1-1'],title:'荷車の護衛',from:'行商人 オットー',client:'オットー',img:'img/clients/client-merchant-otto.png',imgF:'',reward:9000,field:'road',fieldJa:'旧街道',
+ {id:'1-2',ch:1,kind:'visit',ready:true,need:['1-1'],title:'荷車の護衛',from:'行商人 オットー',client:'オットー',voice:'youthM',img:'img/clients/client-merchant-otto.png',imgF:'',reward:9000,field:'road',fieldJa:'旧街道',
   obj:'荷車を配給所まで守りぬく',fail:'荷車の破壊 ／ CORE 大破',enemyJa:'ドローン（3回に分けて襲来）',
   desc:'回収品を売り歩く行商人オットーの荷車を、旧街道の先の西配給所まで護衛する。積み荷の半分は、ドールの部品倉庫行き。',
   brief:['荷車は道なりに、ゆっくり進みます。近くに敵がいると止まり、いなくなると動き出します。','無人機は3回に分けて来るはずです。2回目からは道の先に砲台も。荷車から離れすぎないでください。','……荷車が壊れると、ドールさんが泣きます。たぶん。'],
@@ -2904,7 +2969,7 @@ const MLIST=[
   comm:{start:'砲台4基を確認。給水塔の周辺です。',left:'残り{n}基です。',hot:'射線に入っています。遮蔽物へ。',clear:'砲台、全基沈黙。給水塔への道が開きました。'},
   res:{ok:'配給所から、追伸が届いています。『ありがとう』と、一言だけ。',ng:'撤退します。砲台の位置は記録しました。'},
   enemies:[{type:'turret',x:-8,z:34,rng:70},{type:'turret',x:9,z:42,rng:70},{type:'turret',x:-26,z:22,rng:70},{type:'turret',x:27,z:36,rng:70},{type:'drone',x:-14,z:4},{type:'drone',x:16,z:14},{type:'drone',x:0,z:50}]},
- {id:'1-S',ch:1,kind:'visit',story:true,ready:true,cls:'D',title:'動き出した残骸',from:'元整備兵 ヴァルター',client:'ヴァルター',img:'img/clients/client-veteran-walter.png',imgF:'',reward:15000,field:'ruins',fieldJa:'旧戦役の廃墟',
+ {id:'1-S',ch:1,kind:'visit',story:true,ready:true,cls:'D',title:'動き出した残骸',from:'元整備兵 ヴァルター',client:'ヴァルター',voice:'adultM',img:'img/clients/client-veteran-walter.png',imgF:'',reward:15000,field:'ruins',fieldJa:'旧戦役の廃墟',
   obj:'大型無人砲台の停止',fail:'CORE 大破',enemyJa:'大型無人砲台 ＋ ドローン（2回補充）',
   desc:'廃墟で、旧戦役の大型無人砲台が動き出した。戦役のあと一度も動かなかったものだという。依頼人は、廃墟のそばで暮らす元整備兵。',
   brief:['目標は、旧戦役の大型無人砲台。正面の装甲が厚く、主砲の威力も大きいです。','側面と背面に、冷却用の開口部があります。そこを狙ってください。主砲は、撃つ前に砲口が光ります。','周りにはドローンが護衛についています。……これは、誰かが指示を出している動きです。'],
@@ -3082,7 +3147,7 @@ const depOk=(k,st)=>k==='tut'?(st?st.tut:tutOk()):(st?st.m[k]===2:!!(MIS[k]&&MIS
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
  if(['train','continue','mission','shop','ttdone'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;
   MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)});
- if(out.length){saveGame();misHeader();if(out.some(d=>d.kind==='mail'))$('mailBtn').classList.add('new')}return out}
+ if(out.length){saveGame();misHeader();if(out.some(d=>d.kind==='mail')){$('mailBtn').classList.add('new');SND.play('mail')}}return out}
 function misHeader(){const u=unreadMail().length,got=anyGot();
  $('hCls').textContent='CLASS '+CLS;$('hCh').textContent='CH.'+CH;
  const mb=$('mailBtn');mb.hidden=TUT!=='done'||!gotMails().length;$('mailN').textContent=u;$('mailN').hidden=!u;if(!u)mb.classList.remove('new');
@@ -3116,7 +3181,7 @@ function visitPlay(id,replay){const d=MDEF[id];if(!d||!d.talk)return;mailClose()
  const img=$('vImg');img.src=d.img;img.style.filter=d.imgF||'';img.alt=d.from;img.classList.remove('dim');
  const v=$('visit');$('vCh').innerHTML='';$('vTx').textContent='';$('vNm').textContent='';$('vCi').hidden=true;$('vNx').hidden=true;$('vSkip').hidden=!replay;VS.replay=!!replay;
  v.classList.remove('in','out');v.style.setProperty('--vc',V_SP[d.talk[0][0]](d)[1]);v.hidden=false;document.body.classList.add('visiting');VS.q=d.talk.slice();VS.fin=null;VS.busy=true;
- void v.offsetWidth;v.classList.add('in');VS.t=setTimeout(()=>{VS.busy=false;visitNext()},700)}
+ if(!replay)SND.play('visit',{g:.45});void v.offsetWidth;v.classList.add('in');VS.t=setTimeout(()=>{VS.busy=false;visitNext()},700)}
 function visitNext(){clearInterval(VS.iv);VS.iv=null;
  if(!VS.q.length){visitChoices();return}
  const [sp,raw]=VS.q.shift(),[nm,col,cut]=V_SP[sp](VS.d),txt=raw.replace(/○○様/g,esc(PILOT||'操縦者')+'様').replace(/○○/g,esc(PILOT||'操縦者'));
@@ -3125,7 +3190,7 @@ function visitNext(){clearInterval(VS.iv);VS.iv=null;
  $('vImg').classList.toggle('dim',sp!=='c');$('vNx').hidden=true;
  const el=$('vTx');let n=0;
  VS.done=()=>{clearInterval(VS.iv);VS.iv=null;el.textContent=txt;if(VS.q.length||VS.fin)$('vNx').hidden=false;else visitChoices()};
- el.textContent='';VS.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);if(n>=txt.length)VS.done()},TXT_SPD)}
+ el.textContent='';VS.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip(sp==='c'?(VS.d.voice||'adultM'):sp==='n'?'nona':'doll',n);if(n>=txt.length)VS.done()},TXT_SPD)}
 function visitChoices(){const ch=$('vCh');if(ch.childElementCount||VS.fin)return;const d=VS.d;
  // 見返し：選択肢は出さず、最後のセリフのあとタップで依頼一覧へ戻る
  if(VS.replay){VS.fin=()=>{visitEnd();openBoard(d.id)};$('vNx').hidden=false;return}
@@ -3207,7 +3272,7 @@ function renderBrief(id){const d=MDEF[id];misSel=id;
  bTalk={q:d.brief.map(nameIn),iv:null};const tx=$('bTx');
  const next=()=>{clearInterval(bTalk.iv);if(!bTalk.q.length)return;const t=bTalk.q.shift();let n=0;$('bNx').hidden=true;
   bTalk.done=()=>{clearInterval(bTalk.iv);bTalk.iv=null;tx.textContent=t;$('bNx').hidden=!bTalk.q.length};
-  bTalk.iv=setInterval(()=>{tx.textContent=t.slice(0,++n);if(n>=t.length)bTalk.done()},TXT_SPD)};
+  bTalk.iv=setInterval(()=>{tx.textContent=t.slice(0,++n);SND.blip('nona',n);if(n>=t.length)bTalk.done()},TXT_SPD)};
  $('bTalk').onclick=()=>{if(!bTalk)return;if(bTalk.iv)bTalk.done();else next()};next();
  $('bGo').onclick=()=>{if(blocked)return;saveGame();fadeTo(()=>{hideMis();setMode('play',false,{def:d})},'MISSION '+d.id)};
  $('bChk').onclick=()=>fadeTo(()=>{hideMis();chkSet(id);garageGreet('check')},'GARAGE');
@@ -3222,7 +3287,7 @@ COMM.q=[];COMM.busy=false;
 function comm(txt,dur=0.001){if(dur===0){COMM.q=[];commShow(txt,0);return}COMM.q.push([txt,dur]);if(!COMM.busy)commNext()}
 function commNext(){const it=COMM.q.shift();if(it)commShow(it[0],it[1])}
 function commShow(txt,dur){clearInterval(COMM.iv);const el=$('commTx');$('comm').hidden=false;let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
- COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;
+ COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip('nona',n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;
   if(dur===0){COMM.busy=false;COMM.t=0}else COMM.t=Math.max(1.5,1+txt.length*.12,dur)}},TXT_SPD)}
 function commClear(){COMM.q=[];clearInterval(COMM.iv);COMM.iv=null;COMM.busy=false;COMM.t=0;$('comm').hidden=true}
 function misSpawn(sp){const e=ENEMIES.find(x=>!x.tr&&x.off&&x.type===sp.type)||makeEnemy(sp.type);
@@ -3604,11 +3669,11 @@ function nbNext(){clearInterval(NB.iv);clearTimeout(NB.t);NB.iv=null;
  $('nbNext').hidden=true;
  const draw=k=>{let out='',left=k;for(const p of parts){if(p.startsWith('<ruby')){if(left>0)out+=p;left-=1;continue}if(p[0]==='<'){out+=p;continue}out+=p.slice(0,Math.max(0,left));left-=p.length}el.innerHTML=out};
  NB.done=()=>{clearInterval(NB.iv);NB.iv=null;el.innerHTML=txt;$('nbNext').hidden=!NB.q.length&&!NB.then;if(!NB.q.length&&!NB.hold&&!NB.then)NB.t=setTimeout(nbClose,5200)};
- draw(0);NB.iv=setInterval(()=>{draw(++n);if(n>=total)NB.done()},TXT_SPD);
+ draw(0);NB.iv=setInterval(()=>{draw(++n);SND.blip('nona',n);if(n>=total)NB.done()},TXT_SPD);
 }
 $('nonaBox').addEventListener('click',()=>{if(NB.iv)NB.done();else if(NB.q.length)nbNext();else if(NB.then){const f=NB.then;nbClose();f()}else if(!NB.hold)nbClose()});
 /* CLASS UP：★のクリア後、ガレージでノーナの話→管理局の通知メール→中央の帯→ノーナのひとこと。等級と CHAPTER を進める */
-function classBand(from,to,done){const b=$('clsBand');$('clsTx').innerHTML=`CLASS ${from}<i>▶</i>CLASS ${to}`;b.classList.remove('out','on');void b.offsetWidth;b.classList.add('on');
+function classBand(from,to,done){const b=$('clsBand');$('clsTx').innerHTML=`CLASS ${from}<i>▶</i>CLASS ${to}`;b.classList.remove('out','on');void b.offsetWidth;b.classList.add('on');SND.play('classup',{g:.55});
  setTimeout(()=>{b.classList.add('out')},2600);setTimeout(()=>{b.classList.remove('on','out');done&&done()},3200)}
 function classUpSeq(d){const N=esc(PILOT||'操縦者'),from=CLS;
  nonaSay([[N+'。あの砲台の信号ですが……止まる直前、送り先がありました。どこかに、まだ命令を出しているものがいます。'],['記録には、何もありません。……それなのに、なぜか、聞き覚えがある気がするのです。']],{hold:true});
@@ -3743,7 +3808,7 @@ function firstShop(){
    D('それまでは<em>演習場</em>で腕を磨かれるとよろしいかと。標的機に撃ち返させれば、管理局から<strong>報酬</strong>も出ます。','happy'),
    NN('承知しました。機体の準備も、ここで整えられそうですね。')],()=>{
    TUT='done';saveGame();applyTut();renderGarage();sh.classList.remove('greet');
-   const u=$('unlock');u.hidden=false;setTimeout(()=>{u.hidden=true},4200);
+   const u=$('unlock');u.hidden=false;SND.play('unlock');setTimeout(()=>{u.hidden=true},4200);
    talk([D('部品のことでしたら、何なりと。在庫を数えるのだけは得意でございますので。','happy'),D('……今後とも、どうぞ<strong>よろしくお願いいたします</strong>！','happy')],()=>{
     setTimeout(()=>fadeTo(()=>{$('unlock').hidden=true;closeShop('firstshop')},'GARAGE'),900)});
   });
@@ -3912,7 +3977,7 @@ const opWait=ms=>new Promise((res,rej)=>{const t0=performance.now(),k=()=>{if(OP
 const opTapOr=ms=>new Promise((res,rej)=>{OP.tap=false;const t0=performance.now(),k=()=>{if(OP.skip&&!OP.noSkip)return rej(SKIP);if(OP.tap||performance.now()-t0>=ms){OP.tap=false;return res()}requestAnimationFrame(k)};k()});
 function opType(el,txt,spd=42){return new Promise((res,rej)=>{const parts=txt.split(/(<ruby[^>]*>.*?<\/ruby>|<\/?(?:em|strong)>)/).filter(Boolean),isR=p=>p.startsWith('<ruby'),total=parts.reduce((a,p)=>a+(isR(p)?1:p[0]==='<'?0:p.length),0);let n=0;OP.tap=false;
  const draw=k=>{let out='',left=k;for(const p of parts){if(isR(p)){if(left>0)out+=p;left-=1;continue}if(p[0]==='<'){out+=p;continue}out+=p.slice(0,Math.max(0,left));left-=p.length}el.innerHTML=out};
- const iv=setInterval(()=>{if(OP.skip&&!OP.noSkip){clearInterval(iv);return rej(SKIP)}if(OP.tap){OP.tap=false;n=total}draw(++n);if(n>=total){clearInterval(iv);el.innerHTML=txt;res()}},spd);draw(0)})}
+ const iv=setInterval(()=>{if(OP.skip&&!OP.noSkip){clearInterval(iv);return rej(SKIP)}if(OP.tap){OP.tap=false;n=total}draw(++n);if(spd===TXT_SPD)SND.blip('nona',n);if(n>=total){clearInterval(iv);el.innerHTML=txt;res()}},spd);draw(0)})}
 const veil=(v,ms=600)=>{opVeil.style.transitionDuration=ms+'ms';opVeil.style.opacity=v;return new Promise(r=>setTimeout(r,ms))};
 // ノーナのセリフ（第2部）：打ち出したあと、タップか時間で次へ（wait＝Infinity ならタップ待ち）
 async function opSay(txt,wait=4200){$('opTalk').hidden=false;$('opCh').innerHTML='';$('opNx').hidden=true;await opType($('opText'),txt,TXT_SPD);$('opNx').hidden=false;await opTapOr(wait);$('opNx').hidden=true}
@@ -4087,7 +4152,7 @@ function goFull(){const d=document.documentElement,rq=d.requestFullscreen||d.web
  if(document.fullscreenElement||document.webkitFullscreenElement||!rq){lockLandscape();return}
  try{const p=rq.call(d,{navigationUI:'hide'});p&&p.then?p.then(lockLandscape,lockLandscape):lockLandscape()}catch(e){lockLandscape()}}
 $('bootBtn').onclick=()=>{
- try{const AC=window.AudioContext||window.webkitAudioContext;if(AC){AUDIO.ctx=AUDIO.ctx||new AC();AUDIO.ctx.resume();bootBeep()}}catch(e){}
+ try{const AC=window.AudioContext||window.webkitAudioContext;if(AC){AUDIO.ctx=AUDIO.ctx||new AC();AUDIO.ctx.resume();SND.init();bootBeep()}}catch(e){}
  goFull();wakeOn();document.body.classList.add('started');startGame();
  const b=$('boot');b.classList.add('out');setTimeout(()=>b.remove(),500)};
 /* スリープ止め（Screen Wake Lock）：ゲームを開いている間だけ画面を消さない。別アプリから戻ったらかけ直す。未対応の端末では何もしない */
