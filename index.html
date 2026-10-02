@@ -721,6 +721,10 @@ body.eqm #mailBox{display:none}
 .scats button .fit{flex:1;text-align:left;font-weight:700}
 .sitem .a small.fit{display:block}.rp .nm.fit{display:block}.rp .nm small{color:var(--khaki);font-family:var(--mech);font-size:10px;letter-spacing:.08em;margin-left:6px}
 .tpart small .nw{color:var(--khaki);font-family:var(--mech);letter-spacing:.08em}
+.cmp .c.trt .v{margin-left:0;text-align:left;font-family:var(--body);font-size:11px;line-height:1.45;color:#cfd8d3;white-space:normal}
+.cmp .c.tn2{overflow:hidden;min-width:0}.cmp .c.tn2 .v{margin-left:0;font-size:11px;flex:1 0 100%;display:flex;flex-wrap:wrap;gap:2px 14px;white-space:normal}.tq{display:inline-flex;align-items:center;gap:.35em;white-space:nowrap}.tq .nw{color:#98a59f}.tq b{font-family:var(--mech);font-weight:700;color:#9fe6ee;font-size:.92em}
+.tpp{display:inline-flex;gap:.18em}.tpp i{display:block;width:.7em;height:.55em;background:#1f2a24;transform:skewX(-25deg)}.tpp i.on{background:#6fd3e0;box-shadow:0 0 4px rgba(111,211,224,.5)}
+.tsep{font-style:normal;color:var(--faint);margin:0 .5em}.tplus{color:#6fd3e0!important;font-family:var(--mech);font-weight:700;margin-left:6px}
 #clsBand{position:fixed;left:0;right:0;top:50%;height:78px;margin-top:-39px;z-index:40;pointer-events:none;display:flex;align-items:center;justify-content:center;gap:22px;background:linear-gradient(90deg,transparent,rgba(10,8,4,.94) 18%,rgba(10,8,4,.94) 82%,transparent);border-top:1px solid #c9a24a;border-bottom:1px solid #c9a24a;transform:scaleY(0);transition:transform .25s}
 #clsBand.on{transform:scaleY(1)}#clsBand b{font-family:var(--sten);font-size:30px;letter-spacing:.3em;color:#e8c25a;text-shadow:0 0 12px rgba(232,194,90,.5);transform:translateX(-60vw);opacity:0;transition:transform .5s cubic-bezier(.2,.8,.2,1) .2s,opacity .3s .2s}
 #clsBand span{font-family:var(--mech);font-size:22px;letter-spacing:.2em;color:#fff0c8;transform:translateX(60vw);opacity:0;transition:transform .5s cubic-bezier(.2,.8,.2,1) .35s,opacity .3s .35s}#clsBand span i{font-style:normal;color:#e8c25a;margin:0 .4em}
@@ -1724,7 +1728,7 @@ function renderSide(){
    rows.push(cmpRow('重量',a.wt||0,b.wt||0,'lo'));
    if(b.rate)rows.push(`<div class="c"><span class="k">連射</span><span class="v">${esc(b.rate)}</span></div>`);
    part=rows.join('');
-   const KEYS=(b.kind==='補助'||b.kind==='防御'||(!b.kind&&(a.kind==='補助'||a.kind==='防御')))?['使用回数','効果時間','リロード','重量']:['威力','射程','弾数','リロード','衝撃','重量'];
+   const KEYS=(b.kind==='補助'||b.kind==='防御'||(!b.kind&&(a.kind==='補助'||a.kind==='防御')))?['使用回数','効果時間','リロード','重量']:['威力','射程','弾数','リロード','衝撃'].concat(traitOf(selSlot,cand)?[]:['重量']);
    brief=rows.filter(r=>KEYS.some(k=>r.includes(`class="k">${k}<`))).join('');
   }
   if(selSlot==='ext'){
@@ -1736,6 +1740,7 @@ function renderSide(){
    rows.push(cmpRow('重量',(cu.st&&cu.st.wt)||0,(cd.st&&cd.st.wt)||0,'lo'));
    part=brief=rows.join('');
   }
+  {const ex=extraRows(selSlot,cand);brief=ex+brief;part+=ex}
   const whole=[cmpRow('装甲',SS.armor,P2.armor),cmpRow('機動力',Math.round(SS.mob),Math.round(P2.mob)),cmpRow('ブースト容量',SS.boost,P2.boost),
    cmpRow('積載',`${SS.weap}/${SS.load}`,`${P2.weap}/${P2.load}`),cmpRow('総重量',SS.total,P2.total,'lo')].join('');
   const note=(cd.st&&cd.st.note)?`<p>${esc(cd.st.note)}</p>`:'';
@@ -1748,7 +1753,7 @@ function renderSide(){
   el.innerHTML=`<div class="shd"><span class="code">SLOT ${no}</span><span class="ttl en">${sl.label}</span><span class="sub">${sub}</span></div><div class="rule"></div>
   <div class="cols2"><div class="plist">${catList}${backRow}${(sl.group==='W'&&!wcat?[]:shown).map(id=>{const d=sl.cat[id],w=d.st?d.st.wt:d.wt;const s=id===cand,e=id===cur;
     const ov=!e&&statsFor({...cfg,[selSlot]:id}).over;
-    return `<button class="pitem${s?' sel':''}${ov?' ovw':''}" data-id="${id}"><span class="pc fit"><span class="nw">${pn(selSlot,id)[0]}</span><small>${pn(selSlot,id)[1]}</small></span><span class="n">${esc(ENM(selSlot,id).trim())}</span>${e?'<span class="t eq">装備中</span>':ov?'<span class="t ov">過積載</span>':`<span class="t">重量${w||0}</span>`}</button>`}).join('')}
+    return `<button class="pitem${s?' sel':''}${ov?' ovw':''}" data-id="${id}"><span class="pc fit"><span class="nw">${pn(selSlot,id)[0]}</span><small>${pn(selSlot,id)[1]}</small></span><span class="n">${esc(ENM(selSlot,id).trim())}${tPlus(id)}</span>${e?'<span class="t eq">装備中</span>':ov?'<span class="t ov">過積載</span>':`<span class="t">重量${w||0}</span>`}</button>`}).join('')}
     ${sl.group==='W'?'':items.length<5?'<div class="pitem lock"><span class="pc">－</span><span class="n">未入手（SHOP で購入）</span><span class="t"></span></div>':''}</div>
    <div class="detail"><div class="dtop">${sl.group==='W'&&cand!=='none'?'<div class="pv" id="pv"></div>':''}<div class="dtxt"><span class="en fit"><span class="nw">${pn(selSlot,cand)[0]}</span> ／ ${pn(selSlot,cand)[1]}</span><span class="nm">${esc(ENM(selSlot,cand).trim())}</span><p>${esc(DESC[cand]||'')}</p></div></div>
     <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${brief}</div>
@@ -1808,7 +1813,7 @@ Object.assign(HEADS,{
  }},
 });
 Object.assign(CORES,{
- 'CR-03':{name:'CR-03 高出力コア',armor:700,boost:130,wt:48,regenK:.5,trait:'ブースト回復の待ち時間が半分',build(t){
+ 'CR-03':{name:'CR-03 高出力コア',armor:770,boost:130,wt:48,regenK:.5,trait:'ブースト回復の待ち時間が半分',build(t){
   box(t,.55,.6,.45,M.frame,0,.3,0);
   // 腹：3段の帯（すき間を暗く）
   for(let i=0;i<3;i++){box(t,1.1-i*.08,.16,.78,M.sub,0,.42+i*.2,.02);box(t,1.0-i*.08,.04,.8,M.dark,0,.52+i*.2,.02)}
@@ -1831,7 +1836,7 @@ Object.assign(CORES,{
  }},
 });
 Object.assign(ARMS,{
- 'AR-03':{name:'AR-03 精密アーム',armor:200,load:95,wt:24,reloadK:.75,trait:'すべての兵装のリロード時間 −25%',build(sh,s){
+ 'AR-03':{name:'AR-03 精密アーム',armor:230,load:95,wt:24,reloadK:.75,trait:'すべての兵装のリロード時間 −25%',build(sh,s){
   cyl(sh,.2,.2,.42,M.frame,0,0,0,0,Math.PI/2);
   // 肩当て：3段に重なるくさび
   const pa=grp(sh,s*.2,.28,0);pa.rotation.z=s*.26;
@@ -1849,7 +1854,7 @@ Object.assign(ARMS,{
  }},
 });
 Object.assign(LEGS,{
- 'LG-03':{name:'LG-03 高機動二脚',armor:280,mob:90,wt:50,jumpK:1.2,landK:.5,trait:'跳躍が高く、着地硬直が半分',build(hip){
+ 'LG-03':{name:'LG-03 高機動二脚',armor:320,mob:100,wt:50,jumpK:1.2,landK:.5,trait:'跳躍が高く、着地硬直が半分',build(hip){
   box(hip,.95,.45,.75,M.frame,0,0,0);
   box(hip,.62,.5,.16,M.main,0,-.1,.44,-.3);box(hip,.06,.46,.18,M.warn,0,-.1,.5,-.3);      // 前垂れ
   return [-1,1].map(s=>{
@@ -1957,6 +1962,13 @@ const isFrameId=id=>!!(HEADS[id]||CORES[id]||ARMS[id]||LEGS[id]);
 const SER=id=>isFrameId(id)&&PN[id]?`<span class="nw">${PN[id][0]}</span>`:'';
 // 1行に収める欄（.fit）：はみ出すぶんだけ文字を小さくする（下限 9px）。省略記号では切らない
 function fitText(root=document){if(!root)return;root.querySelectorAll('.fit').forEach(el=>{el.style.fontSize='';if(!el.clientWidth)return;let fs=parseFloat(getComputedStyle(el).fontSize),k=0;while(el.scrollWidth>el.clientWidth+.5&&fs>9&&k<24){fs-=.5;el.style.fontSize=fs+'px';k++}})}
+// 性能の欄に添える行：特性（フレーム trait／ヘッド能力の説明／兵装・EXTRA の note）と、フレームの改造段階（青い5つの目盛り）
+const traitOf=(slot,id)=>{if(!id||id==='none')return '';const d=SLOTOF(slot).cat[id];return d?(d.trait||d.abDesc||(d.st&&d.st.note)||''):''};
+const tSum=id=>(TUNE[id]||[0,0]).reduce((a,b)=>a+b,0);
+const tPlus=id=>isFrameId(id)&&tSum(id)?`<small class="tplus">+${tSum(id)}</small>`:'';
+function extraRows(slot,id){let h='';if(id&&id!=='none')h+=`<div class="c w trt"><span class="k">特性</span><span class="v">${esc(traitOf(slot,id))||'―'}</span></div>`;
+ if(TUNE_DEF[slot]&&isFrameId(id))h+=`<div class="c w tn2"><span class="k">TUNE</span><span class="v">${TUNE_DEF[slot].map((d,i)=>{const lv=tLv(id,i);return `<span class="tq"><span class="nw">${d.lab}</span><span class="tpp">${[1,2,3,4,5].map(n=>`<i class="${n<=lv?'on':''}"></i>`).join('')}</span><b>LV${lv}</b></span>`}).join('')}</span></div>`;
+ return h}
 const fitSoon=root=>requestAnimationFrame(()=>fitText(root));
 const ENM=(slot,id)=>{const p=pn(slot,id);return (p[2]?p[2]+' ':'')+p[3]};
 
@@ -2153,7 +2165,10 @@ const SND=(()=>{
   online(d,t){[1046,1568,2093].forEach((f,i)=>osc('sine',f,t+i*.07,.5,d,{peak:.4}));sub(t,90,60,.6,d,.5)},
   reinf(d,t){for(let i=0;i<2;i++)[-14,14].forEach(dt=>osc('sawtooth',330,t+i*.5,.4,d,{f2:660,peak:.07,detune:dt}));sub(t,60,60,1,d,.4)},
   // ---- 出撃中（第2回）：アタック・芯・サブ低音・余韻の層。残響なし ----
-  step(d,t){sub(t,95,32,.35,d,1);noise(t,.18,d,{type:'lowpass',f:900,f2:200,peak:.9});snap(t,d,{f:3000,peak:.25,dur:.02});noise(t+.035,.25,d,{type:'bandpass',f:jit(2300,.1),q:14,peak:.16});osc('sine',jit(420),t+.05,.12,d,{f2:300,peak:.08})},
+  step(d,t,w=1){const k=1/w;sub(t,jit(78*k,.06),22*k,.62*w,d,1.25);noise(t,.3,d,{type:'lowpass',f:700*k,f2:120,peak:1});snap(t,d,{f:2200,peak:.3,dur:.03});
+   noise(t+.01,.5*w,d,{type:'lowpass',f:260*k,f2:60,a:.02,r:.48*w,peak:.7});
+   noise(t+.03,.4,d,{type:'bandpass',f:jit(1250,.08),q:22,peak:.16});noise(t+.05,.35,d,{type:'bandpass',f:jit(2050,.08),q:26,peak:.1});
+   noise(t+.07,.18,d,{type:'highpass',f:jit(5200,.1),a:.01,r:.17,peak:.12});osc('sine',jit(180*k),t+.02,.2,d,{f2:95*k,peak:.18})},
   qboost(d,t){snap(t,d,{f:4000,peak:.9,dur:.02});noise(t,.55,d,{type:'bandpass',f:5000,f2:300,q:.8,r:.55,peak:1});sub(t,140,40,.45,d,1)},
   jump(d,t){noise(t,.55,d,{type:'bandpass',f:400,f2:2600,q:.8,a:.04,r:.5,peak:.8});sub(t,55,120,.35,d,.5)},
   land(d,t){sub(t,80,26,.6,d,1.1);snap(t,d,{f:2500,peak:.5,dur:.025});noise(t,.35,d,{type:'lowpass',f:1200,f2:150,peak:1});[1450,3170].forEach(f=>noise(t+.03,.7,d,{type:'bandpass',f:jit(f),q:30,peak:.16}))},
@@ -2180,9 +2195,9 @@ const SND=(()=>{
   charge(d,t){[-15,15].forEach(dt=>osc('sawtooth',55,t,2.1,d,{a:1.9,h:.1,r:.1,f2:440,fT:2,peak:.16,detune:dt}));osc('sine',40,t,2.1,d,{a:1.9,h:.1,r:.1,f2:80,fT:2,peak:.7});noise(t,2.1,d,{type:'bandpass',f:200,f2:6000,q:5,a:1.9,h:.1,r:.1,peak:.45});for(let i=0;i<9;i++)osc('sine',1760,t+2*(1-Math.pow(1-i/9,1.6)),.05,d,{peak:.12})},
   mainGun(d,t){snap(t,d,{f:2000,peak:1,dur:.05});sub(t,90,20,1.6,d,1.3);noise(t,2,d,{type:'lowpass',f:5000,f2:90,peak:1.1});osc('sawtooth',240,t,1.2,d,{f2:30,peak:.12})},
   boom(d,t,size=1){snap(t,d,{f:2000,peak:1,dur:.04});sub(t,70/size+30,22,size,d,1.2);noise(t,1.3*size,d,{type:'lowpass',f:4000,f2:100,peak:1});for(let i=0;i<Math.round(3*size);i++)noise(t+.12+Math.random()*.8*size,.06,d,{type:'bandpass',f:jit(3500,.5),q:3,peak:.3})},
-  lockable(d,t){osc('sine',2794,t,.04,d,{peak:.5})},
-  lockOn(d,t){osc('sine',2093,t,.05,d,{peak:.5});osc('sine',3136,t+.06,.09,d,{peak:.5})},
-  lockAtk(d,t){osc('sine',1500,t,.22,d,{f2:4200,peak:.35});osc('sine',4200,t+.2,.05,d,{peak:.3})},
+  lockable(d,t){osc('sine',2093,t,.04,d,{peak:.5})},
+  lockOn(d,t){osc('sine',1568,t,.05,d,{peak:.5});osc('sine',2349,t+.06,.08,d,{peak:.45})},
+  lockAtk(d,t){osc('sine',1100,t,.2,d,{f2:3000,peak:.3});osc('sine',3000,t+.18,.04,d,{peak:.22})},
   ricochet(d,t){snap(t,d,{f:4000,peak:.8});osc('sine',jit(4500,.2),t,.4,d,{f2:jit(1500,.2),peak:.25});noise(t,.1,d,{type:'bandpass',f:6000,q:2,peak:.3})},
  };
  const VOICE={
@@ -2243,10 +2258,10 @@ function bgmI(v){if(cur)cur.set(v)}
   else if(!on&&L){L.g.gain.setTargetAtTime(0,T(),.06);L.ns.forEach(x=>x.stop(T()+.4));LP.dash=null}}
  function hum(list){if(!A)return;
   for(let i=0;i<3;i++){let v=LP.hum[i];const it=list[i];
-   if(!v&&it){const g=A.createGain();g.gain.value=0;const p=A.createStereoPanner(),f=A.createBiquadFilter();f.type='lowpass';f.frequency.value=650;f.Q.value=.7;f.connect(g).connect(p).connect(SE);
+   if(!v&&it){const g=A.createGain();g.gain.value=0;const p=A.createStereoPanner(),f=A.createBiquadFilter();f.type='lowpass';f.frequency.value=420;f.Q.value=.5;f.connect(g).connect(p).connect(SE);
     const fr=140+i*9,os=[[fr,'triangle'],[fr*1.01,'triangle'],[fr*2,'sine']].map(([q,ty])=>{const o=A.createOscillator();o.type=ty;o.frequency.value=q;o.connect(f);o.start();return o});
     const l=A.createOscillator();l.frequency.value=4+i;const lg=A.createGain();lg.gain.value=60;l.connect(lg).connect(f.frequency);l.start();v=LP.hum[i]={g,p,os:[...os,l]}}
-   if(v){v.g.gain.setTargetAtTime(it?.16*att(it.dist):0,T(),.1);if(it)v.p.pan.setTargetAtTime(it.pan||0,T(),.1)}}}
+   if(v){v.g.gain.setTargetAtTime(it?.065*att(it.dist):0,T(),.1);if(it)v.p.pan.setTargetAtTime(it.pan||0,T(),.1)}}}
  function truck(on,dd=0,pan=0,moving=false){if(!A)return;let v=LP.truck;
   if(on&&!v){const g=A.createGain();g.gain.value=0;const p=A.createStereoPanner();g.connect(p).connect(SE);const o=A.createOscillator();o.type='sawtooth';o.frequency.value=42;const f=A.createBiquadFilter();f.type='lowpass';f.frequency.value=420;f.Q.value=3;
    const am=A.createGain();am.gain.value=.5;const l=A.createOscillator();l.frequency.value=14;const lg=A.createGain();lg.gain.value=.35;l.connect(lg).connect(am.gain);o.connect(f).connect(am).connect(g);o.start();l.start();v=LP.truck={g,p,o,l}}
@@ -2643,7 +2658,8 @@ function renderAlt(){
  }
 }
 // 比較表（ガレージと同じ項目から、主要なものだけ）
-function shopRows(sl,a,b){
+function shopRows(sl,a,b){return shopRows0(sl,a,b)+extraRows(sl,b)}
+function shopRows0(sl,a,b){
  const ca=SLOTOF(sl).cat[a],cb=SLOTOF(sl).cat[b],R=[];
  if(FRAME_CAT[sl]){
   if(sl==='head'){R.push(cmpRow('能力',ca.abName,cb.abName));R.push(cmpRow('ロック角度',ca.lockDeg,cb.lockDeg,'hi',v=>'±'+v+'°'));R.push(cmpRow('ロック距離',ca.lockAdd,cb.lockAdd,'hi',v=>'+'+v+'m'))}
@@ -2980,7 +2996,7 @@ function updateLock(){
  if(pinned&&!lockCands.includes(pinned))pinned=null;
  lockT=pinned||lockCands[0]||null;const rest=lockCands.filter(e=>e!==lockT);lockT2=SS.multi&&rest[0]?rest[0]:null;
  LOCKS=[lockT,lockT2].filter(Boolean);
- if(lockT&&lockT!==LSND.t){SND.play('lockOn',{g:.32})}else if(lockCands.some(e=>!LSND.c.includes(e))&&sOnce('lkc',.2))SND.play('lockable',{g:.25});LSND.t=lockT;LSND.c=lockCands.slice();
+ if(lockT&&lockT!==LSND.t){SND.play('lockOn',{g:.16})}else if(lockCands.some(e=>!LSND.c.includes(e))&&sOnce('lkc',.2))SND.play('lockable',{g:.1});LSND.t=lockT;LSND.c=lockCands.slice();
 }
 const LSND={t:null,c:[]};
 /* ロック中の敵（1体または複数ロックのヘッドで2体）。弾の狙い：
@@ -2990,7 +3006,7 @@ const byDist=()=>LOCKS.slice().sort((a,b)=>a.center(_q).distanceTo(P.pos)-b.cent
 function fireTgt(key){const f=FTGT[key];
  if(f&&f.e&&f.e.alive&&LOCKS.includes(f.e)&&t-f.t<.7){f.t=t;return f.e}
  const e=byDist()[0]||null;FTGT[key]={e,t};return e}
-const markAtk=e=>{if(e){if(!e.atkT||t-e.atkT>.5)SND.play('lockAtk',{g:.25});e.atkT=t}};
+const markAtk=e=>{if(e){if(!e.atkT||t-e.atkT>.5)SND.play('lockAtk',{g:.12});e.atkT=t}};
 
 /* ===== 入力（スマホ：左で移動スティック／右でボタン・視点、PC：キーボード＋マウス） ===== */
 const IN={x:0,y:0,dash:false,stickDash:0};
@@ -3310,7 +3326,7 @@ $('mailBtn').onclick=()=>{if(TUT!=='done')return;const mb=$('mailBox');if(!mb.hi
 const VS={q:[],iv:null,done:null,d:null};
 const V_SP={c:d=>[d.client||d.from,'#d8a35a',false],n:()=>['N-07 ノーナ','#6fd3e0',true],d:()=>['D-06 ドール（通信）','#8cf06e',true]};
 function visitPlay(id,replay){const d=MDEF[id];if(!d||!d.talk)return;mailClose();nbClose();VS.d=d;clearTimeout(VS.t);
- const img=$('vImg');img.src=d.img;img.style.filter=d.imgF||'';img.alt=d.from;img.classList.remove('dim');
+ const img=$('vImg');img.style.visibility='hidden';img.onload=()=>{img.style.visibility=''};img.removeAttribute('src');img.src=d.img;if(img.complete&&img.naturalWidth)img.style.visibility='';img.style.filter=d.imgF||'';img.alt=d.from;img.classList.remove('dim');
  const v=$('visit');$('vCh').innerHTML='';$('vTx').textContent='';$('vNm').textContent='';$('vCi').hidden=true;$('vNx').hidden=true;$('vSkip').hidden=!replay;VS.replay=!!replay;
  v.classList.remove('in','out');v.style.setProperty('--vc',V_SP[d.talk[0][0]](d)[1]);v.hidden=false;document.body.classList.add('visiting');VS.q=d.talk.slice();VS.fin=null;VS.busy=true;
  if(!replay)SND.play('visit',{g:.45});void v.offsetWidth;v.classList.add('in');VS.t=setTimeout(()=>{VS.busy=false;visitNext()},700)}
@@ -3331,7 +3347,7 @@ function visitChoices(){const ch=$('vCh');if(ch.childElementCount||VS.fin)return
  [['依頼を受ける',()=>pick('ok',ok)],['考えておく',()=>pick('later',later)]]
   .forEach(([lab,fn])=>{const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=e=>{e.stopPropagation();fn()};ch.appendChild(b)})}
 function visitEnd(){clearInterval(VS.iv);VS.iv=null;clearTimeout(VS.t);const d=VS.d,v=$('visit');VS.fin=null;$('vCh').innerHTML='';VS.q=[];VS.busy=true;
- v.classList.add('out');v.classList.remove('in');VS.t=setTimeout(()=>{v.hidden=true;v.classList.remove('out');VS.busy=false},650);document.body.classList.remove('visiting');
+ v.classList.add('out');v.classList.remove('in');VS.t=setTimeout(()=>{v.hidden=true;v.classList.remove('out');VS.busy=false;const im=$('vImg');im.style.visibility='hidden';im.removeAttribute('src')},650);document.body.classList.remove('visiting');
  if(d&&MIS[d.id]){MIS[d.id].read=true;saveGame()}VS.d=null}
 $('vTalk').addEventListener('click',()=>{if(VS.busy)return;if(VS.iv)VS.done();else if(VS.q.length)visitNext();else if(VS.fin){const f=VS.fin;VS.fin=null;f()}});
 $('vSkip').addEventListener('click',e=>{e.stopPropagation();const d=VS.d;if(!d||VS.busy)return;visitEnd();openBoard(d.id)});
@@ -3683,7 +3699,7 @@ R.setAnimationLoop(()=>{
  if(walk){
   const tq=Math.floor(t*12)/12,p=(tq*.55)%1,lead=p<.5?1:-1,h=(p%.5)*2;
   const mv=Math.min(1,h/.6),u=sm(mv),land=h>.6?Math.max(0,1-(h-.6)/.15):0;
-  wk={lead,u,mv,land};if(h>.6&&h<.64&&!reduce)shake=Math.max(shake,.1);{const si=Math.floor(tq*1.1);if(mode==='play'&&h>.6&&si!==stepI){stepI=si;SND.play('step',{g:.55})}}
+  wk={lead,u,mv,land};if(h>.6&&h<.64&&!reduce)shake=Math.max(shake,.1);{const si=Math.floor(tq*1.1);if(mode==='play'&&h>.6&&si!==stepI){stepI=si;SND.play('step',{g:.6,size:cfg.legs==='LG-02'?1.25:cfg.legs==='LG-03'?.9:1})}}
   if(mv<1&&mode==='garage')scroll=6.5;
  }
  if(dash){if(mode==='garage')scroll=22;boost=Math.max(boost,1);dustT+=dt;if(dustT>.08){dustT=0;dust(.4)}}
@@ -4258,7 +4274,7 @@ function loadingTo(fn,lines){const L=$('loading'),bar=$('lBar'),log=$('lLog'),pc
 const LOAD_CON=['> SAVE DATA ............ FOUND','> N-07 CONTROL UNIT .... ONLINE','> FRAME LINK ........... OK','> HANGAR 07 ............ READY'];
 const LOAD_NEW=['> NEW OPERATOR ......... PENDING','> N-07 CONTROL UNIT .... BOOTING','> FRAME LINK ........... OK','> HANGAR 07 ............ READY'];
 const hasSave=()=>{try{return !!localStorage.getItem(SAVE_KEY)}catch(e){return false}};
-function showTitle(){const t=$('title');t.hidden=false;SND.bgm('title');TT.on=true;titleSize();titleLoop();
+function showTitle(){const t=$('title');view='overview';selSlot=null;wcat=null;hlOff=false;highlight(null);setPreview(null);if(mech&&builtKey!==JSON.stringify(cfg))buildMech(cfg);closeModal();t.hidden=false;SND.bgm('title');TT.on=true;titleSize();titleLoop();
  const sv=hasSave();$('tCon').disabled=!sv;$('tConSub').textContent=sv?fmtCR(CREDIT)+' CR':'NO DATA';$('tNew').focus()}
 function resetGame(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}
  OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();TTUT=0;CLS='E';CH=1;SHOPCLS=0;Object.keys(MIS_X).forEach(k=>delete MIS_X[k]);Object.assign(COL,PRESETS['STANDARD']);applyColors();Object.keys(MIS).forEach(k=>delete MIS[k]);mailClose();
