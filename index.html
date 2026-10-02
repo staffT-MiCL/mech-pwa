@@ -562,10 +562,10 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 /* SHOP 初回：歩いて近づく間はセリフ欄とメニューを隠す */
 #shop.walk #tbox,#shop.walk #shopR,#shop.walk #sExit,#shop.walk .opcard{visibility:hidden}
 #shop.greet #shopR,#shop.greet #sExit{opacity:.25;pointer-events:none}
-#unlock{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:2;min-width:300px;padding:10px 16px 12px;background:rgba(10,14,13,.94);border:1px solid var(--accent);display:flex;flex-direction:column;gap:5px;animation:ulin .4s ease}
+#unlock{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:2;min-width:min(400px,calc(100% - 20px));max-width:calc(100% - 20px);padding:10px 16px 12px;background:rgba(10,14,13,.65);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);text-shadow:0 1px 2px #000;border:1px solid var(--accent);display:flex;flex-direction:column;gap:5px;animation:ulin .4s ease}
 #unlock b{font-family:var(--mech);font-size:12px;letter-spacing:.3em;color:var(--accent)}
 #unlock span{font-family:var(--body);font-size:12px;color:#d9e0dc}
-@keyframes ulin{from{opacity:0;transform:translate(-50%,-8px)}}
+@keyframes ulin{from{opacity:0;transform:translateX(-50%) scale(.96)}}
 /* ===== オープニング ===== */
 #op{position:fixed;inset:0;z-index:44;background:#000;overflow:hidden;user-select:none;-webkit-user-select:none;transition:opacity .4s ease}
 #opGL{position:absolute;inset:0}#opGL canvas{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
