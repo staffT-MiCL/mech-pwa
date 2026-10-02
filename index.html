@@ -1208,7 +1208,7 @@ function dust(n){mech.legs.forEach(l=>{l.ft.getWorldPosition(_p);_p.y=.1;const o
 function missile(obj,st,tgt,src=null){
  obj.getWorldPosition(_p);obj.getWorldDirection(_d);
  const m=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0xdcdcdc}));m.scale.set(.12,.12,.45);m.position.copy(_p);S.add(m);
- FX.push({m,homeT:st&&st.vert?.7:.35,vel:st&&st.vert?_d.clone().multiplyScalar(20):_d.clone().multiplyScalar(7).add(new THREE.Vector3(0,5,0)),life:st?st.range/st.spd+1:3,age:0,missile:true,base:.12,tt:0,team:'p',dmg:st?st.dmg:0,splash:st?st.area:0,imp:st?st.imp:'なし',home:mode==='play'?tgt:null,src});
+ FX.push({m,homeT:st&&st.vert?.7:.35,arc:!!(st&&st.arc),vel:st&&st.vert?_d.clone().multiplyScalar(20):_d.clone().multiplyScalar(7).add(new THREE.Vector3(0,st&&st.arc?8:5,0)),life:st?st.range/st.spd+1:3,age:0,missile:true,base:.12,tt:0,team:'p',dmg:st?st.dmg:0,splash:st?st.area:0,imp:st?st.imp:'なし',home:mode==='play'?tgt:null,src});
 }
 // 迎撃装置用：自機に近い敵弾を1つ探す
 function interceptTarget(r){playerCenter(_q);let best=null,bd=r;FX.forEach(f=>{if(f.team!=='e'||f.age>=f.life)return;const d=f.m.position.distanceTo(_q);if(d<bd){bd=d;best=f}});return best}
@@ -1231,7 +1231,7 @@ function updateFX(dt){
   if(f.missile){
    if(f.home&&f.home.alive&&f.age>(f.homeT||.35)){const want=f.home.center(_q).sub(f.m.position).normalize().multiplyScalar(f.vel.length()+dt*20);f.vel.lerp(want,Math.min(1,dt*4))}
    // 誘導弾は前方の障害物を上へ越える
-   if(mode==='play'&&f.age>.15){_cp.copy(f.vel).setY(0);const sp=_cp.length();if(sp>.1){_cp.multiplyScalar(Math.min(9,sp*.45)/sp).add(f.m.position);if(hitCol(_cp,.8)){f.vel.y=Math.max(f.vel.y,10+sp*.4);f.climb=.25}}if(f.climb>0){f.climb-=dt;f.vel.y=Math.max(f.vel.y,6)}}
+   if(mode==='play'&&f.age>.15){_cp.copy(f.vel).setY(0);const sp=_cp.length();if(sp>.1){_cp.multiplyScalar(Math.min(9,sp*.45)/sp).add(f.m.position);{const ob=f.arc&&hitCol(_cp,.8);if(ob&&ob.top<=4.2){f.vel.y=Math.max(f.vel.y,10+sp*.4);f.climb=.25}}}if(f.climb>0){f.climb-=dt;f.vel.y=Math.max(f.vel.y,6)}}
    else{f.vel.z+=dt*26*(mode==='play'?0:1);f.vel.y-=dt*4}
    if(mode==='play'&&!f.home&&f.age>.35)f.vel.addScaledVector(new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw)),dt*26);
    f.vel.multiplyScalar(1+dt*.6);f.m.position.addScaledVector(f.vel,dt);f.m.lookAt(_q.copy(f.m.position).add(f.vel));
@@ -1284,7 +1284,7 @@ const HAND={
     torsoY:kf(u,[[0,0],[.3,twist(s,-.5)],[.45,twist(s,.55)],[1,0]]),torsoX:kf(u,[[0,0],[.42,.25],[1,0]]),headY:kf(u,[[0,0],[.45,twist(s,-.3)],[1,0]]),
     legs:legsFor(s,kf(u,[[0,0],[.3,.1],[.45,-.6],[1,0]]),kf(u,[[0,0],[.45,.55],[1,0]]),kf(u,[[0,0],[.3,-.2],[.45,.45],[1,0]]),kf(u,[[0,0],[.45,.15],[1,0]])),
     crouch:kf(u,[[0,0],[.3,.35],[.45,.15],[1,0]]),scroll:kf(u,[[.3,0],[.4,12],[.6,0]])}}}},
- 'RF':{name:'ライフル',st:{kind:'射撃',dmg:140,range:60,area:0,rate:'3点射／1.2秒',count:1,ammo:30,reload:3,wt:10,imp:'C',spd:60,hom:'なし'},
+ 'RF':{name:'ライフル',st:{kind:'射撃',dmg:140,range:60,area:0,rate:'3点射／1.3秒',count:1,ammo:30,reload:3,wt:10,imp:'C',spd:60,hom:'なし'},
   build(g){box(g,.2,.6,.28,Wp.dark,0,-.35,0);box(g,.08,1.3,.08,Wp.metal,0,-1.2,0);box(g,.12,.2,.12,Wp.frame,0,-1.85,0);box(g,.1,.3,.2,Wp.body,0,-.25,-.2);box(g,.16,.12,.18,Wp.frame,0,-.7,.18);
    const muzzle=grp(g,0,-1.98,0);muzzle.rotation.x=Math.PI/2;return {muzzle}},
   act:{name:'3点射撃',dur:1.3,run(c){const s=c.s;
@@ -1301,7 +1301,7 @@ const HAND={
    const k=c.st.kick=(c.st.kick||0)*.7,j=(Math.random()-.5)*.06*k,sw=Math.sin(c.u*9)*.12*env(c.u,.3,.7);
    return {w:env(c.u,.15,.85),arm:{x:AIM.x+j-k*.06,z:s*.05+j,e:AIM.e-k*.15},off:brace(s),
     torsoY:twist(s,.4)+sw+j,torsoX:.1-k*.04,headY:twist(s,-.3)+sw*.5,legs:stance(s,1.2),crouch:.3}}}},
- 'BZ':{name:'バズーカ',st:{kind:'射撃',dmg:550,range:50,area:4,rate:'1発／2秒',count:1,ammo:6,reload:5,wt:30,imp:'S',spd:20,hom:'なし'},
+ 'BZ':{name:'バズーカ',st:{kind:'射撃',dmg:550,range:50,area:4,rate:'1発／2秒',count:1,ammo:6,reload:5,wt:30,imp:'S',spd:26,hom:'なし'},
   build(g){cyl(g,.17,.17,1.7,Wp.body,0,-.7,.1,0,0,8);cyl(g,.22,.17,.25,Wp.frame,0,-1.6,.1,0,0,8);cyl(g,.2,.2,.2,Wp.frame,0,.2,.1,0,0,8);box(g,.12,.3,.14,Wp.dark,0,-.25,-.1);box(g,.36,.06,.2,Wp.warn,0,-.5,.1);
    const muzzle=grp(g,0,-1.78,.1);muzzle.rotation.x=Math.PI/2;return {muzzle}},
   act:{name:'砲撃',dur:2.0,run(c){const s=c.s;
@@ -1331,7 +1331,7 @@ const HAND={
 };
 const SHOULDER={
  'none':{name:'なし',st:null,build(){return {}}},
- 'MS':{name:'ミサイル',st:{kind:'射撃',dmg:150,range:70,area:3,rate:'1斉射／2秒',count:6,ammo:24,reload:6,wt:18,imp:'C',spd:25,hom:'強'},
+ 'MS':{name:'ミサイル',st:{kind:'射撃',dmg:150,range:70,area:3,rate:'1斉射／2秒',count:6,ammo:24,reload:9,wt:18,imp:'C',spd:25,hom:'強',note:'障害物に当たると、その場で爆発する'},
   build(g){const pod=grp(g,0,.3,0);pod.rotation.x=-.2;
    box(pod,.6,.5,.9,Wp.body,0,0,0);box(pod,.6,.5,.02,Wp.pods,0,0,.46);box(pod,.5,.08,.9,Wp.warn,0,.28,0);
    const cells=[];for(let j=0;j<2;j++)for(let i=0;i<3;i++){const m=grp(pod,-.2+i*.2,.12-j*.24,.48);cells.push(m)}
@@ -1339,7 +1339,7 @@ const SHOULDER={
   act:{name:'ミサイル',dur:2.0,run(c){
    c.w.cells.forEach((m,i)=>{if(c.once('m'+i,.2+i*.07)&&c.missile(m,i)){flash(m,.3,0xffb060);shake=Math.max(shake,.05)}});
    return {w:env(c.u,.15,.7),torsoX:.18,torsoY:twist(c.s,.15),headY:twist(c.s,-.15),crouch:.25,legs:stance(c.s,.6)}}}},
- 'GC':{name:'グレネード砲',st:{kind:'射撃',dmg:800,range:60,area:6,rate:'1発／3秒',count:1,ammo:4,reload:7,wt:35,imp:'S',spd:26,hom:'なし',note:'しゃがんで撃つ（発射中は移動不可）'},
+ 'GC':{name:'グレネード砲',st:{kind:'射撃',dmg:800,range:60,area:6,rate:'1発／2.6秒',count:1,ammo:4,reload:7,wt:35,imp:'S',spd:30,hom:'なし',note:'しゃがんで撃つ（発射中は移動不可）'},
   build(g){const gun=grp(g,0,.3,0);box(gun,.45,.45,.8,Wp.body,0,0,-.15);cyl(gun,.13,.13,1.5,Wp.metal,0,.06,.7,Math.PI/2,0,8);cyl(gun,.17,.17,.2,Wp.frame,0,.06,1.45,Math.PI/2,0,8);box(gun,.47,.08,.8,Wp.warn,0,.24,-.15);
    const muzzle=grp(gun,0,.06,1.6);return {gun,muzzle}},
   act:{name:'構え撃ち',dur:2.6,root:true,run(c){
@@ -1388,14 +1388,14 @@ const EXT={
 /* ===== 兵装バリエーション（各種類2つ目）=====
  動き（act）は同じ種類の兵装と共通。性能（st）と見た目（build）だけ変える。build は act が使う部品（muzzle など）を同じ名前で返す */
 Object.assign(HAND,{
- 'RF2':{...HAND.RF,st:{kind:'射撃',dmg:260,range:85,area:0,rate:'3点射／1.6秒',count:1,ammo:18,reload:4,wt:16,imp:'B',spd:90,hom:'なし'},
+ 'RF2':{...HAND.RF,act:{...HAND.RF.act,dur:1.6},st:{kind:'射撃',dmg:260,range:85,area:0,rate:'3点射／1.6秒',count:1,ammo:18,reload:4,wt:16,imp:'B',spd:90,hom:'なし'},
   build(g){box(g,.18,.7,.26,Wp.dark,0,-.35,0);box(g,.06,2.0,.06,Wp.metal,0,-1.55,0);box(g,.1,.42,.12,Wp.frame,0,-.6,.2);cyl(g,.06,.06,.3,Wp.dark,0,-.55,.3,0,0,6);
    box(g,.14,.2,.14,Wp.frame,0,-2.6,0);box(g,.08,.4,.22,Wp.body,0,-.2,-.2);const muzzle=grp(g,0,-2.72,0);muzzle.rotation.x=Math.PI/2;return {muzzle}}},
- 'MG2':{...HAND.MG,st:{kind:'射撃',dmg:65,range:35,area:0,rate:'12発／秒',count:1,ammo:120,reload:6,wt:24,imp:'B',spd:55,hom:'なし'},
+ 'MG2':{...HAND.MG,st:{kind:'射撃',dmg:50,range:35,area:0,rate:'12発／秒',count:1,ammo:120,reload:6,wt:24,imp:'B',spd:60,hom:'なし'},
   build(g){box(g,.3,.8,.34,Wp.frame,0,-.4,0);box(g,.36,.42,.36,Wp.body,0,-.35,.26);
    [[-.07,0],[.07,0],[0,.1]].forEach(([x,z])=>cyl(g,.045,.045,1.2,Wp.metal,x,-1.2,z,0,0,6));cyl(g,.16,.16,.08,Wp.dark,0,-1.0,.03,0,0,8);cyl(g,.16,.16,.08,Wp.dark,0,-1.6,.03,0,0,8);
    const muzzle=grp(g,0,-1.85,.03);muzzle.rotation.x=Math.PI/2;return {muzzle}}},
- 'BZ2':{...HAND.BZ,st:{kind:'射撃',dmg:380,range:45,area:3,rate:'1発／1.4秒',count:1,ammo:10,reload:4,wt:20,imp:'A',spd:26,hom:'なし'},
+ 'BZ2':{...HAND.BZ,act:{...HAND.BZ.act,dur:1.4},st:{kind:'射撃',dmg:420,range:45,area:3,rate:'1発／1.4秒',count:1,ammo:10,reload:4,wt:20,imp:'A',spd:32,hom:'なし'},
   build(g){box(g,.28,1.3,.32,Wp.body,0,-.6,.1);box(g,.3,.12,.34,Wp.warn,0,-.25,.1);box(g,.32,.22,.36,Wp.frame,0,-1.3,.1);box(g,.32,.2,.36,Wp.frame,0,.1,.1);
    box(g,.12,.3,.14,Wp.dark,0,-.3,-.12);box(g,.06,.3,.06,Wp.metal,.12,-.75,.3);const muzzle=grp(g,0,-1.45,.1);muzzle.rotation.x=Math.PI/2;return {muzzle}}},
  'BL2':{...HAND.BL,st:{kind:'近接',dmg:1000,range:8,area:0,rate:'1回／1.3秒',count:1,ammo:INF,reload:0,wt:15,imp:'S',spd:0,hom:'－'},
@@ -1406,10 +1406,10 @@ Object.assign(HAND,{
    box(g,.18,.4,.18,Wp.frame,0,-.25,-.15);return {plate:p}}},
 });
 Object.assign(SHOULDER,{
- 'MS2':{...SHOULDER.MS,st:{kind:'射撃',dmg:420,range:80,area:4,rate:'1斉射／2.5秒',count:2,ammo:8,reload:7,wt:24,imp:'A',spd:22,hom:'中'},
+ 'MS2':{...SHOULDER.MS,st:{kind:'射撃',dmg:480,range:80,area:4,rate:'1斉射／2秒',count:2,ammo:8,reload:10,wt:24,imp:'A',spd:22,hom:'中',arc:true,note:'山なりの弾道：高さ約4m までの低い障害物は越える'},
   build(g){const pod=grp(g,0,.32,0);pod.rotation.x=-.25;box(pod,.7,.42,1.1,Wp.body,0,0,0);box(pod,.72,.06,1.1,Wp.warn,0,.24,0);
    const cells=[-1,1].map(s=>{cyl(pod,.13,.13,.06,Wp.dark,s*.17,0,.56,Math.PI/2,0,8);return grp(pod,s*.17,0,.6)});return {cells}}},
- 'GC2':{...SHOULDER.GC,st:{kind:'射撃',dmg:560,range:55,area:5,rate:'1発／2.4秒',count:1,ammo:6,reload:6,wt:26,imp:'S',spd:30,hom:'なし',note:'しゃがんで撃つ（発射中は移動不可）'},
+ 'GC2':{...SHOULDER.GC,st:{kind:'射撃',dmg:860,range:55,area:5,rate:'1発／2.6秒',count:1,ammo:6,reload:6,wt:26,imp:'S',spd:34,hom:'なし',note:'しゃがんで撃つ（発射中は移動不可）'},
   build(g){const gun=grp(g,0,.3,0);box(gun,.5,.4,.7,Wp.body,0,0,-.1);box(gun,.24,.24,1.0,Wp.metal,0,.04,.6);box(gun,.32,.32,.16,Wp.frame,0,.04,1.12);box(gun,.52,.06,.7,Wp.warn,0,.22,-.1);
    const muzzle=grp(gun,0,.04,1.25);return {gun,muzzle}}},
 });
@@ -1645,7 +1645,7 @@ function renderHeader(){
 // 比較表の1行（better='hi'：大きいほど良い、'lo'：小さいほど良い）
 const KEN={'能力':'ABILITY','装甲':'ARMOR','ブースト容量':'BOOST CAP','積載':'LOAD','基本機動力':'BASE MOB.','機動力':'MOBILITY','重量':'WEIGHT','総重量':'TOTAL WT','種類':'TYPE','使用回数':'USES','効果時間':'DURATION','リロード':'RELOAD','威力':'POWER','射程':'RANGE','範囲':'BLAST','同時発射':'SALVO','弾数':'AMMO','衝撃':'IMPACT','弾速':'VELOCITY','誘導':'HOMING','連射':'RATE','歩行速度':'WALK','ダッシュ速度':'DASH','急加速距離':'QUICK BOOST','ロック距離':'LOCK RANGE'};
 const VEN={'射撃':'FIRE','近接':'MELEE','補助':'SUPPORT','防御':'DEFENSE','なし':'NONE','－':'—','弱':'LOW','中':'MID','強':'HIGH','多重ロック':'MULTI-LOCK','遠距離ロック':'LONG LOCK'};
-const RATEN={'1回／1秒':'1 / 1.0s','3点射／1.2秒':'3-RND BURST / 1.2s','12発／秒':'12 RND / s','1発／2秒':'1 / 2.0s','1回／1.3秒':'1 / 1.3s','押している間':'WHILE HELD','1斉射／2秒':'1 SALVO / 2.0s','1発／3秒':'1 / 3.0s'};
+const RATEN={'1回／1秒':'1 / 1.0s','3点射／1.3秒':'3-RND BURST / 1.3s','12発／秒':'12 RND / s','1発／2秒':'1 / 2.0s','1回／1.3秒':'1 / 1.3s','押している間':'WHILE HELD','1斉射／2秒':'1 SALVO / 2.0s','1発／3秒':'1 / 3.0s'};
 const ven=v=>typeof v==='string'&&VEN[v]?VEN[v]:v;
 function cmpRow(k,a,b,better='hi',fmt=v=>v){
  
@@ -1887,14 +1887,14 @@ const VW={steel:psMat(0xffffff,{map:panel('#a8aeb0','#5e6466')}),steel2:psMat(0x
  warn:psMat(0xffffff,{map:stripes('#15171a','#e07a1e')}),tip:psMat(0xe8e4dc),red:psMat(0xb02a20)};
 Object.assign(HAND,{
  // 徹甲ライフル：上下2本のレールの間を通る四角い銃身、光るコイル3つ、青いレンズのスコープ
- 'RF3':{...HAND.RF,st:{kind:'射撃',dmg:200,range:75,area:0,rate:'3点射／1.4秒',count:1,ammo:21,reload:4,wt:14,imp:'B',spd:80,hom:'なし',note:'徹甲弾：大型砲台の正面装甲でも、ダメージが 1/4 ではなく 1/2'},build(g){box(g,.22,.66,.32,VW.steel2,0,-.35,0);box(g,.12,.36,.26,VW.dark,0,-.25,-.22,.3);
+ 'RF3':{...HAND.RF,st:{kind:'射撃',dmg:230,range:75,area:0,rate:'3点射／1.3秒',count:1,ammo:21,reload:4,wt:14,imp:'B',spd:95,hom:'なし',note:'徹甲弾：大型砲台の正面装甲でも、ダメージが 1/4 ではなく 1/2'},build(g){box(g,.22,.66,.32,VW.steel2,0,-.35,0);box(g,.12,.36,.26,VW.dark,0,-.25,-.22,.3);
    box(g,.1,1.7,.1,VW.dark,0,-1.4,0);[-1,1].forEach(q=>box(g,.05,1.8,.16,VW.steel,0,-1.35,q*.11));
    for(let i=0;i<3;i++){box(g,.18,.06,.26,VW.glow,0,-.95-i*.32,0)}
    box(g,.16,.26,.3,VW.steel,0,-2.3,0);box(g,.2,.06,.34,VW.warn,0,-2.18,0);
    const sc=grp(g,0,-.62,.24);box(sc,.12,.42,.14,VW.steel,0,0,0);box(sc,.1,.02,.1,VW.lens,0,-.22,0);
    const muzzle=grp(g,0,-2.45,0);muzzle.rotation.x=Math.PI/2;return {muzzle}}},
  // ガトリング：前の覆い輪と6本の銃身（回る）、大きなモーター箱、背中の弾薬箱へつながるベルト
- 'MG3':{...HAND.MG,st:{kind:'射撃',dmg:32,range:45,area:0,rate:'20発／秒',count:1,ammo:200,reload:6,wt:26,imp:'B',spd:70,hom:'なし',note:'銃身の回転が上がるまで約0.6秒。撃っている間は歩きが遅い'},
+ 'MG3':{...HAND.MG,st:{kind:'射撃',dmg:36,range:45,area:0,rate:'20発／秒',count:1,ammo:200,reload:6,wt:26,imp:'B',spd:70,hom:'なし',note:'銃身の回転が上がるまで約0.6秒。撃っている間は歩きが遅い'},
   act:{name:'回転連射',dur:2.6,run(c){const s=c.s,on=c.u>.23&&c.u<.92;c.w.spin.rotation.y+=c.dt*Math.min(1,c.u/.23)*(c.u<.95?32:8);
    const n=Math.floor((c.u-.23)/.0192);if(on&&n!==c.st.n){c.st.n=n;if(c.shot(c.w.muzzle,{size:.08})){flash(c.w.muzzle,.3);c.st.kick=1;shake=Math.max(shake,.035)}}
    const k=c.st.kick=(c.st.kick||0)*.7,j=(Math.random()-.5)*.05*k;
@@ -1918,7 +1918,7 @@ Object.assign(HAND,{
 });
 Object.assign(SHOULDER,{
  // 垂直ミサイル：縦長の発射箱、開いたふた、白い弾頭の先と赤い帯、横の安定翼
- 'MS3':{...SHOULDER.MS,st:{kind:'射撃',dmg:220,range:80,area:3,rate:'1斉射／2.2秒',count:4,ammo:16,reload:6,wt:22,imp:'B',spd:24,hom:'強',vert:true,note:'真上に打ち上げて上から落ちる。障害物の陰の敵にも当たる'},build(g){const pod=grp(g,0,.3,0);box(pod,.74,.82,.74,VW.steel,0,0,0);box(pod,.76,.08,.76,VW.warn,0,-.3,0);
+ 'MS3':{...SHOULDER.MS,st:{kind:'射撃',dmg:260,range:80,area:3,rate:'1斉射／2秒',count:4,ammo:16,reload:9,wt:22,imp:'B',spd:24,hom:'強',vert:true,note:'真上に打ち上げて上から落ちる。障害物の陰の敵にも当たる'},build(g){const pod=grp(g,0,.3,0);box(pod,.74,.82,.74,VW.steel,0,0,0);box(pod,.76,.08,.76,VW.warn,0,-.3,0);
    for(let i=0;i<3;i++)box(pod,.76,.03,.76,VW.dark,0,-.15+i*.15,0);
    const cells=[];for(let j=0;j<2;j++)for(let i=0;i<2;i++){const x=-.18+i*.36,z=-.18+j*.36;
     cyl(pod,.1,.1,.12,VW.tip,x,.46,z,0,0,6);cyl(pod,.105,.105,.04,VW.red,x,.4,z,0,0,6);
