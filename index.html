@@ -2665,7 +2665,7 @@ const MLIST=[
   subj:'登録等級 更新 CLASS E → CLASS D',body:'登録ギア乗り 殿<br>貴殿の登録等級を CLASS E から <b>CLASS D</b> に更新した。<br>受注できる依頼の範囲が広がる。<br><span class="end">── 以上</span>',
   mailNona:'等級の通知です。……やはり、要件だけですね。'}];
 const MDEF=Object.fromEntries(MLIST.map(d=>[d.id,d]));
-const FIELD_BG={city:0x26241f,road:0x2b2721,ruins:0x2a2420};
+const FIELD_BG={city:0x26241f,road:0x2b2721,ruins:0x2a2e2a};
 const nameIn=s=>s.replace(/○○/g,esc(PILOT||'操縦者'));
 
 /* ----- 地形：配給都市の外れ（乱数はシード固定。配置は毎回同じ）-----
@@ -2728,34 +2728,29 @@ const TRUCK=grp(S);TRUCK.visible=false;
  [[2.6],[-.6],[-2.2]].forEach(([z])=>[-1,1].forEach(sg=>cyl(TRUCK,.55,.55,.42,dk,sg*1.25,.55,z,0,Math.PI/2,8)));
  box(TRUCK,.1,1.2,.1,dk,-1,3.2,1.3);box(TRUCK,.5,.35,.04,psMat(0xc8a040),-.75,3.65,1.3)}
 const truckHB=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0x6fd3e0}));truckHB.position.y=4.4;TRUCK.add(truckHB);
-/* ----- 地形：旧戦役の廃墟（★1-S）。オープニングの燃える廃墟と同じ場所。火はほぼ消え、煙がくすぶる。
+/* ----- 地形：旧戦役の廃墟（★1-S）。オープニングの燃える廃墟と同じ場所の、戦後長い年月がたった姿（火も煙もなく、草が伸び、残骸は錆と苔）。
  すり鉢状の段差に囲まれた円形の広場。中央に大型無人砲台、周りに崩れた壁（遮蔽物）とギアの残骸 ----- */
-const RUINS_R=48,RUINS=grp(S);RUINS.visible=false;const RUINS_MAP=[],RUINS_FX=[];
+const RUINS_R=48,RUINS=grp(S);RUINS.visible=false;const RUINS_MAP=[];
 {let sd=0x0417;const rnd=(a=0,b=1)=>{sd=(sd*1664525+1013904223)>>>0;return a+sd/4294967296*(b-a)};
- const T=(c,l)=>psMat(0xffffff,{map:panel(c,l)}),wm=T('#4a4842','#2a2925'),wm2=T('#3e3c36','#24231f'),rub=[psMat(0x2e2c28),psMat(0x3a3832),psMat(0x45423b)],dk=psMat(0x221d1a),rust=T('#5a3a2a','#2a1a12'),burnt=psMat(0x1a1714);
+ const T=(c,l)=>psMat(0xffffff,{map:panel(c,l)}),wm=T('#4a4842','#2a2925'),wm2=T('#3e3c36','#24231f'),rub=[psMat(0x2e2c28),psMat(0x3a3832),psMat(0x45423b)],dk=psMat(0x221d1a),rust=T('#5a4632','#33302a'),moss=psMat(0x4a5236),grass=[psMat(0x5a5a36),psMat(0x4a5030),psMat(0x6a6440)],soil=psMat(0x403a30);
  const gp=new THREE.Mesh(new THREE.CircleGeometry(80,24),psMat(0x36332d));gp.rotation.x=-Math.PI/2;gp.position.y=.01;RUINS.add(gp);
- for(let i=0;i<10;i++){const r=rnd(4,30),a=rnd(0,6.3),sc=new THREE.Mesh(new THREE.CircleGeometry(rnd(2,5),8),burnt);sc.rotation.x=-Math.PI/2;sc.position.set(Math.sin(a)*r,.02,Math.cos(a)*r);RUINS.add(sc)}
+ // 割れ目から伸びる枯れ草・雑草の茂み（戦後の長い年月）
+ for(let i=0;i<90;i++){const a=rnd(0,6.3),r=rnd(5,50),x=Math.sin(a)*r,z=Math.cos(a)*r;if(Math.hypot(x,z+36)<5)continue;const n=1+Math.floor(rnd(0,3));for(let k=0;k<n;k++){const h=rnd(.3,1.1);box(RUINS,rnd(.4,1.2),h,rnd(.4,1.2),grass[(i+k)%3],x+rnd(-.8,.8),h/2,z+rnd(-.8,.8),rnd(-.2,.2),rnd(0,3),rnd(-.2,.2))}}
+ for(let i=0;i<14;i++){const a=rnd(0,6.3),r=rnd(6,44),pt=new THREE.Mesh(new THREE.CircleGeometry(rnd(1.5,3.5),7),moss);pt.rotation.x=-Math.PI/2;pt.position.set(Math.sin(a)*r,.02,Math.cos(a)*r);RUINS.add(pt)}
  // すり鉢の段差（外へ行くほど高い）
  for(let k=0;k<4;k++){const r=RUINS_R+3+k*4,h=1.2+k*1.4,N=30;for(let i=0;i<N;i++){const a=i/N*Math.PI*2+k*.1;box(RUINS,2*Math.PI*r/N+.4,h,4.2,k%2?wm:wm2,Math.sin(a)*r,h/2-rnd(0,.4),Math.cos(a)*r,0,a,0)}}
  // 外周の崩れた建物
  for(let i=0;i<22;i++){const a=rnd(0,6.3),r=rnd(64,78),h=rnd(6,18);box(RUINS,rnd(5,10),h,rnd(4,8),wm,Math.sin(a)*r,h/2-rnd(0,2),Math.cos(a)*r,rnd(-.12,.12),rnd(0,3),rnd(-.15,.15))}
  // 広場の中の遮蔽物：崩れた壁と大きな板
  [[-22,-14,0.3],[20,-18,-.4],[-26,12,1.2],[25,14,-1.1],[-8,24,.1],[10,-30,.2],[-30,-2,1.5],[32,0,1.6],[0,32,0]].forEach(([x,z,ry],i)=>{const w=rnd(6,10),h=rnd(3.5,6);
-  box(RUINS,w,h,1.2,i%2?wm:wm2,x,h/2,z,0,ry,0);box(RUINS,w*.4,h*.5,1.25,wm2,x+Math.cos(ry)*w*.45,h*.25,z-Math.sin(ry)*w*.45,0,ry,.2);RUINS_MAP.push({x,z,w,d:1.2,ry,k:'b'})});
+  box(RUINS,w,h,1.2,i%2?wm:wm2,x,h/2,z,0,ry,0);box(RUINS,w*.9,.7,2.6,soil,x,.2,z,.1,ry,0);box(RUINS,w*.5,.25,1.25,moss,x-Math.cos(ry)*w*.2,h-.1,z+Math.sin(ry)*w*.2,0,ry,0);box(RUINS,w*.4,h*.5,1.25,wm2,x+Math.cos(ry)*w*.45,h*.25,z-Math.sin(ry)*w*.45,0,ry,.2);RUINS_MAP.push({x,z,w,d:1.2,ry,k:'b'})});
  // 瓦礫
  for(let i=0;i<110;i++){const a=rnd(0,6.3),r=rnd(8,46),x=Math.sin(a)*r,z=Math.cos(a)*r;if(Math.hypot(x,z+36)<6)continue;box(RUINS,rnd(.3,1.8),rnd(.2,1),rnd(.3,1.8),rub[i%3],x,rnd(0,.3),z,rnd(-.5,.5),rnd(0,3),rnd(-.5,.5))}
  // 倒れたギアの残骸（胴・腕・脚の形の塊）
  [[-14,-24,.6],[18,26,-1.1],[-28,22,2.2]].forEach(([x,z,ry])=>{const g=grp(RUINS,x,0,z);g.rotation.y=ry;box(g,3,2.2,2.4,rust,0,1,0,.3,0,.2);box(g,1.4,1.2,1.4,rust,2.4,.6,.8,0,.5,0);box(g,.9,.9,3.6,dk,-2,.45,1.2,0,.4,0);box(g,1,1,3.2,rust,1.2,.5,-2.4,0,-.3,.5);cyl(g,.3,.3,3,dk,-1.6,.4,-1.4,0,Math.PI/2,6);RUINS_MAP.push({x,z,w:4,d:4,ry,k:'v'})});
  // 壊れた無人機
  [[8,-16],[-18,-6],[24,-26],[-6,40]].forEach(([x,z],i)=>{const d=grp(RUINS,x,.3,z);d.rotation.set(rnd(-.3,.3),rnd(0,6),rnd(-.5,.5));box(d,1.4,.9,1.6,T('#5a2a22','#2a1410'),0,0,0);box(d,.9,.12,.8,dk,1,.1,-.1,0,0,.3)});
- // くすぶる煙と小さな残り火
- const smM=new THREE.MeshBasicMaterial({color:0x221c18,transparent:true,opacity:.3,depthWrite:false}),fireM=new THREE.MeshBasicMaterial({color:0xff7a20,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false});
- [[-24,-20,1],[22,-12,.8],[-30,18,1.3],[28,24,1.1],[4,40,1.4],[-40,-30,1.6],[40,-34,1.5]].forEach(([x,z,sz])=>{const sm=[];for(let k=0;k<6;k++){const b=box(RUINS,rnd(1,1.8)*sz,rnd(.9,1.5)*sz,rnd(1,1.8)*sz,smM,x+rnd(-1,1),k*2.6*sz,z+rnd(-1,1),0,rnd(0,3),0);b.userData.top=16*sz;sm.push(b)}
-  const fl=[];for(let k=0;k<3;k++){const H=rnd(.4,.9)*sz,f=box(RUINS,rnd(.3,.6)*sz,H,rnd(.3,.6)*sz,fireM,x+rnd(-.6,.6),H/2,z+rnd(-.6,.6),0,rnd(0,3),0);f.userData.h=H;fl.push(f)}
-  RUINS_FX.push({sm,fl,sz,ph:rnd(0,6)})});
- const pl=new THREE.PointLight(0xff6a20,30,40,1.6);pl.position.set(0,3,30);RUINS.add(pl);
- const glow=box(RUINS,300,20,2,new THREE.MeshBasicMaterial({color:0x5a2410,fog:false}),0,6,-110);glow.lookAt(0,6,0)}
-function ruinsTick(dt){RUINS_FX.forEach(F=>{F.sm.forEach(b=>{b.position.y+=dt*1.2*F.sz;if(b.position.y>b.userData.top)b.position.y=0;b.rotation.y+=dt*.2});F.fl.forEach((f,k)=>{const q=.5+Math.abs(Math.sin(t*8+k*1.7+F.ph))*.6;f.scale.y=q;f.position.y=f.userData.h*q/2})})}
+}
 const isRoad=()=>RUN&&RUN.def.field==='road';
 const fieldR=()=>RUN&&RUN.def.field==='city'?CITY_R:RUN&&RUN.def.field==='ruins'?RUINS_R:ARENA;
 const fieldG=()=>RUN&&RUN.def.field==='city'?CITY:isRoad()?ROAD:RUN&&RUN.def.field==='ruins'?RUINS:world;
@@ -2924,7 +2919,6 @@ function truckPlace(){const z=RUN.tr.z;TRUCK.position.set(roadX(z)+2,0,z);TRUCK.
 function truckHit(dmg,pos){const T=RUN.tr;if(!T||T.hp<=0||RUN.ok)return;T.hp=Math.max(0,T.hp-dmg);spawn(0xffffff,.7,pos,{life:.1});
  if(!T.hurt&&T.hp<T.max*.5){T.hurt=true;comm(RUN.def.comm.hurt,2.6)}
  if(T.hp<=0){explode(new THREE.Vector3(TRUCK.position.x,2,TRUCK.position.z),3);TRUCK.visible=false;say('荷車 大破',3);RUN.endT=2.6;RUN.lost=true}}
-const RUNS_VIS=()=>RUINS.visible;
 // ボス戦：上部の HP バー、増援（HP 2/3・1/3）、撃破で成功
 function bossMisTick(dt){const B=RUN.boss,d=RUN.def,k=Math.max(0,B.hp/B.max);
  $('escHp').style.width=(100*k)+'%';$('escHp').classList.toggle('lo',k<.35);$('escD').textContent=Math.ceil(k*100)+'%';
@@ -2950,7 +2944,6 @@ function escortTick(dt){const T=RUN.tr,d=RUN.def,es=d.escort;if(!T)return;
  if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
 const misLeft=()=>ENEMIES.filter(e=>!e.off&&e.alive).length;
 function misTick(dt){if(COMM.t>0){COMM.t-=dt;if(COMM.t<=0)$('comm').hidden=true}
- if(RUNS_VIS())ruinsTick(dt);
  if(!RUN||RUN.leaving)return;if(RUN.tr){escortTick(dt);return}if(RUN.boss){bossMisTick(dt);return}const n=misLeft();
  if(n!==RUN.left){RUN.left=n;if(n===1&&RUN.total>1)comm(RUN.def.comm.last,2.4)}
  if(n===0&&!RUN.ok&&P.down<=0){RUN.ok=true;RUN.endT=3.4;comm(RUN.def.comm.clear,3);say('MISSION COMPLETE',2.6)}
