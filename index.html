@@ -141,8 +141,9 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .pv canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
 .dtxt{display:flex;flex-direction:column;gap:2px;min-width:0}
 .detail p{font-size:12px;color:#b3beb8;line-height:1.45}
-.cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 12px}
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:3px 12px}
 .cmp .c{display:flex;justify-content:space-between;gap:6px;font-size:12px;border-bottom:1px dotted #26302c;padding-bottom:1px;white-space:nowrap;min-width:0}
+.cmp .c.w{grid-column:1/-1;white-space:normal;flex-wrap:wrap;row-gap:0}.cmp .c.w .v{margin-left:auto;text-align:right}
 .cmp .k{color:#98a59f}.cmp .v{font-variant-numeric:tabular-nums}.cmp .v i{font-style:normal;color:var(--faint);margin:0 3px}
 .sec{font-size:11px;color:#98a59f}
 .ovl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
@@ -1600,7 +1601,9 @@ function cmpRow(k,a,b,better='hi',fmt=v=>v){
  if(na&&nb&&a!==b){const good=better==='hi'?b>a:b<a;cls=good?'up':'dn';mark=b>a?'▲':'▼'}
  else if(!na||!nb){if(a!==b)cls='up'}
  const same=a===b;
- return `<div class="c"><span class="k">${k}</span><span class="v">${same?`<b style="font-weight:500">${fmt(b)}</b>`:`${fmt(a)}<i>→</i><b class="${cls}" style="font-weight:500">${fmt(b)}${mark}</b>`}</span></div>`;
+ // 文章の値（能力など）は横いっぱいの行にし、長ければ値を2行目に折り返す
+ const wide=/[^\d\s.,+\-−±°m%/∞×xX]/.test(String(fmt(a))+String(fmt(b)));
+ return `<div class="c${wide?' w':''}"><span class="k">${k}</span><span class="v">${same?`<b style="font-weight:500">${fmt(b)}</b>`:`${fmt(a)}<i>→</i><b class="${cls}" style="font-weight:500">${fmt(b)}${mark}</b>`}</span></div>`;
 }
 const R0=v=>typeof v==='number'?(v===INF?'∞':Math.round(v)):v;
 function renderGStats(){
