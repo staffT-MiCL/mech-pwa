@@ -50,7 +50,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .kv{display:flex;align-items:baseline;gap:5px;white-space:nowrap}.kv small{font-size:10px;color:var(--dim);letter-spacing:1px}.kv b{font-size:13px;font-variant-numeric:tabular-nums}
 .kv b.over{color:var(--alert)}
 #menuBtn{height:28px;padding:0 14px;display:flex;align-items:center;gap:8px;background:#1c1409;border:1px solid var(--fire);color:var(--fire);font-size:12px;font-weight:700;letter-spacing:3px}
-@media (max-width:700px){.kv:first-of-type,.tag{display:none}}
+@media (max-width:700px){.tag{display:none}}
 
 /* 3D画面 */
 #wrap{position:relative;min-height:0;min-width:0;background:#000;overflow:hidden;touch-action:none;border-right:1px solid var(--line)}
@@ -725,6 +725,11 @@ body.eqm #mailBox{display:none}
 .cmp .c.tn2{overflow:hidden;min-width:0}.cmp .c.tn2 .v{margin-left:0;font-size:11px;flex:1 0 100%;display:flex;flex-wrap:wrap;gap:2px 14px;white-space:normal}.tq{display:inline-flex;align-items:center;gap:.35em;white-space:nowrap}.tq .nw{color:#98a59f}.tq b{font-family:var(--mech);font-weight:700;color:#9fe6ee;font-size:.92em}
 .tpp{display:inline-flex;gap:.18em}.tpp i{display:block;width:.7em;height:.55em;background:#1f2a24;transform:skewX(-25deg)}.tpp i.on{background:#6fd3e0;box-shadow:0 0 4px rgba(111,211,224,.5)}
 .tsep{font-style:normal;color:var(--faint);margin:0 .5em}.tplus{color:#6fd3e0!important;font-family:var(--mech);font-weight:700;margin-left:6px}
+body,#app,#shop,#mis,#menu,#modal,#sconf,#title,#op,#play{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+.detail .cmp{overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.detail .cmp.more,.scmp.more{-webkit-mask-image:linear-gradient(#000 calc(100% - 22px),transparent);mask-image:linear-gradient(#000 calc(100% - 22px),transparent)}
+.kv.cr b{font-size:14px;color:#eef2ef;min-width:4.5em;text-align:right}.kv.cr b.up,#sMoney.up{color:var(--accent);text-shadow:0 0 8px rgba(140,240,110,.6)}.kv.cr b.dn,#sMoney.dn{color:#ffb070;text-shadow:0 0 8px rgba(240,160,64,.5)}
 #clsBand{position:fixed;left:0;right:0;top:50%;height:78px;margin-top:-39px;z-index:40;pointer-events:none;display:flex;align-items:center;justify-content:center;gap:22px;background:linear-gradient(90deg,transparent,rgba(10,8,4,.94) 18%,rgba(10,8,4,.94) 82%,transparent);border-top:1px solid #c9a24a;border-bottom:1px solid #c9a24a;transform:scaleY(0);transition:transform .25s}
 #clsBand.on{transform:scaleY(1)}#clsBand b{font-family:var(--sten);font-size:30px;letter-spacing:.3em;color:#e8c25a;text-shadow:0 0 12px rgba(232,194,90,.5);transform:translateX(-60vw);opacity:0;transition:transform .5s cubic-bezier(.2,.8,.2,1) .2s,opacity .3s .2s}
 #clsBand span{font-family:var(--mech);font-size:22px;letter-spacing:.2em;color:#fff0c8;transform:translateX(60vw);opacity:0;transition:transform .5s cubic-bezier(.2,.8,.2,1) .35s,opacity .3s .35s}#clsBand span i{font-style:normal;color:#e8c25a;margin:0 .4em}
@@ -858,8 +863,7 @@ body.eqm #visit{display:none}
  <span class="grow"></span>
  <span class="hcls" id="hCls">CLASS E</span><span class="hch" id="hCh">CH.1</span>
  <button id="mailBtn" hidden aria-label="メールを読む"><svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5"><rect x=".75" y=".75" width="12.5" height="8.5"/><path d="M1 1l6 5 6-5"/></svg>MAIL<i id="mailN">1</i></button>
- <span class="kv"><small>WEIGHT</small><b id="hWt"></b></span>
- <span class="kv"><small>LOAD</small><b id="hLoad"></b></span>
+ <span class="kv cr"><small>CREDIT</small><b id="hCr"></b><small>CR</small></span>
  <button id="eqClose" aria-label="装備変更を終えてショップへ戻る">◀ SHOP へ戻る</button>
  <button id="menuBtn" class="cut" aria-haspopup="true"><svg width="14" height="12" viewBox="0 0 14 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 1h14M0 6h14M0 11h14"/></svg>MENU</button>
  <button id="chkBack" class="cut" hidden><span class="l">◀ BRIEFING</span><span class="s">◀ BRIEF</span></button>
@@ -1639,7 +1643,7 @@ function syncPreviewMech(){
  if(JSON.stringify(want)!==builtKey&&mech)buildMech(want);
 }
 function renderHeader(){
- $('hWt').textContent=SS.total;const l=$('hLoad');l.textContent=`${SS.weap}/${SS.load}`;l.classList.toggle('over',SS.over);
+ if(!CRA.on)$('hCr').textContent=fmtCR(CR_SHOWN);
  const dead=partNow('core')<=0;$('mTrain').disabled=SS.over;misHeader();$('mWarn').textContent=SS.over?'積載オーバーのため出撃できません。兵装を見直してください':dead?'CORE が大破しています。修理するまで、攻撃ありの TRAINING はできません':'';applyTut();
 }
 // 比較表の1行（better='hi'：大きいほど良い、'lo'：小さいほど良い）
@@ -1740,7 +1744,7 @@ function renderSide(){
    rows.push(cmpRow('重量',(cu.st&&cu.st.wt)||0,(cd.st&&cd.st.wt)||0,'lo'));
    part=brief=rows.join('');
   }
-  {const ex=extraRows(selSlot,cand);brief=ex+brief;part+=ex}
+  {const ex=extraRows(selSlot,cand);brief=ex+part;part+=ex}
   const whole=[cmpRow('装甲',SS.armor,P2.armor),cmpRow('機動力',Math.round(SS.mob),Math.round(P2.mob)),cmpRow('ブースト容量',SS.boost,P2.boost),
    cmpRow('積載',`${SS.weap}/${SS.load}`,`${P2.weap}/${P2.load}`),cmpRow('総重量',SS.total,P2.total,'lo')].join('');
   const note=(cd.st&&cd.st.note)?`<p>${esc(cd.st.note)}</p>`:'';
@@ -1969,7 +1973,11 @@ const tPlus=id=>isFrameId(id)&&tSum(id)?`<small class="tplus">+${tSum(id)}</smal
 function extraRows(slot,id){let h='';if(id&&id!=='none')h+=`<div class="c w trt"><span class="k">特性</span><span class="v">${esc(traitOf(slot,id))||'―'}</span></div>`;
  if(TUNE_DEF[slot]&&isFrameId(id))h+=`<div class="c w tn2"><span class="k">TUNE</span><span class="v">${TUNE_DEF[slot].map((d,i)=>{const lv=tLv(id,i);return `<span class="tq"><span class="nw">${d.lab}</span><span class="tpp">${[1,2,3,4,5].map(n=>`<i class="${n<=lv?'on':''}"></i>`).join('')}</span><b>LV${lv}</b></span>`}).join('')}</span></div>`;
  return h}
-const fitSoon=root=>requestAnimationFrame(()=>fitText(root));
+document.addEventListener('contextmenu',e=>{if(!e.target.closest('input,textarea'))e.preventDefault()});
+document.addEventListener('selectstart',e=>{if(!e.target.closest||!e.target.closest('input,textarea'))e.preventDefault()});
+// 続きがある欄（スクロールできる性能表）は下端をぼかす
+function scrollHints(root){if(!root)return;root.querySelectorAll('.detail .cmp,.scmp').forEach(el=>{const f=()=>el.classList.toggle('more',el.scrollHeight-el.clientHeight-el.scrollTop>4);if(!el._sh){el._sh=1;el.addEventListener('scroll',f,{passive:true})}f()})}
+const fitSoon=root=>requestAnimationFrame(()=>{fitText(root);scrollHints(root)});
 const ENM=(slot,id)=>{const p=pn(slot,id);return (p[2]?p[2]+' ':'')+p[3]};
 
 /* 部位ボタン：機体のまわりの決まった位置に配置（x%,y% は3D画面内の中心位置）。選ぶと実機のその部位を強調 */
@@ -2069,6 +2077,16 @@ const OWN=new Set(START_OWN);let CREDIT=START_CREDIT,shopVisits=0;
 let PILOT='',TUT='intro',FIRE=true,TTUT=0,SHOPCLS=0;const TSEL={target:'std',field:'range'};
 // 文字送りの速さ（1文字あたりのミリ秒）：セリフ／オープニングの字幕
 const TXT_SPD=62,SUB_SPD=85;
+/* 所持金の表示：ヘッダーは CR_SHOWN（表示中の値）。出撃の報酬はガレージに戻ってから数字が高速で増える（crCount）。
+   SHOP の支払いは右上の数字が高速で減る（moneyAnim）。お金そのもの（CREDIT）は獲得・支払いの時点で保存済み */
+let CR_SHOWN=0;const CRA={on:false};
+function crSync(){CR_SHOWN=CREDIT;CRA.on=false;const h=$('hCr');if(h){h.textContent=fmtCR(CREDIT);h.classList.remove('up','dn')}}
+function moneyAnim(el,from,to,done){if(!el)return;if(from===to){el.textContent=fmtCR(to);done&&done();return}
+ const up=to>from,dur=Math.min(1500,800+Math.abs(to-from)/40),t0=performance.now();let lt=0;el.classList.remove('up','dn');el.classList.add(up?'up':'dn');
+ const k=n=>{const u=Math.min(1,(n-t0)/dur),e=1-Math.pow(1-u,3);el.textContent=fmtCR(Math.round(from+(to-from)*e));
+  if(n-lt>55&&u<1){lt=n;SND.play('coin',{g:.22,size:up?1:.7})}
+  if(u<1)requestAnimationFrame(k);else{SND.play('coinEnd',{g:.32,size:up?1:.7});setTimeout(()=>el.classList.remove('up','dn'),500);done&&done()}};requestAnimationFrame(k)}
+function crCount(){if(CR_SHOWN===CREDIT)return;const from=CR_SHOWN;CRA.on=true;moneyAnim($('hCr'),from,CREDIT,()=>{CRA.on=false;CR_SHOWN=CREDIT})}
 const SAMA=()=>esc(PILOT||'パイロット')+'様';
 /* 部位ダメージ：パーツそのものが受けた量（DMG[パーツID]）。出撃後も残り、修理（SHOP の REPAIR）でだけ戻る。
    HEAD は装甲を持たないので対象外。CORE が0＝機体破壊（ゲームオーバー） */
@@ -2157,6 +2175,8 @@ const SND=(()=>{
   unlock(d,t){[784,1175,1568].forEach((f,i)=>osc('sine',f,t+i*.07,.5,d,{peak:.35}));snap(t,d,{peak:.3})},
   classup(d,t){noise(t,.6,d,{type:'bandpass',f:400,f2:10000,q:2,a:.55,r:.05,peak:.45});sub(t+.6,120,40,1.4,d,.9);snap(t+.6,d,{peak:.6});[392,587,784,1175].forEach(f=>[-12,12].forEach(dt=>osc('sawtooth',f,t+.6,2.4,d,{a:.01,h:.5,r:1.9,peak:.06,detune:dt})));[1,1.5,2].forEach((m,i)=>osc('sine',1568*m,t+.6,2,d,{a:.005,peak:.1/(i+1)}))},
   comm(d,t){noise(t,.06,d,{type:'bandpass',f:2400,q:2,peak:.5});osc('sine',1760,t+.06,.05,d,{peak:.35});osc('sine',2637,t+.11,.12,d,{peak:.35})},
+  coin(d,t,p=1){osc('sine',jit(2400*p,.04),t,.03,d,{peak:.4});osc('square',1200*p,t,.015,d,{peak:.05})},
+  coinEnd(d,t,p=1){[1568,2349,3136].forEach((f,i)=>osc('sine',f*p,t+i*.05,.35,d,{peak:.35/(i+1)}));snap(t,d,{f:6000,peak:.2})},
   // ---- 演出（第4回）----
   start(d,t){S.comm(d,t);sub(t+.25,70,70,1.2,d,.6);[392,587].forEach((f,i)=>[-12,12].forEach(dt=>osc('sawtooth',f,t+.25+i*.2,.9,d,{a:.01,h:.2,r:.7,peak:.07,detune:dt})))},
   complete(d,t){sub(t,98,98,2,d,.7);snap(t,d,{peak:.5});[392,494,587,784].forEach((f,i)=>[-12,12].forEach(dt=>osc('sawtooth',f,t+i*.1,1.8-i*.1,d,{a:.01,h:.35,r:1.3,peak:.06,detune:dt})));[1,1.5,2].forEach((m,i)=>osc('sine',1568*m,t+.3,1.8,d,{a:.005,peak:.1/(i+1)}))},
@@ -2528,7 +2548,7 @@ function TREE(n){if(n==='FRAME')return SERIES();if(SERIES().includes(n))return [
 const nodeStock=n=>TREE(n)?TREE(n).reduce((a,c)=>a+nodeStock(c),0):stockOf(n).length;
 function pathTo(cat){const walk=(list,path)=>{for(const n of list){if(n===cat)return path;if(TREE(n)){const r=walk(TREE(n),[...path,n]);if(r)return r}}return null};return walk(SHOP_ROOT,[])||[]}
 function renderShop(){fitSoon($('shopR'));
- $('sMoney').textContent=fmtCR(CREDIT);
+ if(!$('sMoney').classList.contains('up')&&!$('sMoney').classList.contains('dn'))$('sMoney').textContent=fmtCR(CREDIT);
  $('sTabs').querySelectorAll('[data-m]').forEach(b=>{b.setAttribute('aria-selected',b.dataset.m===smode);b.onclick=()=>setSMode(b.dataset.m)});
  $('sBody').hidden=smode!=='buy';$('sAlt').hidden=smode==='buy';
  if(smode!=='buy'){$('sCode').textContent=smode.toUpperCase();renderAlt();return}
@@ -2611,12 +2631,12 @@ function renderAlt(){
    sl.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();ramt=Math.max(0,Math.min(cap,ramt+(e.key==='ArrowRight'?10:-10)));upd()}});
    upd()}
   const mx2=$('sRepMax');if(mx2)mx2.onclick=()=>{ramt=cap;if(sl)sl.dispatchEvent(new Event('upd'));renderShop()};
-  const fix=(id,amt)=>{const c=Math.ceil(amt*REPAIR_K);if(!amt||c>CREDIT)return;CREDIT-=c;DMG[id]=(DMG[id]||0)-amt;if(DMG[id]<=0)delete DMG[id];ramt=null;saveGame();buildMech(cfg);renderGarage();renderShop();
-   const m=$('sMoney');m.classList.add('flash');setTimeout(()=>m.classList.remove('flash'),600);
+  const fix=(id,amt)=>{const c=Math.ceil(amt*REPAIR_K);if(!amt||c>CREDIT)return;CREDIT-=c;moneyAnim($('sMoney'),CREDIT+c,CREDIT);DMG[id]=(DMG[id]||0)-amt;if(DMG[id]<=0)delete DMG[id];ramt=null;saveGame();buildMech(cfg);renderGarage();renderShop();
+   
    talk(DMG[id]?[['応急修理、承りました！ 装甲を <em>'+amt+'</em> ぶん張り替えました。','happy'],['残りは、またいつでも。……継ぎ目が少し目立ちますが、気にしないでくださいませ。','sorry']]:
     [['修理、承りました！ 装甲板を張り替えて……溶接して……','happy'],pick([['あつっ。……いえ、わたくしは熱くないのでした。','panic'],['あっ、溶接棒が<em>もう一本</em>……どこへ。','panic'],['あっ、余ったネジが1本……。いえ、予備です。予備ということにいたしましょう。','panic']]),['<strong>修理完了</strong>でございます。新品同様です。たぶん新品以上です。','happy']])};
-  const doRepair=ids=>{const c=cost(ids);if(!c||c>CREDIT)return;CREDIT-=c;ids.forEach(id=>delete DMG[id]);ramt=null;saveGame();buildMech(cfg);renderGarage();renderShop();
-   const m=$('sMoney');m.classList.add('flash');setTimeout(()=>m.classList.remove('flash'),600);
+  const doRepair=ids=>{const c=cost(ids);if(!c||c>CREDIT)return;CREDIT-=c;moneyAnim($('sMoney'),CREDIT+c,CREDIT);ids.forEach(id=>delete DMG[id]);ramt=null;saveGame();buildMech(cfg);renderGarage();renderShop();
+   
    talk([['修理、承りました！ 装甲板を張り替えて……溶接して……','happy'],pick([['あつっ。……いえ、わたくしは熱くないのでした。','panic'],['あっ、溶接棒が<em>もう一本</em>……どこへ。','panic'],['あっ、余ったネジが1本……。いえ、予備です。予備ということにいたしましょう。','panic']]),['<strong>修理完了</strong>でございます。新品同様です。たぶん新品以上です。','happy']])};
   const ask=(title,rows,c,go)=>{$('sconfBox').innerHTML=`<div class="shd"><span class="code">REPAIR</span><span class="ttl">${title}</span></div><div class="rule"></div>
    <div class="bal">${rows}<span>所持金</span><span>${fmtCR(CREDIT)} CR</span><span>修理費</span><span class="dn">− ${fmtCR(c)} CR</span><span class="tot">修理後</span><span class="tot"><b>${fmtCR(CREDIT-c)} CR</b></span></div>
@@ -2650,8 +2670,8 @@ function renderAlt(){
     <div class="snote">改造はパーツそのものに残ります。元に戻すことはできません。</div>
     <div class="acts"><button class="btn-main cut" id="cfEq">強化する</button><button class="btn-sub" id="cfNo" style="width:90px">やめる</button></div>`;
    $('cfNo').onclick=closeConfirm;$('sconf').hidden=false;$('cfNo').focus();
-   $('cfEq').onclick=()=>{closeConfirm();if(c>CREDIT||tLv(id,i)!==lv)return;CREDIT-=c;const T=TUNE[id]||(TUNE[id]=[0,0]);T[i]=lv+1;saveGame();
-    const wasMax=SS.armor;assemble();renderGarage();renderShop();const m=$('sMoney');m.classList.add('flash');setTimeout(()=>m.classList.remove('flash'),600);
+   $('cfEq').onclick=()=>{closeConfirm();if(c>CREDIT||tLv(id,i)!==lv)return;CREDIT-=c;moneyAnim($('sMoney'),CREDIT+c,CREDIT);const T=TUNE[id]||(TUNE[id]=[0,0]);T[i]=lv+1;saveGame();
+    const wasMax=SS.armor;assemble();renderGarage();renderShop();
     talk(lv+1>=5?[['これで<strong>最大まで</strong>鍛え上げました！ ……感動で、レンズが曇ってまいりました。','happy'],['いえ、ただの結露です。','sorry']]:
      [[d.lab+'を <em>LV '+(lv+1)+'</em> に強化いたします。ええと、この部品をここに……','normal'],pick([['あっ、締めすぎ……いえ、ちょうどいいです。ちょうどいいということにします。','panic'],['あっ、マニュアルが逆さま……。いえ、手が覚えておりました。','panic']]),['<strong>強化完了</strong>でございます。','happy']])};
   });
@@ -2726,10 +2746,10 @@ function buy(id,equip){
  if(OWN.has(id)||PRICE[id]>CREDIT)return closeConfirm();
  const sl=stgt,nm=esc(ENM(sl,id).trim());
  if(equip&&statsFor({...cfg,[sl]:id}).over)equip=false;
- CREDIT-=PRICE[id];OWN.add(id);
+ CREDIT-=PRICE[id];OWN.add(id);moneyAnim($('sMoney'),CREDIT+PRICE[id],CREDIT);
  if(equip){cfg[sl]=id;assemble();renderGarage()}else renderGarage();
  saveGame();closeConfirm();
- const m=$('sMoney');m.classList.add('flash');setTimeout(()=>m.classList.remove('flash'),600);
+ 
  renderShop();
  const oops=pick([
   ['あっ。ああっ、<em>ネジが</em>！ し、失礼しました。','panic'],
@@ -3355,7 +3375,7 @@ $('vSkip').addEventListener('click',e=>{e.stopPropagation();const d=VS.d;if(!d||
 /* ----- 依頼一覧・ブリーフィング・結果（#mis）----- */
 const misEl=$('mis');let misSel=null,bTalk=null;
 function misHead(code,title,sub,back){return `<div class="xhd"><span class="logo"><span class="en">${code}</span></span><span class="sep"></span><span class="t">${title}</span>${sub?`<span class="s">${sub}</span>`:''}<span class="grow"></span>
- <span class="hcls">CLASS ${CLS}</span><span class="hch">CH.${CH}</span><span class="money">${fmtCR(CREDIT)}<small>CR</small></span>${back?`<button class="bk" id="misBack">${back}</button>`:''}</div>`}
+ <span class="hcls">CLASS ${CLS}</span><span class="hch">CH.${CH}</span><span class="money">${fmtCR(CR_SHOWN)}<small>CR</small></span>${back?`<button class="bk" id="misBack">${back}</button>`:''}</div>`}
 function hideMis(){misEl.hidden=true;misEl.innerHTML='';bTalk&&clearInterval(bTalk.iv);bTalk=null}
 function openBoard(sel){fadeTo(()=>{chkSet(null);mailClose();nbClose();renderBoard(sel)},'MISSION')}
 function renderBoard(sel){
@@ -3580,7 +3600,7 @@ function setMode(m,training=false,mis=null,tt=false){
  requestAnimationFrame(resize);resize();
 }
 $('garage').onclick=()=>{if(RUN){misAbort();return}fadeTo(()=>setMode('garage'),'GARAGE')};
-loadGame();loadCfg();buildRings();buildCells();
+loadGame();CR_SHOWN=CREDIT;loadCfg();buildRings();buildCells();
 $('camBtn').onclick=()=>{setCam(CAMMODE==='top'?'tps':'top');saveCfg()};
 assemble();
 
@@ -3878,13 +3898,14 @@ function dbgApply(){const now=Date.now();
  const dv=dbgDerive();CLS=dv.cls;CH=dv.ch;
  // 等級の通知メール：クリア済みの★の分だけ届いている状態にそろえる
  MLIST.filter(d=>d.story&&d.cls).forEach(d=>{const nid='n-cls-'+d.cls.toLowerCase();if(!MDEF[nid])return;if(DW.m[d.id]===2){if(!MIS[nid])MIS[nid]={got:true,read:true,clear:false,n:0,t:now}}else delete MIS[nid]});
- DBG.inv=DW.inv;dbgSave();saveGame();misHeader();renderGarage();dbgClose();
+ DBG.inv=DW.inv;dbgSave();saveGame();crSync();misHeader();renderGarage();dbgClose();
  nonaSay([['（DEBUG）進行状況を変更しました。CLASS '+CLS+' ／ CH.'+CH+(DBG.inv?' ／ 無敵 ON':'')+'。']])}
 $('mDebug').onclick=()=>{openMenu(false);dbgOpen()};
 dbgMenu();
 // ガレージに入ったときのひとこと（kind：intro／continue／shop／firstshop／train）
 const PARTJ={core:'コア',arms:'腕部',legs:'脚部'};
 function garageGreet(kind,info={}){
+ if(['train','mission','ttdone'].includes(kind)){if(!CRA.on)setTimeout(crCount,420)}else if(!CRA.on)crSync();
  if(document.body.classList.contains('eqm'))return;
  const N=esc(PILOT||'操縦者');let L;
  if(TUT!=='done'){nonaSay([['ここがハンガー07、'+N+'の拠点です。'],['申し上げにくいのですが、本機の装備は最低限です。まずは <em>SHOP</em> へ参りましょう。部品倉庫を管理しているAIがいると、記録にあります。'],['右上の <em>MENU</em> から SHOP をお選びください。わたくしも、この端末から同行いたします。']],{hold:true});return}
@@ -4278,7 +4299,7 @@ function showTitle(){const t=$('title');view='overview';selSlot=null;wcat=null;h
  const sv=hasSave();$('tCon').disabled=!sv;$('tConSub').textContent=sv?fmtCR(CREDIT)+' CR':'NO DATA';$('tNew').focus()}
 function resetGame(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}
  OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();TTUT=0;CLS='E';CH=1;SHOPCLS=0;Object.keys(MIS_X).forEach(k=>delete MIS_X[k]);Object.assign(COL,PRESETS['STANDARD']);applyColors();Object.keys(MIS).forEach(k=>delete MIS[k]);mailClose();
- Object.keys(DMG).forEach(k=>delete DMG[k]);Object.keys(TUNE).forEach(k=>delete TUNE[k]);Object.assign(cfg,DEFAULT_CFG);assemble()}
+ Object.keys(DMG).forEach(k=>delete DMG[k]);Object.keys(TUNE).forEach(k=>delete TUNE[k]);Object.assign(cfg,DEFAULT_CFG);assemble();crSync()}
 function hideTitle(){TT.on=false;SND.bgm('garage');$('title').hidden=true;$('title').querySelectorAll('.tmodal').forEach(m=>m.remove());view='overview';selSlot=null;renderGarage();resize()}
 addEventListener('resize',()=>{if(TT.on)titleSize()});
 $('tCon').onclick=()=>{if(hasSave())loadingTo(()=>{if(!PILOT)playNameEntry(hideTitle);else{hideTitle();garageGreet(TUT!=='done'?'intro':'continue')}},LOAD_CON)};
