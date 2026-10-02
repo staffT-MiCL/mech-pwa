@@ -659,6 +659,9 @@ body.eqm #mailBox{display:none}
 #dbgBox .dt{display:flex;align-items:center;justify-content:space-between;min-height:30px;padding:0 6px;font-size:12px;color:#e8e0ff;background:rgba(40,30,60,.5)}
 #dbgBox .ft{display:flex;gap:6px;align-items:center}#dbgBox .ft button{height:32px;font-size:12px;padding:0 12px}#dbgBox .ft .go{background:#8a6ad8;color:#120c1e;border:0}#dbgBox .ft .x{margin-left:auto}
 #dbgBox .note{font-size:10px;color:#8a7aa8}
+#dbgT{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:rgba(4,4,8,.55)}
+#dbgT .bx{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 22px;border:1px solid #8a6ad8;background:rgba(14,10,22,.97)}#dbgT b{font-family:var(--mech);font-size:14px;letter-spacing:.3em;color:#c0a8ff}#dbgT small{font-family:var(--disp);font-size:11px;color:#8a7aa8}
+#dbgT .sg{display:flex;gap:6px;margin-top:4px}#dbgT .sg button{width:90px;height:36px;font-family:var(--mech);font-size:13px;letter-spacing:.2em;background:#1a1428;border:1px solid #4a3a70;color:#8a7aa8}#dbgT .sg button.on{background:#8a6ad8;color:#120c1e;border-color:#8a6ad8}
 #dbgInv{position:absolute;left:50%;top:calc(62px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:3;padding:1px 8px;border:1px solid #8a6ad8;background:rgba(20,12,36,.6);color:#c0a8ff;font-family:var(--mech);font-size:10px;letter-spacing:.14em;pointer-events:none}
 #mailBox .mbc{display:flex;flex-direction:column;gap:7px;flex:1;min-height:0}
 #mailBox.pop{animation:mbPop .25s ease-out;transform-origin:top center}@keyframes mbPop{from{opacity:0;transform:scale(.94)}}
@@ -689,10 +692,10 @@ body.eqm #mailBox{display:none}
 #mis .mdet{padding:10px 12px;min-height:0;display:flex}
 .mdbox{flex:1;min-height:0;padding:12px 14px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);overflow:hidden}
 .mdbox .fr{font-size:10px;letter-spacing:.16em;color:var(--cyan)}.mdbox .fr.visit{color:#d8a35a}
-.mrow.st{background:linear-gradient(90deg,rgba(120,40,24,.32),rgba(40,24,12,.6));border-color:#c9a24a;color:#f3e2b4}.mrow.st .rw small{color:#c9a24a}
-.mrow.st.sel{background:linear-gradient(225deg,transparent 6.4px,#e8c25a 6.4px,#e8c25a 7.8px,transparent 7.8px) top right/16px 16px no-repeat,linear-gradient(90deg,#4a1c10,#2a1a0a);border-color:#e8c25a;color:#fff0c8}
-.mtag.story{background:linear-gradient(90deg,#e8c25a,#c9873a);white-space:nowrap;font-size:8px;letter-spacing:0}
-.mdbox.st{border-color:#c9a24a;background:linear-gradient(180deg,rgba(90,30,16,.25),transparent 60%)}.mdbox.st .fr{color:#e8c25a!important}.mdbox.st .nmt{color:#ffe7a8}.mdbox.st .btn-main{background:#e8c25a;color:#2a1608}
+.mrow.st{background:linear-gradient(90deg,rgba(120,16,24,.42),rgba(40,10,14,.75));border-color:#8a2430;color:#f4dede}.mrow.st .nm small{color:#c08890}.mrow.st .rw small{color:#e07080}
+.mrow.st.sel{background:linear-gradient(225deg,transparent 6.4px,#ff4a5a 6.4px,#ff4a5a 7.8px,transparent 7.8px) top right/16px 16px no-repeat,linear-gradient(90deg,#5a121c,#32101a);border:2px solid #ff4a5a;color:#fff}
+.mtag.story{background:#b81c2c;color:#fff;letter-spacing:.06em}
+.mdbox.st{border-color:#b81c2c;background:linear-gradient(180deg,rgba(120,16,24,.28),transparent 60%)}.mdbox.st .fr{color:#ff7a86!important}.mdbox.st .nmt{color:#fff}.mdbox.st .btn-main{background:#c8202e;color:#fff}
 .mnone{padding:14px 10px;font-family:var(--disp);font-size:12px;color:#6a7a76}
 #clsBand{position:fixed;left:0;right:0;top:50%;height:78px;margin-top:-39px;z-index:40;pointer-events:none;display:flex;align-items:center;justify-content:center;gap:22px;background:linear-gradient(90deg,transparent,rgba(10,8,4,.94) 18%,rgba(10,8,4,.94) 82%,transparent);border-top:1px solid #c9a24a;border-bottom:1px solid #c9a24a;transform:scaleY(0);transition:transform .25s}
 #clsBand.on{transform:scaleY(1)}#clsBand b{font-family:var(--sten);font-size:30px;letter-spacing:.3em;color:#e8c25a;text-shadow:0 0 12px rgba(232,194,90,.5);transform:translateX(-60vw);opacity:0;transition:transform .5s cubic-bezier(.2,.8,.2,1) .2s,opacity .3s .2s}
@@ -2859,7 +2862,7 @@ function renderBoard(sel){
  const list=MLIST.filter(d=>d.ch===CH&&!d.story&&MIS[d.id]&&MIS[d.id].got),allGot=MLIST.filter(d=>d.ch>0&&MIS[d.id]&&MIS[d.id].got),story=MLIST.find(d=>d.ch===CH&&d.story),norm=chNormals(CH),cl=chCleared(CH);
  misSel=sel&&MIS[sel]&&MIS[sel].got?sel:(misSel&&MDEF[misSel]&&MDEF[misSel].ch>0&&MIS[misSel]&&MIS[misSel].got?misSel:(list[0]||allGot[0]||{}).id);
  const row=d=>{const m=MIS[d.id],st=!m.clear?(!m.read?'<small class="nw">NEW</small>':'<small>未達成</small>'):'<small class="cl">CLEARED</small>';
-  return `<button class="mrow${d.story?' st':''}${d.id===misSel?' sel':''}" data-id="${d.id}"><span class="mtag ${d.story?'story':d.kind}">${d.story?'★STORY':d.kind==='mail'?'MAIL':'VISIT'}</span><span class="nm"><b>${d.title}</b><small>${d.from}</small></span><span class="rw">${st}${fmtCR(d.reward)} CR</span></button>`};
+  return `<button class="mrow${d.story?' st':''}${d.id===misSel?' sel':''}" data-id="${d.id}"><span class="mtag ${d.story?'story':d.kind}">${d.story?'STORY':d.kind==='mail'?'MAIL':'VISIT'}</span><span class="nm"><b>${d.title}</b><small>${d.from}</small></span><span class="rw">${st}${fmtCR(d.reward)} CR</span></button>`};
  const stOpen=story&&story.ready&&MIS[story.id]&&MIS[story.id].got;
  const sRow=stOpen?row(story):'';
  const olds=Object.keys(CHAPTERS).map(Number).filter(c=>c<CH).map(c=>`<div class="chh old"><b>▸ CHAPTER ${c}</b><span>${CHAPTERS[c]}</span><small>CLEAR ・ 再挑戦可</small></div>`+MLIST.filter(d=>d.ch===c&&MIS[d.id]&&MIS[d.id].got).map(row).join('')).join('');
@@ -3305,8 +3308,12 @@ try{Object.assign(DBG,JSON.parse(localStorage.getItem(DBG_KEY)||'{}'))}catch(e){
 const dbgSave=()=>{try{localStorage.setItem(DBG_KEY,JSON.stringify(DBG))}catch(e){}};
 function dbgMenu(){$('mDebug').hidden=!DBG.on}
 {let n=0,tm=null;const lg=document.querySelector('#title .tname');lg.style.cursor='default';
- lg.addEventListener('click',()=>{n++;clearTimeout(tm);tm=setTimeout(()=>n=0,1500);if(n<5)return;n=0;DBG.on=true;dbgSave();dbgMenu();
-  const v=$('tVer');v.textContent='DEBUG MODE ON（MENU に DEBUG）';setTimeout(()=>v.textContent='VER 0.9',2600)})}
+ lg.addEventListener('click',()=>{n++;clearTimeout(tm);tm=setTimeout(()=>n=0,1500);if(n<5)return;n=0;dbgTitleBox()})}
+// タイトルで ON／OFF を選ぶ枠
+function dbgTitleBox(){let w=$('dbgT');if(!w){w=document.createElement('div');w.id='dbgT';$('title').appendChild(w)}
+ w.innerHTML=`<div class="bx"><b>DEBUG MODE</b><small>ON にすると MENU に DEBUG が出ます</small><div class="sg"><button data-v="1" class="${DBG.on?'on':''}">ON</button><button data-v="0" class="${DBG.on?'':'on'}">OFF</button></div></div>`;w.hidden=false;
+ w.onclick=e=>{if(e.target===w)w.hidden=true};
+ w.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{DBG.on=b.dataset.v==='1';if(!DBG.on)DBG.inv=false;dbgSave();dbgMenu();w.hidden=true})}
 let DW=null;
 const dependents=id=>MLIST.filter(d=>isMis(d)&&misDeps(d).includes(id));
 function dbgSet(id,v){if(id==='tut'){DW.tut=v;if(!v)dependents('tut').forEach(d=>dbgSet(d.id,0));return}
@@ -3318,7 +3325,7 @@ function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).m
  const seg=(id,v,dis)=>`<span class="sg">${['未着','届いた','クリア'].map((l,i)=>`<button data-id="${id}" data-v="${i}" class="${v===i?'on':''}" ${dis?'disabled':''}>${l}</button>`).join('')}</span>`;
  box.innerHTML=`<div class="dh"><span>DEBUG ／ 進行状況</span><small>選ぶと、矛盾しないように関係する依頼も自動でそろいます</small></div>
   <div class="dl"><div class="dt"><span>チュートリアル完了（ガレージ案内・初回 TRAINING）</span><span class="sg"><button data-t="0" class="${DW.tut?'':'on'}">未完了</button><button data-t="1" class="${DW.tut?'on':''}">完了</button></span></div>
-  ${chs.map(c=>`<div class="dc">CHAPTER ${c}${CHAPTERS[c]?'　'+CHAPTERS[c]:''}</div>`+MLIST.filter(d=>d.ch===c).map(d=>`<div class="dr${d.story?' st':''}${d.ready?'':' na'}"><span><b>${d.story?'★':''}${d.id}</b>${d.title}${d.ready?'':'（準備中）'}</span>${seg(d.id,DW.m[d.id],!d.ready)}</div>`).join('')).join('')}
+  ${chs.map(c=>`<div class="dc">CHAPTER ${c}${CHAPTERS[c]?'　'+CHAPTERS[c]:''}</div>`+MLIST.filter(d=>d.ch===c).map(d=>`<div class="dr${d.story?' st':''}${d.ready?'':' na'}"><span><b>${d.id}</b>${d.title}${d.ready?'':'（準備中）'}</span>${seg(d.id,DW.m[d.id],!d.ready)}</div>`).join('')).join('')}
   <div class="dc">PLAY</div><div class="dt"><span>無敵モード（自機・護衛対象がダメージを受けない）</span><span class="sg"><button data-i="0" class="${DW.inv?'':'on'}">OFF</button><button data-i="1" class="${DW.inv?'on':''}">ON</button></span></div></div>
   <div class="note">いまの状態：CLASS ${CLS} ／ CH.${CH}　→　適用後：CLASS ${dbgDerive().cls} ／ CH.${dbgDerive().ch}</div>
   <div class="ft"><button class="go" id="dbgGo">適用して保存</button><button class="btn-sub" id="dbgOff">デバッグを終了</button><button class="btn-sub x" id="dbgX">閉じる</button></div>`;
