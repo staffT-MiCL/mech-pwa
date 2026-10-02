@@ -723,25 +723,29 @@ body.eqm #mailBox{display:none}
 .detail .acts .btn-main{flex:1 1 0;padding:0 6px;letter-spacing:.12em}
 #equip.ov{background:transparent;border:1px dashed var(--alert);color:var(--alert);opacity:1;letter-spacing:.06em;font-size:12px}
 .ovn{font-family:var(--body);font-size:11px;color:var(--alert);text-align:right;flex-shrink:0;margin-bottom:-3px}
-#comm{position:absolute;left:50%;top:calc(38px + env(safe-area-inset-top,0px));transform:translateX(-50%);max-width:min(440px,42%);display:flex;align-items:center;gap:7px;height:22px;padding:0 10px 0 0;background:rgba(8,30,34,.42);border:1px solid rgba(111,211,224,.35);pointer-events:none;z-index:3;text-shadow:0 1px 2px #000}
+#comm{position:absolute;left:50%;top:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:min(380px,calc(100% - 580px));min-width:180px;display:flex;align-items:center;gap:7px;height:22px;padding:0 10px 0 0;background:rgba(8,30,34,.42);border:1px solid rgba(111,211,224,.35);pointer-events:none;z-index:3;text-shadow:0 1px 2px #000}
 #comm b{align-self:stretch;display:flex;align-items:center;padding:0 6px;background:rgba(45,96,104,.6);color:#d8f6fa;font-family:var(--mech);font-size:9px;letter-spacing:.14em;white-space:nowrap}
 #comm em{font-style:normal;align-self:stretch;display:flex;align-items:center;padding-left:8px;border-left:1px solid rgba(111,211,224,.3);font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:#9fe6ee;white-space:nowrap}
-#comm.tt{height:auto;min-height:22px;max-width:min(560px,56%)}#comm.tt span{white-space:normal;padding:3px 0}
+#comm.tt{height:auto;min-height:22px;max-width:min(380px,calc(100% - 580px))}
+@media (pointer:fine){#comm{bottom:calc(120px + env(safe-area-inset-bottom,0px))}}#comm.tt span{white-space:normal;padding:3px 0}
 #comm.ok b{background:rgba(140,240,110,.55);color:#0b1408}
 .tth{animation:tthl .7s ease-in-out infinite alternate}@keyframes tthl{from{filter:none}to{filter:drop-shadow(0 0 6px #6fd3e0) brightness(1.5)}}
 #comm span{font-family:var(--disp);font-size:13px;color:#cfeff4;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* メールボックス */
 #mailBox .mlx{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:4px}
-.mrw{display:grid;grid-template-columns:12px minmax(0,9em) minmax(0,1fr) auto;gap:8px;align-items:center;height:36px;padding:0 10px;background:rgba(14,30,32,.9);border:1px solid #2d6068;color:#eef2ef;text-align:left;font-family:var(--disp);font-size:13px}
+.mrw{display:grid;grid-template-columns:12px minmax(0,9em) minmax(0,1fr) auto auto;gap:8px;align-items:center;height:36px;padding:0 10px;background:rgba(14,30,32,.9);border:1px solid #2d6068;color:#eef2ef;text-align:left;font-family:var(--disp);font-size:13px}
 .mrw i{font-style:normal;color:var(--fire);font-size:10px}.mrw .fr{color:#9fe6ee;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mrw .sj{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mrw em{font-style:normal;font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:var(--accent)}
+.mrw .rs{font-family:var(--body);font-size:9px;font-weight:400;padding:0 5px;line-height:15px;border:1px solid currentColor}.mrw .rs.u{color:var(--fire)}.mrw .rs.r{color:#6a7a76}
 .mrw.rd{background:rgba(10,16,16,.85);border-color:#1f3a3e;color:#8a9a96}.mrw.rd .sj{font-weight:400}.mrw.rd .fr{color:#5f8a8e}
 /* ポーズ（出撃中・TRAINING／MISSION 共通） */
 #topC{position:absolute;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);display:flex;align-items:center;gap:8px;z-index:3}
 #topC #modeBadge{position:static;transform:none}
-#pauseBtn{width:30px;height:24px;padding:0;display:flex;align-items:center;justify-content:center;gap:4px;background:rgba(14,19,17,.7);border:1px solid var(--khaki);touch-action:none}
+#pauseBtn{position:absolute;right:12px;top:calc(142px + env(safe-area-inset-top,0px));width:32px;height:30px;z-index:3;padding:0;display:flex;align-items:center;justify-content:center;gap:4px;background:rgba(14,19,17,.7);border:1px solid var(--khaki);touch-action:none}
 #pauseBtn i{width:3px;height:10px;background:var(--khaki)}
 #garage{display:none!important}
+#bTgt{right:54px!important;width:82px!important;padding:0 8px!important;letter-spacing:1px!important}
+@media (max-height:420px){#pauseBtn{top:calc(120px + env(safe-area-inset-top,0px))}#bTgt{width:62px!important;padding:0 6px!important}#bTgt span:last-child{display:none}}
 #camBtn{top:calc(10px + env(safe-area-inset-top,0px))!important}#score{top:calc(46px + env(safe-area-inset-top,0px))!important}
 #pause{position:absolute;inset:0;z-index:8;background:rgba(3,5,4,.62);display:flex;align-items:center;justify-content:center;font-family:var(--mech);text-shadow:none}
 #pause .box{width:min(300px,80%);padding:16px 18px;display:flex;flex-direction:column;gap:10px;border:1px solid var(--khaki);background:linear-gradient(225deg,transparent 9.4px,var(--khaki) 9.4px,var(--khaki) 10.8px,transparent 10.8px) top right/24px 24px no-repeat,rgba(14,18,17,.96);clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
@@ -788,7 +792,8 @@ body.eqm #mailBox{display:none}
    <div class="hr2"><span class="hl bs">BOOST</span><div class="hcells thin" id="bsCells"></div><b class="bsn" id="bsNum">0</b></div>
   </div>
   <div class="extchip" id="extChip"></div>
-  <div id="topC"><button id="pauseBtn" aria-label="ポーズ"><i></i><i></i></button><div id="modeBadge"></div></div>
+  <div id="topC"><div id="modeBadge"></div></div>
+  <button id="pauseBtn" aria-label="ポーズ"><i></i><i></i></button>
   <button id="garage">ガレージ</button>
   <button id="camBtn">CAM: CHASE</button>
   <canvas id="map" width="124" height="124" aria-label="マップ"></canvas>
@@ -2594,7 +2599,7 @@ const gotMails=()=>MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got).so
 // メールボックス：受信一覧（新しい順。未読は●と太字、既読は暗く）→ 行を押すと本文
 function mailList(){const box=$('mailBox'),L=gotMails(),u=unreadMail().length;
  box.innerHTML=`<div class="mh"><span>MAILBOX ／ ${u?'未読 '+u+' 件':'未読なし'}</span><span>${L.length} 通</span></div>
-  <div class="mlx">${L.map(d=>{const m=MIS[d.id];return `<button class="mrw${m.read?' rd':''}" data-m="${d.id}"><i>${m.read?'':'●'}</i><span class="fr">${d.from}</span><span class="sj">${d.subj}</span>${m.clear?'<em>CLEARED</em>':''}</button>`}).join('')}</div>
+  <div class="mlx">${L.map(d=>{const m=MIS[d.id];return `<button class="mrw${m.read?' rd':''}" data-m="${d.id}"><i>${m.read?'':'●'}</i><span class="fr">${d.from}</span><span class="sj">${d.subj}</span>${m.clear?'<em>CLEARED</em>':''}<b class="rs ${m.read?'r':'u'}">${m.read?'既読':'未読'}</b></button>`}).join('')}</div>
   <div class="acts"><button class="btn-sub" id="mailX" style="margin-left:auto;width:90px">閉じる</button></div>`;
  box.hidden=false;nbClose();box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>mailOpen(b.dataset.m));$('mailX').onclick=mailClose}
 function mailOpen(id){const d=MDEF[id];if(!d)return;
@@ -2710,13 +2715,13 @@ const TT_STEPS=[
  {t:()=>'肩の兵装は、両肩同時に発動します。SHLDR で標的機を撃破してください。'+(PCI?'（L）':''),h:'#wS',k:'sh'},
  {t:()=>'TARGET で、狙う敵を切り替えられます。'+(PCI?'（Tab）':''),h:'#bTgt'},
  {t:()=>'残りの標的機を、5機撃破してください。',h:null},
- {t:()=>'お疲れさまでした。右上の ‖ から、いつでも中断できます。ガレージへ戻ります。',h:'#pauseBtn'}];
+ {t:()=>'お疲れさまでした。基本の操作は以上です。このまま自由に練習できます。戻るときは、TARGET の横の ‖ からガレージへ。',h:'#pauseBtn'}];
 const TTS={step:-1,wait:0,acc:0,yaw:null,kills:0,busy:false,end:0};
 function ttHL(sel){document.querySelectorAll('.tth').forEach(e=>e.classList.remove('tth'));if(sel)document.querySelectorAll('#play '+sel).forEach(e=>e.classList.add('tth'))}
 function ttShow(i){const S=TT_STEPS[i];TTS.step=i;TTS.acc=0;TTS.kills=0;TTS.busy=false;TTS.yaw=null;$('comm').classList.add('tt');$('comm').classList.remove('ok');
  $('commSt').hidden=false;$('commSt').textContent='STEP '+(i+1)+'/'+TT_N;comm(S.t()+(i===9?'（0/5）':''),0);ttHL(S.h);
  if(S.k&&!canKill(S.k)){TTS.busy=true;setTimeout(()=>{if(!TRT||TTS.step!==i)return;comm((S.k==='sh'?'肩':S.k==='lHand'?'L-HAND':'R-HAND')+' の装備では撃破できないため、この項目は飛ばします。',0);setTimeout(()=>ttDone(i,true),2200)},1600)}
- if(i===TT_N-1){TTS.busy=true;TTUT=TT_N;saveGame();setTimeout(()=>{if(TRT&&mode==='play')fadeTo(()=>setMode('garage'),'GARAGE')},5200)}}
+ if(i===TT_N-1){TTS.busy=true;TTUT=TT_N;saveGame();$('commSt').hidden=true;comm(S.t(),7)}}
 function ttDone(i,skip=false){if(!TRT||TTS.step!==i||(TTS.busy&&!skip&&i!==TT_N-1))return;TTS.busy=true;TTUT=i+1;saveGame();
  if(!skip){$('comm').classList.add('ok');comm('OK',0)}setTimeout(()=>{if(TRT&&mode==='play')ttShow(i+1)},skip?200:1100)}
 function ttStart(){TTS.step=-1;$('comm').classList.add('tt');$('commSt').hidden=true;
