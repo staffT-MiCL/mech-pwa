@@ -717,9 +717,30 @@ body.eqm #mailBox{display:none}
 .rbot .btn-main{flex:0 0 190px;height:64px;font-size:14px;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
 @media (max-height:400px){.rhd b{font-size:38px}#mis .mres{gap:8px}.rbot .btalk,.rbot .btn-main{height:56px}}
 /* 出撃中のノーナの通信 */
-#comm{position:absolute;left:50%;top:calc(36px + env(safe-area-inset-top,0px));transform:translateX(-50%);max-width:min(560px,58%);display:flex;align-items:center;gap:8px;padding:4px 12px 4px 0;background:rgba(6,10,10,.84);border:1px solid #2d6068;pointer-events:none;z-index:3}
-#comm b{align-self:stretch;display:flex;align-items:center;padding:0 7px;background:#2d6068;color:#e8f6f8;font-size:10px;letter-spacing:.14em;white-space:nowrap}
-#comm span{font-family:var(--disp);font-size:14px;color:#eef2ef;line-height:1.4}
+#comm{position:absolute;left:50%;top:calc(38px + env(safe-area-inset-top,0px));transform:translateX(-50%);max-width:min(440px,42%);display:flex;align-items:center;gap:7px;height:22px;padding:0 10px 0 0;background:rgba(8,30,34,.42);border:1px solid rgba(111,211,224,.35);pointer-events:none;z-index:3;text-shadow:0 1px 2px #000}
+#comm b{align-self:stretch;display:flex;align-items:center;padding:0 6px;background:rgba(45,96,104,.6);color:#d8f6fa;font-family:var(--mech);font-size:9px;letter-spacing:.14em;white-space:nowrap}
+#comm span{font-family:var(--disp);font-size:13px;color:#cfeff4;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* メールボックス */
+#mailBox .mlx{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:4px}
+.mrw{display:grid;grid-template-columns:12px minmax(0,9em) minmax(0,1fr) auto;gap:8px;align-items:center;height:36px;padding:0 10px;background:rgba(14,30,32,.9);border:1px solid #2d6068;color:#eef2ef;text-align:left;font-family:var(--disp);font-size:13px}
+.mrw i{font-style:normal;color:var(--fire);font-size:10px}.mrw .fr{color:#9fe6ee;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrw .sj{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mrw em{font-style:normal;font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:var(--accent)}
+.mrw.rd{background:rgba(10,16,16,.85);border-color:#1f3a3e;color:#8a9a96}.mrw.rd .sj{font-weight:400}.mrw.rd .fr{color:#5f8a8e}
+/* ポーズ（出撃中・TRAINING／MISSION 共通） */
+#topC{position:absolute;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);display:flex;align-items:center;gap:8px;z-index:3}
+#topC #modeBadge{position:static;transform:none}
+#pauseBtn{width:30px;height:24px;padding:0;display:flex;align-items:center;justify-content:center;gap:4px;background:rgba(14,19,17,.7);border:1px solid var(--khaki);touch-action:none}
+#pauseBtn i{width:3px;height:10px;background:var(--khaki)}
+#garage{display:none!important}
+#camBtn{top:calc(10px + env(safe-area-inset-top,0px))!important}#score{top:calc(46px + env(safe-area-inset-top,0px))!important}
+#pause{position:absolute;inset:0;z-index:8;background:rgba(3,5,4,.62);display:flex;align-items:center;justify-content:center;font-family:var(--mech);text-shadow:none}
+#pause .box{width:min(300px,80%);padding:16px 18px;display:flex;flex-direction:column;gap:10px;border:1px solid var(--khaki);background:linear-gradient(225deg,transparent 9.4px,var(--khaki) 9.4px,var(--khaki) 10.8px,transparent 10.8px) top right/24px 24px no-repeat,rgba(14,18,17,.96);clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
+#pause .h{font-size:16px;font-weight:700;letter-spacing:.5em;color:var(--khaki);text-align:center}
+#pause .s{font-family:var(--disp);font-size:12px;color:#9aa6a0;text-align:center}
+#pause button{height:40px;font-size:13px;font-weight:700;letter-spacing:.14em}
+#pause .go{background:var(--fire);border:0;color:#1a1006;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
+#pause .ab{background:#2a0e09;border:1px solid var(--alert);color:#ffb0a0}
+#pause .cam{background:transparent;border:1px solid #3a4540;color:#aeb8b3}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=DotGothic16&family=M+PLUS+1p:wght@400;700&family=Stardos+Stencil:wght@400;700&display=swap">
 
@@ -757,7 +778,7 @@ body.eqm #mailBox{display:none}
    <div class="hr2"><span class="hl bs">BOOST</span><div class="hcells thin" id="bsCells"></div><b class="bsn" id="bsNum">0</b></div>
   </div>
   <div class="extchip" id="extChip"></div>
-  <div id="modeBadge"></div>
+  <div id="topC"><button id="pauseBtn" aria-label="ポーズ"><i></i><i></i></button><div id="modeBadge"></div></div>
   <button id="garage">ガレージ</button>
   <button id="camBtn">CAM: CHASE</button>
   <canvas id="map" width="124" height="124" aria-label="マップ"></canvas>
@@ -766,6 +787,7 @@ body.eqm #mailBox{display:none}
   <div id="reticle"></div>
   <div id="lock" hidden><span id="lockTxt"></span></div>
   <div id="msg"></div>
+  <div id="pause" hidden role="dialog" aria-label="ポーズ"><div class="box"><span class="h">PAUSE</span><span class="s" id="pzSub"></span><button class="go" id="pzGo">再開する</button><button class="cam" id="pzCam">視点：CHASE</button><button class="ab" id="pzAb">撤退する</button></div></div>
   <div id="comm" hidden role="status" aria-live="polite"><b>N-07</b><span id="commTx"></span></div>
   <div id="stickArea"><div id="stick"><div id="knob"></div></div>
    <div class="qb" data-d="u"></div><div class="qb" data-d="d"></div><div class="qb" data-d="l"></div><div class="qb" data-d="r"></div></div>
@@ -1788,7 +1810,7 @@ function loadGame(){
   if(d.tune)Object.entries(d.tune).forEach(([k,v])=>{if(Array.isArray(v))TUNE[k]=[Math.min(5,v[0]|0),Math.min(5,v[1]|0)]});
   if(d.dmg)Object.entries(d.dmg).forEach(([k,v])=>{if(typeof v==='number'&&v>0)DMG[k]=v});
   if(typeof d.cls==='string'&&CLASSES.includes(d.cls))CLS=d.cls;if((d.ch|0)>0)CH=d.ch|0;
-  if(d.mis)Object.entries(d.mis).forEach(([k,v])=>{if(MDEF[k]&&v&&typeof v==='object')MIS[k]={got:!!v.got,read:!!v.read,clear:!!v.clear,n:v.n|0}});
+  if(d.mis)Object.entries(d.mis).forEach(([k,v])=>{if(MDEF[k]&&v&&typeof v==='object')MIS[k]={got:!!v.got,read:!!v.read,clear:!!v.clear,n:v.n|0,t:+v.t||0}});
   if(d.cfg)SLOTS.forEach(sl=>{const v=d.cfg[sl.key];if(v&&sl.cat[v]&&(v==='none'||OWN.has(v)))cfg[sl.key]=v});
  }catch(e){}
 }
@@ -2549,23 +2571,30 @@ const anyGot=()=>MLIST.some(d=>MIS[d.id]&&MIS[d.id].got);
 const unreadMail=()=>MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got&&!MIS[d.id].read);
 // ガレージに入ったときに新しい依頼を届ける。1-1：チュートリアル後、TRAINING から戻ったとき（または CONTINUE で再開したとき）
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
- const d=MDEF['1-1'];if(d.ready&&!MIS[d.id]&&['train','continue','mission'].includes(kind)){MIS[d.id]={got:true,read:false,clear:false,n:0};out.push(d)}
+ const d=MDEF['1-1'];if(d.ready&&!MIS[d.id]&&['train','continue','mission'].includes(kind)){MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)}
  if(out.length){saveGame();misHeader();$('mailBtn').classList.add('new')}return out}
 function misHeader(){const u=unreadMail().length,got=anyGot();
  $('hCls').textContent='CLASS '+CLS;$('hCh').textContent='CH.'+CH;
- const mb=$('mailBtn');mb.hidden=!got||TUT!=='done'||!MLIST.some(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got);$('mailN').textContent=u;$('mailN').hidden=!u;if(!u)mb.classList.remove('new');
+ const mb=$('mailBtn');mb.hidden=TUT!=='done'||!gotMails().length;$('mailN').textContent=u;$('mailN').hidden=!u;if(!u)mb.classList.remove('new');
  $('mMission').disabled=!got;$('mMisSub').textContent=got?'依頼を受けて戦う':'依頼が届くと選べます'}
 
 /* ----- メール（機体エリアに重ねる。下にノーナの補足）----- */
-function mailOpen(id){const d=MDEF[id||((unreadMail()[0]||{}).id)||[...MLIST].reverse().find(x=>x.kind==='mail'&&MIS[x.id]&&MIS[x.id].got).id];if(!d)return;
- const box=$('mailBox');box.innerHTML=`<div class="mh"><span>MAIL ／ ${unreadMail().length?'NEW':'READ'}</span><span>CH.${d.ch} MISSION</span></div>
+const gotMails=()=>MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got).sort((a,b)=>(MIS[b.id].t||0)-(MIS[a.id].t||0));
+// メールボックス：受信一覧（新しい順。未読は●と太字、既読は暗く）→ 行を押すと本文
+function mailList(){const box=$('mailBox'),L=gotMails(),u=unreadMail().length;
+ box.innerHTML=`<div class="mh"><span>MAILBOX ／ ${u?'未読 '+u+' 件':'未読なし'}</span><span>${L.length} 通</span></div>
+  <div class="mlx">${L.map(d=>{const m=MIS[d.id];return `<button class="mrw${m.read?' rd':''}" data-m="${d.id}"><i>${m.read?'':'●'}</i><span class="fr">${d.from}</span><span class="sj">${d.subj}</span>${m.clear?'<em>CLEARED</em>':''}</button>`}).join('')}</div>
+  <div class="acts"><button class="btn-sub" id="mailX" style="margin-left:auto;width:90px">閉じる</button></div>`;
+ box.hidden=false;nbClose();box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>mailOpen(b.dataset.m));$('mailX').onclick=mailClose}
+function mailOpen(id){const d=MDEF[id];if(!d)return;
+ const box=$('mailBox');box.innerHTML=`<div class="mh"><span>MAIL</span><span>CH.${d.ch} MISSION${MIS[d.id].clear?' ／ CLEARED':''}</span></div>
   <div class="mk"><span>FROM</span><span>${d.fromFull||d.from}</span><span>SUBJ</span><span class="sj">${d.subj}</span></div>
-  <div class="mb">${d.body}</div><div class="acts"><button class="go" id="mailGo">MISSION を開く</button><button class="btn-sub" id="mailX" style="width:90px">閉じる</button></div>`;
+  <div class="mb">${d.body}</div><div class="acts"><button class="btn-sub" id="mailBk" style="width:84px">◀ 一覧</button><button class="go" id="mailGo">MISSION を開く</button><button class="btn-sub" id="mailX" style="width:80px">閉じる</button></div>`;
  box.hidden=false;MIS[d.id].read=true;saveGame();misHeader();$('mailBtn').classList.remove('new');
- $('mailGo').onclick=()=>{mailClose();openBoard(d.id)};$('mailX').onclick=mailClose;
+ $('mailGo').onclick=()=>{mailClose();openBoard(d.id)};$('mailX').onclick=mailClose;$('mailBk').onclick=mailList;
  nonaSay([[nameIn(d.mailNona)]],{hold:true})}
 function mailClose(){const b=$('mailBox');if(b.hidden)return;b.hidden=true;nbClose()}
-$('mailBtn').onclick=()=>{if(TUT!=='done')return;if(!$('mailBox').hidden)mailClose();else mailOpen()};
+$('mailBtn').onclick=()=>{if(TUT!=='done')return;if(!$('mailBox').hidden)mailClose();else{const u=unreadMail();u.length===1&&gotMails().length===1?mailOpen(u[0].id):mailList()}};
 
 /* ----- 依頼一覧・ブリーフィング・結果（#mis）----- */
 const misEl=$('mis');let misSel=null,bTalk=null;
@@ -2587,7 +2616,7 @@ function renderBoard(sel){
    <div class="ds">${d.desc}</div>
    <div class="acts"><button class="btn-main" id="misBrief">BRIEFING ▶</button>${d.kind==='mail'?'<button class="btn-sub" id="misMail" style="width:120px">メールを読む</button>':''}</div></div>`
   :`<div class="mdbox mc14"><span class="ds" style="border:0">届いている依頼はありません。</span></div>`;
- misEl.innerHTML=misHead('MISSION','第7区画管理局 依頼端末','','◀ GARAGE')+`<div class="mbd"><div class="mlist"><div class="chh"><b>CHAPTER ${CH}</b><span>${CHAPTERS[CH]||''}</span><small>通常依頼 ${cl} / ${norm.length} 達成</small></div>${list.map(row).join('')}${sRow}${olds}</div><div class="mdet">${det}</div></div>`;
+ misEl.innerHTML=misHead('MISSION','第7区画管理局 依頼端末','','◀ GARAGE')+`<div class="mbd"><div class="mlist"><div class="chh"><b>CHAPTER ${CH}</b><span>${CHAPTERS[CH]||''}</span></div>${list.map(row).join('')}${sRow}${olds}</div><div class="mdet">${det}</div></div>`;
  misEl.hidden=false;
  misEl.querySelectorAll('.mrow[data-id]').forEach(b=>b.onclick=()=>renderBoard(b.dataset.id));
  $('misBack').onclick=()=>fadeTo(()=>{hideMis();garageGreet('board')},'GARAGE');
@@ -2645,7 +2674,7 @@ function misFinish(ok,reason=''){if(!RUN||RUN.leaving||fading)return;RUN.leaving
   saveGame();setMode('garage');renderResult(r)},'DEBRIEF')}
 function renderResult(r){const d=r.def,cl=chCleared(d.ch),norm=chNormals(d.ch);
  const dm=PART_KEYS.map(k=>{const v=partNow(k)/partMax(k),c=v<=.25?'var(--alert)':v<=.5?'var(--fire)':'var(--accent)';return `<span>${PART_LABEL[k]}</span><div class="bar"><i style="left:0;width:${Math.round(v*100)}%;background:${c}"></i></div><em>${Math.round(v*100)}%</em>`}).join('');
- const prog=r.ok&&cl>=norm.length?'通常依頼 '+cl+' / '+norm.length+' 達成 ── ストーリー依頼が届きます':'通常依頼 '+cl+' / '+norm.length+' 達成'+(r.ok?'':' ── 再挑戦できます');
+ const prog=r.ok&&cl>=norm.length?'ストーリー依頼が届きます':r.ok?'':'再挑戦できます';
  misEl.innerHTML=misHead('DEBRIEF',d.title,'CH.'+d.ch,'')+`<div class="mres" style="--band:${r.ok?'#14261a':'#2a1410'};--acc:${r.ok?'var(--accent)':'#ff6a4c'}">
   <div class="rhd"><b>${r.ok?'SUCCESS':'FAILED'}</b><span>${r.ok?'依頼を達成しました':(r.reason==='撤退'?'作戦を中断し、撤退しました':'機体が大破し、回収されました')}</span></div>
   <div class="rgrid"><div class="rmoney"><span>依頼報酬</span><span>${r.ok?fmtCR(r.reward)+' CR':'— CR'}</span><span>撃破</span><span>${fmtCR(r.earned)} CR</span><span class="tl">合計</span><span class="tv">+${fmtCR(r.reward+r.earned)} CR</span></div>
@@ -2654,8 +2683,21 @@ function renderResult(r){const d=r.def,cl=chCleared(d.ch),norm=chNormals(d.ch);
   <div class="rbot"><div class="btalk"><span class="nm">N-07 ノーナ</span><div class="tx">${nameIn(r.ok?d.res.ok:d.res.ng)}</div></div><button class="btn-main" id="rGo">GARAGE ▶</button></div></div>`;
  misEl.hidden=false;$('rGo').onclick=()=>fadeTo(()=>{hideMis();garageGreet('mission',{ok:r.ok})},'GARAGE')}
 
+/* ----- ポーズ（TRAINING・MISSION 共通）：時間を止め、再開・視点・撤退を選ぶ。撤退は MISSION なら失敗として結果へ、TRAINING はガレージへ ----- */
+let PAUSED=false;
+function pauseSet(on){if(mode!=='play'||(RUN&&RUN.leaving)||fading){on=false}
+ PAUSED=on;$('pause').hidden=!on;if(on){HOLD.rHand=HOLD.lHand=HOLD.sh=false;GUARD[-1]=GUARD[1]=false;keys.clear();IN.x=IN.y=0;
+  $('pzSub').textContent=RUN?'MISSION '+RUN.def.id+' ／ '+RUN.def.title:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';
+  $('pzAb').textContent=RUN?'撤退する（失敗）':'ガレージへ戻る';$('pzCam').textContent='視点：'+(CAMMODE==='top'?'OVERHEAD':'CHASE')}}
+$('pauseBtn').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();pauseSet(true)});
+$('pzGo').onclick=()=>pauseSet(false);
+$('pzCam').onclick=()=>{setCam(CAMMODE==='top'?'tps':'top');$('pzCam').textContent='視点：'+(CAMMODE==='top'?'OVERHEAD':'CHASE')};
+$('pzAb').onclick=()=>{pauseSet(false);if(RUN)misAbort();else fadeTo(()=>setMode('garage'),'GARAGE')};
+$('pause').addEventListener('pointerdown',e=>e.stopPropagation());
+addEventListener('keydown',e=>{if(e.key==='Escape'&&mode==='play'){e.preventDefault();pauseSet(!PAUSED)}});
 /* ===== ガレージ／出撃の切り替え ===== */
 function setMode(m,training=false,mis=null){
+ PAUSED=false;$('pause').hidden=true;
  const wasPlay=mode==='play',wasFire=wasPlay&&!TRAIN,earned=P.earned||0,wasMis=!!RUN;
  if(m==='play')RUN=mis;else RUN=null;
  mode=m;const p=m==='play';TRAIN=p&&training;
@@ -2736,6 +2778,7 @@ function tickPassive(dt){
 let t0p=0,icN=0;
 const lockEl=$('lock'),lockTxt=$('lockTxt');
 R.setAnimationLoop(()=>{
+ if(PAUSED){lastT=performance.now();return}
  const now=performance.now(),dt=Math.min((now-lastT)/1000,.05);lastT=now;t+=dt;
  const m=mech,br=Math.sin(t*1.6)*.02;
  let am=pose,moveBoost=0;
