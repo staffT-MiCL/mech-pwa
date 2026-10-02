@@ -725,6 +725,10 @@ body.eqm #mailBox{display:none}
 .ovn{font-family:var(--body);font-size:11px;color:var(--alert);text-align:right;flex-shrink:0;margin-bottom:-3px}
 #comm{position:absolute;left:50%;top:calc(38px + env(safe-area-inset-top,0px));transform:translateX(-50%);max-width:min(440px,42%);display:flex;align-items:center;gap:7px;height:22px;padding:0 10px 0 0;background:rgba(8,30,34,.42);border:1px solid rgba(111,211,224,.35);pointer-events:none;z-index:3;text-shadow:0 1px 2px #000}
 #comm b{align-self:stretch;display:flex;align-items:center;padding:0 6px;background:rgba(45,96,104,.6);color:#d8f6fa;font-family:var(--mech);font-size:9px;letter-spacing:.14em;white-space:nowrap}
+#comm em{font-style:normal;align-self:stretch;display:flex;align-items:center;padding-left:8px;border-left:1px solid rgba(111,211,224,.3);font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:#9fe6ee;white-space:nowrap}
+#comm.tt{height:auto;min-height:22px;max-width:min(560px,56%)}#comm.tt span{white-space:normal;padding:3px 0}
+#comm.ok b{background:rgba(140,240,110,.55);color:#0b1408}
+.tth{animation:tthl .7s ease-in-out infinite alternate}@keyframes tthl{from{filter:none}to{filter:drop-shadow(0 0 6px #6fd3e0) brightness(1.5)}}
 #comm span{font-family:var(--disp);font-size:13px;color:#cfeff4;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* メールボックス */
 #mailBox .mlx{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:4px}
@@ -794,7 +798,7 @@ body.eqm #mailBox{display:none}
   <div id="lock" hidden><span id="lockTxt"></span></div>
   <div id="msg"></div>
   <div id="pause" hidden role="dialog" aria-label="ポーズ"><div class="box"><span class="h">PAUSE</span><span class="s" id="pzSub"></span><button class="go" id="pzGo">再開する</button><button class="cam" id="pzCam">視点：CHASE</button><button class="ab" id="pzAb">撤退する</button></div></div>
-  <div id="comm" hidden role="status" aria-live="polite"><b>N-07</b><span id="commTx"></span></div>
+  <div id="comm" hidden role="status" aria-live="polite"><b>N-07</b><span id="commTx"></span><em id="commSt" hidden></em></div>
   <div id="stickArea"><div id="stick"><div id="knob"></div></div>
    <div class="qb" data-d="u"></div><div class="qb" data-d="d"></div><div class="qb" data-d="l"></div><div class="qb" data-d="r"></div></div>
   <div id="lock2" hidden></div><div id="marks"></div><div id="guardMsg"></div>
@@ -1082,28 +1086,28 @@ const AIM={x:-1.45,e:-.1}; // 腕を前に構える角度（どの腕パーツ�
 const FX=[],UB=new THREE.BoxGeometry(1,1,1),_p=new THREE.Vector3(),_d=new THREE.Vector3(),_q=new THREE.Vector3();
 let mode='garage',lockT=null;
 function spawn(color,size,pos,o={}){
- const {vel=null,life=.3,grow=0,fade=true,len=1,spin=false,grav=0,trail=0,team=null,dmg=0,splash=0,imp='なし'}=o;
+ const {vel=null,life=.3,grow=0,fade=true,len=1,spin=false,grav=0,trail=0,team=null,dmg=0,splash=0,imp='なし',src=null}=o;
  const m=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color,transparent:true}));
  m.scale.set(size,size,size*len);m.position.copy(pos);S.add(m);
  if(vel)m.lookAt(_q.copy(pos).add(vel));
- const f={m,vel:vel&&vel.clone(),life,age:0,grow,fade,base:size,spin,grav,trail,tt:0,team,dmg,splash,imp};FX.push(f);return f;
+ const f={m,vel:vel&&vel.clone(),life,age:0,grow,fade,base:size,spin,grav,trail,tt:0,team,dmg,splash,imp,src};FX.push(f);return f;
 }
 function flash(obj,size,color=0xffe080){obj.getWorldPosition(_p);spawn(color,size,_p,{life:.08,grow:-.5});spawn(0xffffff,size*.5,_p,{life:.05})}
 function smoke(pos,n,size){const o=pos.clone();for(let i=0;i<n;i++)spawn(0x6a6a66,size,o.clone().add(new THREE.Vector3((Math.random()-.5)*.6,Math.random()*.4,(Math.random()-.5)*.6)),{vel:new THREE.Vector3((Math.random()-.5),1+Math.random(),(Math.random()-.5)),life:.8+Math.random()*.4,grow:1.2,spin:true})}
 // 照準：出撃中でロックオンしていれば標的へ、それ以外は銃口の向き
 function aimDir(from,obj,tgt){if(mode==='play'&&tgt&&tgt.alive)return tgt.center(new THREE.Vector3()).sub(from).normalize();if(mode==='play')return new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw));return obj.getWorldDirection(new THREE.Vector3())}
-function shoot(obj,{size=.1,speed=40,color=0xffe080,life=.8,len=5,trail=0,dmg=0,splash=0,range=0,imp='なし',tgt=null}={}){
+function shoot(obj,{size=.1,speed=40,color=0xffe080,life=.8,len=5,trail=0,dmg=0,splash=0,range=0,imp='なし',tgt=null,src=null}={}){
  obj.getWorldPosition(_p);const dir=aimDir(_p,obj,tgt);
- spawn(color,size,_p,{vel:dir.multiplyScalar(speed),life:range?range/speed:life,len,trail,team:'p',dmg,splash,imp});
+ spawn(color,size,_p,{vel:dir.multiplyScalar(speed),life:range?range/speed:life,len,trail,team:'p',dmg,splash,imp,src});
 }
 function ring(obj){obj.getWorldPosition(_p);
  const m=new THREE.Mesh(new THREE.RingGeometry(.9,1,24),new THREE.MeshBasicMaterial({color:0x8cf06e,transparent:true,side:THREE.DoubleSide}));
  m.rotation.x=-Math.PI/2;m.position.copy(_p);S.add(m);FX.push({m,life:1.2,age:0,grow:(mode==='play'?40:9),fade:true,base:.3,ring:true});}
 function dust(n){mech.legs.forEach(l=>{l.ft.getWorldPosition(_p);_p.y=.1;const o=_p.clone();for(let i=0;i<Math.max(1,Math.round(n*3));i++)spawn(0x7a766c,.35,o.clone().add(new THREE.Vector3((Math.random()-.5)*.8,0,(Math.random()-.5)*.8)),{vel:new THREE.Vector3((Math.random()-.5)*3,.6+Math.random(),(Math.random()-.5)*3),life:.6+Math.random()*.3,grow:1.4,spin:true})})}
-function missile(obj,st,tgt){
+function missile(obj,st,tgt,src=null){
  obj.getWorldPosition(_p);obj.getWorldDirection(_d);
  const m=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0xdcdcdc}));m.scale.set(.12,.12,.45);m.position.copy(_p);S.add(m);
- FX.push({m,vel:_d.clone().multiplyScalar(7).add(new THREE.Vector3(0,5,0)),life:st?st.range/st.spd+1:3,age:0,missile:true,base:.12,tt:0,team:'p',dmg:st?st.dmg:0,splash:st?st.area:0,imp:st?st.imp:'なし',home:mode==='play'?tgt:null});
+ FX.push({m,vel:_d.clone().multiplyScalar(7).add(new THREE.Vector3(0,5,0)),life:st?st.range/st.spd+1:3,age:0,missile:true,base:.12,tt:0,team:'p',dmg:st?st.dmg:0,splash:st?st.area:0,imp:st?st.imp:'なし',home:mode==='play'?tgt:null,src});
 }
 // 迎撃装置用：自機に近い敵弾を1つ探す
 function interceptTarget(r){playerCenter(_q);let best=null,bd=r;FX.forEach(f=>{if(f.team!=='e'||f.age>=f.life)return;const d=f.m.position.distanceTo(_q);if(d<bd){bd=d;best=f}});return best}
@@ -1138,8 +1142,8 @@ function updateFX(dt){
   // 当たり判定
   if(mode==='play'&&f.team&&f.age<f.life){const pos=f.m.position;
    if(f.team==='p'){
-    for(const e of ENEMIES){if(!e.alive)continue;if(e.center(_q).distanceTo(pos)<e.r+f.base+.4){hitEnemy(e,f.dmg,pos.clone(),f.imp);if(f.splash)splashAt(pos,f.splash,f.dmg,f.imp,e);f.age=f.life;break}}
-    if(f.age<f.life&&pos.y<.05){if(f.splash)splashAt(pos,f.splash,f.dmg,f.imp);f.age=f.life}
+    for(const e of ENEMIES){if(!e.alive)continue;if(e.center(_q).distanceTo(pos)<e.r+f.base+.4){HITSRC=f.src;hitEnemy(e,f.dmg,pos.clone(),f.imp);if(f.splash)splashAt(pos,f.splash,f.dmg,f.imp,e);f.age=f.life;break}}
+    if(f.age<f.life&&pos.y<.05){HITSRC=f.src;if(f.splash)splashAt(pos,f.splash,f.dmg,f.imp);f.age=f.life}
    }else if(f.team==='e'){const by=mech.bot.position.y;if(Math.hypot(pos.x-P.pos.x,pos.z-P.pos.z)<1.9&&pos.y>by+.2&&pos.y<by+7.6){hitPlayer(f.dmg,f.imp,pos.clone());f.age=f.life}else if(pos.y<.05)f.age=f.life}
   }
   if(f.fade&&f.m.material.transparent)f.m.material.opacity=1-Math.min(1,k);
@@ -1470,7 +1474,7 @@ function jump(){
  if(active.jump)return;
  if(mode==='play'&&P.hp.legs<=0){say('LEGS 損壊：跳躍不能',.6);return}
  if(mode==='play'){if(P.stun>0||P.boost<20){if(P.boost<20)say('BOOST 不足',.6);return}P.boost-=20;P.regen=.8}
- run('jump',JUMP);
+ run('jump',JUMP);if(TRT)ttEvt('jump');
 }
 
 /* ===== ガレージUI =====
@@ -1778,7 +1782,7 @@ const PRICE={'HD-02':12000,'CR-02':18000,'AR-02':15000,'LG-02':16000,
  'RF2':9000,'MG2':8500,'BZ2':9800,'BL2':11000,'SH2':6000,'MS2':14000,'GC2':13000,'RD2':7000,'BT2':7500,'IC2':9000};
 const START_CREDIT=30000,REWARD={drone:800,turret:1200};
 const OWN=new Set(START_OWN);let CREDIT=START_CREDIT,shopVisits=0;
-let PILOT='',TUT='intro',FIRE=true;const TSEL={target:'std',field:'range'};
+let PILOT='',TUT='intro',FIRE=true,TTUT=0;const TSEL={target:'std',field:'range'};
 // 文字送りの速さ（1文字あたりのミリ秒）：セリフ／オープニングの字幕
 const TXT_SPD=62,SUB_SPD=85;
 const SAMA=()=>esc(PILOT||'パイロット')+'様';
@@ -1811,7 +1815,7 @@ function loadGame(){
   (d.own||[]).forEach(id=>{if(PRICE[id])OWN.add(id)});
   if(typeof d.cr==='number'&&isFinite(d.cr))CREDIT=Math.max(0,Math.floor(d.cr));
   shopVisits=d.visits|0;
-  PILOT=typeof d.pilot==='string'?d.pilot.slice(0,10):'';TUT=d.tut==='intro'?'intro':'done';if(typeof d.fire==='boolean')FIRE=d.fire;
+  PILOT=typeof d.pilot==='string'?d.pilot.slice(0,10):'';TUT=d.tut==='intro'?'intro':'done';TTUT=typeof d.ttut==='number'?Math.max(0,Math.min(TT_N,d.ttut|0)):(TUT==='intro'?0:TT_N);if(typeof d.fire==='boolean')FIRE=d.fire;
   if(d.tsel&&typeof d.tsel.target==='string')TSEL.target=d.tsel.target;if(d.tsel&&typeof d.tsel.field==='string')TSEL.field=d.tsel.field;
   if(d.tune)Object.entries(d.tune).forEach(([k,v])=>{if(Array.isArray(v))TUNE[k]=[Math.min(5,v[0]|0),Math.min(5,v[1]|0)]});
   if(d.dmg)Object.entries(d.dmg).forEach(([k,v])=>{if(typeof v==='number'&&v>0)DMG[k]=v});
@@ -1820,7 +1824,7 @@ function loadGame(){
   if(d.cfg)SLOTS.forEach(sl=>{const v=d.cfg[sl.key];if(v&&sl.cat[v]&&(v==='none'||OWN.has(v)))cfg[sl.key]=v});
  }catch(e){}
 }
-function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG,tune:TUNE,pilot:PILOT,tut:TUT,fire:FIRE,tsel:TSEL,cls:CLS,ch:CH,mis:MIS}))}catch(e){}}
+function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG,tune:TUNE,pilot:PILOT,tut:TUT,fire:FIRE,tsel:TSEL,ttut:TTUT,cls:CLS,ch:CH,mis:MIS}))}catch(e){}}
 
 /* ===== SHOP ===== */
 const fmtCR=n=>Math.round(n).toLocaleString('ja-JP');
@@ -2352,9 +2356,10 @@ function placeEnemy(e){const a=Math.random()*Math.PI*2,r=22+Math.random()*40;
  e.home.set(Math.sin(a)*r,e.type==='drone'?6:0,Math.cos(a)*r);e.g.position.copy(e.home);e.hp=e.max;e.alive=true;e.g.visible=true;e.cd=2+Math.random()*2}
 for(let i=0;i<4;i++)makeEnemy('drone').tr=true;for(let i=0;i<3;i++)makeEnemy('turret').tr=true;
 const IMP={S:{st:.8,kb:4,p:1},A:{st:.6,kb:2.5,p:1},B:{st:.45,kb:1.5,p:1},C:{st:.35,kb:.8,p:.5},D:{st:.3,kb:.4,p:.25}};
+let HITSRC=null;
 function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;e.hp-=dmg;e.hit=.08;spawn(0xffffff,.5,pos,{life:.08});
  const I=IMP[imp];if(I&&Math.random()<I.p){e.stun=Math.max(e.stun,I.st);e.kb.copy(e.g.position).sub(P.pos).setY(0).normalize().multiplyScalar(I.kb*3)}
- if(e.hp<=0){e.alive=false;e.g.visible=false;e.respawn=5;P.kills++;if(!TRAIN){const rw=e.type==='drone'?REWARD.drone:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
+ if(e.hp<=0){e.alive=false;e.g.visible=false;e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN){const rw=e.type==='drone'?REWARD.drone:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
 function updateEnemies(dt){
  ENEMIES.forEach(e=>{
   if(e.off)return;
@@ -2399,7 +2404,7 @@ function quickBoost(x,y,mult=1,free=false){ // x=右+ / y=前+ （画面基準�
  if(!free){if(P.boost<30){say('BOOST 不足',.6);return}P.boost-=30;P.regen=.8}
  const top=CAMMODE==='top',f=top?topF():new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw)),r=top?topR():new THREE.Vector3(-Math.cos(P.yaw),0,Math.sin(P.yaw));
  const dir=f.multiplyScalar(y).add(r.multiplyScalar(x));if(dir.lengthSq()<.01)dir.set(Math.sin(P.yaw),0,Math.cos(P.yaw));
- P.qb={dir:dir.normalize(),u:0,dist:SS.qb*mult};run('qb',QBA);shake=Math.max(shake,.12);
+ P.qb={dir:dir.normalize(),u:0,dist:SS.qb*mult};run('qb',QBA);shake=Math.max(shake,.12);if(TRT)ttEvt('qb');
 }
 let lockT2=null,reveal=0;
 let pinned=null,lockCands=[];
@@ -2440,7 +2445,7 @@ function drawMap(){
 }
 function switchTarget(){
  if(mode!=='play'||lockCands.length<2){if(mode==='play'&&!lockCands.length)say('ロック可能な敵なし',.6);return}
- const i=lockCands.indexOf(lockT);pinned=lockCands[(i+1)%lockCands.length];lockT=pinned;
+ const i=lockCands.indexOf(lockT);pinned=lockCands[(i+1)%lockCands.length];lockT=pinned;if(TRT)ttEvt('tgt');
  const b=$('bTgt');b.classList.add('on');setTimeout(()=>b.classList.remove('on'),150);
 }
 function updateLock(){
@@ -2577,7 +2582,7 @@ const anyGot=()=>MLIST.some(d=>MIS[d.id]&&MIS[d.id].got);
 const unreadMail=()=>MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got&&!MIS[d.id].read);
 // ガレージに入ったときに新しい依頼を届ける。1-1：チュートリアル後、TRAINING から戻ったとき（または CONTINUE で再開したとき）
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
- const d=MDEF['1-1'];if(d.ready&&!MIS[d.id]&&['train','continue','mission'].includes(kind)){MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)}
+ const d=MDEF['1-1'];if(d.ready&&!MIS[d.id]&&TTUT>=TT_N&&['train','continue','mission','ttdone'].includes(kind)){MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)}
  if(out.length){saveGame();misHeader();$('mailBtn').classList.add('new')}return out}
 function misHeader(){const u=unreadMail().length,got=anyGot();
  $('hCls').textContent='CLASS '+CLS;$('hCh').textContent='CH.'+CH;
@@ -2689,6 +2694,43 @@ function renderResult(r){const d=r.def,cl=chCleared(d.ch),norm=chNormals(d.ch);
   <div class="rbot"><div class="btalk"><span class="nm">N-07 ノーナ</span><div class="tx">${nameIn(r.ok?d.res.ok:d.res.ng)}</div></div><button class="btn-main" id="rGo">GARAGE ▶</button></div></div>`;
  misEl.hidden=false;$('rGo').onclick=()=>fadeTo(()=>{hideMis();garageGreet('mission',{ok:r.ok})},'GARAGE')}
 
+/* ----- 初回 TRAINING のチュートリアル（TTUT：次に行う項目 0〜10、TT_N で完了。途中で撤退したら続きから）-----
+ 設定は固定（敵の攻撃なし・STANDARD・演習場）。ノーナが通信の帯で1項目ずつ教え、指示された操作をすると次へ。
+ 6〜8 は指定の武器でとどめを刺して撃破。その武器では倒せない装備なら飛ばす。10 は5機撃破（敵は湧き直す） */
+let TRT=false;const TT_N=11,PCI=matchMedia('(pointer:fine)').matches;
+const canKill=k=>{if(k==='sh')return ['rShoulder','lShoulder'].some(x=>{const st=stOf(x);return st&&st.kind==='射撃'});const st=stOf(k);return !!st&&st.kind!=='防御'};
+const TT_STEPS=[
+ {t:()=>PCI?'WASD で歩いてみてください。':'左のスティックで歩いてみてください。',h:null},
+ {t:()=>PCI?'Shift を押しながら移動すると、ダッシュします。':'スティックを端まで倒し続けると、ダッシュします。',h:null},
+ {t:()=>PCI?'同じ移動キーを2回すばやく押すと、急加速します。':'スティックのまわりの三角を押すと、その方向へ急加速します。',h:'.qb'},
+ {t:()=>PCI?'Space で跳躍します。':'JUMP で跳躍します。',h:'.jbtn'},
+ {t:()=>PCI?'マウスをドラッグするか Q・E で、視点が回ります。':'画面の右側をなぞると、視点が回ります。',h:null},
+ {t:()=>'R-HAND で標的機を撃破してください。正面の敵は自動でロックします。'+(PCI?'（J・左クリック）':''),h:'#wR',k:'rHand'},
+ {t:()=>(HAND[cfg.lHand].st.kind==='近接'?'L-HAND は近接兵装です。近づいて、標的機を撃破してください。':'L-HAND で標的機を撃破してください。')+(PCI?'（K・右クリック）':''),h:'#wL',k:'lHand'},
+ {t:()=>'肩の兵装は、両肩同時に発動します。SHLDR で標的機を撃破してください。'+(PCI?'（L）':''),h:'#wS',k:'sh'},
+ {t:()=>'TARGET で、狙う敵を切り替えられます。'+(PCI?'（Tab）':''),h:'#bTgt'},
+ {t:()=>'残りの標的機を、5機撃破してください。',h:null},
+ {t:()=>'お疲れさまでした。右上の ‖ から、いつでも中断できます。ガレージへ戻ります。',h:'#pauseBtn'}];
+const TTS={step:-1,wait:0,acc:0,yaw:null,kills:0,busy:false,end:0};
+function ttHL(sel){document.querySelectorAll('.tth').forEach(e=>e.classList.remove('tth'));if(sel)document.querySelectorAll('#play '+sel).forEach(e=>e.classList.add('tth'))}
+function ttShow(i){const S=TT_STEPS[i];TTS.step=i;TTS.acc=0;TTS.kills=0;TTS.busy=false;TTS.yaw=null;$('comm').classList.add('tt');$('comm').classList.remove('ok');
+ $('commSt').hidden=false;$('commSt').textContent='STEP '+(i+1)+'/'+TT_N;comm(S.t()+(i===9?'（0/5）':''),0);ttHL(S.h);
+ if(S.k&&!canKill(S.k)){TTS.busy=true;setTimeout(()=>{if(!TRT||TTS.step!==i)return;comm((S.k==='sh'?'肩':S.k==='lHand'?'L-HAND':'R-HAND')+' の装備では撃破できないため、この項目は飛ばします。',0);setTimeout(()=>ttDone(i,true),2200)},1600)}
+ if(i===TT_N-1){TTS.busy=true;TTUT=TT_N;saveGame();setTimeout(()=>{if(TRT&&mode==='play')fadeTo(()=>setMode('garage'),'GARAGE')},5200)}}
+function ttDone(i,skip=false){if(!TRT||TTS.step!==i||(TTS.busy&&!skip&&i!==TT_N-1))return;TTS.busy=true;TTUT=i+1;saveGame();
+ if(!skip){$('comm').classList.add('ok');comm('OK',0)}setTimeout(()=>{if(TRT&&mode==='play')ttShow(i+1)},skip?200:1100)}
+function ttStart(){TTS.step=-1;$('comm').classList.add('tt');$('commSt').hidden=true;
+ comm(TTUT>0?'チュートリアルの続きを始めます。':'操作のチュートリアルを始めます。指示に沿って操作してください。',0);setTimeout(()=>{if(TRT&&mode==='play')ttShow(Math.min(TTUT,TT_N-1))},2600)}
+function ttClear(){TRT=false;ttHL(null);$('comm').classList.remove('tt','ok');$('commSt').hidden=true;$('comm').hidden=true;COMM.t=0}
+function ttMove(dt,dash,walk){const i=TTS.step;if(TTS.busy||i<0)return;
+ if(i===0&&walk){TTS.acc+=P.vel.length()*dt;if(TTS.acc>14)ttDone(0)}
+ if(i===1&&dash){TTS.acc+=dt;if(TTS.acc>1)ttDone(1)}
+ if(i===4){const y=CAMMODE==='top'?topYaw:camYaw;if(TTS.yaw!=null)TTS.acc+=Math.abs(y-TTS.yaw);TTS.yaw=y;if(TTS.acc>1.6)ttDone(4)}}
+function ttEvt(ev,src){const i=TTS.step;if(TTS.busy||i<0)return;
+ if(ev==='qb'&&i===2)ttDone(2);if(ev==='jump'&&i===3)ttDone(3);if(ev==='tgt'&&i===8)ttDone(8);
+ if(ev==='kill'){const k=TT_STEPS[i].k;
+  if(k&&(src===k||(k==='sh'&&(src==='rShoulder'||src==='lShoulder'))))ttDone(i);
+  if(i===9){TTS.kills++;if(TTS.kills>=5)ttDone(9);else comm(TT_STEPS[9].t()+'（'+TTS.kills+'/5）',0)}}}
 /* ----- ポーズ（TRAINING・MISSION 共通）：時間を止め、再開・視点・撤退を選ぶ。撤退は MISSION なら失敗として結果へ、TRAINING はガレージへ ----- */
 let PAUSED=false;
 function pauseSet(on){if(mode!=='play'||(RUN&&RUN.leaving)||fading){on=false}
@@ -2702,7 +2744,8 @@ $('pzAb').onclick=()=>{pauseSet(false);if(RUN)misAbort();else fadeTo(()=>setMode
 $('pause').addEventListener('pointerdown',e=>e.stopPropagation());
 addEventListener('keydown',e=>{if(e.key==='Escape'&&mode==='play'){e.preventDefault();pauseSet(!PAUSED)}});
 /* ===== ガレージ／出撃の切り替え ===== */
-function setMode(m,training=false,mis=null){
+function setMode(m,training=false,mis=null,tt=false){
+ const wasTT=TRT;TRT=m==='play'&&tt;
  PAUSED=false;$('pause').hidden=true;
  const wasPlay=mode==='play',wasFire=wasPlay&&!TRAIN,earned=P.earned||0,wasMis=!!RUN;
  if(m==='play')RUN=mis;else RUN=null;
@@ -2714,10 +2757,10 @@ function setMode(m,training=false,mis=null){
  S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
  P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=null;pinned=null;reveal=0;topYaw=topYawC=0;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
- $('modeBadge').textContent=RUN?'MISSION '+RUN.def.id:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';$('garage').textContent=RUN?'撤退':'ガレージ';$('comm').hidden=true;
+ $('modeBadge').textContent=TRT?'TRAINING ／ TUTORIAL':RUN?'MISSION '+RUN.def.id:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';$('garage').textContent=RUN?'撤退':'ガレージ';$('comm').hidden=true;
  if(p){untintDamage();hudCache={};updateHUD();P.kills=0;P.earned=0;
-  if(RUN)misStartEnemies();else{ENEMIES.forEach(e=>{if(e.tr){e.off=false;placeEnemy(e)}else{e.off=true;e.alive=false;e.g.visible=false}});say(TRAIN?'演習開始（攻撃なし）':'演習開始（攻撃あり）',1.2)}}
- else{ENEMIES.forEach(e=>{e.off=true;e.alive=false;e.g.visible=false});view='overview';selSlot=null;renderGarage();tintDamage();if(wasPlay&&!wasMis)garageGreet('train',{fire:wasFire,earned})}
+  if(RUN)misStartEnemies();else{ENEMIES.forEach(e=>{if(e.tr){e.off=false;placeEnemy(e)}else{e.off=true;e.alive=false;e.g.visible=false}});say(TRT?'TUTORIAL':TRAIN?'演習開始（攻撃なし）':'演習開始（攻撃あり）',1.2);if(TRT)ttStart()}}
+ else{ENEMIES.forEach(e=>{e.off=true;e.alive=false;e.g.visible=false});view='overview';selSlot=null;renderGarage();tintDamage();ttClear();if(wasPlay&&!wasMis)garageGreet(wasTT&&TTUT>=TT_N?'ttdone':'train',{fire:wasFire,earned,tt:wasTT})}
  applyGarageView();
  requestAnimationFrame(resize);resize();
 }
@@ -2814,6 +2857,7 @@ R.setAnimationLoop(()=>{
   if(!dashing&&!P.qb&&!air){P.regen-=dt;if(P.regen<=0)P.boost=Math.min(SS.boost,P.boost+35*dt)}
   am=(dashing||P.qb)?2:(P.vel.length()>1.5&&!air?1:0);
   if(dashing)moveBoost=1;
+  if(TRT)ttMove(dt,dashing,!dashing&&!P.qb&&!air&&P.vel.length()>1.5);
   // ロックオン（照準の中心付近の敵を自動で捕捉し、視点をゆっくり向ける）
   updateLock();
   if(lockT&&!top){lockT.center(_q).sub(P.pos);const ty=Math.atan2(_q.x,_q.z);camYaw+=Math.atan2(Math.sin(ty-camYaw),Math.cos(ty-camYaw))*Math.min(1,dt*(attacking?9:2.5))}
@@ -2844,9 +2888,9 @@ R.setAnimationLoop(()=>{
    once:(id,u0)=>c.u>=u0&&!a.fired.has(id)&&(a.fired.add(id),true),
    tgt:(a.sl.side>0&&lockT2)?lockT2:lockT,
    use:(n=1)=>ammoUse(key,n),
-   shot:(obj,vis)=>{if(!ammoUse(key))return false;shoot(obj,{...vis,dmg:S0.dmg,speed:S0.spd,range:S0.range,splash:S0.area,imp:S0.imp,tgt:c.tgt});return true},
-   missile:(obj,i)=>{if(!ammoUse(key))return false;missile(obj,S0,(i%2&&lockT2)?lockT2:lockT);return true},
-   melee:()=>melee(S0.range,S0.dmg,S0.imp)};
+   shot:(obj,vis)=>{if(!ammoUse(key))return false;shoot(obj,{...vis,dmg:S0.dmg,speed:S0.spd,range:S0.range,splash:S0.area,imp:S0.imp,tgt:c.tgt,src:key});return true},
+   missile:(obj,i)=>{if(!ammoUse(key))return false;missile(obj,S0,(i%2&&lockT2)?lockT2:lockT,key);return true},
+   melee:()=>{HITSRC=key;melee(S0.range,S0.dmg,S0.imp)}};
   if(c.u>=1){endOf(a.def)?.(c.w);delete active[key];continue}
   const o=a.def.act.run(c);if(!o)continue;const w=o.w??1,ai=c.s<0?0:1;
   if(o.arms)armF.forEach(f=>mixArm(f,o.arms,o.arms.w??w));
@@ -2912,7 +2956,7 @@ R.setAnimationLoop(()=>{
    [['hpA','arms'],['hpL','legs']].forEach(([id,k])=>{const el=$(id),r=P.hp[k]/P.hpMax[k];el.querySelector('b').textContent=Math.round(P.hp[k]);
     setCells(el.querySelector('.hcells'),Math.ceil(r*10),'');el.classList.toggle('dmg',r<=.5&&r>.25);el.classList.toggle('crit',r<=.25&&r>0);el.classList.toggle('dead',r<=0)});
    setCells($('bsCells'),Math.ceil(P.boost/SS.boost*25),'');$('bsNum').textContent=Math.round(P.boost);$('hudp').classList.toggle('low',P.boost<30)}
-  $('score').textContent=RUN?`残り ${misLeft()}`:`撃破 ${P.kills}`;if(RUN)misTick(dt);
+  $('score').textContent=RUN?`残り ${misLeft()}`:`撃破 ${P.kills}`;misTick(dt);
   drawMap();
   setWeaponBtn('wR','cR',['rHand']);setWeaponBtn('wL','cL',['lHand']);setWeaponBtn('wS','cS',['rShoulder','lShoulder']);
   $('guardMsg').textContent=(guarding(-1)||guarding(1))?'防御中':'';
@@ -2959,11 +3003,13 @@ function garageGreet(kind,info={}){
  else if(kind==='shop')L=[[pick(['おかえりなさい、'+N+'。新しい装備は、ここで付け替えられます。','おかえりなさい、'+N+'。ドールさんは、今日もお元気そうでしたね。'])]];
  else if(kind==='train'){
   if(partNow('core')<=0)L=[['……申し訳ありません、機体を守りきれませんでした。'],['修理が終わるまで、攻撃ありの演習は控えましょう。']];
+  else if(info.tt)L=[['チュートリアルを中断しました。次の TRAINING で、続きから再開します。']];
   else if(!info.fire)L=[['お疲れさまでした。操作の記録は良好です。']];
   else{const hurt=PART_KEYS.filter(k=>partNow(k)/partMax(k)<=.5);
    L=[[(info.earned>0?'お疲れさまでした。獲得した報酬は <strong>'+fmtCR(info.earned)+' CR</strong> です。':'お疲れさまでした。')+(hurt.length?'':' 損傷は軽微です。')]];
    if(hurt.length)L.push([hurt.map(k=>PARTJ[k]).join('と')+'の装甲が大きく減っています。SHOP での修理をおすすめします。'])}
- }else if(kind==='mission'){
+ }else if(kind==='ttdone')L=[['お疲れさまでした。基本の操作は以上です。'],['あとは実戦で慣れていきましょう。TRAINING は、次からは敵の攻撃のあり・なしを選べます。']];
+ else if(kind==='mission'){
   if(partNow('core')<=0)L=[['……申し訳ありません、機体を守りきれませんでした。'],['修理が終わるまで、出撃は控えましょう。']];
   else{const hurt=PART_KEYS.filter(k=>partNow(k)/partMax(k)<=.5);L=[[info.ok?'報酬の入金を確認しました。所持金は <strong>'+fmtCR(CREDIT)+' CR</strong> です。':'依頼は、いつでも受け直せます。']];
    if(hurt.length)L.push([hurt.map(k=>PARTJ[k]).join('と')+'の装甲が大きく減っています。SHOP での修理をおすすめします。'])}
@@ -2980,6 +3026,7 @@ function garageGreet(kind,info={}){
 const TRAIN_TARGETS=[{id:'std',name:'STANDARD',ja:'ドローン＋砲台',ready:true},{id:'heavy',name:'HEAVY',ja:'重装の標的機',ready:false},{id:'gear',name:'GEAR',ja:'ギアの標的機',ready:false}];
 const TRAIN_FIELDS=[{id:'range',name:'RANGE',ja:'演習場',ready:true},{id:'ruins',name:'RUINS',ja:'廃墟',ready:false},{id:'city',name:'CITY',ja:'市街地',ready:false}];
 function openTrainPrep(){
+ if(TTUT<TT_N&&!SS.over){saveGame();fadeTo(()=>setMode('play',true,null,true),'TRAINING');return}
  if(SS.over)return;
  if(!TRAIN_TARGETS.some(o=>o.ready&&o.id===TSEL.target))TSEL.target='std';if(!TRAIN_FIELDS.some(o=>o.ready&&o.id===TSEL.field))TSEL.field='range';
  const draw=()=>{const dead=partNow('core')<=0,fire=FIRE&&!dead;
@@ -3338,7 +3385,7 @@ const hasSave=()=>{try{return !!localStorage.getItem(SAVE_KEY)}catch(e){return f
 function showTitle(){const t=$('title');t.hidden=false;TT.on=true;titleSize();titleLoop();
  const sv=hasSave();$('tCon').disabled=!sv;$('tConSub').textContent=sv?fmtCR(CREDIT)+' CR':'NO DATA';$('tNew').focus()}
 function resetGame(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}
- OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();CLS='E';CH=1;Object.keys(MIS).forEach(k=>delete MIS[k]);mailClose();
+ OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();TTUT=0;CLS='E';CH=1;Object.keys(MIS).forEach(k=>delete MIS[k]);mailClose();
  Object.keys(DMG).forEach(k=>delete DMG[k]);Object.keys(TUNE).forEach(k=>delete TUNE[k]);Object.assign(cfg,DEFAULT_CFG);assemble()}
 function hideTitle(){TT.on=false;$('title').hidden=true;$('title').querySelectorAll('.tmodal').forEach(m=>m.remove());view='overview';selSlot=null;renderGarage();resize()}
 addEventListener('resize',()=>{if(TT.on)titleSize()});
