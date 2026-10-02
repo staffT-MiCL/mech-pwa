@@ -649,6 +649,17 @@ body.tut .hcls,body.tut .hch{display:none}
 #mailBox .acts button{height:34px;font-family:var(--disp);font-size:13px}
 #mailBox .go{flex:1;background:var(--cyan);border:0;color:#08201f;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
 body.eqm #mailBox{display:none}
+#dbgBox{position:fixed;left:max(8px,calc(50% - 330px));right:max(8px,calc(50% - 330px));top:8px;bottom:8px;z-index:30;pointer-events:auto;box-sizing:border-box;padding:10px 12px;display:flex;flex-direction:column;gap:6px;border:1px solid #8a6ad8;background:rgba(14,10,22,.97);min-height:0;font-family:var(--disp)}
+#dbgBox .dh{display:flex;justify-content:space-between;align-items:center;font-family:var(--mech);font-size:11px;letter-spacing:.2em;color:#c0a8ff}#dbgBox .dh small{font-family:var(--disp);letter-spacing:0;color:#8a7aa8}
+#dbgBox .dl{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:3px;padding-right:4px}
+#dbgBox .dc{font-family:var(--mech);font-size:10px;letter-spacing:.16em;color:#c0a8ff;border-bottom:1px solid #4a3a70;padding:4px 0 2px;margin-top:4px}
+#dbgBox .dr{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;min-height:30px;padding:0 6px;background:rgba(40,30,60,.5);font-size:12px;color:#e8e0ff}
+#dbgBox .dr b{font-family:var(--mech);font-size:10px;color:#a090c8;margin-right:6px}#dbgBox .dr.st{background:rgba(90,60,20,.45)}#dbgBox .dr.na{opacity:.45}
+#dbgBox .sg{display:flex}#dbgBox .sg button{height:24px;padding:0 9px;font-size:11px;background:#1a1428;border:1px solid #4a3a70;color:#8a7aa8;margin-left:-1px}#dbgBox .sg button.on{background:#8a6ad8;color:#120c1e;border-color:#8a6ad8}
+#dbgBox .dt{display:flex;align-items:center;justify-content:space-between;min-height:30px;padding:0 6px;font-size:12px;color:#e8e0ff;background:rgba(40,30,60,.5)}
+#dbgBox .ft{display:flex;gap:6px;align-items:center}#dbgBox .ft button{height:32px;font-size:12px;padding:0 12px}#dbgBox .ft .go{background:#8a6ad8;color:#120c1e;border:0}#dbgBox .ft .x{margin-left:auto}
+#dbgBox .note{font-size:10px;color:#8a7aa8}
+#dbgInv{position:absolute;left:50%;top:calc(62px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:3;padding:1px 8px;border:1px solid #8a6ad8;background:rgba(20,12,36,.6);color:#c0a8ff;font-family:var(--mech);font-size:10px;letter-spacing:.14em;pointer-events:none}
 #mailBox .mbc{display:flex;flex-direction:column;gap:7px;flex:1;min-height:0}
 #mailBox.pop{animation:mbPop .25s ease-out;transform-origin:top center}@keyframes mbPop{from{opacity:0;transform:scale(.94)}}
 #mailBox.cls{transition:opacity .18s,transform .18s;opacity:0;transform:scale(.96);transform-origin:top center}
@@ -818,6 +829,7 @@ body.eqm #visit{display:none}
   <div class="tools"><button id="btnPaint">PAINT</button><button id="btnTrain">TRAINING</button><button id="btnView">VIEW</button></div></div>
   <div id="gstats"></div>
   <div id="mailBox" class="mc14" hidden role="dialog" aria-label="メール"></div>
+  <div id="dbgBox" class="mc14" hidden role="dialog" aria-label="デバッグ"></div>
   <div id="visit" hidden role="dialog" aria-label="来訪"><div class="vdim"></div><img id="vImg" alt=""><div id="vCh"></div>
    <div id="vTalk"><span class="nm" id="vNm"></span><span class="ci" id="vCi" hidden>CUT IN</span><div id="vTx"></div><span id="vNx" hidden>▼</span></div><button type="button" id="vSkip" hidden>SKIP ▶▶</button></div>
   <div id="nonaBox" hidden role="status" aria-live="polite"><span class="nm">N-07 ノーナ</span><div id="nbText"></div><span id="nbNext" hidden>▼</span></div>
@@ -831,6 +843,7 @@ body.eqm #visit{display:none}
   </div>
   <div class="extchip" id="extChip"></div>
   <div id="topC"><div id="modeBadge"></div></div>
+  <div id="dbgInv" hidden>DEBUG：無敵</div>
   <div id="esc" hidden><b id="escL">CARGO</b><i><u id="escHp"></u></i><span id="escS">配給所まで</span><em id="escD"></em></div>
   <button id="pauseBtn" aria-label="ポーズ"><i></i><i></i></button>
   <button id="garage">ガレージ</button>
@@ -865,6 +878,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mMission" disabled><span class="no">02</span><span class="t en">MISSION<br><small id="mMisSub">依頼が届くと選べます</small></span></button>
   <button class="mitem" disabled data-soon="1"><span class="no">03</span><span class="t en">VERSUS<br><small>闘技場で戦う（準備中）</small></span></button>
   <button class="mitem" id="mShop"><span class="no">04</span><span class="t en">SHOP<br><small>パーツや兵装を買う</small></span></button>
+  <button class="mitem" id="mDebug" hidden><span class="no">DBG</span><span class="t en">DEBUG<br><small>依頼の進行・無敵モード（テスト用）</small></span></button>
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
@@ -2467,7 +2481,7 @@ const P={pos:new THREE.Vector3(),vel:new THREE.Vector3(),yaw:0,hp:{core:1,arms:1
 let camYaw=0;
 function playerCenter(v){return v.set(P.pos.x,mech.bot.position.y+4,P.pos.z)}
 let msgT=0;function say(s,d=.8){$('msg').textContent=s;msgT=d}
-function hitPlayer(dmg,imp,pos){if(P.down>0)return;
+function hitPlayer(dmg,imp,pos){if(P.down>0)return;if(DBG.inv){spawn(0xc0a8ff,.6,pos,{life:.08});return}
  // シールド：正面からの弾を防ぐ（衝撃も無効）
  const from=_d.copy(pos).sub(P.pos).setY(0).normalize(),front=from.x*Math.sin(P.yaw)+from.z*Math.cos(P.yaw);
  for(const sd of [-1,1]){const key=sd<0?'rHand':'lHand';
@@ -2622,7 +2636,7 @@ const MIS={}; // 依頼の状態 {got:届いた, read:メールを読んだ, cle
 const CHAPTERS={1:'何でも屋の初仕事',2:''};
 const PASTOR07='<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-07</span>',JONAH='<ruby class="mc">JONAH<rt>ヨナ</rt></ruby>';
 const MLIST=[
- {id:'1-1',ch:1,kind:'mail',ready:true,title:'配給所周辺の掃除',from:'第7区画管理局',fromFull:'第7区画管理局（'+PASTOR07+' '+JONAH+' 管轄）',
+ {id:'1-1',ch:1,kind:'mail',ready:true,need:['tut'],title:'配給所周辺の掃除',from:'第7区画管理局',fromFull:'第7区画管理局（'+PASTOR07+' '+JONAH+' 管轄）',
   subj:'配給所周辺における小型無人機の排除',body:'登録ギア乗り各位<br>配給所外周に小型無人機の侵入を確認。排除を依頼する。<br>報酬 6,000 CR。受諾は任意。<br><span class="end">── 以上</span>',
   mailNona:'管理局から依頼です。……本文は、相変わらず短いですね。最初のお仕事としては手頃かと。',
   reward:6000,field:'city',fieldJa:'配給都市の外れ',obj:'ドローンを全機撃破',fail:'CORE 大破',enemyJa:'ドローン ×6',
@@ -2631,7 +2645,7 @@ const MLIST=[
   comm:{start:'敵影6。散開しています。',last:'残り1機です。',clear:'敵影なし。全機の撃破を確認しました。帰還します。'},
   res:{ok:'お疲れさまでした。管理局からの返信は……ありませんね。報酬だけは届いています。',ng:'撤退します。損傷の確認を。'},
   enemies:[{type:'drone',x:-14,z:26},{type:'drone',x:12,z:24},{type:'drone',x:-4,z:44},{type:'drone',x:20,z:44},{type:'drone',x:-26,z:40},{type:'drone',x:6,z:56}]},
- {id:'1-2',ch:1,kind:'visit',ready:true,title:'荷車の護衛',from:'行商人 オットー',client:'オットー',img:'img/clients/client-merchant-otto.png',imgF:'',reward:9000,field:'road',fieldJa:'旧街道',
+ {id:'1-2',ch:1,kind:'visit',ready:true,need:['1-1'],title:'荷車の護衛',from:'行商人 オットー',client:'オットー',img:'img/clients/client-merchant-otto.png',imgF:'',reward:9000,field:'road',fieldJa:'旧街道',
   obj:'荷車を配給所まで守りぬく',fail:'荷車の破壊 ／ CORE 大破',enemyJa:'ドローン（3回に分けて襲来）',
   desc:'回収品を売り歩く行商人オットーの荷車を、旧街道の先の西配給所まで護衛する。積み荷の半分は、ドールの部品倉庫行き。',
   brief:['荷車は道なりに、ゆっくり進みます。近くに敵がいると止まり、いなくなると動き出します。','無人機は3回に分けて来るはずです。2回目からは道の先に砲台も。荷車から離れすぎないでください。','……荷車が壊れると、ドールさんが泣きます。たぶん。'],
@@ -2646,7 +2660,7 @@ const MLIST=[
   talk:[['c','あんたがハンガー07のギア乗りかい。回収品を売り歩いてる、オットーってもんだ。'],['c','旧街道を抜けて、西の配給所まで荷車を運びたいんだ。最近、無人機がうろついててね……護衛を頼めないか？'],
    ['d','ちょ、ちょっとお待ちを！ その荷車、もしや当倉庫に納める部品も積んでおられます？'],['c','お、ドールの旦那か。そうさ、半分はあんたのとこ行きだ。'],
    ['d','でしたらぜひ、ぜひ丁寧に！ ○○様、どうかよろしくお願いいたします！'],['n','旧街道は見通しが悪い地形です。荷車の速さに合わせる必要がありますね。……お受けになりますか、○○。']]},
- {id:'1-3',ch:1,kind:'mail',ready:false,title:'給水塔の砲台撤去',from:'西配給所 補修班',reward:8000,field:'factory',fieldJa:'放棄工場'},
+ {id:'1-3',ch:1,kind:'mail',ready:false,need:['1-1'],title:'給水塔の砲台撤去',from:'西配給所 補修班',reward:8000,field:'factory',fieldJa:'放棄工場'},
  {id:'1-S',ch:1,kind:'visit',story:true,ready:true,cls:'D',title:'動き出した残骸',from:'元整備兵 ヴァルター',client:'ヴァルター',img:'img/clients/client-veteran-walter.png',imgF:'',reward:15000,field:'ruins',fieldJa:'旧戦役の廃墟',
   obj:'大型無人砲台の停止',fail:'CORE 大破',enemyJa:'大型無人砲台 ＋ ドローン（2回補充）',
   desc:'廃墟で、旧戦役の大型無人砲台が動き出した。戦役のあと一度も動かなかったものだという。依頼人は、廃墟のそばで暮らす元整備兵。',
@@ -2765,10 +2779,19 @@ const chReadyAll=c=>{const n=chNormals(c).filter(d=>d.ready);return n.length>0&&
 const anyGot=()=>MLIST.some(d=>MIS[d.id]&&MIS[d.id].got);
 const unreadMail=()=>MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got&&!MIS[d.id].read);
 // ガレージに入ったときに新しい依頼を届ける。1-1：チュートリアル後、TRAINING から戻ったとき（または CONTINUE で再開したとき）
+/* 依頼の届く条件（データだけで決まる。依頼を増やすときは MLIST に need を書くだけ）
+ need：['tut']＝チュートリアル完了／['1-1']＝その依頼をクリア。
+ 自動で足す条件：★＝同じ CHAPTER の ready な通常依頼すべて／CHAPTER 2 以降の通常依頼＝前の CHAPTER の★ */
+const isMis=d=>d.ch>0;
+function misDeps(d){const r=new Set((d.need||[]));
+ if(d.story)chNormals(d.ch).filter(x=>x.ready).forEach(x=>r.add(x.id));
+ else if(d.ch>1){const ps=MLIST.find(x=>x.ch===d.ch-1&&x.story);if(ps)r.add(ps.id)}
+ if(!r.size)r.add('tut');return [...r]}
+const tutOk=()=>TUT==='done'&&TTUT>=TT_N;
+const depOk=(k,st)=>k==='tut'?(st?st.tut:tutOk()):(st?st.m[k]===2:!!(MIS[k]&&MIS[k].clear));
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
- const d=MDEF['1-1'];if(d.ready&&!MIS[d.id]&&TTUT>=TT_N&&['train','continue','mission','ttdone'].includes(kind)){MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)}
- const v=MDEF['1-2'];if(!MIS[v.id]&&MIS['1-1']&&MIS['1-1'].clear&&['train','continue','mission','shop','ttdone'].includes(kind)){MIS[v.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(v)}
- const st=MLIST.find(d=>d.ch===CH&&d.story);if(st&&st.ready&&!MIS[st.id]&&chReadyAll(CH)&&['train','continue','mission','shop','ttdone'].includes(kind)){MIS[st.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(st)}
+ if(['train','continue','mission','shop','ttdone'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(!misDeps(d).every(k=>depOk(k)))return;
+  MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)});
  if(out.length){saveGame();misHeader();if(out.some(d=>d.kind==='mail'))$('mailBtn').classList.add('new')}return out}
 function misHeader(){const u=unreadMail().length,got=anyGot();
  $('hCls').textContent='CLASS '+CLS;$('hCh').textContent='CH.'+CH;
@@ -2918,7 +2941,7 @@ function misStartEnemies(){
  if(es){RUN.tr={hp:es.hp,max:es.hp,z:es.z0,stop:false,wait:false,hurt:false,near:false};truckPlace();TRUCK.visible=true;RUN.total=RUN.def.waves.reduce((a,w)=>a+w.en.length,0)}else TRUCK.visible=false;
  say('MISSION START',1.4);setTimeout(()=>{if(RUN)comm(RUN.def.comm.start)},700)}
 function truckPlace(){const z=RUN.tr.z;TRUCK.position.set(roadX(z)+2,0,z);TRUCK.rotation.y=Math.atan(roadDX(z))}
-function truckHit(dmg,pos){const T=RUN.tr;if(!T||T.hp<=0||RUN.ok)return;T.hp=Math.max(0,T.hp-dmg);spawn(0xffffff,.7,pos,{life:.1});
+function truckHit(dmg,pos){const T=RUN.tr;if(!T||T.hp<=0||RUN.ok)return;if(DBG.inv){spawn(0xc0a8ff,.6,pos,{life:.08});return}T.hp=Math.max(0,T.hp-dmg);spawn(0xffffff,.7,pos,{life:.1});
  if(!T.hurt&&T.hp<T.max*.5){T.hurt=true;comm(RUN.def.comm.hurt,2.6)}
  if(T.hp<=0){explode(new THREE.Vector3(TRUCK.position.x,2,TRUCK.position.z),3);TRUCK.visible=false;say('荷車 大破',3);RUN.endT=2.6;RUN.lost=true}}
 // ボス戦：上部の HP バー、増援（HP 2/3・1/3）、撃破で成功
@@ -3030,7 +3053,7 @@ function setMode(m,training=false,mis=null,tt=false){
  P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=null;pinned=null;reveal=0;topYaw=topYawC=0;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
  if(p&&RUN&&RUN.def.start){P.pos.set(RUN.def.start.x,0,RUN.def.start.z);mech.bot.position.copy(P.pos)}
- $('modeBadge').textContent=TRT?'TRAINING ／ TUTORIAL':RUN?'MISSION '+RUN.def.id:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';$('garage').textContent=RUN?'撤退':'ガレージ';$('comm').hidden=true;
+ $('dbgInv').hidden=!(p&&DBG.inv);$('modeBadge').textContent=TRT?'TRAINING ／ TUTORIAL':RUN?'MISSION '+RUN.def.id:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';$('garage').textContent=RUN?'撤退':'ガレージ';$('comm').hidden=true;
  if(p){untintDamage();hudCache={};updateHUD();P.kills=0;P.earned=0;
   if(RUN)misStartEnemies();else{ENEMIES.forEach(e=>{if(e.tr){e.off=false;placeEnemy(e)}else{e.off=true;e.alive=false;e.g.visible=false}});say(TRT?'TUTORIAL':TRAIN?'演習開始（攻撃なし）':'演習開始（攻撃あり）',1.2);if(TRT)ttStart()}}
  else{ENEMIES.forEach(e=>{e.off=true;e.alive=false;e.g.visible=false;if(e.shadow)e.shadow.visible=false});view='overview';selSlot=null;renderGarage();tintDamage();ttClear();if(wasPlay&&!wasMis)garageGreet(wasTT&&TTUT>=TT_N?'ttdone':'train',{fire:wasFire,earned,tt:wasTT})}
@@ -3273,12 +3296,53 @@ function classUpSeq(d){const N=esc(PILOT||'操縦者'),from=CLS;
  nonaSay([[N+'。あの砲台の信号ですが……止まる直前、送り先がありました。どこかに、まだ命令を出しているものがいます。'],['記録には、何もありません。……それなのに、なぜか、聞き覚えがある気がするのです。']],{hold:true});
  NB.then=()=>{CLS=d.cls;CH=d.ch+1;const nid='n-cls-'+d.cls.toLowerCase();if(MDEF[nid]&&!MIS[nid])MIS[nid]={got:true,read:false,clear:false,n:0,t:Date.now()};saveGame();misHeader();$('mailBtn').classList.add('new');
   classBand(from,d.cls,()=>nonaSay([['管理局からの通知です。等級が上がりました。……返信より先に、こういう連絡だけは早いのですね。'],['ヘッダーの <em>MAIL</em> に、通知が届いています。']]))}}
-// テスト用：タイトルの VER 表示を5回タップすると、いまのセーブを「1-1・1-2 クリア済み」にする（★1-S の来訪を確かめるため）
-{let n=0,tm=null;const v=$('tVer');v.style.pointerEvents='auto';v.style.cursor='default';
- v.addEventListener('click',()=>{n++;clearTimeout(tm);tm=setTimeout(()=>n=0,1500);if(n<5)return;n=0;
-  if(TUT!=='done'){v.textContent='TEST：先に NEW GAME を進めてください';setTimeout(()=>v.textContent='VER 0.9',2400);return}
-  ['1-1','1-2'].forEach(id=>{const m=MIS[id]||(MIS[id]={got:true,read:true,clear:false,n:0,t:Date.now()});m.got=true;m.read=true;m.clear=true;m.n=Math.max(1,m.n)});TTUT=Math.max(TTUT,TT_N);saveGame();
-  v.textContent='TEST：1-1・1-2 クリア済みにしました（CONTINUE で来訪）';setTimeout(()=>v.textContent='VER 0.9',3200)})}
+/* ===== デバッグモード（タイトルのロゴを5回タップで有効。MENU に DEBUG が出る）=====
+ 依頼の状態（未着／届いた／クリア）を選べる。進行の矛盾は misDeps から自動でそろえる：
+ 「届いた・クリア」にする→条件の依頼をさかのぼってクリアに／「クリア」から外す→それを条件にしている依頼を未着に。
+ 等級と CHAPTER はクリア済みの★（cls）から決める。無敵＝自機（と護衛対象）がダメージを受けない。設定は別キーに保存 */
+const DBG_KEY='mech-pwa-debug',DBG={on:false,inv:false};
+try{Object.assign(DBG,JSON.parse(localStorage.getItem(DBG_KEY)||'{}'))}catch(e){}
+const dbgSave=()=>{try{localStorage.setItem(DBG_KEY,JSON.stringify(DBG))}catch(e){}};
+function dbgMenu(){$('mDebug').hidden=!DBG.on}
+{let n=0,tm=null;const lg=document.querySelector('#title .tname');lg.style.cursor='default';
+ lg.addEventListener('click',()=>{n++;clearTimeout(tm);tm=setTimeout(()=>n=0,1500);if(n<5)return;n=0;DBG.on=true;dbgSave();dbgMenu();
+  const v=$('tVer');v.textContent='DEBUG MODE ON（MENU に DEBUG）';setTimeout(()=>v.textContent='VER 0.9',2600)})}
+let DW=null;
+const dependents=id=>MLIST.filter(d=>isMis(d)&&misDeps(d).includes(id));
+function dbgSet(id,v){if(id==='tut'){DW.tut=v;if(!v)dependents('tut').forEach(d=>dbgSet(d.id,0));return}
+ const d=MDEF[id];if(!d.ready)v=0;DW.m[id]=v;
+ if(v>=1)misDeps(d).forEach(k=>{if(k==='tut')DW.tut=true;else if(DW.m[k]!==2)dbgSet(k,2)});
+ if(v<2)dependents(id).forEach(x=>{if(DW.m[x.id])dbgSet(x.id,0)})}
+function dbgOpen(){mailClose();nbClose();DW={tut:tutOk(),inv:DBG.inv,m:{}};MLIST.filter(isMis).forEach(d=>{const m=MIS[d.id];DW.m[d.id]=!m||!m.got?0:m.clear?2:1});dbgRender()}
+function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).map(d=>d.ch))].sort((a,b)=>a-b);
+ const seg=(id,v,dis)=>`<span class="sg">${['未着','届いた','クリア'].map((l,i)=>`<button data-id="${id}" data-v="${i}" class="${v===i?'on':''}" ${dis?'disabled':''}>${l}</button>`).join('')}</span>`;
+ box.innerHTML=`<div class="dh"><span>DEBUG ／ 進行状況</span><small>選ぶと、矛盾しないように関係する依頼も自動でそろいます</small></div>
+  <div class="dl"><div class="dt"><span>チュートリアル完了（ガレージ案内・初回 TRAINING）</span><span class="sg"><button data-t="0" class="${DW.tut?'':'on'}">未完了</button><button data-t="1" class="${DW.tut?'on':''}">完了</button></span></div>
+  ${chs.map(c=>`<div class="dc">CHAPTER ${c}${CHAPTERS[c]?'　'+CHAPTERS[c]:''}</div>`+MLIST.filter(d=>d.ch===c).map(d=>`<div class="dr${d.story?' st':''}${d.ready?'':' na'}"><span><b>${d.story?'★':''}${d.id}</b>${d.title}${d.ready?'':'（準備中）'}</span>${seg(d.id,DW.m[d.id],!d.ready)}</div>`).join('')).join('')}
+  <div class="dc">PLAY</div><div class="dt"><span>無敵モード（自機・護衛対象がダメージを受けない）</span><span class="sg"><button data-i="0" class="${DW.inv?'':'on'}">OFF</button><button data-i="1" class="${DW.inv?'on':''}">ON</button></span></div></div>
+  <div class="note">いまの状態：CLASS ${CLS} ／ CH.${CH}　→　適用後：CLASS ${dbgDerive().cls} ／ CH.${dbgDerive().ch}</div>
+  <div class="ft"><button class="go" id="dbgGo">適用して保存</button><button class="btn-sub" id="dbgOff">デバッグを終了</button><button class="btn-sub x" id="dbgX">閉じる</button></div>`;
+ box.hidden=false;
+ box.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{dbgSet(b.dataset.id,+b.dataset.v);dbgRender()});
+ box.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{dbgSet('tut',b.dataset.t==='1');dbgRender()});
+ box.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{DW.inv=b.dataset.i==='1';dbgRender()});
+ $('dbgX').onclick=dbgClose;$('dbgGo').onclick=dbgApply;
+ $('dbgOff').onclick=()=>{DBG.on=false;DBG.inv=false;dbgSave();dbgMenu();dbgClose();nonaSay([['デバッグモードを終了しました。']])}}
+function dbgDerive(){let ci=0,ch=1;MLIST.forEach(d=>{if(d.story&&DW.m[d.id]===2){if(d.cls)ci=Math.max(ci,CLASSES.indexOf(d.cls));ch=Math.max(ch,d.ch+1)}});
+ const maxCh=Math.max(...Object.keys(CHAPTERS).map(Number));return {cls:CLASSES[ci],ch:Math.min(ch,maxCh)}}
+function dbgClose(){$('dbgBox').hidden=true;DW=null}
+function dbgApply(){const now=Date.now();
+ if(DW.tut){TUT='done';TTUT=TT_N}else if(TUT==='done'&&TTUT>=TT_N)TTUT=0;
+ MLIST.filter(isMis).forEach(d=>{const v=DW.m[d.id],m=MIS[d.id];
+  if(!v){delete MIS[d.id];return}
+  const nm=m||{got:true,read:false,clear:false,n:0,t:now};nm.got=true;nm.clear=v===2;if(v===2){nm.read=true;nm.n=Math.max(1,nm.n)}else nm.n=0;MIS[d.id]=nm});
+ const dv=dbgDerive();CLS=dv.cls;CH=dv.ch;
+ // 等級の通知メール：クリア済みの★の分だけ届いている状態にそろえる
+ MLIST.filter(d=>d.story&&d.cls).forEach(d=>{const nid='n-cls-'+d.cls.toLowerCase();if(!MDEF[nid])return;if(DW.m[d.id]===2){if(!MIS[nid])MIS[nid]={got:true,read:true,clear:false,n:0,t:now}}else delete MIS[nid]});
+ DBG.inv=DW.inv;dbgSave();saveGame();misHeader();renderGarage();dbgClose();
+ nonaSay([['（DEBUG）進行状況を変更しました。CLASS '+CLS+' ／ CH.'+CH+(DBG.inv?' ／ 無敵 ON':'')+'。']])}
+$('mDebug').onclick=()=>{openMenu(false);dbgOpen()};
+dbgMenu();
 // ガレージに入ったときのひとこと（kind：intro／continue／shop／firstshop／train）
 const PARTJ={core:'コア',arms:'腕部',legs:'脚部'};
 function garageGreet(kind,info={}){
