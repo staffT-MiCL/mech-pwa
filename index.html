@@ -649,6 +649,10 @@ body.tut .hcls,body.tut .hch{display:none}
 #mailBox .acts button{height:34px;font-family:var(--disp);font-size:13px}
 #mailBox .go{flex:1;background:var(--cyan);border:0;color:#08201f;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
 body.eqm #mailBox{display:none}
+#mailBox .mbc{display:flex;flex-direction:column;gap:7px;flex:1;min-height:0}
+#mailBox.pop{animation:mbPop .25s ease-out;transform-origin:top center}@keyframes mbPop{from{opacity:0;transform:scale(.94)}}
+#mailBox.cls{transition:opacity .18s,transform .18s;opacity:0;transform:scale(.96);transform-origin:top center}
+#mailBox .mbc.sl{animation:mbSl .22s ease-out}#mailBox .mbc.sr{animation:mbSr .22s ease-out}@keyframes mbSl{from{opacity:0;transform:translateX(24px)}}@keyframes mbSr{from{opacity:0;transform:translateX(-24px)}}
 #mis{position:fixed;inset:0;z-index:17;background:var(--bg);display:grid;grid-template-rows:40px minmax(0,1fr);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 #mis .xhd{display:flex;align-items:center;gap:12px;padding:0 12px;background:#101513;border-bottom:1px solid var(--line);min-width:0}
 #mis .xhd .t{font-family:var(--disp);font-size:14px;color:#eef2ef;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -734,10 +738,14 @@ body.eqm #mailBox{display:none}
 /* 来訪（VISIT）：機体エリアを暗くして依頼人のイラストを重ね、下にセリフ欄。ノーナ・ドールは CUT IN で割り込む */
 #visit{position:absolute;inset:0;z-index:5;pointer-events:auto;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 #visit .vdim{position:absolute;inset:0;background:rgba(5,7,6,.66);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
-#vImg{position:absolute;left:14px;bottom:calc(var(--gsh,120px) + 2px);height:calc(100% - var(--gsh,120px) - 10px);width:auto;max-width:58%;object-fit:contain;object-position:bottom left;transition:filter .2s}
+#vImg{position:absolute;left:50%;bottom:calc(var(--gsh,120px) + 2px);height:calc(100% - var(--gsh,120px) - 10px);width:auto;max-width:72%;object-fit:contain;object-position:bottom center;opacity:0;transform:translate(-50%,16px);transition:filter .2s,opacity .4s ease .25s,transform .4s ease-out .25s}
+#visit .vdim{opacity:0;transition:opacity .3s}#vTalk{opacity:0;transform:translateY(12px);transition:opacity .3s ease .5s,transform .3s ease-out .5s}
+#visit.in .vdim,#visit.in #vImg,#visit.in #vTalk{opacity:1}#visit.in #vImg{transform:translate(-50%,0)}#visit.in #vTalk{transform:none}
+#visit.out .vdim{transition-delay:.3s}#visit.out #vImg{transition-delay:.12s,.12s,.12s}#visit.out #vTalk{transition-delay:0s}
+#vSkip{position:absolute;right:8px;top:-11px;height:20px;padding:0 8px;background:#0a0e0d;border:1px solid #4a5550;color:#9aa6a0;font-family:var(--mech);font-size:10px;letter-spacing:.14em;cursor:pointer}
 #vImg.dim{filter:brightness(.4) saturate(.7)!important}
-#vCh{position:absolute;right:12px;bottom:calc(var(--gsh,120px) + 12px);display:flex;flex-direction:column;gap:6px;width:min(186px,38%)}#vCh:empty{display:none}
-#vCh button{height:36px;font-family:var(--disp);font-size:13px;background:rgba(14,18,17,.92);border:1px solid #3a4540;color:#aeb8b3}
+#vCh{position:absolute;right:12px;bottom:calc(var(--gsh,120px) + 8px);display:flex;flex-direction:row;gap:6px;animation:vchIn .25s ease-out}@keyframes vchIn{from{opacity:0;transform:translateY(6px)}}#vCh:empty{display:none}
+#vCh button{height:30px;padding:0 14px;font-family:var(--disp);font-size:12px;background:rgba(14,18,17,.92);border:1px solid #3a4540;color:#aeb8b3}
 #vCh button:first-child{background:var(--fire);border:0;color:#1a1006;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
 #vTalk{position:absolute;left:8px;right:8px;bottom:8px;height:calc(var(--gsh,120px) - 4px);min-height:74px;box-sizing:border-box;padding:16px 14px 10px;background:#0a0e0d;border:1px solid #34403a;border-top:2px solid var(--vc,#d8a35a);cursor:pointer}
 #vTalk .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:var(--vc,#d8a35a);color:#0b0e0d;font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:2px;display:flex;align-items:center}
@@ -799,7 +807,7 @@ body.eqm #visit{display:none}
   <div id="gstats"></div>
   <div id="mailBox" class="mc14" hidden role="dialog" aria-label="メール"></div>
   <div id="visit" hidden role="dialog" aria-label="来訪"><div class="vdim"></div><img id="vImg" alt=""><div id="vCh"></div>
-   <div id="vTalk"><span class="nm" id="vNm"></span><span class="ci" id="vCi" hidden>CUT IN</span><div id="vTx"></div><span id="vNx" hidden>▼</span></div></div>
+   <div id="vTalk"><span class="nm" id="vNm"></span><span class="ci" id="vCi" hidden>CUT IN</span><div id="vTx"></div><span id="vNx" hidden>▼</span><button type="button" id="vSkip" hidden>SKIP ×</button></div></div>
   <div id="nonaBox" hidden role="status" aria-live="polite"><span class="nm">N-07 ノーナ</span><div id="nbText"></div><span id="nbNext" hidden>▼</span></div>
  </div>
  <div id="play" hidden>
@@ -2626,28 +2634,32 @@ function misHeader(){const u=unreadMail().length,got=anyGot();
 /* ----- メール（機体エリアに重ねる。下にノーナの補足）----- */
 const gotMails=()=>MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got).sort((a,b)=>(MIS[b.id].t||0)-(MIS[a.id].t||0));
 // メールボックス：受信一覧（新しい順。未読は●と太字、既読は暗く）→ 行を押すと本文
+function mailShow(box,html,dir){const was=!box.hidden&&!box.classList.contains('cls');clearTimeout(box._t);box.classList.remove('cls','pop');
+ box.innerHTML=`<div class="mbc${was?' '+dir:''}">${html}</div>`;box.hidden=false;if(!was){void box.offsetWidth;box.classList.add('pop')}}
 function mailList(){const box=$('mailBox'),L=gotMails(),u=unreadMail().length;
- box.innerHTML=`<div class="mh"><span>MAILBOX ／ ${u?'未読 '+u+' 件':'未読なし'}</span><span>${L.length} 通</span></div>
+ mailShow(box,`<div class="mh"><span>MAILBOX ／ ${u?'未読 '+u+' 件':'未読なし'}</span><span>${L.length} 通</span></div>
   <div class="mlx">${L.map(d=>{const m=MIS[d.id];return `<button class="mrw${m.read?' rd':''}" data-m="${d.id}"><i>${m.read?'':'●'}</i><span class="fr">${d.from}</span><span class="sj">${d.subj}</span>${m.clear?'<em>CLEARED</em>':''}<b class="rs ${m.read?'r':'u'}">${m.read?'既読':'未読'}</b></button>`}).join('')}</div>
-  <div class="acts"><button class="btn-sub" id="mailX" style="margin-left:auto;width:90px">閉じる</button></div>`;
- box.hidden=false;nbClose();box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>mailOpen(b.dataset.m));$('mailX').onclick=mailClose}
+  <div class="acts"><button class="btn-sub" id="mailX" style="margin-left:auto;width:90px">閉じる</button></div>`,'sr');
+ nbClose();box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>mailOpen(b.dataset.m));$('mailX').onclick=mailClose}
 function mailOpen(id){const d=MDEF[id];if(!d)return;
- const box=$('mailBox');box.innerHTML=`<div class="mh"><span>MAIL</span><span>CH.${d.ch} MISSION${MIS[d.id].clear?' ／ CLEARED':''}</span></div>
+ const box=$('mailBox');mailShow(box,`<div class="mh"><span>MAIL</span><span>CH.${d.ch} MISSION${MIS[d.id].clear?' ／ CLEARED':''}</span></div>
   <div class="mk"><span>FROM</span><span>${d.fromFull||d.from}</span><span>SUBJ</span><span class="sj">${d.subj}</span></div>
-  <div class="mb">${d.body}</div><div class="acts"><button class="btn-sub" id="mailBk" style="width:84px">◀ 一覧</button><button class="go" id="mailGo">MISSION を開く</button><button class="btn-sub" id="mailX" style="width:80px">閉じる</button></div>`;
- box.hidden=false;MIS[d.id].read=true;saveGame();misHeader();$('mailBtn').classList.remove('new');
+  <div class="mb">${d.body}</div><div class="acts"><button class="btn-sub" id="mailBk" style="width:84px">◀ 一覧</button><button class="go" id="mailGo">MISSION を開く</button><button class="btn-sub" id="mailX" style="width:80px">閉じる</button></div>`,'sl');
+ MIS[d.id].read=true;saveGame();misHeader();$('mailBtn').classList.remove('new');
  $('mailGo').onclick=()=>{mailClose();openBoard(d.id)};$('mailX').onclick=mailClose;$('mailBk').onclick=mailList;
  nonaSay([[nameIn(d.mailNona)]],{hold:true})}
-function mailClose(){const b=$('mailBox');if(b.hidden)return;b.hidden=true;nbClose()}
-$('mailBtn').onclick=()=>{if(TUT!=='done')return;if(!$('mailBox').hidden)mailClose();else mailList()};
+function mailClose(){const b=$('mailBox');if(b.hidden||b.classList.contains('cls'))return;b.classList.remove('pop');b.classList.add('cls');nbClose();b._t=setTimeout(()=>{b.hidden=true;b.classList.remove('cls')},180)}
+$('mailBtn').onclick=()=>{if(TUT!=='done')return;const mb=$('mailBox');if(!mb.hidden&&!mb.classList.contains('cls'))mailClose();else mailList()};
 
 /* ----- 来訪（VISIT）：依頼人がハンガーを訪ねてくる。def.talk＝[['c'|'n'|'d', 文], ...]（c＝依頼人、n＝ノーナ、d＝ドールの通信）
  最後に［依頼を受ける］（依頼一覧を開く）／［考えておく］。どちらでも依頼は一覧に残り、一覧から［会話を見返す］で見直せる ----- */
 const VS={q:[],iv:null,done:null,d:null};
 const V_SP={c:d=>[d.client||d.from,'#d8a35a',false],n:()=>['N-07 ノーナ','#6fd3e0',true],d:()=>['D-06 ドール（通信）','#8cf06e',true]};
-function visitPlay(id){const d=MDEF[id];if(!d||!d.talk)return;mailClose();nbClose();VS.d=d;
- const img=$('vImg');img.src=d.img;img.style.filter=d.imgF||'';img.alt=d.from;
- $('vCh').innerHTML='';$('visit').hidden=false;document.body.classList.add('visiting');VS.q=d.talk.slice();visitNext()}
+function visitPlay(id,replay){const d=MDEF[id];if(!d||!d.talk)return;mailClose();nbClose();VS.d=d;clearTimeout(VS.t);
+ const img=$('vImg');img.src=d.img;img.style.filter=d.imgF||'';img.alt=d.from;img.classList.remove('dim');
+ const v=$('visit');$('vCh').innerHTML='';$('vTx').textContent='';$('vNm').textContent='';$('vCi').hidden=true;$('vNx').hidden=true;$('vSkip').hidden=!replay;
+ v.classList.remove('in','out');v.style.setProperty('--vc',V_SP[d.talk[0][0]](d)[1]);v.hidden=false;document.body.classList.add('visiting');VS.q=d.talk.slice();VS.busy=true;
+ void v.offsetWidth;v.classList.add('in');VS.t=setTimeout(()=>{VS.busy=false;visitNext()},700)}
 function visitNext(){clearInterval(VS.iv);VS.iv=null;
  if(!VS.q.length){visitChoices();return}
  const [sp,raw]=VS.q.shift(),[nm,col,cut]=V_SP[sp](VS.d),txt=raw.replace(/○○様/g,esc(PILOT||'操縦者')+'様').replace(/○○/g,esc(PILOT||'操縦者'));
@@ -2660,9 +2672,11 @@ function visitNext(){clearInterval(VS.iv);VS.iv=null;
 function visitChoices(){const ch=$('vCh');if(ch.childElementCount)return;const d=VS.d;
  [['依頼を受ける',()=>{visitEnd();openBoard(d.id)}],['考えておく',()=>{visitEnd();nonaSay([['依頼一覧に入れておきました。MENU の <em>MISSION</em> から、いつでも確認できます。']])}]]
   .forEach(([lab,fn])=>{const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=e=>{e.stopPropagation();fn()};ch.appendChild(b)})}
-function visitEnd(){clearInterval(VS.iv);VS.iv=null;const d=VS.d;$('visit').hidden=true;document.body.classList.remove('visiting');$('vCh').innerHTML='';
+function visitEnd(){clearInterval(VS.iv);VS.iv=null;clearTimeout(VS.t);const d=VS.d,v=$('visit');$('vCh').innerHTML='';VS.q=[];VS.busy=true;
+ v.classList.add('out');v.classList.remove('in');VS.t=setTimeout(()=>{v.hidden=true;v.classList.remove('out');VS.busy=false},650);document.body.classList.remove('visiting');
  if(d&&MIS[d.id]){MIS[d.id].read=true;saveGame()}VS.d=null}
-$('vTalk').addEventListener('click',()=>{if(VS.iv)VS.done();else if(VS.q.length)visitNext()});
+$('vTalk').addEventListener('click',()=>{if(VS.busy)return;if(VS.iv)VS.done();else if(VS.q.length)visitNext()});
+$('vSkip').addEventListener('click',e=>{e.stopPropagation();const d=VS.d;if(!d||VS.busy)return;visitEnd();openBoard(d.id)});
 
 /* ----- 依頼一覧・ブリーフィング・結果（#mis）----- */
 const misEl=$('mis');let misSel=null,bTalk=null;
@@ -2688,7 +2702,7 @@ function renderBoard(sel){
  misEl.hidden=false;
  misEl.querySelectorAll('.mrow[data-id]').forEach(b=>b.onclick=()=>renderBoard(b.dataset.id));
  $('misBack').onclick=()=>fadeTo(()=>{hideMis();garageGreet('board')},'GARAGE');
- if(d){$('misBrief').onclick=()=>renderBrief(d.id);const mv=$('misVisit');if(mv)mv.onclick=()=>fadeTo(()=>{hideMis();visitPlay(d.id)},'GARAGE');const mm=$('misMail');if(mm)mm.onclick=()=>fadeTo(()=>{hideMis();mailOpen(d.id)},'GARAGE')}
+ if(d){$('misBrief').onclick=()=>renderBrief(d.id);const mv=$('misVisit');if(mv)mv.onclick=()=>fadeTo(()=>{hideMis();visitPlay(d.id,true)},'GARAGE');const mm=$('misMail');if(mm)mm.onclick=()=>fadeTo(()=>{hideMis();mailOpen(d.id)},'GARAGE')}
 }
 // ブリーフィングの地図（上＝出撃時の正面 +Z）
 function briefMap(d){const s=[];
@@ -3038,18 +3052,18 @@ function tutBlock(){if(TUT==='done')return false;openMenu(false);nonaSay([['ま�
 
 /* ===== ノーナのセリフ（ガレージ左下）=====
  1文字ずつ表示。タップで早送り→次へ。hold＝最後の文を出したまま残す（チュートリアルの案内用）、それ以外は数秒で閉じる */
-const NB={q:[],iv:null,done:null,hold:false,t:null};
-function nonaSay(lines,{hold=false}={}){clearTimeout(NB.t);clearInterval(NB.iv);NB.q=lines.map(l=>Array.isArray(l)?l[0]:l);NB.hold=hold;$('nonaBox').hidden=false;nbNext()}
-function nbClose(){clearTimeout(NB.t);clearInterval(NB.iv);NB.iv=null;$('nonaBox').hidden=true}
+const NB={q:[],iv:null,done:null,hold:false,t:null,then:null};
+function nonaSay(lines,{hold=false}={}){clearTimeout(NB.t);clearInterval(NB.iv);NB.q=lines.map(l=>Array.isArray(l)?l[0]:l);NB.hold=hold;NB.then=null;$('nonaBox').hidden=false;nbNext()}
+function nbClose(){NB.then=null;clearTimeout(NB.t);clearInterval(NB.iv);NB.iv=null;$('nonaBox').hidden=true}
 function nbNext(){clearInterval(NB.iv);clearTimeout(NB.t);NB.iv=null;
  if(!NB.q.length){if(!NB.hold)nbClose();return}
  const txt=NB.q.shift(),el=$('nbText'),parts=txt.split(/(<ruby[^>]*>.*?<\/ruby>|<\/?(?:em|strong)>)/).filter(Boolean),total=parts.reduce((a,p)=>a+(p.startsWith('<ruby')?1:p[0]==='<'?0:p.length),0);let n=0;
  $('nbNext').hidden=true;
  const draw=k=>{let out='',left=k;for(const p of parts){if(p.startsWith('<ruby')){if(left>0)out+=p;left-=1;continue}if(p[0]==='<'){out+=p;continue}out+=p.slice(0,Math.max(0,left));left-=p.length}el.innerHTML=out};
- NB.done=()=>{clearInterval(NB.iv);NB.iv=null;el.innerHTML=txt;$('nbNext').hidden=!NB.q.length;if(!NB.q.length&&!NB.hold)NB.t=setTimeout(nbClose,5200)};
+ NB.done=()=>{clearInterval(NB.iv);NB.iv=null;el.innerHTML=txt;$('nbNext').hidden=!NB.q.length&&!NB.then;if(!NB.q.length&&!NB.hold&&!NB.then)NB.t=setTimeout(nbClose,5200)};
  draw(0);NB.iv=setInterval(()=>{draw(++n);if(n>=total)NB.done()},TXT_SPD);
 }
-$('nonaBox').addEventListener('click',()=>{if(NB.iv)NB.done();else if(NB.q.length)nbNext();else if(!NB.hold)nbClose()});
+$('nonaBox').addEventListener('click',()=>{if(NB.iv)NB.done();else if(NB.q.length)nbNext();else if(NB.then){const f=NB.then;nbClose();f()}else if(!NB.hold)nbClose()});
 // ガレージに入ったときのひとこと（kind：intro／continue／shop／firstshop／train）
 const PARTJ={core:'コア',arms:'腕部',legs:'脚部'};
 function garageGreet(kind,info={}){
@@ -3075,7 +3089,7 @@ function garageGreet(kind,info={}){
  if(SS.over)L.push(['積載が上限を超えています。このままでは出撃できません。']);
  const nm=misDeliver(kind),nmail=nm.filter(d=>d.kind==='mail'),nvis=nm.find(d=>d.kind==='visit');
  if(nmail.length)L.push(['……通信です。'+nmail.map(d=>d.from).join('、')+'から、メールが届いています。ヘッダーの <em>MAIL</em> からお読みください。']);
- if(nvis){setTimeout(()=>visitPlay(nvis.id),700);return}
+ if(nvis){setTimeout(()=>{nonaSay([['……ハンガーの入口に、来客です。お通ししますね。']],{hold:true});NB.then=()=>visitPlay(nvis.id)},500);return}
  if(L.length)nonaSay(L);
 }
 
