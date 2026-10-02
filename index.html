@@ -678,6 +678,10 @@ body.eqm #mailBox{display:none}
 #mis .mdet{padding:10px 12px;min-height:0;display:flex}
 .mdbox{flex:1;min-height:0;padding:12px 14px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);overflow:hidden}
 .mdbox .fr{font-size:10px;letter-spacing:.16em;color:var(--cyan)}.mdbox .fr.visit{color:#d8a35a}
+.mrow.st{background:linear-gradient(90deg,rgba(120,40,24,.32),rgba(40,24,12,.6));border-color:#c9a24a;color:#f3e2b4}.mrow.st .rw small{color:#c9a24a}
+.mrow.st.sel{background:linear-gradient(225deg,transparent 6.4px,#e8c25a 6.4px,#e8c25a 7.8px,transparent 7.8px) top right/16px 16px no-repeat,linear-gradient(90deg,#4a1c10,#2a1a0a);border-color:#e8c25a;color:#fff0c8}
+.mtag.story{background:linear-gradient(90deg,#e8c25a,#c9873a);white-space:nowrap;font-size:8px;letter-spacing:0}
+.mdbox.st{border-color:#c9a24a;background:linear-gradient(180deg,rgba(90,30,16,.25),transparent 60%)}.mdbox.st .fr{color:#e8c25a!important}.mdbox.st .nmt{color:#ffe7a8}.mdbox.st .btn-main{background:#e8c25a;color:#2a1608}
 .mdbox .nmt{font-family:var(--disp);font-size:19px;color:#eef2ef;line-height:1.3}
 .kvg{display:grid;grid-template-columns:6.6em minmax(0,1fr);gap:5px 10px;font-size:12px;align-items:baseline}
 .kvg>span:nth-child(odd){color:var(--dim);font-size:10px;letter-spacing:.14em}.kvg>span:nth-child(even){font-family:var(--disp)}
@@ -765,6 +769,8 @@ body.eqm #visit{display:none}
 /* ポーズ（出撃中・TRAINING／MISSION 共通） */
 #topC{position:absolute;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);display:flex;align-items:center;gap:8px;z-index:3}
 #topC #modeBadge{position:static;transform:none}
+#esc{position:absolute;left:50%;top:calc(38px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:7px;height:20px;padding:0 9px;background:rgba(8,30,34,.5);border:1px solid rgba(111,211,224,.45);font-family:var(--mech);font-size:10px;letter-spacing:.14em;color:#9fe6ee;pointer-events:none;white-space:nowrap}
+#esc b{color:#6fd3e0}#esc i{width:110px;height:6px;background:rgba(0,0,0,.5);border:1px solid #2d6068;display:block}#esc u{display:block;height:100%;width:100%;background:#6fd3e0;transition:width .2s}#esc u.lo{background:#ff6a4c}#esc span{font-family:var(--disp);font-size:10px;letter-spacing:0;color:#7fb0b4}#esc em{font-style:normal;color:#eef2ef;min-width:42px;text-align:right}
 #pauseBtn{position:absolute;right:12px;top:calc(142px + env(safe-area-inset-top,0px));width:32px;height:30px;z-index:3;padding:0;display:flex;align-items:center;justify-content:center;gap:4px;background:rgba(14,19,17,.7);border:1px solid var(--khaki);touch-action:none}
 #pauseBtn i{width:3px;height:10px;background:var(--khaki)}
 #garage{display:none!important}
@@ -819,6 +825,7 @@ body.eqm #visit{display:none}
   </div>
   <div class="extchip" id="extChip"></div>
   <div id="topC"><div id="modeBadge"></div></div>
+  <div id="esc" hidden><b>CARGO</b><i><u id="escHp"></u></i><span>配給所まで</span><em id="escD"></em></div>
   <button id="pauseBtn" aria-label="ポーズ"><i></i><i></i></button>
   <button id="garage">ガレージ</button>
   <button id="camBtn">CAM: CHASE</button>
@@ -1175,7 +1182,8 @@ function updateFX(dt){
    if(f.team==='p'){
     for(const e of ENEMIES){if(!e.alive)continue;if(e.center(_q).distanceTo(pos)<e.r+f.base+.4){HITSRC=f.src;hitEnemy(e,f.dmg,pos.clone(),f.imp);if(f.splash)splashAt(pos,f.splash,f.dmg,f.imp,e);f.age=f.life;break}}
     if(f.age<f.life&&pos.y<.05){HITSRC=f.src;if(f.splash)splashAt(pos,f.splash,f.dmg,f.imp);f.age=f.life}
-   }else if(f.team==='e'){const by=mech.bot.position.y;if(Math.hypot(pos.x-P.pos.x,pos.z-P.pos.z)<1.9&&pos.y>by+.2&&pos.y<by+7.6){hitPlayer(f.dmg,f.imp,pos.clone());f.age=f.life}else if(pos.y<.05)f.age=f.life}
+   }else if(f.team==='e'){const by=mech.bot.position.y;if(Math.hypot(pos.x-P.pos.x,pos.z-P.pos.z)<1.9&&pos.y>by+.2&&pos.y<by+7.6){hitPlayer(f.dmg,f.imp,pos.clone());f.age=f.life}
+    else if(RUN&&RUN.tr&&RUN.tr.hp>0&&pos.y<3.8&&Math.hypot(pos.x-TRUCK.position.x,pos.z-TRUCK.position.z)<2.8){truckHit(f.dmg,pos.clone());f.age=f.life}else if(pos.y<.05)f.age=f.life}
   }
   if(f.fade&&f.m.material.transparent)f.m.material.opacity=1-Math.min(1,k);
   if(f.age>=f.life){S.remove(f.m);f.m.material.dispose();if(f.m.geometry!==UB)f.m.geometry.dispose();FX.splice(i,1)}
@@ -2398,7 +2406,9 @@ function updateEnemies(dt){
   if(e.shadow)e.shadow.visible=e.alive&&!e.off;
   if(e.off)return;
   if(!e.alive){if(RUN)return;e.respawn-=dt;if(e.respawn<=0)placeEnemy(e);return}
-  const to=_q.copy(P.pos).sub(e.g.position);to.y=0;const d=to.length(),yaw=Math.atan2(to.x,to.z);
+  const tr=RUN&&RUN.tr&&RUN.tr.hp>0?RUN.tr:null,dP=Math.hypot(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z),dT=tr?Math.hypot(TRUCK.position.x-e.g.position.x,TRUCK.position.z-e.g.position.z):1e9,atT=tr&&(e.cargo?dT<60:dT<dP-6);
+  const to=_q.copy(atT?TRUCK.position:P.pos).sub(e.g.position);to.y=0;const d=to.length(),yaw=Math.atan2(to.x,to.z);
+  if(tr&&e.type==='drone'&&e.stun<=0&&d>14){const k=Math.min(1,dt*.5*(e.cargo?1.6:1));e.home.x+=(TRUCK.position.x-e.home.x)*k*.25;e.home.z+=(TRUCK.position.z+(atT?0:6)-e.home.z)*k*.25}
   e.stun=Math.max(0,e.stun-dt);e.home.addScaledVector(e.kb,dt);e.kb.multiplyScalar(Math.max(0,1-dt*5));
   if(e.type==='drone'){if(e.stun<=0)e.ang+=dt*.35;e.g.position.set(e.home.x+Math.sin(e.ang)*8,6+Math.sin(t*1.3+e.ang)*.6,e.home.z+Math.cos(e.ang)*8);e.g.rotation.y=yaw;e.g.rotation.z=e.stun>0?Math.sin(t*40)*.2:0;
    const sh=e.shadow,hh=e.g.position.y,k=Math.max(.55,1-hh*.05);sh.position.x=e.g.position.x;sh.position.z=e.g.position.z;sh.scale.setScalar(k);sh.material.opacity=.62*k}
@@ -2406,8 +2416,8 @@ function updateEnemies(dt){
   e.mat.emissive.setRGB(e.hit>0?1:0,e.hit>0?1:0,e.hit>0?1:0);e.hit-=dt;
   e.hpBar.scale.set(1.6*e.hp/e.max,.1,.1);e.hpBar.lookAt(C.position);
   if(e.stun<=0)e.cd-=dt;
-  if(e.cd<=0&&d<50&&P.hp.core>0&&!TRAIN){e.cd=3.5+Math.random()*2.5;
-   const from=e.center(new THREE.Vector3()),aim=playerCenter(new THREE.Vector3()).add(new THREE.Vector3(-Math.cos(P.yaw),0,Math.sin(P.yaw)).multiplyScalar((Math.random()-.5)*3.4)).add(new THREE.Vector3(0,Math.random()*5.6-3.3,0)),dir=aim.sub(from).normalize();
+  if(e.cd<=0&&d<50&&(atT||P.hp.core>0)&&!TRAIN){e.cd=3.5+Math.random()*2.5;
+   const from=e.center(new THREE.Vector3()),aim=atT?new THREE.Vector3(TRUCK.position.x,1.8+Math.random()*1.2,TRUCK.position.z).add(new THREE.Vector3((Math.random()-.5)*2.4,0,(Math.random()-.5)*3)):playerCenter(new THREE.Vector3()).add(new THREE.Vector3(-Math.cos(P.yaw),0,Math.sin(P.yaw)).multiplyScalar((Math.random()-.5)*3.4)).add(new THREE.Vector3(0,Math.random()*5.6-3.3,0)),dir=aim.sub(from).normalize();
    spawn(0xff5030,.3,from,{vel:dir.multiplyScalar(18),life:4,len:2.5,team:'e',dmg:e.type==='drone'?25:45,imp:e.type==='drone'?'D':'C'});spawn(0xff9060,.8,from,{life:.08})}
  });
 }
@@ -2460,7 +2470,8 @@ function drawMap(){
  for(let i=1;i<4;i++){MG.beginPath();MG.arc(cx,cy,(W0/2-6)*i/3,0,Math.PI*2);MG.stroke()}
  MG.beginPath();MG.moveTo(cx,0);MG.lineTo(cx,H0);MG.moveTo(0,cy);MG.lineTo(W0,cy);MG.stroke();
  // 演習場の外周
- MG.strokeStyle='rgba(184,168,120,.6)';MG.beginPath();for(let i=0;i<=48;i++){const a=i/48*Math.PI*2,[x,y]=toM(Math.sin(a)*fieldR(),Math.cos(a)*fieldR());i?MG.lineTo(x,y):MG.moveTo(x,y)}MG.stroke();
+ MG.strokeStyle='rgba(184,168,120,.6)';if(isRoad()){[-1,1].forEach(sg=>{MG.beginPath();for(let z=ROAD_Z0,i=0;z<=ROAD_Z1;z+=6,i++){const [x,y]=toM(roadX(z)+sg*ROAD_W,z);i?MG.lineTo(x,y):MG.moveTo(x,y)}MG.stroke()});MG.strokeStyle='rgba(184,168,120,.25)';MG.beginPath();for(let z=ROAD_Z0,i=0;z<=ROAD_Z1;z+=6,i++){const [x,y]=toM(roadX(z),z);i?MG.lineTo(x,y):MG.moveTo(x,y)}MG.stroke()}
+ else{MG.beginPath();for(let i=0;i<=48;i++){const a=i/48*Math.PI*2,[x,y]=toM(Math.sin(a)*fieldR(),Math.cos(a)*fieldR());i?MG.lineTo(x,y):MG.moveTo(x,y)}MG.stroke()}
  // 建物
  MG.fillStyle='rgba(120,130,120,.35)';fieldG().children.forEach(b=>{if(!b.isMesh||!b.geometry.parameters||b.geometry.parameters.height<2)return;const [x,y]=toM(b.position.x,b.position.z);MG.fillRect(x-2,y-2,4,4)});
  // 俯瞰：画面に映る地面の範囲
@@ -2471,6 +2482,8 @@ function drawMap(){
   const inR=Math.hypot(x-cx,y-cy)<W0/2-4;const X=inR?x:cx+(x-cx)/Math.hypot(x-cx,y-cy)*(W0/2-5),Y=inR?y:cy+(y-cy)/Math.hypot(x-cx,y-cy)*(W0/2-5);
   MG.fillStyle=inR?'#ff5a3c':'rgba(255,90,60,.5)';if(e.type==='drone'){MG.beginPath();MG.moveTo(X,Y-3.5);MG.lineTo(X+3.5,Y+3);MG.lineTo(X-3.5,Y+3);MG.closePath();MG.fill()}else MG.fillRect(X-3,Y-3,6,6);
   if(e===lockT){MG.strokeStyle='#f0a040';MG.lineWidth=1.5;MG.strokeRect(X-6,Y-6,12,12);MG.lineWidth=1}else if(e===lockT2){MG.strokeStyle='rgba(240,160,64,.6)';MG.setLineDash([2,2]);MG.strokeRect(X-6,Y-6,12,12);MG.setLineDash([])}});
+ // 荷車（シアンの四角）
+ if(RUN&&RUN.tr){const [x,y]=toM(TRUCK.position.x,TRUCK.position.z),inR=Math.hypot(x-cx,y-cy)<W0/2-4,dd=Math.hypot(x-cx,y-cy)||1,X=inR?x:cx+(x-cx)/dd*(W0/2-5),Y=inR?y:cy+(y-cy)/dd*(W0/2-5);MG.fillStyle=inR?'#6fd3e0':'rgba(111,211,224,.55)';MG.fillRect(X-3,Y-4.5,6,9)}
  // 自機（向きつきの三角）
  {const [x,y]=toM(P.pos.x,P.pos.z),hx=Math.sin(P.yaw),hz=Math.cos(P.yaw),a=Math.atan2(hx*rx+hz*rz,hx*fx+hz*fz);
   MG.save();MG.translate(x,y);MG.rotate(a);MG.fillStyle='#8cf06e';MG.beginPath();MG.moveTo(0,-6);MG.lineTo(4.5,5);MG.lineTo(0,2.5);MG.lineTo(-4.5,5);MG.closePath();MG.fill();MG.restore()}
@@ -2578,10 +2591,17 @@ const MLIST=[
   comm:{start:'敵影6。散開しています。',last:'残り1機です。',clear:'敵影なし。全機の撃破を確認しました。帰還します。'},
   res:{ok:'お疲れさまでした。管理局からの返信は……ありませんね。報酬だけは届いています。',ng:'撤退します。損傷の確認を。'},
   enemies:[{type:'drone',x:-14,z:26},{type:'drone',x:12,z:24},{type:'drone',x:-4,z:44},{type:'drone',x:20,z:44},{type:'drone',x:-26,z:40},{type:'drone',x:6,z:56}]},
- {id:'1-2',ch:1,kind:'visit',ready:false,title:'荷車の護衛',from:'行商人 オットー',client:'オットー',img:'img/clients/client-merchant-otto.png',imgF:'',reward:9000,field:'road',fieldJa:'旧街道',
+ {id:'1-2',ch:1,kind:'visit',ready:true,title:'荷車の護衛',from:'行商人 オットー',client:'オットー',img:'img/clients/client-merchant-otto.png',imgF:'',reward:9000,field:'road',fieldJa:'旧街道',
   obj:'荷車を配給所まで守りぬく',fail:'荷車の破壊 ／ CORE 大破',enemyJa:'ドローン（3回に分けて襲来）',
   desc:'回収品を売り歩く行商人オットーの荷車を、旧街道の先の西配給所まで護衛する。積み荷の半分は、ドールの部品倉庫行き。',
-  brief:['荷車は一定の速さで進みます。止めることはできません。','無人機は3回に分けて、道の両側から来るはずです。荷車から離れすぎないでください。','……荷車が壊れると、ドールさんが泣きます。たぶん。'],
+  brief:['荷車は道なりに、ゆっくり進みます。近くに敵がいると止まり、いなくなると動き出します。','無人機は3回に分けて来るはずです。2回目からは道の先に砲台も。荷車から離れすぎないでください。','……荷車が壊れると、ドールさんが泣きます。たぶん。'],
+  comm:{start:'荷車、発進します。前方の警戒を。',stop:'敵影、前方。荷車を止めます。',go:'進路クリア。荷車、前進を再開します。',wait:'荷車が待っています。離れすぎです。',hurt:'荷車の損傷が増えています。守ってください。',near:'配給所が見えました。あと少しです。',clear:'荷車、配給所に到着。任務完了です。'},
+  res:{ok:'お疲れさまでした。オットーさんから「積み荷は全部無事だ」と。ドールさんが、通信の向こうで泣いています。うれし泣きだそうです。',ng:'撤退します。……荷車は、ひとまず引き返させました。'},
+  escort:{hp:1500,speed:3.2,z0:10,z1:176},
+  waves:[{at:18,en:[{type:'drone',o:-12,z:58},{type:'drone',o:10,z:62},{type:'drone',o:0,z:70}]},
+   {at:72,en:[{type:'drone',o:-14,z:108},{type:'drone',o:14,z:112},{type:'drone',o:-6,z:120,cargo:1},{type:'turret',o:13,z:124}]},
+   {at:120,en:[{type:'drone',o:-12,z:150},{type:'drone',o:12,z:152},{type:'drone',o:-16,z:160,cargo:1},{type:'drone',o:16,z:162,cargo:1},{type:'turret',o:-13,z:166}]}],
+  enemies:[],
   after:{ok:'助かるよ！ 荷車の支度をして待ってる。旧街道の入口で落ち合おう。',later:'そうかい……。まあ、急ぎじゃない。気が向いたら声をかけてくれ。'},
   talk:[['c','あんたがハンガー07のギア乗りかい。回収品を売り歩いてる、オットーってもんだ。'],['c','旧街道を抜けて、西の配給所まで荷車を運びたいんだ。最近、無人機がうろついててね……護衛を頼めないか？'],
    ['d','ちょ、ちょっとお待ちを！ その荷車、もしや当倉庫に納める部品も積んでおられます？'],['c','お、ドールの旦那か。そうさ、半分はあんたのとこ行きだ。'],
@@ -2589,7 +2609,7 @@ const MLIST=[
  {id:'1-3',ch:1,kind:'mail',ready:false,title:'給水塔の砲台撤去',from:'西配給所 補修班',reward:8000,field:'factory',fieldJa:'放棄工場'},
  {id:'1-S',ch:1,kind:'visit',story:true,ready:false,title:'動き出した残骸',from:'元整備兵 ヴァルター',reward:15000,field:'ruins',fieldJa:'旧戦役の廃墟'}];
 const MDEF=Object.fromEntries(MLIST.map(d=>[d.id,d]));
-const FIELD_BG={city:0x26241f};
+const FIELD_BG={city:0x26241f,road:0x2b2721};
 const nameIn=s=>s.replace(/○○/g,esc(PILOT||'操縦者'));
 
 /* ----- 地形：配給都市の外れ（乱数はシード固定。配置は毎回同じ）-----
@@ -2614,8 +2634,49 @@ const CITY_R=58,CITY=grp(S);CITY.visible=false;const CITY_MAP=[];
  for(let i=0;i<10;i++){const a=rnd()*Math.PI*2,r=12+rnd()*40,x=Math.sin(a)*r,z=Math.cos(a)*r;if(Math.abs(x)<6&&z>-4&&z<20)continue;box(CITY,1.3,1,1.3,crate,x,.5,z,0,rnd()*3,0)}
  // 外周の防壁
  for(let i=0;i<34;i++){const a=i/34*Math.PI*2;box(CITY,1.2,1.8,10,blk,Math.sin(a)*(CITY_R+1.5),.9,Math.cos(a)*(CITY_R+1.5),0,a,0)}}
+/* ----- 地形：旧街道（1-2 荷車の護衛）。+Z へ延びる一本道。両側は崖、道ばたに廃屋と放置車両、奥（+Z）に西配給所の門 -----
+ 道の中心 x＝roadX(z)。自機は道の中心から ±ROAD_W まで動ける */
+const ROAD_W=22,ROAD_Z0=-20,ROAD_Z1=194,roadX=z=>7*Math.sin(z/32),roadDX=z=>7/32*Math.cos(z/32);
+const ROAD=grp(S);ROAD.visible=false;const ROAD_MAP=[];
+{let sd=0x1207;const rnd=()=>{sd=(sd*1664525+1013904223)>>>0;return sd/4294967296};
+ const dirt=psMat(0xffffff,{map:panel('#4a4236','#3a3329')}),asp=psMat(0x2e2c28),line=psMat(0x8a7f5a),rock=psMat(0xffffff,{map:panel('#5a5040','#3a3228')}),rock2=psMat(0xffffff,{map:panel('#4c463a','#2e2a22')}),
+  wall=psMat(0xffffff,{map:panel('#6a6355','#3a352c')}),roof=psMat(0x3b3229),rust=psMat(0xffffff,{map:panel('#6a4a30','#3a2618')}),dark=psMat(0x1e1c1a),fence=psMat(0x4a4f45),ware=psMat(0xffffff,{map:panel('#5a6058','#2c302b')});
+ const dt=dirt.map.clone();dt.needsUpdate=true;dt.wrapS=dt.wrapT=THREE.RepeatWrapping;dt.repeat.set(10,40);dirt.map=dt;
+ const gp=new THREE.Mesh(new THREE.PlaneGeometry(120,260,12,26),dirt);gp.rotation.x=-Math.PI/2;gp.position.set(0,.01,88);ROAD.add(gp);
+ // 舗装（区間ごとの板）と中央の破線
+ for(let z=ROAD_Z0;z<ROAD_Z1;z+=6){const zc=z+3,ry=Math.atan(roadDX(zc));box(ROAD,9,.06,6.3,asp,roadX(zc),.04,zc,0,ry,0);if((z/6)%2===0)box(ROAD,.25,.07,2.6,line,roadX(zc),.06,zc,0,ry,0)}
+ // 両側の崖
+ for(let z=ROAD_Z0-6;z<ROAD_Z1+8;z+=7)[-1,1].forEach(sg=>{const h=6+rnd()*8,w=6+rnd()*4,x=roadX(z)+sg*(ROAD_W+4+rnd()*3);box(ROAD,w,h,8+rnd()*2,rnd()<.5?rock:rock2,x,h/2,z,0,(rnd()-.5)*.5,0);
+  if(rnd()<.5){const h2=2+rnd()*3;box(ROAD,3+rnd()*2,h2,3+rnd()*2,rock2,x-sg*(w/2+1),h2/2,z+rnd()*4,0,rnd()*3,0)}});
+ // 廃屋
+ [[-15,34],[16,48],[-17,92],[15,100],[-16,138],[17,146]].forEach(([o,z],i)=>{const x=roadX(z)+o,w=6+rnd()*3,d=5+rnd()*3,h=3+rnd()*2.5,ry=(rnd()-.5)*.4;
+  box(ROAD,w,h,d,wall,x,h/2,z,0,ry,0);if(i%2)box(ROAD,w*.9,.4,d*.9,roof,x,h+.2,z,0,ry,.18);else box(ROAD,w*.5,.4,d*.9,roof,x-w*.2,h+.2,z,0,ry,-.2);ROAD_MAP.push({x,z,w,d,ry,k:'b'})});
+ // 放置車両（錆びた車体と横倒しの荷台）
+ [[-7,26,.4],[8,64,-.3],[-8,84,1.4],[7.5,132,.2],[-7,170,-.5]].forEach(([o,z,ry])=>{const x=roadX(z)+o;box(ROAD,2.2,1.4,4.2,rust,x,.7,z,0,ry,0);box(ROAD,2,.8,1.8,dark,x,1.8,z+Math.cos(ry)*.6,0,ry,0);ROAD_MAP.push({x,z,w:2.2,d:4.2,ry,k:'v'})});
+ // 電柱（傾いたものも）
+ for(let z=0;z<180;z+=14){const x=roadX(z)+(z%28?-6.5:6.5);cyl(ROAD,.16,.18,7,psMat(0x3a342c),x,3.4,z,(rnd()-.5)*.2,(rnd()-.5)*.25,6)}
+ // 西配給所の門とフェンス・倉庫
+ const gz=186,gx=roadX(gz);box(ROAD,1.2,6,1.2,dark,gx-6,3,gz);box(ROAD,1.2,6,1.2,dark,gx+6,3,gz);box(ROAD,13.2,1.2,1,psMat(0x8a7a40),gx,5.6,gz);
+ [-1,1].forEach(sg=>{box(ROAD,14,2.2,.12,fence,gx+sg*13,1.1,gz);ROAD_MAP.push({x:gx+sg*13,z:gz,w:14,d:.4,ry:0,k:'f'})});
+ box(ROAD,20,7,10,ware,gx,3.5,gz+10);box(ROAD,18,.5,9,psMat(0x3b3f3a),gx,7.25,gz+10);ROAD_MAP.push({x:gx,z:gz+10,w:20,d:10,ry:0,k:'w'})}
+// 荷車（オットーの古い小型トラック）：+Z が前。運転席・荷台・幌・木箱・6輪
+const TRUCK=grp(S);TRUCK.visible=false;
+{const body=psMat(0xffffff,{map:panel('#6b6a48','#3a3a26')}),rustM=psMat(0xffffff,{map:panel('#7a5236','#40281a')}),dk=psMat(0x1c1c1a),glass=psMat(0x2a3a3c),tarp=psMat(0xffffff,{map:panel('#8a7a58','#5a4c34')}),crate=psMat(0xffffff,{map:panel('#6b5a3a','#3a3020')}),lamp=new THREE.MeshBasicMaterial({color:0xffe8a0});
+ box(TRUCK,2.5,.5,6.4,dk,0,.85,0);                         // 車台
+ box(TRUCK,2.4,1.7,2,body,0,1.95,2.1);box(TRUCK,2.2,.9,1.2,body,0,1.45,3.5);   // 運転席・ボンネット
+ box(TRUCK,2.1,.7,.08,glass,0,2.4,3.11,-.15);[-1,1].forEach(sg=>{box(TRUCK,.08,.6,1.1,glass,sg*1.21,2.35,2.1);box(TRUCK,.36,.26,.1,lamp,sg*.8,1.5,4.12)});
+ box(TRUCK,2.2,.3,.2,dk,0,1.05,4.15);box(TRUCK,.6,.5,.1,rustM,0,1.5,4.12);
+ box(TRUCK,2.6,.3,4.2,rustM,0,1.25,-1.1);[-1,1].forEach(sg=>box(TRUCK,.12,.6,4.2,rustM,sg*1.25,1.6,-1.1));box(TRUCK,2.6,.6,.12,rustM,0,1.6,-3.2);
+ box(TRUCK,2.5,1.7,2.6,tarp,0,2.6,-.5);for(let i=0;i<3;i++)box(TRUCK,2.56,.08,.1,dk,0,3.46,-1.6+i*1.1);
+ box(TRUCK,1,.8,.9,crate,-.6,1.8,-2.5,0,.2,0);box(TRUCK,.9,.7,.9,crate,.6,1.75,-2.6,0,-.3,0);box(TRUCK,.8,.6,.8,crate,.5,2.45,-2.5);
+ [[2.6],[-.6],[-2.2]].forEach(([z])=>[-1,1].forEach(sg=>cyl(TRUCK,.55,.55,.42,dk,sg*1.25,.55,z,0,Math.PI/2,8)));
+ box(TRUCK,.1,1.2,.1,dk,-1,3.2,1.3);box(TRUCK,.5,.35,.04,psMat(0xc8a040),-.75,3.65,1.3)}
+const truckHB=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0x6fd3e0}));truckHB.position.y=4.4;TRUCK.add(truckHB);
+const isRoad=()=>RUN&&RUN.def.field==='road';
 const fieldR=()=>RUN&&RUN.def.field==='city'?CITY_R:ARENA;
-const fieldG=()=>RUN&&RUN.def.field==='city'?CITY:world;
+const fieldG=()=>RUN&&RUN.def.field==='city'?CITY:isRoad()?ROAD:world;
+function clampField(v){if(isRoad()){v.z=Math.max(ROAD_Z0,Math.min(ROAD_Z1,v.z));const c=roadX(v.z);v.x=Math.max(c-ROAD_W,Math.min(c+ROAD_W,v.x));return}
+ const pl=Math.hypot(v.x,v.z),FR=fieldR();if(pl>FR){v.x*=FR/pl;v.z*=FR/pl}}
 
 /* ----- 進行 ----- */
 const chNormals=c=>MLIST.filter(d=>d.ch===c&&!d.story);
@@ -2691,12 +2752,12 @@ function renderBoard(sel){
  const list=MLIST.filter(d=>d.ch===CH&&!d.story&&MIS[d.id]&&MIS[d.id].got),story=MLIST.find(d=>d.ch===CH&&d.story),norm=chNormals(CH),cl=chCleared(CH);
  misSel=sel&&MIS[sel]&&MIS[sel].got?sel:(misSel&&MDEF[misSel]&&MIS[misSel]&&MIS[misSel].got?misSel:(list[0]||{}).id);
  const row=d=>{const m=MIS[d.id],st=!m.clear?(!m.read?'<small class="nw">NEW</small>':'<small>未達成</small>'):'<small class="cl">CLEARED</small>';
-  return `<button class="mrow${d.id===misSel?' sel':''}" data-id="${d.id}"><span class="mtag ${d.kind}">${d.kind==='mail'?'MAIL':'VISIT'}</span><span class="nm"><b>${d.title}</b><small>${d.from}</small></span><span class="rw">${st}${fmtCR(d.reward)} CR</span></button>`};
+  return `<button class="mrow${d.story?' st':''}${d.id===misSel?' sel':''}" data-id="${d.id}"><span class="mtag ${d.story?'story':d.kind}">${d.story?'★STORY':d.kind==='mail'?'MAIL':'VISIT'}</span><span class="nm"><b>${d.title}</b><small>${d.from}</small></span><span class="rw">${st}${fmtCR(d.reward)} CR</span></button>`};
  const stOpen=story&&story.ready&&cl>=norm.length&&MIS[story.id]&&MIS[story.id].got;
  const sRow=stOpen?row(story):'';
  const olds=Object.keys(CHAPTERS).map(Number).filter(c=>c<CH).map(c=>`<div class="chh old"><b>▸ CHAPTER ${c}</b><span>${CHAPTERS[c]}</span><small>CLEAR ・ 再挑戦可</small></div>`).join('');
  const d=MDEF[misSel];
- const det=d?`<div class="mdbox mc14"><span class="fr ${d.kind}">${d.kind==='mail'?'MAIL':'VISIT'} ／ ${d.from}</span><span class="nmt">${d.title}</span>
+ const det=d?`<div class="mdbox mc14${d.story?' st':''}"><span class="fr ${d.kind}">${d.kind==='mail'?'MAIL':'VISIT'} ／ ${d.from}</span><span class="nmt">${d.title}</span>
    <div class="kvg"><span>目的</span><span>${d.obj}</span><span>地形</span><span>${d.fieldJa}</span><span>予想される敵</span><span>${d.enemyJa}</span><span>報酬</span><span class="cr">${fmtCR(d.reward)} CR</span>${MIS[d.id].n?`<span>クリア</span><span>${MIS[d.id].n} 回（再挑戦できます）</span>`:''}</div>
    <div class="ds">${d.desc}</div>
    <div class="acts"><button class="btn-main" id="misBrief">BRIEFING ▶</button>${d.kind==='visit'?'<button class="btn-sub" id="misVisit" style="width:120px">会話を見返す</button>':''}${d.kind==='mail'?'<button class="btn-sub" id="misMail" style="width:120px">メールを読む</button>':''}</div></div>`
@@ -2708,7 +2769,17 @@ function renderBoard(sel){
  if(d){$('misBrief').onclick=()=>renderBrief(d.id);const mv=$('misVisit');if(mv)mv.onclick=()=>fadeTo(()=>{hideMis();visitPlay(d.id,true)},'GARAGE');const mm=$('misMail');if(mm)mm.onclick=()=>fadeTo(()=>{hideMis();mailOpen(d.id)},'GARAGE')}
 }
 // ブリーフィングの地図（上＝出撃時の正面 +Z）
-function briefMap(d){const s=[];
+function briefMapRoad(d){const s=[],P2=(x,z)=>`${z.toFixed(1)} ${x.toFixed(1)}`,line=o=>{let a='';for(let z=ROAD_Z0;z<=ROAD_Z1;z+=6)a+=(a?'L':'M')+P2(roadX(z)+o,z);return a};
+ s.push(`<path d="${line(-ROAD_W)}${line(ROAD_W)}" fill="none" stroke="#2f7e86" stroke-width=".6" stroke-dasharray="3 2"/>`);
+ s.push(`<path d="${line(0)}" fill="none" stroke="#3a4a48" stroke-width="9"/><path d="${line(0)}" fill="none" stroke="#6a6a50" stroke-width=".4" stroke-dasharray="2 3"/>`);
+ ROAD_MAP.forEach(o=>s.push(`<rect x="${-o.d/2}" y="${-o.w/2}" width="${o.d}" height="${o.w}" transform="translate(${o.z.toFixed(1)} ${o.x.toFixed(1)}) rotate(${(-o.ry*180/Math.PI).toFixed(1)})" fill="${o.k==='w'?'rgba(111,211,224,.18)':'none'}" stroke="${o.k==='v'?'#5a5040':'#2f7e86'}" stroke-width=".5"/>`));
+ const w=ROAD_MAP.find(o=>o.k==='w');if(w)s.push(`<text x="${w.z}" y="${w.x-8}" fill="#6fd3e0" font-size="5" text-anchor="middle" font-family="DotGothic16,monospace">西配給所</text>`);
+ d.waves.forEach((wv,i)=>{const zs=wv.en.map(e=>e.z),zc=(Math.min(...zs)+Math.max(...zs))/2;s.push(`<rect x="${Math.min(...zs)-6}" y="-26" width="${Math.max(...zs)-Math.min(...zs)+12}" height="52" fill="rgba(255,106,76,.07)" stroke="rgba(255,106,76,.4)" stroke-width=".4" stroke-dasharray="1.5 1.5"/><text x="${zc}" y="-28" fill="#ff6a4c" font-size="4.4" text-anchor="middle" font-family="Chakra Petch,monospace">WAVE ${i+1}</text>`);
+  wv.en.forEach(e=>{const x=roadX(e.z)+e.o;s.push(e.type==='turret'?`<rect x="${e.z-2}" y="${x-2}" width="4" height="4" fill="#ff6a4c"/>`:`<path d="M${e.z} ${x-2.2}l2.2 3.8h-4.4z" fill="#ff6a4c"/>`)})});
+ const es=d.escort;s.push(`<rect x="${es.z0-3}" y="-1.4" width="6" height="2.8" fill="#6fd3e0"/><path d="M${es.z0+5} 0H${es.z1}" stroke="#6fd3e0" stroke-width=".5" stroke-dasharray="1 2"/><text x="${es.z0}" y="-4" fill="#6fd3e0" font-size="4" text-anchor="middle" font-family="DotGothic16,monospace">荷車</text>`);
+ s.push(`<path d="M-4 0l6 3v-6z" fill="#8cf06e"/><text x="-2" y="8" fill="#8cf06e" font-size="3.6" text-anchor="middle" font-family="Chakra Petch,monospace">START</text>`);
+ return `<svg viewBox="-26 -36 228 72" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
+function briefMap(d){if(d.field==='road')return briefMapRoad(d);const s=[];
  for(let i=-60;i<=60;i+=20)s.push(`<path d="M-62 ${i}H62M${i} -62V62" stroke="#173236" stroke-width=".4"/>`);
  s.push(`<circle r="${CITY_R}" fill="none" stroke="#2f7e86" stroke-width=".6" stroke-dasharray="3 2"/>`);
  CITY_MAP.forEach(o=>s.push(`<rect x="${-o.w/2}" y="${-o.d/2}" width="${o.w}" height="${o.d}" transform="translate(${o.x.toFixed(1)} ${(-o.z).toFixed(1)}) rotate(${(o.ry*180/Math.PI).toFixed(1)})" fill="${o.k==='w'?'rgba(111,211,224,.18)':'none'}" stroke="${o.k==='f'?'#24585e':'#2f7e86'}" stroke-width="${o.k==='w'?.8:.5}"/>`));
@@ -2741,14 +2812,36 @@ function renderBrief(id){const d=MDEF[id];misSel=id;
 const COMM={iv:null,t:0};
 function comm(txt,dur=3.4){clearInterval(COMM.iv);const el=$('commTx');$('comm').hidden=false;let n=0;el.textContent='';COMM.t=0;
  COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;COMM.t=dur}},TXT_SPD)}
-function misStartEnemies(){const used=new Set();
- ENEMIES.forEach(e=>{e.off=true;e.alive=false;e.g.visible=false});
- RUN.def.enemies.forEach(sp=>{const e=ENEMIES.find(x=>!x.tr&&!used.has(x)&&x.type===sp.type)||makeEnemy(sp.type);used.add(e);
-  e.off=false;e.home.set(sp.x,sp.type==='drone'?6:0,sp.z);e.ang=Math.random()*6;e.g.position.copy(e.home);e.hp=e.max;e.alive=true;e.g.visible=true;e.cd=3+Math.random()*2.5;e.stun=0;e.kb.set(0,0,0)});
- RUN.total=RUN.left=RUN.def.enemies.length;RUN.ok=false;RUN.leaving=false;say('MISSION START',1.4);setTimeout(()=>{if(RUN)comm(RUN.def.comm.start)},700)}
+function misSpawn(sp){const e=ENEMIES.find(x=>!x.tr&&x.off&&x.type===sp.type)||makeEnemy(sp.type);
+ const x=sp.o!==undefined?roadX(sp.z)+sp.o:sp.x;e.cargo=!!sp.cargo;
+ e.off=false;e.home.set(x,sp.type==='drone'?6:0,sp.z);e.ang=Math.random()*6;e.g.position.copy(e.home);e.hp=e.max;e.alive=true;e.g.visible=true;e.cd=3+Math.random()*2.5;e.stun=0;e.kb.set(0,0,0);return e}
+function misStartEnemies(){
+ ENEMIES.forEach(e=>{e.off=true;e.alive=false;e.g.visible=false;e.cargo=false});
+ RUN.def.enemies.forEach(misSpawn);
+ RUN.total=RUN.left=RUN.def.enemies.length;RUN.ok=false;RUN.leaving=false;RUN.tr=null;RUN.wave=0;
+ const es=RUN.def.escort;$('esc').hidden=!es;
+ if(es){RUN.tr={hp:es.hp,max:es.hp,z:es.z0,stop:false,wait:false,hurt:false,near:false};truckPlace();TRUCK.visible=true;RUN.total=RUN.def.waves.reduce((a,w)=>a+w.en.length,0)}else TRUCK.visible=false;
+ say('MISSION START',1.4);setTimeout(()=>{if(RUN)comm(RUN.def.comm.start)},700)}
+function truckPlace(){const z=RUN.tr.z;TRUCK.position.set(roadX(z)+2,0,z);TRUCK.rotation.y=Math.atan(roadDX(z))}
+function truckHit(dmg,pos){const T=RUN.tr;if(!T||T.hp<=0||RUN.ok)return;T.hp=Math.max(0,T.hp-dmg);spawn(0xffffff,.7,pos,{life:.1});
+ if(!T.hurt&&T.hp<T.max*.5){T.hurt=true;comm(RUN.def.comm.hurt,2.6)}
+ if(T.hp<=0){explode(new THREE.Vector3(TRUCK.position.x,2,TRUCK.position.z),3);TRUCK.visible=false;say('荷車 大破',3);RUN.endT=2.6;RUN.lost=true}}
+// 護衛：荷車を進める・波を出す・到着／破壊を判定
+function escortTick(dt){const T=RUN.tr,d=RUN.def,es=d.escort;if(!T)return;
+ if(RUN.lost){RUN.endT-=dt;if(RUN.endT<=0)misFinish(false,'荷車の破壊');return}
+ while(RUN.wave<d.waves.length&&T.z>=d.waves[RUN.wave].at){d.waves[RUN.wave].en.forEach(misSpawn);RUN.wave++}
+ const near=ENEMIES.some(e=>!e.off&&e.alive&&Math.hypot(e.g.position.x-TRUCK.position.x,e.g.position.z-TRUCK.position.z)<34),far=Math.hypot(P.pos.x-TRUCK.position.x,P.pos.z-TRUCK.position.z)>46;
+ if(near!==T.stop){T.stop=near;if(!RUN.ok)comm(near?d.comm.stop:d.comm.go,2.4)}
+ if(!near&&far!==T.wait){T.wait=far;if(far)comm(d.comm.wait,2.4)}
+ if(!near&&!far&&!RUN.ok&&T.hp>0){T.z=Math.min(es.z1,T.z+es.speed*dt);truckPlace();TRUCK.position.y=Math.abs(Math.sin(t*9))*.04}
+ if(!T.near&&T.z>es.z1-26){T.near=true;comm(d.comm.near,2.6)}
+ truckHB.scale.set(3*T.hp/T.max,.12,.12);truckHB.lookAt(C.position);
+ $('escHp').style.width=(100*T.hp/T.max)+'%';$('escHp').classList.toggle('lo',T.hp<T.max*.35);$('escD').textContent=Math.max(0,Math.round(es.z1-T.z))+' m';
+ if(T.z>=es.z1&&!RUN.ok&&P.down<=0){RUN.ok=true;RUN.endT=3.4;comm(d.comm.clear,3);say('MISSION COMPLETE',2.6)}
+ if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
 const misLeft=()=>ENEMIES.filter(e=>!e.off&&e.alive).length;
 function misTick(dt){if(COMM.t>0){COMM.t-=dt;if(COMM.t<=0)$('comm').hidden=true}
- if(!RUN||RUN.leaving)return;const n=misLeft();
+ if(!RUN||RUN.leaving)return;if(RUN.tr){escortTick(dt);return}const n=misLeft();
  if(n!==RUN.left){RUN.left=n;if(n===1&&RUN.total>1)comm(RUN.def.comm.last,2.4)}
  if(n===0&&!RUN.ok&&P.down<=0){RUN.ok=true;RUN.endT=3.4;comm(RUN.def.comm.clear,3);say('MISSION COMPLETE',2.6)}
  if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
@@ -2825,7 +2918,7 @@ function setMode(m,training=false,mis=null,tt=false){
  if(m==='play')RUN=mis;else RUN=null;
  mode=m;const p=m==='play';TRAIN=p&&training;
  if(p&&builtKey!==JSON.stringify(cfg))buildMech(cfg);
- $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';dock.visible=!p;
+ $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';gnd.visible=!ROAD.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}dock.visible=!p;
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
  S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
@@ -2927,7 +3020,7 @@ R.setAnimationLoop(()=>{
   P.vel.lerp(want,Math.min(1,dt*(dashing?4:6)));
   if(P.qb){P.qb.u+=dt/.4;const v=2*P.qb.dist/.4*(1-P.qb.u);if(P.qb.u>=1)P.qb=null;else P.vel.copy(P.qb.dir).multiplyScalar(v)}
   P.pos.addScaledVector(P.vel,dt);
-  const pl=Math.hypot(P.pos.x,P.pos.z),FR=fieldR();if(pl>FR){P.pos.x*=FR/pl;P.pos.z*=FR/pl}
+  clampField(P.pos);
   if(!dashing&&!P.qb&&!air){P.regen-=dt;if(P.regen<=0)P.boost=Math.min(SS.boost,P.boost+35*dt)}
   am=(dashing||P.qb)?2:(P.vel.length()>1.5&&!air?1:0);
   if(dashing)moveBoost=1;
@@ -3030,7 +3123,7 @@ R.setAnimationLoop(()=>{
    [['hpA','arms'],['hpL','legs']].forEach(([id,k])=>{const el=$(id),r=P.hp[k]/P.hpMax[k];el.querySelector('b').textContent=Math.round(P.hp[k]);
     setCells(el.querySelector('.hcells'),Math.ceil(r*10),'');el.classList.toggle('dmg',r<=.5&&r>.25);el.classList.toggle('crit',r<=.25&&r>0);el.classList.toggle('dead',r<=0)});
    setCells($('bsCells'),Math.ceil(P.boost/SS.boost*25),'');$('bsNum').textContent=Math.round(P.boost);$('hudp').classList.toggle('low',P.boost<30)}
-  $('score').textContent=RUN?`残り ${misLeft()}`:`撃破 ${P.kills}`;misTick(dt);
+  $('score').textContent=RUN?(RUN.tr?`撃破 ${P.kills}`:`残り ${misLeft()}`):`撃破 ${P.kills}`;misTick(dt);
   drawMap();
   setWeaponBtn('wR','cR',['rHand']);setWeaponBtn('wL','cL',['lHand']);setWeaponBtn('wS','cS',['rShoulder','lShoulder']);
   $('guardMsg').textContent=(guarding(-1)||guarding(1))?'防御中':'';
