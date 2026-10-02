@@ -2801,7 +2801,7 @@ const VS={q:[],iv:null,done:null,d:null};
 const V_SP={c:d=>[d.client||d.from,'#d8a35a',false],n:()=>['N-07 ノーナ','#6fd3e0',true],d:()=>['D-06 ドール（通信）','#8cf06e',true]};
 function visitPlay(id,replay){const d=MDEF[id];if(!d||!d.talk)return;mailClose();nbClose();VS.d=d;clearTimeout(VS.t);
  const img=$('vImg');img.src=d.img;img.style.filter=d.imgF||'';img.alt=d.from;img.classList.remove('dim');
- const v=$('visit');$('vCh').innerHTML='';$('vTx').textContent='';$('vNm').textContent='';$('vCi').hidden=true;$('vNx').hidden=true;$('vSkip').hidden=!replay;
+ const v=$('visit');$('vCh').innerHTML='';$('vTx').textContent='';$('vNm').textContent='';$('vCi').hidden=true;$('vNx').hidden=true;$('vSkip').hidden=!replay;VS.replay=!!replay;
  v.classList.remove('in','out');v.style.setProperty('--vc',V_SP[d.talk[0][0]](d)[1]);v.hidden=false;document.body.classList.add('visiting');VS.q=d.talk.slice();VS.fin=null;VS.busy=true;
  void v.offsetWidth;v.classList.add('in');VS.t=setTimeout(()=>{VS.busy=false;visitNext()},700)}
 function visitNext(){clearInterval(VS.iv);VS.iv=null;
@@ -2814,6 +2814,8 @@ function visitNext(){clearInterval(VS.iv);VS.iv=null;
  VS.done=()=>{clearInterval(VS.iv);VS.iv=null;el.textContent=txt;if(VS.q.length||VS.fin)$('vNx').hidden=false;else visitChoices()};
  el.textContent='';VS.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);if(n>=txt.length)VS.done()},TXT_SPD)}
 function visitChoices(){const ch=$('vCh');if(ch.childElementCount||VS.fin)return;const d=VS.d;
+ // 見返し：選択肢は出さず、最後のセリフのあとタップで依頼一覧へ戻る
+ if(VS.replay){VS.fin=()=>{visitEnd();openBoard(d.id)};$('vNx').hidden=false;return}
  const ok=()=>{visitEnd();openBoard(d.id)},later=()=>{visitEnd();nonaSay([['依頼一覧に入れておきました。MENU の <em>MISSION</em> から、いつでも確認できます。']])};
  const pick=(key,fn)=>{ch.innerHTML='';const a=d.after&&d.after[key];if(!a){fn();return}VS.fin=fn;VS.q=[['c',a]];visitNext()};
  [['依頼を受ける',()=>pick('ok',ok)],['考えておく',()=>pick('later',later)]]
