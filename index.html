@@ -392,8 +392,20 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #reticle{position:absolute;left:50%;top:44%;width:26px;height:26px;margin:-13px 0 0 -13px;border:1px solid rgba(140,240,110,.6);pointer-events:none}
 #reticle::before,#reticle::after{content:"";position:absolute;background:rgba(140,240,110,.7)}
 #reticle::before{left:12px;top:-6px;width:1px;height:38px}#reticle::after{top:12px;left:-6px;height:1px;width:38px}
-#lock{position:absolute;width:48px;height:48px;margin:-24px 0 0 -24px;border:2px solid var(--alert);pointer-events:none;color:var(--alert);font-size:11px}
-#lock span{position:absolute;left:0;top:-16px;white-space:nowrap}
+#lkC{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lk{position:absolute;width:48px;height:48px;margin:-24px 0 0 -24px;pointer-events:none;color:var(--alert);font-size:11px}
+.lk::before{content:"";position:absolute;inset:0;border:2px solid var(--alert);transition:border-radius .22s,transform .22s,opacity .18s}
+.lk .d{position:absolute;left:0;top:-16px;white-space:nowrap;font-family:var(--mech);letter-spacing:.06em}
+.lk svg{position:absolute;left:-16px;top:-16px;width:80px;height:80px;opacity:0;transform:scale(1.3);transition:opacity .2s,transform .22s;overflow:visible}
+.lk svg *{stroke:var(--alert)}.lk svg .tri{fill:var(--alert);stroke:none}
+.lk.atk::before{border-radius:50%;transform:scale(.7);opacity:0}.lk.atk svg{opacity:1;transform:scale(1)}.lk.atk .rg{animation:lkspin 2.4s linear infinite;transform-origin:0 0}.lk.atk .tri{animation:kblink .5s steps(2) infinite}
+.lk.atk .d{left:44px;top:-6px}
+.lk.can{width:40px;height:40px;margin:-20px 0 0 -20px}.lk.can::before{border:0;background:
+ linear-gradient(var(--cyan),var(--cyan)) left top/10px 2px no-repeat,linear-gradient(var(--cyan),var(--cyan)) left top/2px 10px no-repeat,
+ linear-gradient(var(--cyan),var(--cyan)) right bottom/10px 2px no-repeat,linear-gradient(var(--cyan),var(--cyan)) right bottom/2px 10px no-repeat}
+.lk.can .d,.lk.can svg{display:none}
+@keyframes lkspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.lk.atk .rg{animation:none}}
 #msg{position:absolute;left:0;right:0;top:30%;text-align:center;font-size:22px;color:var(--fire);letter-spacing:.2em;pointer-events:none}
 #stickArea{position:absolute;left:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:200px;height:200px;pointer-events:none}
 #stick{position:absolute;left:50%;top:50%;width:104px;height:104px;margin:-52px 0 0 -52px;border:2px solid rgba(140,240,110,.35);border-radius:50%;pointer-events:none}
@@ -411,7 +423,6 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .pbtn{position:absolute;width:74px;height:74px;border-radius:50%;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-family:var(--disp);font-size:13px;line-height:1.1;background:linear-gradient(to top,rgba(111,200,255,.4) var(--rl,0%),rgba(20,24,22,.55) var(--rl,0%));border:2px solid rgba(214,220,216,.35);color:var(--fg);touch-action:none}
 .pbtn small{font-size:10px;color:var(--dim);font-variant-numeric:tabular-nums;max-width:70px;overflow:hidden;white-space:nowrap}
 .pbtn.empty{color:var(--dim)}.pbtn.empty small{color:#6fc8ff}
-#lock2{position:absolute;width:40px;height:40px;margin:-20px 0 0 -20px;border:2px dashed var(--fire);pointer-events:none}
 .mark{position:absolute;width:0;height:0;margin:-6px 0 0 -6px;border:6px solid transparent;border-top:9px solid var(--alert);pointer-events:none}
 #guardMsg{position:absolute;left:50%;top:58%;transform:translateX(-50%);font-size:12px;color:#6fc8ff;pointer-events:none}
 .pbtn.on{background:rgba(240,160,64,.55);border-color:var(--fire)}
@@ -735,7 +746,15 @@ body.eqm #mailBox{display:none}
 .rhd{position:relative;padding-top:16px;display:flex;flex-direction:column;gap:2px}
 .rhd b{font-size:46px;font-weight:700;letter-spacing:.2em;line-height:1;color:var(--acc)}
 .rhd span{font-family:var(--disp);font-size:14px;color:#c6d2cd}
-.rgrid{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px}
+.rgrid{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.rbox{position:relative;padding:12px 12px 10px;background:linear-gradient(180deg,rgba(14,19,17,.94),rgba(8,11,10,.94));border:1px solid #34403a;border-top:2px solid var(--olive);min-width:0;display:flex;flex-direction:column;gap:6px}
+.rbox::before{content:attr(data-h);position:absolute;right:10px;top:-9px;padding:0 6px;background:#0b0e0d;font-family:var(--sten);font-size:10px;letter-spacing:3px;color:var(--khaki)}
+.rmoney .kl{grid-column:1/-1;text-align:left!important;color:#9aa6a0!important;font-family:var(--disp);font-size:11px!important;letter-spacing:0!important;margin-top:-4px}
+.rdl{display:flex;flex-direction:column;gap:6px}.rd{display:grid;grid-template-columns:44px 64px minmax(0,1fr);align-items:center;gap:8px}.rd .aL{font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:.1em;color:#9fe6ee}
+.rd .aV{font-family:var(--mech);font-size:13px;font-weight:700;color:#eef2ef;text-align:right;font-variant-numeric:tabular-nums}.rd .aV small{font-size:9px;color:var(--dim);font-weight:500}.rd .cells{height:8px}.rd.dead .aL,.rd.dead .aV{color:var(--alert)}
+.rnote{font-size:10px;color:var(--dim)}
+.rtime{position:absolute;right:0;top:20px;display:flex;align-items:center;gap:14px;font-family:var(--mech);font-size:10px;letter-spacing:.16em;color:var(--dim)}.rtime b{font-size:18px;color:#eef2ef;margin-left:6px;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.rtime em{font-style:normal;font-size:10px;font-weight:700;letter-spacing:.14em;color:#1a1206;background:#e8c25a;padding:2px 7px;animation:kblink 1s steps(2) infinite}
 .rmoney{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;font-size:13px;align-items:baseline;font-variant-numeric:tabular-nums}
 .rmoney span:nth-child(odd){color:var(--dim);font-size:11px;letter-spacing:.14em}.rmoney span:nth-child(even){text-align:right}
 .rmoney .tl{color:#eef2ef!important;border-top:1px solid var(--line);padding-top:6px}.rmoney .tv{color:var(--fire);font-weight:700;font-size:18px;border-top:1px solid var(--line);padding-top:6px}
@@ -745,7 +764,7 @@ body.eqm #mailBox{display:none}
 .rprog{position:relative;height:42px;flex-shrink:0;padding:0 14px;display:flex;align-items:center;gap:14px;border:1px solid var(--line)}
 .rprog b{font-size:11px;color:var(--fire);letter-spacing:.2em}.rprog span{font-family:var(--disp);font-size:13px}
 .rbot{position:relative;display:flex;gap:12px;margin-top:auto;margin-bottom:12px}
-.rbot .btalk{flex:1;height:64px;padding:12px 12px 6px}.rbot .btalk .tx{font-size:14px}
+.rbot .btalk{flex:1;height:64px;padding:12px 12px 6px;border-top-color:#2d6068}.rbot .btalk .tx{font-size:14px}
 .rbot .btn-main{flex:0 0 190px;height:64px;font-size:14px;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
 @media (max-height:400px){.rhd b{font-size:38px}#mis .mres{gap:8px}.rbot .btalk,.rbot .btn-main{height:56px}}
 /* 出撃中のノーナの通信 */
@@ -762,7 +781,8 @@ body.eqm #mailBox{display:none}
 @media (pointer:fine){#comm{bottom:calc(120px + env(safe-area-inset-bottom,0px))}}#comm.tt span{white-space:normal;padding:3px 0}
 #comm.ok b{background:rgba(140,240,110,.55);color:#0b1408}
 .tth{animation:tthl .7s ease-in-out infinite alternate}@keyframes tthl{from{filter:none}to{filter:drop-shadow(0 0 6px #6fd3e0) brightness(1.5)}}
-#comm span{font-family:var(--disp);font-size:13px;color:#cfeff4;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#comm span{font-family:var(--disp);font-size:13px;color:#cfeff4;line-height:1.35;white-space:normal;padding:3px 0;overflow:visible}
+#comm{height:auto!important;min-height:22px}
 /* 来訪（VISIT）：機体エリアを暗くして依頼人のイラストを重ね、下にセリフ欄。ノーナ・ドールは CUT IN で割り込む */
 #visit{position:absolute;inset:0;z-index:5;pointer-events:auto;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 #visit .vdim{position:absolute;inset:0;background:rgba(5,7,6,.66);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
@@ -861,13 +881,13 @@ body.eqm #visit{display:none}
   <button id="bTgt" aria-label="ターゲット変更"><span>TARGET</span><span>▶▶</span></button>
   <div id="score"></div>
   <div id="reticle"></div>
-  <div id="lock" hidden><span id="lockTxt"></span></div>
+  <div id="lkC"></div>
   <div id="msg"></div>
   <div id="pause" hidden role="dialog" aria-label="ポーズ"><div class="box"><span class="h">PAUSE</span><span class="s" id="pzSub"></span><button class="go" id="pzGo">再開する</button><button class="cam" id="pzCam">視点：CHASE</button><button class="ab" id="pzAb">撤退する</button></div></div>
   <div id="comm" hidden role="status" aria-live="polite"><b>N-07</b><span id="commTx"></span><em id="commSt" hidden></em></div>
   <div id="stickArea"><div id="stick"><div id="knob"></div></div>
    <div class="qb" data-d="u"></div><div class="qb" data-d="d"></div><div class="qb" data-d="l"></div><div class="qb" data-d="r"></div></div>
-  <div id="lock2" hidden></div><div id="marks"></div><div id="guardMsg"></div>
+<div id="marks"></div><div id="guardMsg"></div>
   <div class="wbtn" id="wS"><svg viewBox="0 0 92 92"></svg><button id="bS" aria-label="肩の兵装"><span class="wl">SHLDR</span><b id="cS"></b><small id="nS"></small></button></div>
   <div class="wbtn" id="wL"><svg viewBox="0 0 92 92"></svg><button id="bL" aria-label="左手の兵装"><span class="wl">L-HAND</span><b id="cL"></b><small id="nL"></small></button></div>
   <div class="wbtn" id="wR"><svg viewBox="0 0 92 92"></svg><button id="bR" aria-label="右手の兵装"><span class="wl">R-HAND</span><b id="cR"></b><small id="nR"></small></button></div>
@@ -1195,6 +1215,8 @@ function updateFX(dt){
  for(let i=FX.length-1;i>=0;i--){const f=FX[i];f.age+=dt;const k=f.age/f.life;
   if(f.missile){
    if(f.home&&f.home.alive&&f.age>.35){const want=f.home.center(_q).sub(f.m.position).normalize().multiplyScalar(f.vel.length()+dt*20);f.vel.lerp(want,Math.min(1,dt*4))}
+   // 誘導弾は前方の障害物を上へ越える
+   if(mode==='play'&&f.age>.15){_cp.copy(f.vel).setY(0);const sp=_cp.length();if(sp>.1){_cp.multiplyScalar(Math.min(9,sp*.45)/sp).add(f.m.position);if(hitCol(_cp,.8)){f.vel.y=Math.max(f.vel.y,10+sp*.4);f.climb=.25}}if(f.climb>0){f.climb-=dt;f.vel.y=Math.max(f.vel.y,6)}}
    else{f.vel.z+=dt*26*(mode==='play'?0:1);f.vel.y-=dt*4}
    if(mode==='play'&&!f.home&&f.age>.35)f.vel.addScaledVector(new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw)),dt*26);
    f.vel.multiplyScalar(1+dt*.6);f.m.position.addScaledVector(f.vel,dt);f.m.lookAt(_q.copy(f.m.position).add(f.vel));
@@ -1207,6 +1229,9 @@ function updateFX(dt){
    if(f.spin)f.m.rotation.z+=dt*2;
   }
   // 当たり判定
+  if(mode==='play'&&f.team&&f.age<f.life&&hitCol(f.m.position)){const pos=f.m.position.clone();
+   spawn(0xffd080,.5,pos,{life:.1,grow:.8});for(let k=0;k<3;k++)spawn(0xffb040,.12,pos,{vel:new THREE.Vector3((Math.random()-.5)*8,2+Math.random()*4,(Math.random()-.5)*8),grav:14,life:.35});
+   if(f.team==='p'&&f.splash){HITSRC=f.src;splashAt(pos,f.splash,f.dmg,f.imp)}f.age=f.life}
   if(mode==='play'&&f.team&&f.age<f.life){const pos=f.m.position;
    if(f.team==='p'){
     for(const e of ENEMIES){if(!e.alive)continue;if(e.center(_q).distanceTo(pos)<e.r+f.base+.4){HITSRC=f.src;hitEnemy(e,f.dmg,pos.clone(),f.imp);if(f.splash)splashAt(pos,f.splash,f.dmg,f.imp,e);f.age=f.life;break}}
@@ -1895,7 +1920,7 @@ function loadGame(){
   if(d.tune)Object.entries(d.tune).forEach(([k,v])=>{if(Array.isArray(v))TUNE[k]=[Math.min(5,v[0]|0),Math.min(5,v[1]|0)]});
   if(d.dmg)Object.entries(d.dmg).forEach(([k,v])=>{if(typeof v==='number'&&v>0)DMG[k]=v});
   if(typeof d.cls==='string'&&CLASSES.includes(d.cls))CLS=d.cls;if((d.ch|0)>0)CH=d.ch|0;
-  if(d.mis)Object.entries(d.mis).forEach(([k,v])=>{if(MDEF[k]&&v&&typeof v==='object')MIS[k]={got:!!v.got,read:!!v.read,clear:!!v.clear,n:v.n|0,t:+v.t||0}});
+  if(d.mis)Object.entries(d.mis).forEach(([k,v])=>{if(MDEF[k]&&v&&typeof v==='object')MIS[k]={got:!!v.got,read:!!v.read,clear:!!v.clear,n:v.n|0,t:+v.t||0,best:+v.best||0}});
   if(d.cfg)SLOTS.forEach(sl=>{const v=d.cfg[sl.key];if(v&&sl.cat[v]&&(v==='none'||OWN.has(v)))cfg[sl.key]=v});
  }catch(e){}
 }
@@ -2477,14 +2502,14 @@ function makeEnemy(type){if(type==='boss')return makeBoss();
  if(type==='drone'){e.shadow=new THREE.Mesh(SHADOW_G,new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.42,depthWrite:false}));e.shadow.rotation.x=-Math.PI/2;e.shadow.position.y=.04;e.shadow.visible=false;S.add(e.shadow)}
  ENEMIES.push(e);e.alive=false;g.visible=false;e.off=true;return e;
 }
-function placeEnemy(e){const a=Math.random()*Math.PI*2,r=22+Math.random()*40;
+function placeEnemy(e){const a=Math.random()*Math.PI*2,r=22+Math.random()*40;setTimeout(()=>{if(e.type==='turret'){pushOut(e.home,e.r+.6,0);e.g.position.copy(e.home)}},0);
  e.home.set(Math.sin(a)*r,e.type==='drone'?6:0,Math.cos(a)*r);e.g.position.copy(e.home);e.hp=e.max;e.alive=true;e.g.visible=true;e.cd=2+Math.random()*2}
 for(let i=0;i<4;i++)makeEnemy('drone').tr=true;for(let i=0;i<3;i++)makeEnemy('turret').tr=true;
 const IMP={S:{st:.8,kb:4,p:1},A:{st:.6,kb:2.5,p:1},B:{st:.45,kb:1.5,p:1},C:{st:.35,kb:.8,p:.5},D:{st:.3,kb:.4,p:.25}};
 let HITSRC=null;
 function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(e.type==='boss')dmg=bossDmg(e,dmg,pos);e.hp-=dmg;e.hit=.08;spawn(0xffffff,.5,pos,{life:.08});
  const I=e.type==='boss'?null:IMP[imp];if(I&&Math.random()<I.p){e.stun=Math.max(e.stun,I.st);e.kb.copy(e.g.position).sub(P.pos).setY(0).normalize().multiplyScalar(I.kb*3)}
- if(e.hp<=0){e.alive=false;e.g.visible=e.type==='boss';if(e.type==='boss'){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.head.rotation.x=.08;e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a)}e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN){const rw=e.type==='drone'?REWARD.drone:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
+ if(e.hp<=0){if(RUN&&RUN.kills)RUN.kills[e.type]=(RUN.kills[e.type]||0)+1;e.alive=false;e.g.visible=e.type==='boss';if(e.type==='boss'){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.head.rotation.x=.08;e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a)}e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN){const rw=e.type==='drone'?REWARD.drone:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
 function updateEnemies(dt){
  ENEMIES.forEach(e=>{
   if(e.shadow)e.shadow.visible=e.alive&&!e.off;
@@ -2495,7 +2520,7 @@ function updateEnemies(dt){
   if(e.type==='boss'){bossTick(e,dt,d,yaw);return}
   if(tr&&e.type==='drone'&&e.stun<=0&&d>14){const k=Math.min(1,dt*.5*(e.cargo?1.6:1));e.home.x+=(TRUCK.position.x-e.home.x)*k*.25;e.home.z+=(TRUCK.position.z+(atT?0:6)-e.home.z)*k*.25}
   e.stun=Math.max(0,e.stun-dt);e.home.addScaledVector(e.kb,dt);e.kb.multiplyScalar(Math.max(0,1-dt*5));
-  if(e.type==='drone'){if(e.stun<=0)e.ang+=dt*.35;e.g.position.set(e.home.x+Math.sin(e.ang)*8,6+Math.sin(t*1.3+e.ang)*.6,e.home.z+Math.cos(e.ang)*8);e.g.rotation.y=yaw;e.g.rotation.z=e.stun>0?Math.sin(t*40)*.2:0;
+  if(e.type==='drone'){if(e.stun<=0)e.ang+=dt*.35;e.g.position.set(e.home.x+Math.sin(e.ang)*8,6+Math.sin(t*1.3+e.ang)*.6,e.home.z+Math.cos(e.ang)*8);pushOut(e.g.position,1.6,5.4);e.g.rotation.y=yaw;e.g.rotation.z=e.stun>0?Math.sin(t*40)*.2:0;
    const sh=e.shadow,hh=e.g.position.y,k=Math.max(.55,1-hh*.05);sh.position.x=e.g.position.x;sh.position.z=e.g.position.z;sh.scale.setScalar(k);sh.material.opacity=.62*k}
   else e.head.rotation.y=L(e.head.rotation.y,yaw,Math.min(1,dt*2));
   e.mat.emissive.setRGB(e.hit>0?1:0,e.hit>0?1:0,e.hit>0?1:0);e.hit-=dt;
@@ -2589,7 +2614,16 @@ function updateLock(){
  c.sort((a,b)=>a[0]-b[0]);lockCands=c.map(x=>x[1]);
  if(pinned&&!lockCands.includes(pinned))pinned=null;
  lockT=pinned||lockCands[0]||null;const rest=lockCands.filter(e=>e!==lockT);lockT2=SS.multi&&rest[0]?rest[0]:null;
+ LOCKS=[lockT,lockT2].filter(Boolean);
 }
+/* ロック中の敵（1体または複数ロックのヘッドで2体）。弾の狙い：
+ 同時発射（ミサイルの i 発目）＝近い順に割り振り／連射・単発＝撃ち始めにいちばん近いロック中の敵を決め、撃ち続ける間は固定 */
+let LOCKS=[];const FTGT={};
+const byDist=()=>LOCKS.slice().sort((a,b)=>a.center(_q).distanceTo(P.pos)-b.center(_v).distanceTo(P.pos));
+function fireTgt(key){const f=FTGT[key];
+ if(f&&f.e&&f.e.alive&&LOCKS.includes(f.e)&&t-f.t<.7){f.t=t;return f.e}
+ const e=byDist()[0]||null;FTGT[key]={e,t};return e}
+const markAtk=e=>{if(e)e.atkT=t};
 
 /* ===== 入力（スマホ：左で移動スティック／右でボタン・視点、PC：キーボード＋マウス） ===== */
 const IN={x:0,y:0,dash:false,stickDash:0};
@@ -2799,6 +2833,28 @@ const RUINS_R=48,RUINS=grp(S);RUINS.visible=false;const RUINS_MAP=[];
 const isRoad=()=>RUN&&RUN.def.field==='road';
 const fieldR=()=>RUN&&RUN.def.field==='city'?CITY_R:RUN&&RUN.def.field==='ruins'?RUINS_R:ARENA;
 const fieldG=()=>RUN&&RUN.def.field==='city'?CITY:isRoad()?ROAD:RUN&&RUN.def.field==='ruins'?RUINS:world;
+/* ===== 障害物の当たり判定 =====
+ 各ステージのグループ（演習場 world／CITY／ROAD／RUINS）から、地面に立っている箱（高さ1.5m以上・ほぼ水平）を
+ 向きつきの箱 {x,z,c,s,hw,hd,top} として自動で集める（最初に使うときに1回）。新しいステージも同じ作り方なら自動で入る */
+const COLC=new Map(),_cq=new THREE.Quaternion(),_ce=new THREE.Euler(),_cs=new THREE.Vector3(),_cp=new THREE.Vector3();
+function colsOf(g){let L=COLC.get(g);if(L)return L;L=[];g.updateMatrixWorld(true);
+ g.traverse(o=>{if(!o.isMesh||!o.geometry||o.geometry.type!=='BoxGeometry'||o.material.transparent)return;
+  o.matrixWorld.decompose(_cp,_cq,_cs);_ce.setFromQuaternion(_cq,'YXZ');if(Math.abs(_ce.x)>.35||Math.abs(_ce.z)>.35)return;
+  const P0=o.geometry.parameters,h=P0.height*_cs.y,bot=_cp.y-h/2;if(h<1.5||bot>.8)return;
+  const hw=P0.width*_cs.x/2,hd=P0.depth*_cs.z/2;if(hw<.05||hd<.05)return;
+  L.push({x:_cp.x,z:_cp.z,c:Math.cos(_ce.y),s:Math.sin(_ce.y),hw,hd,top:bot+h,b:Math.hypot(hw,hd)})});
+ COLC.set(g,L);return L}
+const curCols=()=>mode==='play'?colsOf(fieldG()):[];
+// 円（半径 r、足元の高さ y）を箱の外へ押し出す
+function pushOut(v,r,y=0){const L=curCols();for(const o of L){if(y>=o.top-.2)continue;const dx=v.x-o.x,dz=v.z-o.z;if(Math.abs(dx)>o.b+r||Math.abs(dz)>o.b+r)continue;
+ const lx=dx*o.c-dz*o.s,lz=dx*o.s+dz*o.c,cx=Math.max(-o.hw,Math.min(o.hw,lx)),cz=Math.max(-o.hd,Math.min(o.hd,lz));let ex=lx-cx,ez=lz-cz,d=Math.hypot(ex,ez),nx,nz;
+ if(d>=r)continue;
+ if(d<1e-4){const px=o.hw-Math.abs(lx),pz=o.hd-Math.abs(lz);if(px<pz){nx=(lx<0?-1:1)*(o.hw+r);nz=lz}else{nx=lx;nz=(lz<0?-1:1)*(o.hd+r)}}
+ else{nx=cx+ex/d*r;nz=cz+ez/d*r}
+ v.x=o.x+nx*o.c+nz*o.s;v.z=o.z-nx*o.s+nz*o.c}}
+// 点が箱の中か（弾・ミサイルの先読み用）
+function hitCol(p,pad=0){const L=curCols();for(const o of L){if(p.y>o.top+pad||p.y<-1)continue;const dx=p.x-o.x,dz=p.z-o.z;if(Math.abs(dx)>o.b+pad||Math.abs(dz)>o.b+pad)continue;
+ const lx=dx*o.c-dz*o.s,lz=dx*o.s+dz*o.c;if(Math.abs(lx)<=o.hw+pad&&Math.abs(lz)<=o.hd+pad)return o}return null}
 function clampField(v){if(isRoad()){v.z=Math.max(ROAD_Z0,Math.min(ROAD_Z1,v.z));const c=roadX(v.z);v.x=Math.max(c-ROAD_W,Math.min(c+ROAD_W,v.x));return}
  const pl=Math.hypot(v.x,v.z),FR=fieldR();if(pl>FR){v.x*=FR/pl;v.z*=FR/pl}
  if(RUN&&RUN.boss){const bp=RUN.boss.g.position,dx=v.x-bp.x,dz=v.z-bp.z,l=Math.hypot(dx,dz);if(l<8.2&&l>.01){v.x=bp.x+dx/l*8.2;v.z=bp.z+dz/l*8.2}}}
@@ -2958,15 +3014,22 @@ function renderBrief(id){const d=MDEF[id];misSel=id;
 
 /* ----- 出撃中 ----- */
 const COMM={iv:null,t:0};
-function comm(txt,dur=3.4){clearInterval(COMM.iv);const el=$('commTx');$('comm').hidden=false;let n=0;el.textContent='';COMM.t=0;
- COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;COMM.t=dur}},TXT_SPD)}
+/* 通信：長いセリフは折り返して全文表示。出そろってから「1秒＋文字数×0.12秒（最低1.5秒）」残す。
+ 表示中に次が来たら順番待ち。dur=0（チュートリアルの指示）はすぐ差し替えて消さない */
+COMM.q=[];COMM.busy=false;
+function comm(txt,dur=0.001){if(dur===0){COMM.q=[];commShow(txt,0);return}COMM.q.push([txt,dur]);if(!COMM.busy)commNext()}
+function commNext(){const it=COMM.q.shift();if(it)commShow(it[0],it[1])}
+function commShow(txt,dur){clearInterval(COMM.iv);const el=$('commTx');$('comm').hidden=false;let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
+ COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;
+  if(dur===0){COMM.busy=false;COMM.t=0}else COMM.t=Math.max(1.5,1+txt.length*.12,dur)}},TXT_SPD)}
+function commClear(){COMM.q=[];clearInterval(COMM.iv);COMM.iv=null;COMM.busy=false;COMM.t=0;$('comm').hidden=true}
 function misSpawn(sp){const e=ENEMIES.find(x=>!x.tr&&x.off&&x.type===sp.type)||makeEnemy(sp.type);
  const x=sp.o!==undefined?roadX(sp.z)+sp.o:sp.x;e.cargo=!!sp.cargo;
- e.off=false;e.home.set(x,sp.type==='drone'?6:0,sp.z);e.ang=Math.random()*6;e.g.position.copy(e.home);e.hp=e.max;e.alive=true;e.g.visible=true;e.cd=3+Math.random()*2.5;e.stun=0;e.kb.set(0,0,0);return e}
+ e.off=false;e.home.set(x,sp.type==='drone'?6:0,sp.z);if(sp.type==='turret')pushOut(e.home,e.r+.6,0);e.ang=Math.random()*6;e.g.position.copy(e.home);e.hp=e.max;e.alive=true;e.g.visible=true;e.cd=3+Math.random()*2.5;e.stun=0;e.kb.set(0,0,0);return e}
 function misStartEnemies(){
  ENEMIES.forEach(e=>{e.off=true;e.alive=false;e.g.visible=false;e.cargo=false});
  RUN.def.enemies.forEach(misSpawn);
- RUN.total=RUN.left=RUN.def.enemies.length;RUN.ok=false;RUN.leaving=false;RUN.tr=null;RUN.wave=0;
+ RUN.total=RUN.left=RUN.def.enemies.length;RUN.ok=false;RUN.leaving=false;RUN.tr=null;RUN.wave=0;RUN.time=0;RUN.kills={};commClear();
  const es=RUN.def.escort;$('esc').hidden=!es&&!RUN.def.boss;RUN.boss=null;RUN.rf=0;RUN.chgSaid=false;
  $('escL').textContent=es?'CARGO':'TARGET';$('escS').textContent=es?'配給所まで':'大型無人砲台';$('escHp').classList.remove('lo');$('escHp').style.width='100%';
  if(RUN.def.boss){RUN.boss=ENEMIES.find(e=>e.type==='boss'&&!e.off);const B=RUN.boss;B.mat.color.setHex(0xffffff);B.head.rotation.x=0;B.g.rotation.y=Math.PI;B.head.rotation.y=0;B.mc=9;B.chg=0;B.bq=0;B.front=0;B.cd=4;B.line.visible=B.glow.visible=false;$('escD').textContent='100%'}
@@ -3000,24 +3063,29 @@ function escortTick(dt){const T=RUN.tr,d=RUN.def,es=d.escort;if(!T)return;
  if(T.z>=es.z1&&!RUN.ok&&P.down<=0){RUN.ok=true;RUN.endT=3.4;comm(d.comm.clear,3);say('MISSION COMPLETE',2.6)}
  if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
 const misLeft=()=>ENEMIES.filter(e=>!e.off&&e.alive).length;
-function misTick(dt){if(COMM.t>0){COMM.t-=dt;if(COMM.t<=0)$('comm').hidden=true}
+function misTick(dt){if(COMM.t>0){COMM.t-=dt;if(COMM.t<=0){COMM.busy=false;if(COMM.q.length)commNext();else $('comm').hidden=true}}
+ if(RUN&&!RUN.leaving&&!RUN.ok)RUN.time=(RUN.time||0)+dt;
  if(!RUN||RUN.leaving)return;if(RUN.tr){escortTick(dt);return}if(RUN.boss){bossMisTick(dt);return}const n=misLeft();
  if(n!==RUN.left){RUN.left=n;if(n===1&&RUN.total>1)comm(RUN.def.comm.last,2.4)}
  if(n===0&&!RUN.ok&&P.down<=0){RUN.ok=true;RUN.endT=3.4;comm(RUN.def.comm.clear,3);say('MISSION COMPLETE',2.6)}
  if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
 function misAbort(){if(!RUN||RUN.leaving)return;misFinish(false,'撤退')}
 function misFinish(ok,reason=''){if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;
- const def=RUN.def,r={def,ok,reason,earned:P.earned||0,reward:ok?def.reward:0};
- fadeTo(()=>{if(ok){CREDIT+=def.reward;const m=MIS[def.id]||(MIS[def.id]={got:true,read:true,clear:false,n:0});m.clear=true;m.n++}
+ const def=RUN.def,tm=RUN.time||0,r={def,ok,reason,earned:P.earned||0,reward:ok?def.reward:0,time:tm,kills:{...(RUN.kills||{})},best:(MIS[def.id]&&MIS[def.id].best)||0,rec:false};commClear();
+ fadeTo(()=>{if(ok){CREDIT+=def.reward;const m=MIS[def.id]||(MIS[def.id]={got:true,read:true,clear:false,n:0});m.clear=true;m.n++;if(!m.best||tm<m.best){r.rec=!!m.best;if(!m.best)r.first=true;m.best=tm}}
   saveGame();setMode('garage');renderResult(r)},'DEBRIEF')}
-function renderResult(r){const d=r.def,cl=chCleared(d.ch),norm=chNormals(d.ch);
- const dm=PART_KEYS.map(k=>{const v=partNow(k)/partMax(k),c=v<=.25?'var(--alert)':v<=.5?'var(--fire)':'var(--accent)';return `<span>${PART_LABEL[k]}</span><div class="bar"><i style="left:0;width:${Math.round(v*100)}%;background:${c}"></i></div><em>${Math.round(v*100)}%</em>`}).join('');
- const prog=d.story&&r.ok?'CHAPTER CLEAR':r.ok&&chReadyAll(d.ch)&&!(MIS[(MLIST.find(x=>x.ch===d.ch&&x.story)||{}).id])?'ストーリー依頼が届きます':r.ok?'':'再挑戦できます';
+const KILL_JA={drone:'ドローン',turret:'砲台',boss:'大型無人砲台'};
+const fmtT=t=>{t=Math.max(0,Math.round(t));return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')};
+function renderResult(r){const d=r.def;
+ const dm=PART_KEYS.map(k=>{const mx=partMax(k),nw=partNow(k),v=nw/mx,c=nw<=0?'':v<=.2?'c-over':v<=.5?'c-warn':'c-core';
+  return `<div class="rd${nw<=0?' dead':''}"><span class="aL">${PART_LABEL[k]}</span><span class="aV">${nw}<small>/${mx}</small></span><div class="cells" style="grid-template-columns:repeat(20,minmax(0,1fr))">${Array.from({length:20},(_,i)=>`<i class="${i<Math.round(v*20)?c:''}"></i>`).join('')}</div></div>`}).join('');
+ const kl=Object.entries(r.kills||{}).filter(([,n])=>n>0).map(([k,n])=>`${KILL_JA[k]||k} ×${n}`).join(' ／ ')||'なし';
+ const best=r.ok?(r.rec||r.first?r.time:r.best):r.best;
  misEl.innerHTML=misHead('DEBRIEF',d.title,'CH.'+d.ch,'')+`<div class="mres" style="--band:${r.ok?'#14261a':'#2a1410'};--acc:${r.ok?'var(--accent)':'#ff6a4c'}">
-  <div class="rhd"><b>${r.ok?'SUCCESS':'FAILED'}</b><span>${r.ok?'依頼を達成しました':(r.reason==='撤退'?'作戦を中断し、撤退しました':'機体が大破し、回収されました')}</span></div>
-  <div class="rgrid"><div class="rmoney"><span>依頼報酬</span><span>${r.ok?fmtCR(r.reward)+' CR':'— CR'}</span><span>撃破</span><span>${fmtCR(r.earned)} CR</span><span class="tl">合計</span><span class="tv">+${fmtCR(r.reward+r.earned)} CR</span></div>
-   <div class="rdmg"><span class="h">DAMAGE（持ち帰り）</span>${dm}</div></div>
-  <div class="rprog mc14"><b>CHAPTER ${d.ch}</b><span class="pips">${norm.map((x,i)=>`<i class="${i<cl?'on':''}"></i>`).join('')}</span><span style="color:${r.ok?'var(--fire)':'#9aa6a0'}">${prog}</span></div>
+  <div class="rhd"><b>${r.ok?'SUCCESS':'FAILED'}</b><span>${r.ok?'依頼を達成しました':(r.reason==='撤退'?'作戦を中断し、撤退しました':r.reason==='荷車の破壊'?'荷車を守りきれませんでした':'機体が大破し、回収されました')}</span>
+   <div class="rtime"><span>TIME<b>${fmtT(r.time)}</b></span>${best?`<span>BEST<b>${fmtT(best)}</b></span>`:''}${r.rec?'<em>NEW RECORD</em>':''}</div></div>
+  <div class="rgrid"><div class="rbox" data-h="REWARD"><div class="rmoney"><span>依頼報酬</span><span>${r.ok?fmtCR(r.reward)+' CR':'— CR'}</span><span>撃破</span><span>${fmtCR(r.earned)} CR</span><span class="kl">${kl}</span><span class="tl">合計</span><span class="tv">+${fmtCR(r.reward+r.earned)} CR</span></div></div>
+   <div class="rbox" data-h="DAMAGE"><div class="rdl">${dm}</div><span class="rnote">損傷は持ち帰りです。修理は SHOP の REPAIR で。</span></div></div>
   <div class="rbot"><div class="btalk"><span class="nm">N-07 ノーナ</span><div class="tx">${nameIn(r.ok?d.res.ok:d.res.ng)}</div></div><button class="btn-main" id="rGo">GARAGE ▶</button></div></div>`;
  misEl.hidden=false;$('rGo').onclick=()=>fadeTo(()=>{hideMis();garageGreet('mission',{ok:r.ok,def:d})},'GARAGE')}
 
@@ -3048,7 +3116,7 @@ function ttDone(i,skip=false){if(!TRT||TTS.step!==i||(TTS.busy&&!skip&&i!==TT_N-
  if(!skip){$('comm').classList.add('ok');comm('OK',0)}setTimeout(()=>{if(TRT&&mode==='play')ttShow(i+1)},skip?200:1100)}
 function ttStart(){TTS.step=-1;$('comm').classList.add('tt');$('commSt').hidden=true;
  comm(TTUT>0?'チュートリアルの続きを始めます。':'操作のチュートリアルを始めます。指示に沿って操作してください。',0);setTimeout(()=>{if(TRT&&mode==='play')ttShow(Math.min(TTUT,TT_N-1))},2600)}
-function ttClear(){TRT=false;ttHL(null);$('comm').classList.remove('tt','ok');$('commSt').hidden=true;$('comm').hidden=true;COMM.t=0}
+function ttClear(){TRT=false;ttHL(null);$('comm').classList.remove('tt','ok');$('commSt').hidden=true;commClear()}
 function ttMove(dt,dash,walk){const i=TTS.step;if(TTS.busy||i<0)return;
  if(i===0&&walk){TTS.acc+=P.vel.length()*dt;if(TTS.acc>14)ttDone(0)}
  if(i===1&&dash){TTS.acc+=dt;if(TTS.acc>1)ttDone(1)}
@@ -3084,7 +3152,7 @@ function setMode(m,training=false,mis=null,tt=false){
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
  S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
- P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=null;pinned=null;reveal=0;topYaw=topYawC=0;GUARD[-1]=GUARD[1]=false;resetAmmo();
+ P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=null;LOCKS=[];pinned=null;reveal=0;topYaw=topYawC=0;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
  if(p&&RUN&&RUN.def.start){P.pos.set(RUN.def.start.x,0,RUN.def.start.z);mech.bot.position.copy(P.pos)}
  $('dbgInv').hidden=!(p&&DBG.inv);$('modeBadge').textContent=TRT?'TRAINING ／ TUTORIAL':RUN?'MISSION '+RUN.def.id:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';$('garage').textContent=RUN?'撤退':'ガレージ';$('comm').hidden=true;
@@ -3155,7 +3223,16 @@ function tickPassive(dt){
    t.muzzle.getWorldPosition(_p);flash(t.muzzle,.2,0x9fe0ff);spawn(0x9fe0ff,.06,_p,{vel:b.m.position.clone().sub(_p).normalize().multiplyScalar(80),life:.12,len:6});spawn(0xffffff,.7,b.m.position,{life:.1});b.age=b.life;icT=SS.icInt}}}}
 }
 let t0p=0,icN=0;
-const lockEl=$('lock'),lockTxt=$('lockTxt');
+/* ロック表示：ロック可能＝シアンのカギ括弧／ロック中＝赤い枠＋距離／攻撃中（0.5秒以内に撃った）＝回転するリング照準 */
+const LKC=$('lkC'),LKP=[];
+const LK_RING='<svg viewBox="-40 -40 80 80" aria-hidden="true"><g class="rg"><circle r="26" fill="none" stroke-width="2" stroke-dasharray="30 10.8"/><path d="M0 -36V-29M0 29V36M-36 0H-29M29 0H36" stroke-width="2.4"/></g><path d="M-8 0H-3M3 0H8M0 -8V-3M0 3V8" stroke-width="1.6"/><path class="tri" d="M-6 -46H6L0 -39Z"/></svg>';
+function drawLocks(){let n=0;
+ const put=(e,cls)=>{e.center(_q).project(C);if(_q.z>=1||Math.abs(_q.x)>1.1||Math.abs(_q.y)>1.1)return;
+  let el=LKP[n];if(!el){el=document.createElement('div');el.className='lk';el.innerHTML='<span class="d"></span>'+LK_RING;LKC.appendChild(el);LKP.push(el)}n++;
+  el.hidden=false;if(el.dataset.c!==cls){el.className='lk '+cls;el.dataset.c=cls}el.style.left=((_q.x+1)/2*100)+'%';el.style.top=((1-_q.y)/2*100)+'%';
+  if(cls!=='can')el.firstChild.textContent=(cls==='atk'?'':'LOCK ')+Math.round(e.center(_v).distanceTo(P.pos))+'m'};
+ if(mode==='play'){LOCKS.forEach(e=>put(e,e.atkT&&t-e.atkT<.5?'atk':'on'));lockCands.forEach(e=>{if(!LOCKS.includes(e))put(e,'can')})}
+ for(let i=n;i<LKP.length;i++)LKP[i].hidden=true}
 R.setAnimationLoop(()=>{
  if(PAUSED){lastT=performance.now();return}
  const now=performance.now(),dt=Math.min((now-lastT)/1000,.05);lastT=now;t+=dt;
@@ -3183,7 +3260,7 @@ R.setAnimationLoop(()=>{
   P.vel.lerp(want,Math.min(1,dt*(dashing?4:6)));
   if(P.qb){P.qb.u+=dt/.4;const v=2*P.qb.dist/.4*(1-P.qb.u);if(P.qb.u>=1)P.qb=null;else P.vel.copy(P.qb.dir).multiplyScalar(v)}
   P.pos.addScaledVector(P.vel,dt);
-  clampField(P.pos);
+  clampField(P.pos);pushOut(P.pos,1.7,mech.bot.position.y);
   if(!dashing&&!P.qb&&!air){P.regen-=dt;if(P.regen<=0)P.boost=Math.min(SS.boost,P.boost+35*dt)}
   am=(dashing||P.qb)?2:(P.vel.length()>1.5&&!air?1:0);
   if(dashing)moveBoost=1;
@@ -3216,11 +3293,11 @@ R.setAnimationLoop(()=>{
  const mixArm=(f,o,w)=>{f.x=L(f.x,o.x,w);f.z=L(f.z,o.z,w);f.e=L(f.e,o.e,w)};
  for(const key in active){const a=active[key],S0=a.def.st,c={u:(t-a.t0)/a.def.act.dur,dt,s:a.sl.side,w:m.weps[key],st:a.st,S:S0,
    once:(id,u0)=>c.u>=u0&&!a.fired.has(id)&&(a.fired.add(id),true),
-   tgt:(a.sl.side>0&&lockT2)?lockT2:lockT,
+   tgt:fireTgt(key),
    use:(n=1)=>ammoUse(key,n),
-   shot:(obj,vis)=>{if(!ammoUse(key))return false;shoot(obj,{...vis,dmg:S0.dmg,speed:S0.spd,range:S0.range,splash:S0.area,imp:S0.imp,tgt:c.tgt,src:key});return true},
-   missile:(obj,i)=>{if(!ammoUse(key))return false;missile(obj,S0,(i%2&&lockT2)?lockT2:lockT,key);return true},
-   melee:()=>{HITSRC=key;melee(S0.range,S0.dmg,S0.imp)}};
+   shot:(obj,vis)=>{if(!ammoUse(key))return false;markAtk(c.tgt);shoot(obj,{...vis,dmg:S0.dmg,speed:S0.spd,range:S0.range,splash:S0.area,imp:S0.imp,tgt:c.tgt,src:key});return true},
+   missile:(obj,i)=>{if(!ammoUse(key))return false;const L2=byDist(),tg=L2.length?L2[(i|0)%L2.length]:null;markAtk(tg);missile(obj,S0,tg,key);return true},
+   melee:()=>{HITSRC=key;markAtk(c.tgt);melee(S0.range,S0.dmg,S0.imp)}};
   if(c.u>=1){endOf(a.def)?.(c.w);delete active[key];continue}
   const o=a.def.act.run(c);if(!o)continue;const w=o.w??1,ai=c.s<0?0:1;
   if(o.arms)armF.forEach(f=>mixArm(f,o.arms,o.arms.w??w));
@@ -3290,7 +3367,7 @@ R.setAnimationLoop(()=>{
   drawMap();
   setWeaponBtn('wR','cR',['rHand']);setWeaponBtn('wL','cL',['lHand']);setWeaponBtn('wS','cS',['rShoulder','lShoulder']);
   $('guardMsg').textContent=(guarding(-1)||guarding(1))?'防御中':'';
-  if(lockT2){lockT2.center(_q).project(C);const l2=$('lock2');if(_q.z<1){l2.hidden=false;l2.style.left=((_q.x+1)/2*100)+'%';l2.style.top=((1-_q.y)/2*100)+'%'}else l2.hidden=true}else $('lock2').hidden=true;
+  drawLocks();
   const marks=$('marks');
   if(reveal>0){while(marks.children.length<ENEMIES.length){const d=document.createElement('div');d.className='mark';marks.appendChild(d)}
    ENEMIES.forEach((e,i)=>{const d=marks.children[i];if(!e.alive){d.hidden=true;return}e.center(_q).project(C);
@@ -3298,8 +3375,6 @@ R.setAnimationLoop(()=>{
     d.hidden=false;d.style.left=((x+1)/2*100)+'%';d.style.top=((1-y)/2*100)+'%'})}
   else [...marks.children].forEach(d=>d.hidden=true);
   if(msgT>0){msgT-=dt;if(msgT<=0)$('msg').textContent=''}
-  if(lockT){lockT.center(_q).project(C);if(_q.z<1){lockEl.hidden=false;lockEl.style.left=((_q.x+1)/2*100)+'%';lockEl.style.top=((1-_q.y)/2*100)+'%';
-   lockTxt.textContent='LOCK '+Math.round(lockT.center(_v).distanceTo(P.pos))+'m'}else lockEl.hidden=true}else lockEl.hidden=true;
  }
 });
 /* ===== 進行（チュートリアル）と操縦者名 =====
