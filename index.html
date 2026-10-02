@@ -523,6 +523,9 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 body.eqm::before{content:"";position:fixed;inset:0;background:rgba(3,5,4,.78);z-index:13}
 body.eqm #app{position:fixed;inset:calc(10px + env(safe-area-inset-top,0px)) 14px calc(10px + env(safe-area-inset-bottom,0px));height:auto;z-index:14;border:1px solid var(--fire);box-shadow:0 10px 40px rgba(0,0,0,.7)}
 body.eqm #menuBtn{display:none}
+#chkBack{height:28px;padding:0 8px;display:flex;align-items:center;justify-content:center;background:#1c1409;border:1px solid var(--fire);color:var(--fire);font-size:11px;font-weight:700;letter-spacing:.5px;white-space:nowrap}#chkBack[hidden]{display:none}#chkBack .s{display:none}
+@media (max-width:760px){#chkBack .l{display:none}#chkBack .s{display:inline}}
+body.chk #menuBtn{display:none}body.chk #btnTrain{display:none}
 #eqClose{display:none;height:28px;padding:0 12px;align-items:center;gap:6px;background:#1c1409;border:1px solid var(--fire);color:var(--fire);font-size:12px;font-weight:700;letter-spacing:.12em}
 body.eqm #eqClose{display:flex}
 body.eqm #btnTrain{display:none}
@@ -827,6 +830,7 @@ body.eqm #visit{display:none}
  <span class="kv"><small>LOAD</small><b id="hLoad"></b></span>
  <button id="eqClose" aria-label="装備変更を終えてショップへ戻る">◀ SHOP へ戻る</button>
  <button id="menuBtn" class="cut" aria-haspopup="true"><svg width="14" height="12" viewBox="0 0 14 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 1h14M0 6h14M0 11h14"/></svg>MENU</button>
+ <button id="chkBack" class="cut" hidden><span class="l">◀ BRIEFING</span><span class="s">◀ BRIEF</span></button>
 </header>
 <div id="wrap">
  <div id="gui">
@@ -1579,8 +1583,9 @@ const SLOTOF=k=>SLOTS.find(s=>s.key===k);
 
 /* 右パネルの状態 */
 let view='overview',selSlot=null,cand=null;
+let hlOff=false; // 装備した直後は輪郭線を出さない（候補を選び直すとまた出す）
 let wcat=null; // 兵装の一覧で開いている種類（null＝種類の一覧）
-function openSlot(k){if(TUT!=='done')return;view='slot';selSlot=k;cand=cfg[k];wcat=null;renderGarage()}
+function openSlot(k){if(TUT!=='done')return;view='slot';selSlot=k;cand=cfg[k];wcat=null;hlOff=false;renderGarage()}
 function renderGarage(){renderHeader();renderGStats();renderSide()}
 // ガレージでは、選択中（未装備）の装備を仮に組んだ見た目にする
 function syncPreviewMech(){
@@ -1710,12 +1715,12 @@ function renderSide(){
    <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${part}</div>
    <div class="sec">機体全体<span class="secj">現在 → 装備後</span></div><div class="cmp">${whole}${cmpRow('歩行速度',+SS.walk.toFixed(1),+P2.walk.toFixed(1))}${cmpRow('ダッシュ速度',+SS.dash.toFixed(1),+P2.dash.toFixed(1))}${cmpRow('急加速距離',+SS.qb.toFixed(1),+P2.qb.toFixed(1))}${cmpRow('ロック距離',SS.lockRange,P2.lockRange,'hi',v=>v+'m')}</div>
    ${P2.over?`<div class="warn-msg">この装備にすると積載を ${P2.weap-P2.load} 超えます（出撃不可）</div>`:''}`);
-  el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{cand=b.dataset.id;renderGarage()});
+  el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{cand=b.dataset.id;hlOff=false;renderGarage()});
   el.querySelectorAll('.detail p').forEach(setupTicker);
-  el.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{wcat=b.dataset.cat;const ids=CATS.get(wcat);cand=ids.includes(cur)?cur:ids[0];renderGarage()});
+  el.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{wcat=b.dataset.cat;const ids=CATS.get(wcat);cand=ids.includes(cur)?cur:ids[0];hlOff=false;renderGarage()});
   const cb=$('catBack');if(cb)cb.onclick=()=>{wcat=null;cand=cur;renderGarage()};
   const pv=$('pv');if(pv&&pv.appendChild){pv.appendChild(PR.domElement);setPreview(selSlot,cand)}else setPreview(null);
-  $('equip').onclick=()=>{if(statsFor({...cfg,[selSlot]:cand}).over)return;cfg[selSlot]=cand;assemble();saveGame()};
+  $('equip').onclick=()=>{if(statsFor({...cfg,[selSlot]:cand}).over)return;cfg[selSlot]=cand;hlOff=true;assemble();saveGame();highlight(null)};
   $('back').onclick=()=>{view='overview';selSlot=null;renderGarage()};
  }else if(view==='paint'){
   el.innerHTML=`<div class="shd"><span class="code">SYS</span><span class="ttl en">PAINT</span><span class="sub">フレームの色を変更します（兵装は変わりません）</span></div><div class="rule"></div>
@@ -1738,7 +1743,7 @@ function renderSide(){
   $('back').onclick=()=>{view='overview';renderGarage()};
  }
  if(view!=='slot')setPreview(null);
- syncPreviewMech();updateTagsState();highlight(view==='slot'?selSlot:null);
+ syncPreviewMech();updateTagsState();highlight(view==='slot'&&!hlOff?selSlot:null);
 }
 const id2code=id=>id==='none'?'―':id;
 /* 名前の体系：CAT＝種類（英語の項目名）、TYPE＝種類の日本語、MODEL＝型番、NAME＝固有名。
@@ -1826,6 +1831,10 @@ let fading=false;
 function fadeTo(fn,label=''){if(fading)return;fading=true;const f=$('fade');$('fadeTxt').textContent=label;f.classList.add('on');
  setTimeout(()=>{try{fn()}finally{requestAnimationFrame(()=>requestAnimationFrame(()=>{f.classList.remove('on');setTimeout(()=>{fading=false},230)}))}},240)}
 $('menuBtn').onclick=()=>openMenu(true);
+// ブリーフィングの［機体を確認］から来たとき：ヘッダーの MENU を［◀ BRIEFING］に置き換える
+let CHK=null;
+function chkSet(id){const w=$('menuBtn').offsetWidth;if(w)$('chkBack').style.width=w+'px';CHK=id||null;document.body.classList.toggle('chk',!!CHK);$('chkBack').hidden=!CHK}
+$('chkBack').onclick=()=>{const id=CHK;if(!id)return;fadeTo(()=>{chkSet(null);view='overview';selSlot=null;renderGarage();nbClose();renderBrief(id)},'BRIEFING')};
 $('modalClose').onclick=closeModal;$('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
 addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});$('menuClose').onclick=()=>openMenu(false);
 menu.addEventListener('click',e=>{if(e.target===menu)openMenu(false)});
@@ -2877,7 +2886,7 @@ const misEl=$('mis');let misSel=null,bTalk=null;
 function misHead(code,title,sub,back){return `<div class="xhd"><span class="logo"><span class="en">${code}</span></span><span class="sep"></span><span class="t">${title}</span>${sub?`<span class="s">${sub}</span>`:''}<span class="grow"></span>
  <span class="hcls">CLASS ${CLS}</span><span class="hch">CH.${CH}</span><span class="money">${fmtCR(CREDIT)}<small>CR</small></span>${back?`<button class="bk" id="misBack">${back}</button>`:''}</div>`}
 function hideMis(){misEl.hidden=true;misEl.innerHTML='';bTalk&&clearInterval(bTalk.iv);bTalk=null}
-function openBoard(sel){fadeTo(()=>{mailClose();nbClose();renderBoard(sel)},'MISSION')}
+function openBoard(sel){fadeTo(()=>{chkSet(null);mailClose();nbClose();renderBoard(sel)},'MISSION')}
 function renderBoard(sel){
  const list=MLIST.filter(d=>d.ch===CH&&!d.story&&MIS[d.id]&&MIS[d.id].got),allGot=MLIST.filter(d=>d.ch>0&&MIS[d.id]&&MIS[d.id].got),story=MLIST.find(d=>d.ch===CH&&d.story),norm=chNormals(CH),cl=chCleared(CH);
  misSel=sel&&MIS[sel]&&MIS[sel].got?sel:(misSel&&MDEF[misSel]&&MDEF[misSel].ch>0&&MIS[misSel]&&MIS[misSel].got?misSel:(list[0]||allGot[0]||{}).id);
@@ -2943,7 +2952,7 @@ function renderBrief(id){const d=MDEF[id];misSel=id;
   bTalk.iv=setInterval(()=>{tx.textContent=t.slice(0,++n);if(n>=t.length)bTalk.done()},TXT_SPD)};
  $('bTalk').onclick=()=>{if(!bTalk)return;if(bTalk.iv)bTalk.done();else next()};next();
  $('bGo').onclick=()=>{if(blocked)return;saveGame();fadeTo(()=>{hideMis();setMode('play',false,{def:d})},'MISSION '+d.id)};
- $('bChk').onclick=()=>fadeTo(()=>{hideMis();garageGreet('check')},'GARAGE');
+ $('bChk').onclick=()=>fadeTo(()=>{hideMis();chkSet(id);garageGreet('check')},'GARAGE');
  $('bNo').onclick=()=>renderBoard(id);
 }
 
@@ -3063,6 +3072,7 @@ $('pause').addEventListener('pointerdown',e=>e.stopPropagation());
 addEventListener('keydown',e=>{if(e.key==='Escape'&&mode==='play'){e.preventDefault();pauseSet(!PAUSED)}});
 /* ===== ガレージ／出撃の切り替え ===== */
 function setMode(m,training=false,mis=null,tt=false){
+ if(m==='play')chkSet(null);
  const wasTT=TRT;TRT=m==='play'&&tt;
  PAUSED=false;$('pause').hidden=true;
  const wasPlay=mode==='play',wasFire=wasPlay&&!TRAIN,earned=P.earned||0,wasMis=!!RUN;
@@ -3392,7 +3402,7 @@ function garageGreet(kind,info={}){
   if(partNow('core')<=0)L=[['……申し訳ありません、機体を守りきれませんでした。'],['修理が終わるまで、出撃は控えましょう。']];
   else{const hurt=PART_KEYS.filter(k=>partNow(k)/partMax(k)<=.5);L=[[info.ok?'報酬の入金を確認しました。所持金は <strong>'+fmtCR(CREDIT)+' CR</strong> です。':'依頼は、いつでも受け直せます。']];
    if(hurt.length)L.push([hurt.map(k=>PARTJ[k]).join('と')+'の装甲が大きく減っています。SHOP での修理をおすすめします。'])}
- }else if(kind==='board'||kind==='check')L=kind==='check'?[['機体の確認ですね。準備ができたら、MENU の <em>MISSION</em> から出撃できます。']]:[];
+ }else if(kind==='board'||kind==='check')L=kind==='check'?[[CHK?'機体の確認ですね。準備ができたら、右上の <em>BRIEFING</em> から戻れます。':'機体の確認ですね。準備ができたら、MENU の <em>MISSION</em> から出撃できます。']]:[];
  else{const dmg=PART_KEYS.some(k=>partNow(k)<partMax(k));L=[[dmg?'おかえりなさい、'+N+'。前回の損傷が残っています。修理は SHOP でどうぞ。':'おかえりなさい、'+N+'。本機に異常はありません。']]}
  if(SS.over)L.push(['積載が上限を超えています。このままでは出撃できません。']);
  const nm=misDeliver(kind),nmail=nm.filter(d=>d.kind==='mail'),nvis=nm.find(d=>d.kind==='visit');
