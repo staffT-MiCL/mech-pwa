@@ -1519,11 +1519,12 @@ function buildMech(c){
  });
  const eg=grp(torso,...so.ext);weps.ext=EXT[c.ext].build(mountExt(eg));anchors.ext=eg;
  gxPost(c,{torso,head,hip,legs,arms});
+ const lean=CORES[c.core].lean||0;if(lean)head.rotation.x=-lean*.8;
  anchors.head=grp(head,0,.3,0);anchors.core=grp(torso,.7,1.0,.3);anchors.legs=grp(legs[1].kn,0,-.6,0);
  const flames=[-1,1].map(s=>{const n=grp(torso,s*so.boost[0],so.boost[1],so.boost[2]);
   box(n,.3,.3,.3,M.frame,0,0,.1);cyl(n,.13,.18,.3,Wp.frame,0,0,-.1,Math.PI/2,0,8);cyl(n,.12,.12,.02,Wp.glow,0,0,-.26,Math.PI/2,0,8);
   const f=grp(n,0,0,-.27);f.rotation.x=-Math.PI/2-.35;cyl(f,.02,.15,1,Wp.glow,0,.5,0,0,0,6);f.scale.set(1,.01,1);return f});
- mech={bot,hip,torso,head,arms,legs,weps,flames,anchors,cfgUsed:c};
+ mech={bot,hip,torso,head,arms,legs,weps,flames,anchors,cfgUsed:c,lean};
  tintDamage();if(camAuto&&mode==='garage')requestAnimationFrame(()=>fitGarageCam());
  if(mode==='play'){bot.position.set(P.pos.x,0,P.pos.z);bot.rotation.y=P.yaw}
  hlMech=null;
@@ -2789,7 +2790,7 @@ function gxHead(ser,h){const B=GX[ser],K=gxK(ser);B.head(h,K);gxDeco(B,gxP({head
 function gxCore(ser,t){const B=GX[ser],K=gxK(ser),so=B.core(t,K);so.boost=so.boost||[.5,.55,-1.0];gxDeco(B,gxP({torso:t}),K);return so}
 function gxArms(ser,sh,s){const B=GX[ser],K=gxK(ser),r=B.arms(sh,s,K),a={s,sh,up:r.up||r.el.parent,el:r.el,hand:r.hand};
  const P=gxP({});P.arms=[a];gxDeco(B,P,K);return {el:r.el,hand:r.hand}}
-function gxLegs(ser,hip){const B=GX[ser],K=gxK(ser),legs=B.legs(hip,K),P=gxP({hip,legs});gxDeco(B,P,K);if(B.skirt)B.skirt(P,K);return legs}
+function gxLegs(ser,hip){const B=GX[ser],K=gxK(ser),legs=B.legs(hip,K);if(B.stance)legs.forEach(l=>{l.tb=-.22;l.kb=.4;l.sz=l.s*(ser==='CTR'?.15:.13)});const P=gxP({hip,legs});gxDeco(B,P,K);if(B.skirt)B.skirt(P,K);return legs}
 // 00 COUNTER：4部位そろい（必ずそろう）のときだけ、胴と腕を細く絞り、足を大きくする
 const C00=['HD-00','CR-00','AR-00','LG-00'];
 const is00=id=>C00.includes(id);
@@ -2818,7 +2819,7 @@ const GXF=[
 ];
 GXF.forEach(f=>{const id=k=>k+'-'+f.n,B=f.ser;
  HEADS[id('HD')]={name:id('HD')+' '+f.types[0],...f.head,build(h){gxHead(B,h)}};
- CORES[id('CR')]={name:id('CR')+' '+f.types[1],...f.core,build(t){return gxCore(B,t)}};
+ CORES[id('CR')]={name:id('CR')+' '+f.types[1],...f.core,lean:GX[B].lean||0,build(t){return gxCore(B,t)}};
  ARMS[id('AR')]={name:id('AR')+' '+f.types[2],...f.arms,build(sh,s){return gxArms(B,sh,s)}};
  LEGS[id('LG')]={name:id('LG')+' '+f.types[3],...f.legs,build(hip){return gxLegs(B,hip)}};
  ['HD','CR','AR','LG'].forEach((k,i)=>{const v=[f.head,f.core,f.arms,f.legs][i];
@@ -3801,7 +3802,7 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,keep=sp.keep||22,spd=(sp
  let dy=yaw-e.g.rotation.y;dy=Math.atan2(Math.sin(dy),Math.cos(dy));e.g.rotation.y+=dy*Math.min(1,dt*3);
  // 歩き（左右の脚を交互に振る）と接地
  const walk=Math.min(1,Math.abs(mv)+Math.abs(side)*.6)*(spd>0?1:0);e.ph+=dt*spd*.9*(walk>0?1:0);
- m.legs.forEach((l,i)=>{const q=Math.sin(e.ph+(i?Math.PI:0))*.5*walk;if(l.dg){digiPose(l,-q*.8,Math.max(0,-q)*1.6,0);return}l.th.rotation.x=-.12+q;l.kn.rotation.x=.24+Math.max(0,-q)*1.2;l.ft.rotation.x=-(l.th.rotation.x+l.kn.rotation.x)});
+ m.legs.forEach((l,i)=>{const q=Math.sin(e.ph+(i?Math.PI:0))*.5*walk;if(l.dg){digiPose(l,-q*.8,Math.max(0,-q)*1.6,0);return}l.th.rotation.x=-.12+q+(l.tb||0);l.kn.rotation.x=.24+Math.max(0,-q)*1.2+(l.kb||0);l.th.rotation.z=l.sz||0;l.ft.rotation.z=-(l.sz||0);l.ft.rotation.x=-(l.th.rotation.x+l.kn.rotation.x)});
  m.position.y=0;m.updateMatrixWorld(true);let mn=1e9;m.legs.forEach(l=>{l.ft.getWorldPosition(_v);mn=Math.min(mn,_v.y)});m.position.y=SOLE-mn;
  e.mat.emissive.setRGB(e.hit>0?1:0,e.hit>0?1:0,e.hit>0?1:0);e.hit-=dt;
  e.hpBar.scale.set(2.4*e.hp/e.max,.12,.12);e.hpBar.lookAt(C.position);
@@ -4697,12 +4698,12 @@ R.setAnimationLoop(()=>{
   if(P.hp.core<=0){const d=Math.min(1,(3.2-P.down)/.8);crouch=Math.max(crouch,d);tX=L(tX,.75,d);hY=L(hY,.4,d)}
  }
  // 3) 書き込み
- m.torso.rotation.set(tX,tY,0);m.head.rotation.y=hY;
+ m.torso.rotation.set(tX+(m.lean||0),tY,0);m.head.rotation.y=hY;
  if(!m.armLift)m.armLift=[0,0];
- m.arms.forEach((a,i)=>{a.sh.rotation.set(armF[i].x+m.armLift[i],0,armF[i].z);a.el.rotation.x=armF[i].e});
+ m.arms.forEach((a,i)=>{a.sh.rotation.set(armF[i].x+m.armLift[i]+(m.lean||0)*.6,0,armF[i].z);a.el.rotation.x=armF[i].e});
  m.legs.forEach((l,i)=>{const b=legF[i];
   if(l.dg){digiPose(l,b.th,b.kn,crouch);l.th.rotation.z=b.tz;l.ft.rotation.z=-l.th.rotation.z;return}
-  l.th.rotation.x=L(b.th,-.8,crouch);l.kn.rotation.x=L(b.kn,1.55,crouch);l.th.rotation.z=b.tz;
+  l.th.rotation.x=L(b.th+(l.tb||0),-.8,crouch);l.kn.rotation.x=L(b.kn+(l.kb||0),1.55,crouch);l.th.rotation.z=b.tz+(l.sz||0);
   l.ft.rotation.x=-(l.th.rotation.x+l.kn.rotation.x);l.ft.rotation.z=-l.th.rotation.z});
  if(mode==='play'){
   // アクションの踏み込み・反動（scroll）は機体の前後移動として反映
@@ -4966,6 +4967,8 @@ function gearModel(parent,c,tint){
   if(c[sk]&&c[sk]!=='none'){const hp=grp(torso,s*so.shoulder[0],so.shoulder[1],so.shoulder[2]);SHOULDER[c[sk]].build(mountShoulder(hp),s)}
   sh.rotation.x=-.12;a.el.rotation.x=-.3;arms.push({sh,el:a.el,s})});
  gxPost(c,{torso,head,hip,legs,arms});
+ {const ln=CORES[c.core].lean||0;if(ln){torso.rotation.x=ln;head.rotation.x=-ln*.8;arms.forEach(a=>a.sh.rotation.x+=ln*.6)}}
+ legs.forEach(l=>{if(l.dg){digiPose(l,0,0,0);return}if(l.sz!=null){l.th.rotation.set(-.12+l.tb,0,l.sz);l.kn.rotation.x=.24+l.kb;l.ft.rotation.set(-(l.th.rotation.x+l.kn.rotation.x),0,-l.sz)}});
  bot.legs=legs;bot.arms=arms;
  if(tint)retint(bot,tint);
  bot.hip=hip;bot.torso=torso;bot.head=head;return bot;
