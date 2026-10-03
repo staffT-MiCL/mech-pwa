@@ -410,6 +410,17 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #memFx{position:absolute;inset:0;z-index:6;pointer-events:none;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;background:repeating-linear-gradient(0deg,rgba(111,211,224,.16) 0 2px,transparent 2px 5px),radial-gradient(ellipse at center,rgba(111,211,224,.35),rgba(8,30,34,.6));opacity:0}
 #memFx.on{animation:memfx 3.4s ease-out forwards}#memFx b{font-family:var(--mech);font-size:34px;letter-spacing:.5em;color:#e8fbff;text-shadow:0 0 14px #6fd3e0}#memFx span{font-family:var(--disp);font-size:16px;letter-spacing:.3em;color:#bff3fa}
 @keyframes memfx{0%{opacity:0}6%{opacity:1;transform:translateX(-6px)}9%{transform:translateX(5px)}12%{transform:none}70%{opacity:.9}100%{opacity:0}}
+#banner{position:absolute;left:0;right:0;top:50%;z-index:5;pointer-events:none;transform:translateY(-50%) scaleY(0);opacity:0;padding:14px 0 12px;text-align:center;
+ background:linear-gradient(90deg,transparent,rgba(12,10,6,.88) 12%,rgba(12,10,6,.88) 88%,transparent),repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 1px,transparent 1px 3px);
+ border-top:2px solid var(--fire);border-bottom:2px solid var(--fire);box-shadow:0 0 24px rgba(255,140,40,.35)}
+#banner b{display:block;font-family:var(--mech);font-size:64px;line-height:1;letter-spacing:.18em;color:#ffd08a;text-shadow:0 0 10px var(--fire),0 0 28px rgba(255,120,30,.8)}
+#banner small{display:block;margin-top:8px;font-size:13px;letter-spacing:.3em;color:#e8d8b8}
+#banner.ng{border-color:#e0443a;box-shadow:0 0 24px rgba(224,68,58,.4)}#banner.ng b{color:#ffb0a0;text-shadow:0 0 10px #e0443a,0 0 28px rgba(224,60,40,.8)}
+#banner.on{animation:bnIn .35s ease-out forwards}#banner.on b{animation:bnFl .9s .35s}#banner.off{animation:bnOut .4s ease-in forwards}
+@keyframes bnIn{0%{opacity:1;transform:translateY(-50%) scale(1.6,0)}100%{opacity:1;transform:translateY(-50%) scale(1,1)}}
+@keyframes bnOut{0%{opacity:1;transform:translateY(-50%) scaleY(1)}100%{opacity:0;transform:translateY(-50%) scaleY(0)}}
+@keyframes bnFl{0%,100%{filter:none}15%{filter:brightness(2.4)}}
+@media (max-height:500px){#banner b{font-size:46px}}
 #msg{position:absolute;left:0;right:0;top:30%;text-align:center;font-size:22px;color:var(--fire);letter-spacing:.2em;pointer-events:none}
 #stickArea{position:absolute;left:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:200px;height:200px;pointer-events:none}
 #stick{position:absolute;left:50%;top:50%;width:104px;height:104px;margin:-52px 0 0 -52px;border:2px solid rgba(140,240,110,.35);border-radius:50%;pointer-events:none}
@@ -656,7 +667,8 @@ ruby.mc.n{margin-right:0}
 #mailBtn i{font-style:normal;background:var(--fire);color:#1a1006;padding:0 5px;font-size:10px}
 #mailBtn.new{animation:mailp 1s steps(2) infinite}
 @keyframes mailp{50%{border-color:var(--fire);color:var(--fire)}}
-body.tut .hcls,body.tut .hch{display:none}
+.hdt{font-family:var(--mech);font-size:10px;letter-spacing:.1em;color:#7fb0b4;white-space:nowrap}
+body.tut .hcls,body.tut .hch,body.tut .hdt{display:none}
 #mailBox{position:absolute;left:8px;right:8px;top:8px;bottom:calc(var(--gsh,120px) + 10px);z-index:3;pointer-events:auto;box-sizing:border-box;padding:12px 14px;display:flex;flex-direction:column;gap:7px;--ln:#2d6068;--bgc:rgba(10,18,18,.96);border:1px solid #2d6068;min-height:0;overflow:hidden}
 #mailBox .mh{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.2em;color:var(--cyan)}
 #mailBox .mh span:last-child{color:#4a6a6e}
@@ -698,11 +710,12 @@ body.eqm #mailBox{display:none}
 .mtag{font-size:9px;font-weight:700;color:#0b0e0d;padding:2px 0;letter-spacing:.06em;text-align:center;width:44px;flex-shrink:0}
 .mtag.mail{background:var(--cyan)}.mtag.visit{background:#d8a35a}
 /* 依頼一覧 */
-#mis .mbd{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:0}
+#mis .mbd{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:0}
 #mis .mlist{border-right:1px solid var(--line);background:var(--panel);padding:10px 12px;display:flex;flex-direction:column;gap:5px;overflow-y:auto;min-height:0}
 .chh{display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--fire);padding-bottom:3px;margin-bottom:2px}
 .chh b{font-size:12px;color:var(--fire);letter-spacing:.2em}.chh span{font-family:var(--disp);font-size:13px;color:#eef2ef}.chh small{margin-left:auto;font-size:10px;color:var(--dim)}
-.chh.old{border-color:var(--line);margin-top:8px}.chh.old b{color:var(--dim)}.chh.old span{color:#9aa6a0}.chh.old small{color:var(--accent)}
+.chh{width:100%;background:none;border-left:0;border-right:0;border-top:0;cursor:pointer;text-align:left;padding-left:0;padding-right:0;font-family:var(--mech)}.chh+.chh,.mrow+.chh,.mnone+.chh{margin-top:8px}.chh i{font-style:normal;font-size:10px;color:var(--fire);width:10px}
+.chh.old{border-color:var(--line)}.chh.old b{color:var(--dim)}.chh.old span{color:#9aa6a0}.chh.old small{color:var(--accent)}
 .mrow{height:44px;flex-shrink:0;display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:8px;padding:0 10px;background:var(--panel2);border:1px solid var(--line);text-align:left;color:var(--fg)}
 .mrow .nm{display:flex;flex-direction:column;gap:1px;min-width:0}.mrow .nm b{font-family:var(--disp);font-weight:400;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mrow .nm small{font-size:10px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mrow .rw{display:flex;flex-direction:column;align-items:flex-end;gap:1px;font-size:12px;white-space:nowrap}.mrow .rw small{font-size:9px;letter-spacing:.14em;color:var(--dim)}
@@ -712,7 +725,7 @@ body.eqm #mailBox{display:none}
 .mrow .star{color:#6a5a40;font-size:13px;text-align:center}
 .pips{display:flex;gap:3px}.pips i{width:16px;height:6px;background:var(--line)}.pips i.on{background:var(--accent)}
 #mis .mdet{padding:10px 12px;min-height:0;display:flex}
-.mdbox{flex:1;min-height:0;padding:12px 14px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);overflow:hidden}
+.mdbox{position:relative;flex:1;min-height:0;padding:12px 14px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);overflow:hidden}
 .mdbox .fr{font-size:10px;letter-spacing:.16em;color:var(--cyan)}.mdbox .fr.visit{color:#d8a35a}
 .mrow.st{background:linear-gradient(90deg,rgba(120,16,24,.42),rgba(40,10,14,.75));border-color:#8a2430;color:#f4dede}.mrow.st .nm small{color:#c08890}.mrow.st .rw small{color:#e07080}
 .mrow.st.sel{background:linear-gradient(225deg,transparent 6.4px,#ff4a5a 6.4px,#ff4a5a 7.8px,transparent 7.8px) top right/16px 16px no-repeat,linear-gradient(90deg,#5a121c,#32101a);border:2px solid #ff4a5a;color:#fff}
@@ -734,7 +747,7 @@ body.eqm #mailBox{display:none}
 body,#app,#shop,#mis,#menu,#modal,#sconf,#title,#op,#play{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 .detail .cmp{overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
-.detail .cmp,.scmp{scrollbar-width:none;-ms-overflow-style:none}.detail .cmp::-webkit-scrollbar,.scmp::-webkit-scrollbar{display:none;width:0;height:0}
+.detail .cmp,.scmp,#mailBox .mlx,#mailBox .mb,#mis .mlist,.mdbox .ds{scrollbar-width:none;-ms-overflow-style:none}.detail .cmp::-webkit-scrollbar,.scmp::-webkit-scrollbar,#mailBox .mlx::-webkit-scrollbar,#mailBox .mb::-webkit-scrollbar,#mis .mlist::-webkit-scrollbar,.mdbox .ds::-webkit-scrollbar{display:none;width:0;height:0}
 .detail,.sdet{position:relative}
 .smore{position:absolute;z-index:2;pointer-events:none;font-family:var(--mech);font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--fire);text-shadow:0 0 6px rgba(0,0,0,.9);animation:kblink 1s steps(2) infinite}
 .smore[hidden]{display:none}
@@ -833,8 +846,8 @@ body.eqm #visit{display:none}
 .bmp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:14px;color:#3f6f74;letter-spacing:.2em}
 /* メールボックス */
 #mailBox .mlx{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:4px}
-.mrw{display:grid;grid-template-columns:12px minmax(0,9em) minmax(0,1fr) auto auto;gap:8px;align-items:center;height:36px;padding:0 10px;background:rgba(14,30,32,.9);border:1px solid #2d6068;color:#eef2ef;text-align:left;font-family:var(--disp);font-size:13px}
-.mrw i{font-style:normal;color:var(--fire);font-size:10px}.mrw .fr{color:#9fe6ee;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrw{display:grid;grid-template-columns:12px auto minmax(0,9em) minmax(0,1fr) auto auto;gap:8px;align-items:center;height:36px;padding:0 10px;background:rgba(14,30,32,.9);border:1px solid #2d6068;color:#eef2ef;text-align:left;font-family:var(--disp);font-size:13px}
+.mrw i{font-style:normal;color:var(--fire);font-size:10px}.mrw .dt{font-family:var(--mech);font-size:10px;letter-spacing:.06em;color:#7fb0b4;white-space:nowrap}.mrw.rd .dt{color:#58767a}.mrw .fr{color:#9fe6ee;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mrw .sj{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mrw em{font-style:normal;font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:var(--accent)}
 .mrw .rs{font-family:var(--body);font-size:9px;font-weight:400;padding:0 5px;line-height:15px;border:1px solid currentColor}.mrw .rs.u{color:var(--fire)}.mrw .rs.r{color:#6a7a76}
 .mrw.rd{background:rgba(10,16,16,.85);border-color:#1f3a3e;color:#8a9a96}.mrw.rd .sj{font-weight:400}.mrw.rd .fr{color:#5f8a8e}
@@ -872,7 +885,7 @@ body.eqm #visit{display:none}
  <span class="sep"></span>
  <span class="tag unit">HX-07 VESTIGE</span><span class="sn">S/N 0417-A</span>
  <span class="grow"></span>
- <span class="hcls" id="hCls">CLASS E</span><span class="hch" id="hCh">CH.1</span>
+ <span class="hcls" id="hCls">CLASS E</span><span class="hch" id="hCh">CH.1</span><span class="hdt" id="hDt"></span>
  <button id="mailBtn" hidden aria-label="メールを読む"><svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5"><rect x=".75" y=".75" width="12.5" height="8.5"/><path d="M1 1l6 5 6-5"/></svg>MAIL<i id="mailN">1</i></button>
  <span class="kv cr"><small>CREDIT</small><b id="hCr"></b><small>CR</small></span>
  <button id="eqClose" aria-label="装備変更を終えてショップへ戻る">◀ SHOP へ戻る</button>
@@ -909,7 +922,7 @@ body.eqm #visit{display:none}
   <div id="score"></div>
   <div id="reticle"></div>
   <div id="lkC"></div><div id="dnums"></div>
-  <div id="msg"></div><div id="memFx"><b>NONA</b><span>── 糸を、紡ぐ者</span></div>
+  <div id="msg"></div><div id="banner"><b></b><small></small></div><div id="memFx"><b>NONA</b><span>── 糸を、紡ぐ者</span></div>
   <div id="pause" hidden role="dialog" aria-label="ポーズ"><div class="box"><span class="h">PAUSE</span><span class="s" id="pzSub"></span><button class="go" id="pzGo">再開する</button><button class="cam" id="pzCam">視点：CHASE</button><button class="ab" id="pzAb">撤退する</button></div></div>
   <div id="comm" hidden role="status" aria-live="polite"><b>N-07</b><span id="commTx"></span><em id="commSt" hidden></em></div>
   <div id="stickArea"><div id="stick"><div id="knob"></div></div>
@@ -2945,7 +2958,8 @@ function extraRows(slot,id){let h='';if(id&&id!=='none')h+=`<div class="c w trt"
 document.addEventListener('contextmenu',e=>{if(!e.target.closest('input,textarea'))e.preventDefault()});
 document.addEventListener('selectstart',e=>{if(!e.target.closest||!e.target.closest('input,textarea'))e.preventDefault()});
 // 続きがある欄（スクロールできる性能表）は下端をぼかす
-function scrollHints(root){if(!root)return;root.querySelectorAll('.detail .cmp,.scmp').forEach(el=>{
+const SX_SEL='#mailBox .mlx,#mailBox .mb,#mis .mlist,.mdbox .ds';
+function scrollHints(root,sel='.detail .cmp,.scmp'){if(!root)return;root.querySelectorAll(sel).forEach(el=>{
  let mk=el._mk;if(!mk||!mk.isConnected){mk=el._mk=document.createElement('span');mk.className='smore';mk.textContent='▼';el.after(mk)}
  const f=()=>{const more=el.scrollHeight-el.clientHeight-el.scrollTop>4;el.classList.toggle('more',more);mk.hidden=!more;
   if(more){mk.style.left=(el.offsetLeft+(el.offsetWidth-mk.offsetWidth)/2)+'px';mk.style.top=(el.offsetTop+el.offsetHeight-14)+'px'}};
@@ -3100,13 +3114,14 @@ function loadGame(){
   if(d.dmg)Object.entries(d.dmg).forEach(([k,v])=>{if(typeof v==='number'&&v>0)DMG[k]=v});
   if(typeof d.cls==='string'&&CLASSES.includes(d.cls))CLS=d.cls;SHOPCLS=typeof d.shopcls==='number'?d.shopcls:CLASSES.indexOf(CLS)===0?0:0;if((d.ch|0)>0)CH=d.ch|0;
   if(d.col&&typeof d.col==='object'){Object.keys(COL).forEach(k=>{if(typeof d.col[k]==='string'&&/^#[0-9a-f]{6}$/i.test(d.col[k]))COL[k]=d.col[k]});applyColors()}
-  if(d.mis)Object.entries(d.mis).forEach(([k,v])=>{if(!MDEF[k]&&v&&typeof v==='object'){MIS_X[k]=v;return}if(MDEF[k]&&v&&typeof v==='object')MIS[k]={got:!!v.got,read:!!v.read,clear:!!v.clear,n:v.n|0,t:+v.t||0,best:+v.best||0}});
+  if(d.mis)Object.entries(d.mis).forEach(([k,v])=>{if(!MDEF[k]&&v&&typeof v==='object'){MIS_X[k]=v;return}if(MDEF[k]&&v&&typeof v==='object')MIS[k]={got:!!v.got,read:!!v.read,clear:!!v.clear,n:v.n|0,t:+v.t||0,best:+v.best||0,dy:typeof v.dy==='number'?v.dy:null}});
+  if(typeof d.day==='number'){DAY=Math.max(0,d.day|0);DAY_SAVED=true}
   if(d.cfg)SLOTS.forEach(sl=>{const v=d.cfg[sl.key];if(v&&sl.cat[v]&&(v==='none'||OWN.has(v)))cfg[sl.key]=v});
  }catch(e){}
 }
 // MIS_X：いまの版が知らない依頼の記録（古い版・新しい版のどちらで起動しても消さずに残す）
 const MIS_X={};
-function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG,tune:TUNE,pilot:PILOT,tut:TUT,fire:FIRE,tsel:TSEL,ttut:TTUT,cls:CLS,ch:CH,mis:{...MIS_X,...MIS},col:COL,shopcls:SHOPCLS}))}catch(e){}}
+function saveGame(){try{fixDays();DAY_SAVED=true;localStorage.setItem(SAVE_KEY,JSON.stringify({day:DAY,own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG,tune:TUNE,pilot:PILOT,tut:TUT,fire:FIRE,tsel:TSEL,ttut:TTUT,cls:CLS,ch:CH,mis:{...MIS_X,...MIS},col:COL,shopcls:SHOPCLS}))}catch(e){}}
 // CONFIG（画質・頂点のゆれ・視点）は本体のセーブとは別に保存（NEW GAME でも消えない）
 const CFG_KEY='mech-pwa-config';
 // 音量（BGM・SE は 0〜10）とミュート。CONFIG と同じキーに保存
@@ -3905,8 +3920,9 @@ const CAN_Z0=-20,CAN_Z1=270,canX=z=>20*Math.sin(z/46)+4*Math.sin(z/15),canDX=z=>
  canW=z=>6.5+9*Math.exp(-(((z-90)/16)**2))+9*Math.exp(-(((z-176)/16)**2))+6*Math.exp(-(((z-250)/12)**2));
 /* 敵ギアの行動：武器のアクション（構え・発射・踏み込み）は自機と同じ act.run をそのまま使う。弾・威力だけ敵用に置き換える。
  段階（tier）：mob＝ダッシュのみ／mid＝＋急加速・跳躍／boss＝自機と同じ全動作（ダッシュ・急加速・跳躍・全兵装・シールド防御）。
- dk＝射撃の威力倍率（兵装の性能表 dmg に掛ける。ミサイルはさらに半分）、mk＝近接の倍率、spread＝狙いのばらつき(m)、cdK＝撃ち終えてから次までの間（GEAR_MOB の rate に掛ける） */
-const GEAR_TIER={mob:{qb:0,jump:0,dk:.18,mk:.25,spread:3.4,cdK:1.6},mid:{qb:1,jump:1,dk:.14,mk:.25,spread:2.6,cdK:1.3},boss:{qb:1,jump:1,dk:.16,mk:.3,spread:1.8,cdK:1,lead:1}};
+ dk＝射撃の威力倍率（兵装の性能表 dmg に掛ける。ミサイルはさらに半分）、mk＝近接の倍率、spread＝狙いのばらつき(m)、cdK＝撃ち終えてから次までの間（GEAR_MOB の rate に掛ける）、rf＝3点射のうち撃つ数、gap＝兵装を持ち替えるときの間（秒） */
+const GEAR_TIER={mob:{qb:0,jump:0,dk:.18,mk:.25,spread:3.4,cdK:1.6},mid:{qb:1,jump:1,dk:.14,mk:.25,spread:2.6,cdK:2,rf:2,gap:1.5},boss:{qb:1,jump:1,dk:.16,mk:.3,spread:1.8,cdK:1.6,gap:1.5,lead:1}};
+const GEAR_MS_MAX=2; // 敵のミサイルは1回の斉射で2発まで
 const GSLOTS=[['rHand',-1,HAND],['lHand',1,HAND],['rShoulder',-1,SHOULDER],['lShoulder',1,SHOULDER]];
 const PTGT={get alive(){return P.hp.core>0&&P.down<=0},center:v=>playerCenter(v)};
 function gearInit(e){const sp=e.spec;e.tier=GEAR_TIER[sp.tier||'mob'];e.ws=[];
@@ -3953,12 +3969,12 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
  const shk=shake;let o=null,scroll=0;
  if(A){const c={u:(t-A.t0)/A.def.act.dur,dt,s:A.s,w:A.w,st:A.st,S:A.def.st,tgt:null,use:()=>true,
    once:(id,u0)=>c.u>=u0&&!A.fired.has(id)&&(A.fired.add(id),true),
-   shot:(obj,vis)=>{gearShot(e,A,obj,vis);return true},missile:(obj,i)=>{gearMissile(e,A,obj,i);return true},melee:()=>gearMelee(e,A)};
-  if(c.u>=1||e.stun>.3){endOf(A.def)?.(A.w);e.act=null}else{o=A.def.act.run(c);if(o&&o.scroll)scroll=o.scroll}}
+   shot:(obj,vis)=>{A.st.ns=(A.st.ns||0)+1;if(T.rf&&/^RF/.test(A.id)&&A.st.ns>T.rf)return false;gearShot(e,A,obj,vis);return true},missile:(obj,i)=>{A.st.nm=(A.st.nm||0)+1;if(A.st.nm>GEAR_MS_MAX)return false;gearMissile(e,A,obj,i);return true},melee:()=>gearMelee(e,A)};
+  if(c.u>=1||e.stun>.3){endOf(A.def)?.(A.w);e.act=null;e.gapT=T.gap||0}else{o=A.def.act.run(c);if(o&&o.scroll)scroll=o.scroll}}
  shake=shk+Math.max(0,shake-shk)*(Math.hypot(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z)<16?.3:0);
  if(scroll){const ry=e.g.rotation.y;e.home.x+=Math.sin(ry)*scroll*dt;e.home.z+=Math.cos(ry)*scroll*dt}
  pushOut(e.home,1.8,e.y);clampField(e.home);e.g.position.set(e.home.x,e.y,e.home.z);
- if(!e.act&&free&&armed&&e.guardT<=0){const r=e.ws.filter(w=>w.cd<=0&&w.kind!=='防御'&&(w.kind==='近接'?d<w.def.st.range+4:d<Math.min(w.def.st.range,sp.rng||w.def.st.range)));
+ e.gapT=(e.gapT||0)-dt;if(!e.act&&free&&armed&&e.guardT<=0&&e.gapT<=0){const r=e.ws.filter(w=>w.cd<=0&&w.kind!=='防御'&&(w.kind==='近接'?d<w.def.st.range+4:d<Math.min(w.def.st.range,sp.rng||w.def.st.range)));
   if(r.length){const w=r.find(x=>x.kind==='近接')||r[Math.floor(Math.random()*r.length)];e.act={def:w.def,id:w.id,s:w.s,w:w.w,t0:t,st:{},fired:new Set()};w.cd=w.def.act.dur+(sp.rate||3)*T.cdK*(.8+Math.random()*.4)}}
  // シールド（どの段階でも）：自機が撃っている間、正面に構える
  const shw=e.ws.find(w=>w.kind==='防御');if(shw&&!e.act&&pa&&e.gCd<=0&&e.stun<=0&&Math.random()<dt*3){e.guardT=1.1+Math.random()*.6;e.gCd=3+Math.random()*2}
@@ -4107,6 +4123,12 @@ function sPan(x,z){_sr.setFromMatrixColumn(C.matrixWorld,0);const dx=x-P.pos.x,d
 function sAt(name,pos,o={}){if(mode!=='play')return;const [d,pan]=sPan(pos.x,pos.z);SND.play(name,{g:.5,...o,dist:d*(o.dk??1),pan})}
 const WSND=id=>/^RF3/.test(id)?'ap':/^RF/.test(id)?'rifle':id==='MG3'?'gat':/^MG/.test(id)?'mg':/^BZ/.test(id)?'bazooka':/^GC/.test(id)?'grenade':null;
 const SNDT={};const sOnce=(k,gap)=>{const n=performance.now();if(n-(SNDT[k]||0)<gap*1000)return false;SNDT[k]=n;return true};
+// 中央の帯（MISSION COMPLETE／FAILED）：帯が広がり、文字を一文字ずつ打ち込み、白く光ってから消える
+let bnT=[];function banner(txt,sub='',ng=false,dur=3){const B=$('banner'),b=B.querySelector('b');bnT.forEach(clearTimeout);bnT=[];
+ B.className=ng?'ng':'';void B.offsetWidth;B.classList.add('on');B.querySelector('small').textContent=sub;b.textContent='';
+ [...txt].forEach((ch,i)=>bnT.push(setTimeout(()=>{b.textContent+=ch;if(ch!==' '&&sOnce('bnk',.03))SND.play('tick',{g:.15})},120+i*45)));
+ bnT.push(setTimeout(()=>{B.classList.remove('on');B.classList.add('off')},(dur+.4)*1000))}
+function bannerClear(){bnT.forEach(clearTimeout);bnT=[];$('banner').className=''}
 let msgT=0;function say(s,d=.8){$('msg').textContent=s;msgT=d}
 function hitPlayer(dmg,imp,pos){if(P.down>0)return;if(DBG.inv){spawn(0xc0a8ff,.6,pos,{life:.08});return}
  // シールド：正面からの弾を防ぐ（衝撃も無効）
@@ -4122,7 +4144,7 @@ function hitPlayer(dmg,imp,pos){if(P.down>0)return;if(DBG.inv){spawn(0xc0a8ff,.6
  if(RUN&&RUN.def.comm.hot&&RUN.hits){RUN.hits=RUN.hits.filter(x=>t-x<3);RUN.hits.push(t);if(RUN.hits.length>=3&&t-RUN.hotT>10){RUN.hotT=t;RUN.hits=[];comm(RUN.def.comm.hot)}}
  PART_KEYS.forEach(k=>{DMG[cfg[k]]=P.hpMax[k]-P.hp[k];if(DMG[cfg[k]]<=0)delete DMG[cfg[k]]});saveGame();
  shake=Math.max(shake,.2);spawn(0xffffff,.8,pos,{life:.1});
- if(P.hp.core<=0){P.down=3.2;P.stun=4;say('CORE 大破',3);SND.play('coreDown',{g:.7});explode(playerCenter(new THREE.Vector3()),2.5);return}
+ if(P.hp.core<=0){P.down=3.2;P.stun=4;if(RUN)banner('MISSION FAILED','CORE 大破',true,2.4);else say('CORE 大破',3);SND.play('coreDown',{g:.7});explode(playerCenter(new THREE.Vector3()),2.5);return}
  const I=IMP[imp];if(I&&Math.random()<I.p){P.stun=Math.max(P.stun,I.st);say('被弾',.5);run('hit',STAGGER);P.vel.addScaledVector(from,-I.kb*4)}}
 function guarding(sd){const key=sd<0?'rHand':'lHand';return mode==='play'&&P.hp.arms>0&&GUARD[sd]&&HAND[cfg[key]].st.kind==='防御'&&ammoReady(key)&&P.stun<=0}
 function onLand(){if(mode!=='play')return;P.stun=Math.max(P.stun,.4*(SS.landK||1));say('着地硬直',.4)}
@@ -4274,6 +4296,13 @@ function readInput(dt){
  MDEF に1件足すと依頼が増える（ready:false は内容が未実装で、届かない） */
 const CLASSES=['E','D','C','B','A','S'];
 let CLS='E',CH=1,RUN=null;
+/* 架空の暦（再建暦 P.R.）：1年＝12か月×30日。DAY は P.R. 0037 MAR 01 からの日数。出撃して帰還するたびに1日進む */
+let DAY=0,DAY_SAVED=false;const PR_MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+function prDate(dy){const n=dy+60,y=37+Math.floor(n/360),m=Math.floor(n%360/30),d=n%30+1;return `P.R. ${String(y).padStart(4,'0')} ／ ${PR_MON[m]} ${String(d).padStart(2,'0')}`}
+function prTime(id){let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))>>>0;const m=6*60+h%(15*60);return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
+// 日付のないメールに日付を付ける（古いセーブは届いた順に1日ずつ。以後は届いた日）
+function fixDays(){const L=MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got&&MIS[d.id].dy==null);if(!L.length)return;
+ if(!DAY_SAVED){L.sort((a,b)=>(MIS[a.id].t||0)-(MIS[b.id].t||0)).forEach((d,i)=>MIS[d.id].dy=i);DAY=Math.max(DAY,L.length-1);DAY_SAVED=true}else L.forEach(d=>MIS[d.id].dy=DAY)}
 const MIS={}; // 依頼の状態 {got:届いた, read:メールを読んだ, clear:1回以上クリア, n:クリア回数}
 const CHAPTERS={1:'何でも屋の初仕事',2:'残響',3:'闘技場'};
 const PASTOR07='<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-07</span>',JONAH='<ruby class="mc">JONAH<rt>ヨナ</rt></ruby>';
@@ -4660,25 +4689,25 @@ function misDeliver(kind){if(TUT!=='done')return [];const out=[];
  out.push(...shopNotice());
  if(out.length){saveGame();misHeader();if(out.some(d=>d.kind==='mail')){$('mailBtn').classList.add('new');SND.play('mail')}}return out}
 function misHeader(){const u=unreadMail().length,got=anyGot();
- $('hCls').textContent='CLASS '+CLS;$('hCh').textContent='CH.'+CH;
+ $('hCls').textContent='CLASS '+CLS;$('hCh').textContent='CH.'+CH;fixDays();$('hDt').textContent=prDate(DAY);
  const mb=$('mailBtn');mb.hidden=TUT!=='done'||!gotMails().length;$('mailN').textContent=u;$('mailN').hidden=!u;if(!u)mb.classList.remove('new');
  $('mMission').disabled=!got;$('mMisSub').textContent=got?'依頼を受けて戦う':'依頼が届くと選べます'}
 
 /* ----- メール（機体エリアに重ねる。下にノーナの補足）----- */
-const gotMails=()=>MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got).sort((a,b)=>(MIS[b.id].t||0)-(MIS[a.id].t||0));
+const gotMails=()=>(fixDays(),MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got).sort((a,b)=>(MIS[b.id].dy-MIS[a.id].dy)||((MIS[b.id].t||0)-(MIS[a.id].t||0))));
 // メールボックス：受信一覧（新しい順。未読は●と太字、既読は暗く）→ 行を押すと本文
 function mailShow(box,html,dir){const was=!box.hidden&&!box.classList.contains('cls');clearTimeout(box._t);box.classList.remove('cls','pop');
  box.innerHTML=`<div class="mbc${was?' '+dir:''}">${html}</div>`;box.hidden=false;if(!was){void box.offsetWidth;box.classList.add('pop')}}
 function mailList(){const box=$('mailBox'),L=gotMails(),u=unreadMail().length;
  mailShow(box,`<div class="mh"><span>MAILBOX ／ ${u?'未読 '+u+' 件':'未読なし'}</span><span>${L.length} 通</span></div>
-  <div class="mlx">${L.map(d=>{const m=MIS[d.id];return `<button class="mrw${m.read?' rd':''}" data-m="${d.id}"><i>${m.read?'':'●'}</i><span class="fr">${d.from}</span><span class="sj">${d.subj}</span>${m.clear?'<em>CLEARED</em>':''}<b class="rs ${m.read?'r':'u'}">${m.read?'既読':'未読'}</b></button>`}).join('')}</div>
+  <div class="mlx">${L.map(d=>{const m=MIS[d.id];return `<button class="mrw${m.read?' rd':''}" data-m="${d.id}"><i>${m.read?'':'●'}</i><span class="dt">${prDate(m.dy).replace('P.R. ','').replace(' ／ ',' ')}</span><span class="fr">${d.from}</span><span class="sj">${d.subj}</span>${m.clear?'<em>CLEARED</em>':''}<b class="rs ${m.read?'r':'u'}">${m.read?'既読':'未読'}</b></button>`}).join('')}</div>
   <div class="acts"><button class="btn-sub" id="mailX" style="margin-left:auto;width:90px">閉じる</button></div>`,'sr');
- nbClose();box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>mailOpen(b.dataset.m));$('mailX').onclick=mailClose}
+ nbClose();box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>mailOpen(b.dataset.m));$('mailX').onclick=mailClose;requestAnimationFrame(()=>scrollHints(box,SX_SEL))}
 function mailOpen(id){const d=MDEF[id];if(!d)return;
  const box=$('mailBox');mailShow(box,`<div class="mh"><span>MAIL</span><span>${d.shop?'SHOP':d.notice?'NOTICE':'CH.'+d.ch+' MISSION'}${MIS[d.id].clear?' ／ CLEARED':''}</span></div>
-  <div class="mk"><span>FROM</span><span>${d.fromFull||d.from}</span><span>SUBJ</span><span class="sj">${d.subj}</span></div>
+  <div class="mk"><span>DATE</span><span class="dtl">${prDate(MIS[d.id].dy)}　${prTime(d.id)}</span><span>FROM</span><span>${d.fromFull||d.from}</span><span>SUBJ</span><span class="sj">${d.subj}</span></div>
   <div class="mb">${nameIn(d.body)}</div><div class="acts"><button class="btn-sub" id="mailBk" style="width:84px">◀ 一覧</button>${d.notice?'':'<button class="go" id="mailGo">MISSION を開く</button>'}<button class="btn-sub" id="mailX" style="width:80px">閉じる</button></div>`,'sl');
- MIS[d.id].read=true;saveGame();misHeader();$('mailBtn').classList.remove('new');
+ MIS[d.id].read=true;saveGame();misHeader();$('mailBtn').classList.remove('new');requestAnimationFrame(()=>scrollHints(box,SX_SEL));
  if(!d.notice)$('mailGo').onclick=()=>{mailClose();openBoard(d.id)};$('mailX').onclick=mailClose;$('mailBk').onclick=mailList;
  nonaSay([[nameIn(d.mailNona)]],{hold:true})}
 function mailClose(){const b=$('mailBox');if(b.hidden||b.classList.contains('cls'))return;b.classList.remove('pop');b.classList.add('cls');nbClose();b._t=setTimeout(()=>{b.hidden=true;b.classList.remove('cls')},180)}
@@ -4723,6 +4752,7 @@ function misHead(code,title,sub,back){return `<div class="xhd"><span class="logo
  <span class="hcls">CLASS ${CLS}</span><span class="hch">CH.${CH}</span><span class="money">${fmtCR(CR_SHOWN)}<small>CR</small></span>${back?`<button class="bk" id="misBack">${back}</button>`:''}</div>`}
 function hideMis(){misEl.hidden=true;misEl.innerHTML='';bTalk&&clearInterval(bTalk.iv);bTalk=null}
 function openBoard(sel){fadeTo(()=>{chkSet(null);mailClose();nbClose();renderBoard(sel)},'MISSION')}
+let CHO={};try{CHO=JSON.parse(localStorage.getItem('mech-pwa-cho')||'{}')||{}}catch(e){}
 function renderBoard(sel){
  const list=MLIST.filter(d=>d.ch===CH&&!d.story&&MIS[d.id]&&MIS[d.id].got),allGot=MLIST.filter(d=>d.ch>0&&MIS[d.id]&&MIS[d.id].got),story=MLIST.find(d=>d.ch===CH&&d.story),norm=chNormals(CH),cl=chCleared(CH);
  misSel=sel&&MIS[sel]&&MIS[sel].got?sel:(misSel&&MDEF[misSel]&&MDEF[misSel].ch>0&&MIS[misSel]&&MIS[misSel].got?misSel:(list[0]||allGot[0]||{}).id);
@@ -4730,7 +4760,10 @@ function renderBoard(sel){
   return `<button class="mrow${d.story?' st':''}${d.id===misSel?' sel':''}" data-id="${d.id}"><span class="mtag ${d.story?'story':d.kind}">${d.story?'STORY':d.kind==='mail'?'MAIL':'VISIT'}</span><span class="nm"><b>${d.title}</b><small>${d.from}</small></span><span class="rw">${st}${fmtCR(d.reward)} CR</span></button>`};
  const stOpen=story&&story.ready&&MIS[story.id]&&MIS[story.id].got;
  const sRow=stOpen?row(story):'';
- const olds=Object.keys(CHAPTERS).map(Number).filter(c=>c<CH).map(c=>`<div class="chh old"><b>▸ CHAPTER ${c}</b><span>${CHAPTERS[c]}</span><small>CLEAR ・ 再挑戦可</small></div>`+MLIST.filter(d=>d.ch===c&&MIS[d.id]&&MIS[d.id].got).map(row).join('')).join('');
+ // CHAPTER ごとに折りたたみ（CHAPTER 1 から順。最初は今の CHAPTER だけ開く。開閉は CHO に保存）
+ const chOpen=c=>CHO[c]??(c===CH),chs=Object.keys(CHAPTERS).map(Number).filter(c=>c<=CH).sort((a,b)=>a-b);
+ const chBlock=c=>{const op=chOpen(c),old=c<CH,rows=old?MLIST.filter(d=>d.ch===c&&MIS[d.id]&&MIS[d.id].got).map(row).join(''):list.map(row).join('')+sRow+(none?none:'');
+  return `<button class="chh${old?' old':''}" data-ch="${c}"><i>${op?'▼':'▶'}</i><b>CHAPTER ${c}</b><span>${CHAPTERS[c]||''}</span>${old?'<small>CLEAR ・ 再挑戦可</small>':''}</button>`+(op?rows:'')};
  const none=!list.length&&!sRow?`<div class="mnone">── 依頼はまだ届いていません</div>`:'';
  const d=MDEF[misSel];
  const det=d?`<div class="mdbox mc14${d.story?' st':''}"><span class="fr ${d.kind}">${d.kind==='mail'?'MAIL':'VISIT'} ／ ${d.from}</span><span class="nmt">${d.title}</span>
@@ -4738,9 +4771,12 @@ function renderBoard(sel){
    <div class="ds">${d.desc}</div>
    <div class="acts"><button class="btn-main" id="misBrief">BRIEFING ▶</button>${d.kind==='visit'?'<button class="btn-sub" id="misVisit" style="width:120px">会話を見返す</button>':''}${d.kind==='mail'?'<button class="btn-sub" id="misMail" style="width:120px">メールを読む</button>':''}</div></div>`
   :`<div class="mdbox mc14"><span class="ds" style="border:0">届いている依頼はありません。</span></div>`;
- misEl.innerHTML=misHead('MISSION','第7区画管理局 依頼端末','','◀ GARAGE')+`<div class="mbd"><div class="mlist"><div class="chh"><b>CHAPTER ${CH}</b><span>${CHAPTERS[CH]||''}</span></div>${list.map(row).join('')}${sRow}${none}${olds}</div><div class="mdet">${det}</div></div>`;
- misEl.hidden=false;
+ const ml0=misEl.querySelector('.mlist'),sy=ml0&&!misEl.hidden?ml0.scrollTop:0;
+ misEl.innerHTML=misHead('MISSION','第7区画管理局 依頼端末','','◀ GARAGE')+`<div class="mbd"><div class="mlist">${chs.map(chBlock).join('')}</div><div class="mdet">${det}</div></div>`;
+ misEl.hidden=false;const ml=misEl.querySelector('.mlist');ml.scrollTop=sy;
  misEl.querySelectorAll('.mrow[data-id]').forEach(b=>b.onclick=()=>renderBoard(b.dataset.id));
+ misEl.querySelectorAll('.chh[data-ch]').forEach(b=>b.onclick=()=>{const c=+b.dataset.ch;CHO[c]=!chOpen(c);try{localStorage.setItem('mech-pwa-cho',JSON.stringify(CHO))}catch(e){}SND.play('click',{g:.3});renderBoard(misSel)});
+ requestAnimationFrame(()=>scrollHints(misEl,SX_SEL));
  $('misBack').onclick=()=>fadeTo(()=>{hideMis();garageGreet('board')},'GARAGE');
  if(d){$('misBrief').onclick=()=>renderBrief(d.id);const mv=$('misVisit');if(mv)mv.onclick=()=>fadeTo(()=>{hideMis();visitPlay(d.id,true)},'GARAGE');const mm=$('misMail');if(mm)mm.onclick=()=>fadeTo(()=>{hideMis();mailOpen(d.id)},'GARAGE')}
 }
@@ -4854,7 +4890,7 @@ function misStartEnemies(){
 function truckPlace(){const z=RUN.tr.z;TRUCK.position.set(roadX(z)+2,0,z);TRUCK.rotation.y=Math.atan(roadDX(z))}
 function truckHit(dmg,pos){const T=RUN.tr;if(!T||T.hp<=0||RUN.ok)return;if(DBG.inv){spawn(0xc0a8ff,.6,pos,{life:.08});return}T.hp=Math.max(0,T.hp-dmg);spawn(0xffffff,.7,pos,{life:.1});
  if(!T.hurt&&T.hp<T.max*.5){T.hurt=true;comm(RUN.def.comm.hurt,2.6)}
- if(T.hp<=0){const O=TOBJ();explode(new THREE.Vector3(O.position.x,2,O.position.z),3);if(O===TRUCK)TRUCK.visible=false;else O.userData.wreck();say(T.obj?'監視所 大破':'荷車 大破',3);SND.truck(false);RUN.endT=2.6;RUN.lost=true}}
+ if(T.hp<=0){const O=TOBJ();explode(new THREE.Vector3(O.position.x,2,O.position.z),3);if(O===TRUCK)TRUCK.visible=false;else O.userData.wreck();banner('MISSION FAILED',T.obj?'監視所 大破':'荷車 大破',true,2.2);SND.truck(false);RUN.endT=2.6;RUN.lost=true}}
 // ボス戦：上部の HP バー、増援（HP 2/3・1/3）、撃破で成功
 function bossMisTick(dt){const B=RUN.boss,d=RUN.def,k=Math.max(0,B.hp/B.max);
  $('escHp').style.width=(100*k)+'%';$('escHp').classList.toggle('lo',k<.35);$('escD').textContent=Math.ceil(k*100)+'%';
@@ -4863,7 +4899,7 @@ function bossMisTick(dt){const B=RUN.boss,d=RUN.def,k=Math.max(0,B.hp/B.max);
  if(!B.alive&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=6.2;B.line.visible=B.glow.visible=false;
   ENEMIES.forEach(e=>{if(e!==B&&!e.off&&e.alive){e.alive=false;e.g.visible=false;explode(e.center(new THREE.Vector3()),1.4)}});
   for(let i=0;i<5;i++)setTimeout(()=>{if(RUN)explode(B.center(new THREE.Vector3()).add(new THREE.Vector3((Math.random()-.5)*6,Math.random()*3,(Math.random()-.5)*6)),2.5)},i*260);
-  comm(d.comm.clear,2.8);setTimeout(()=>{if(RUN&&RUN.ok)comm(d.comm.clear2,3)},3000);setTimeout(()=>{if(RUN&&RUN.ok)say('MISSION COMPLETE',2.6)},1400)}
+  comm(d.comm.clear,2.8);setTimeout(()=>{if(RUN&&RUN.ok)comm(d.comm.clear2,3)},3000);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},1400)}
  if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
 // 護衛：荷車を進める・波を出す・到着／破壊を判定
 function escortTick(dt){const T=RUN.tr,d=RUN.def,es=d.escort;if(!T)return;
@@ -4877,7 +4913,7 @@ function escortTick(dt){const T=RUN.tr,d=RUN.def,es=d.escort;if(!T)return;
  {const [dd,pn2]=sPan(TRUCK.position.x,TRUCK.position.z);SND.truck(T.hp>0&&!RUN.ok,dd,pn2,!near&&!far)}
  truckHB.scale.set(3*T.hp/T.max,.12,.12);truckHB.lookAt(C.position);
  $('escHp').style.width=(100*T.hp/T.max)+'%';$('escHp').classList.toggle('lo',T.hp<T.max*.35);$('escD').textContent=Math.max(0,Math.round(es.z1-T.z))+' m';
- if(T.z>=es.z1&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=3.4;comm(d.comm.clear,3);say('MISSION COMPLETE',2.6)}
+ if(T.z>=es.z1&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=3.4;comm(d.comm.clear,3);banner('MISSION COMPLETE',RUN.def.title)}
  if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
 // 拠点防衛（2-1）：決めた時間、監視所を守る。時間で波が来る。監視所の耐久が0で失敗、時間いっぱい守れば成功（残った敵は引いていく）
 function defendTick(dt){const T=RUN.tr,d=RUN.def,df=d.defend;
@@ -4889,7 +4925,7 @@ function defendTick(dt){const T=RUN.tr,d=RUN.def,df=d.defend;
  if(!RUN.lastSaid&&rem<=30&&!RUN.ok){RUN.lastSaid=true;comm(d.comm.last,2)}
  $('escHp').style.width=(100*T.hp/T.max)+'%';$('escHp').classList.toggle('lo',T.hp<T.max*.35);$('escD').textContent=fmtT(rem);
  POST.userData.tick(t);
- if(rem<=0&&!RUN.ok&&P.down<=0&&T.hp>0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=4.2;comm(d.comm.clear,3);say('MISSION COMPLETE',2.6);
+ if(rem<=0&&!RUN.ok&&P.down<=0&&T.hp>0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=4.2;comm(d.comm.clear,3);banner('MISSION COMPLETE',RUN.def.title);
   ENEMIES.forEach(e=>{if(!e.off&&e.alive){e.alive=false;e.g.visible=false;if(e.shadow)e.shadow.visible=false}})}
  if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
 // 中継局（★2-S）：アンテナが生きている間、指揮型ギアは被ダメージ 1/4、一定間隔で護衛を呼ぶ。アンテナ全滅で守りが消える。ギア撃破で成功（記憶①の演出）
@@ -4912,7 +4948,7 @@ function collectTick(dt){const d=RUN.def,c=d.collect,dr=DROPM.position;
     const left=c.items.length-RUN.got;if(left>0)comm(d.comm.got.replace('{n}',left),2.4)}}});
  if(P.hp.core<=0&&RUN.carry){const k=RUN.carry;k.st=0;RUN.carry=null;k.g.position.y=0;k.g.scale.setScalar(1);k.g.userData.bc.visible=true}
  $('escD').textContent=RUN.got+' / '+c.items.length+(RUN.carry?'（運搬中）':'');$('escHp').style.width=(100*RUN.got/c.items.length)+'%';
- if(RUN.got>=c.items.length&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=4.6;comm(d.comm.clear,3.4);say('MISSION COMPLETE',2.6)}
+ if(RUN.got>=c.items.length&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=4.6;comm(d.comm.clear,3.4);banner('MISSION COMPLETE',RUN.def.title)}
  if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
 // 到達：地点までの距離を上部に表示。半分・近づいた・着いたで通信。着いたら成功（敵が残っていてもよい）
 function reachTick(dt){const d=RUN.def,g=d.reach,dist=Math.hypot(P.pos.x-g.x,P.pos.z-g.z);if(!RUN.reachD0)RUN.reachD0=dist;
@@ -4921,19 +4957,19 @@ function reachTick(dt){const d=RUN.def,g=d.reach,dist=Math.hypot(P.pos.x-g.x,P.p
  if(!RUN.wkSaid&&d.comm.walker&&ENEMIES.some(e=>e.type==='walker'&&e.alive&&!e.off&&Math.hypot(e.g.position.x-P.pos.x,e.g.position.z-P.pos.z)<45)){RUN.wkSaid=true;comm(d.comm.walker,2.4)}
  if(!RUN.halfSaid&&dist<RUN.reachD0*.5){RUN.halfSaid=true;comm(d.comm.half,2.2)}
  if(!RUN.nearSaid&&dist<g.r+16){RUN.nearSaid=true;comm(d.comm.near,2.2)}
- if(dist<=g.r&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=6.4;comm(d.comm.clear,2.6);setTimeout(()=>{if(RUN&&RUN.ok)comm(d.comm.clear2,3.2)},2800);say('MISSION COMPLETE',2.6)}
+ if(dist<=g.r&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=6.4;comm(d.comm.clear,2.6);setTimeout(()=>{if(RUN&&RUN.ok)comm(d.comm.clear2,3.2)},2800);banner('MISSION COMPLETE',RUN.def.title)}
  if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
 const misLeft=()=>ENEMIES.filter(e=>!e.off&&e.alive&&(!RUN||!RUN.def.goal||e.type===RUN.def.goal)).length;
 function misTick(dt){if(COMM.t>0){COMM.t-=dt;if(COMM.t<=0){COMM.busy=false;if(COMM.q.length)commNext();else $('comm').hidden=true}}
  if(RUN&&!RUN.leaving&&!RUN.ok)RUN.time=(RUN.time||0)+dt;
  if(!RUN||RUN.leaving)return;if(RUN.tr){if(RUN.def.defend)defendTick(dt);else escortTick(dt);return}if(RUN.boss){bossMisTick(dt);return}if(RUN.def.reach){reachTick(dt);return}if(RUN.def.collect){collectTick(dt);return}if(RUN.def.relay){relayTick(dt);return}const n=misLeft();
  if(n!==RUN.left){const dn=n<RUN.left;RUN.left=n;if(dn&&n>0&&RUN.def.comm.left)comm(RUN.def.comm.left.replace('{n}',n));else if(n===1&&RUN.total>1&&RUN.def.comm.last)comm(RUN.def.comm.last,2.4)}
- if(n===0&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=3.4;comm(RUN.def.comm.clear,3);say('MISSION COMPLETE',2.6)}
+ if(n===0&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=3.4;comm(RUN.def.comm.clear,3);banner('MISSION COMPLETE',RUN.def.title)}
  if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
 function misAbort(){if(!RUN||RUN.leaving)return;misFinish(false,'撤退')}
 function misFinish(ok,reason=''){if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;
  const def=RUN.def,tm=RUN.time||0,r={def,ok,reason,earned:P.earned||0,reward:ok?def.reward:0,time:tm,kills:{...(RUN.kills||{})},best:(MIS[def.id]&&MIS[def.id].best)||0,rec:false};commClear();
- fadeTo(()=>{if(ok){CREDIT+=def.reward;const m=MIS[def.id]||(MIS[def.id]={got:true,read:true,clear:false,n:0});m.clear=true;m.n++;if(!m.best||tm<m.best){r.rec=!!m.best;if(!m.best)r.first=true;m.best=tm}}
+ fadeTo(()=>{DAY++;if(ok){CREDIT+=def.reward;const m=MIS[def.id]||(MIS[def.id]={got:true,read:true,clear:false,n:0});m.clear=true;m.n++;if(!m.best||tm<m.best){r.rec=!!m.best;if(!m.best)r.first=true;m.best=tm}}
   saveGame();setMode('garage');renderResult(r)},'DEBRIEF')}
 const KILL_JA={drone:'ドローン',turret:'砲台',boss:'大型無人砲台',gear:'ギア',walker:'多脚砲台',crawler:'自走地雷',antenna:'中継アンテナ'};
 const fmtT=t=>{t=Math.max(0,Math.round(t));return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')};
@@ -5000,7 +5036,7 @@ $('pzAb').onclick=()=>{pauseSet(false);if(RUN)misAbort();else fadeTo(()=>setMode
 $('pause').addEventListener('pointerdown',e=>e.stopPropagation());
 addEventListener('keydown',e=>{if(e.key==='Escape'&&mode==='play'){e.preventDefault();pauseSet(!PAUSED)}});
 /* ===== ガレージ／出撃の切り替え ===== */
-function setMode(m,training=false,mis=null,tt=false){dmgNumClear();ENEMIES.forEach(e=>{e.jo=null;e.vib=0});
+function setMode(m,training=false,mis=null,tt=false){dmgNumClear();bannerClear();ENEMIES.forEach(e=>{e.jo=null;e.vib=0});
  if(m==='play')chkSet(null);
  const wasTT=TRT;TRT=m==='play'&&tt;
  PAUSED=false;$('pause').hidden=true;
@@ -5781,7 +5817,7 @@ const hasSave=()=>{try{return !!localStorage.getItem(SAVE_KEY)}catch(e){return f
 function showTitle(){const t=$('title');view='overview';selSlot=null;wcat=null;hlOff=false;highlight(null);setPreview(null);if(mech&&builtKey!==JSON.stringify(cfg))buildMech(cfg);closeModal();t.hidden=false;SND.bgm('title');TT.on=true;titleSize();titleLoop();
  const sv=hasSave();$('tCon').disabled=!sv;$('tConSub').textContent=sv?fmtCR(CREDIT)+' CR':'NO DATA';$('tNew').focus()}
 function resetGame(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}
- OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();TTUT=0;CLS='E';CH=1;SHOPCLS=0;Object.keys(MIS_X).forEach(k=>delete MIS_X[k]);Object.assign(COL,PRESETS['STANDARD']);applyColors();Object.keys(MIS).forEach(k=>delete MIS[k]);mailClose();
+ OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();TTUT=0;CLS='E';CH=1;SHOPCLS=0;DAY=0;DAY_SAVED=true;Object.keys(MIS_X).forEach(k=>delete MIS_X[k]);Object.assign(COL,PRESETS['STANDARD']);applyColors();Object.keys(MIS).forEach(k=>delete MIS[k]);mailClose();
  Object.keys(DMG).forEach(k=>delete DMG[k]);Object.keys(TUNE).forEach(k=>delete TUNE[k]);Object.assign(cfg,DEFAULT_CFG);assemble();crSync()}
 function hideTitle(){TT.on=false;SND.bgm('garage');$('title').hidden=true;$('title').querySelectorAll('.tmodal').forEach(m=>m.remove());view='overview';selSlot=null;renderGarage();resize()}
 addEventListener('resize',()=>{if(TT.on)titleSize()});
