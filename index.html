@@ -393,6 +393,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #reticle::before,#reticle::after{content:"";position:absolute;background:rgba(140,240,110,.7)}
 #reticle::before{left:12px;top:-6px;width:1px;height:38px}#reticle::after{top:12px;left:-6px;height:1px;width:38px}
 #lkC{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+#dnums{position:absolute;inset:0;pointer-events:none;overflow:hidden}.dnum{position:absolute;font-family:var(--mech);font-size:12px;font-weight:700;color:#fff;text-shadow:0 0 2px #000,1px 1px 0 #000;white-space:nowrap}
 .lk{position:absolute;width:48px;height:48px;margin:-24px 0 0 -24px;pointer-events:none;color:var(--alert);font-size:11px}
 .lk::before{content:"";position:absolute;inset:0;border:2px solid var(--alert);transition:border-radius .22s,transform .22s,opacity .18s}
 .lk .d{position:absolute;left:0;top:-16px;white-space:nowrap;font-family:var(--mech);letter-spacing:.06em}
@@ -903,7 +904,7 @@ body.eqm #visit{display:none}
   <button id="bTgt" aria-label="ターゲット変更"><span>TARGET</span><span>▶▶</span></button>
   <div id="score"></div>
   <div id="reticle"></div>
-  <div id="lkC"></div>
+  <div id="lkC"></div><div id="dnums"></div>
   <div id="msg"></div>
   <div id="pause" hidden role="dialog" aria-label="ポーズ"><div class="box"><span class="h">PAUSE</span><span class="s" id="pzSub"></span><button class="go" id="pzGo">再開する</button><button class="cam" id="pzCam">視点：CHASE</button><button class="ab" id="pzAb">撤退する</button></div></div>
   <div id="comm" hidden role="status" aria-live="polite"><b>N-07</b><span id="commTx"></span><em id="commSt" hidden></em></div>
@@ -1497,6 +1498,7 @@ function tickAmmo(dt){WSLOTS.forEach(sl=>{const a=AM[sl.key];if(a&&a.rl>0){a.rl-
 let mech=null;const active={};
 let builtKey='';
 // 機体の3Dモデルを組む（c＝構成。ガレージでは選択中の装備を仮に組んで見せる）
+let STDH=0;function stdH(){if(!STDH){const g=new THREE.Group(),b=gearModel(g,{...DEFAULT_CFG});b.updateMatrixWorld(true);STDH=new THREE.Box3().setFromObject(b).getSize(new THREE.Vector3()).y||9;b.traverse(o=>o.geometry&&o.geometry!==UB&&o.geometry.dispose())}return STDH}
 function buildMech(c){
  builtKey=JSON.stringify(c);
  Object.keys(active).forEach(k=>delete active[k]);
@@ -1525,6 +1527,11 @@ function buildMech(c){
   box(n,.3,.3,.3,M.frame,0,0,.1);cyl(n,.13,.18,.3,Wp.frame,0,0,-.1,Math.PI/2,0,8);cyl(n,.12,.12,.02,Wp.glow,0,0,-.26,Math.PI/2,0,8);
   const f=grp(n,0,0,-.27);f.rotation.x=-Math.PI/2-.35;cyl(f,.02,.15,1,Wp.glow,0,.5,0,0,0,6);f.scale.set(1,.01,1);return f});
  mech={bot,hip,torso,head,arms,legs,weps,flames,anchors,cfgUsed:c,lean,fitN:12};
+ /* 00 の翼と肩の刃（userData.wing＝広げた角度）。チェイス視点の通常時は半分にすぼめ、ダッシュ・急加速・跳躍で全開 */
+ const wf=(o,k)=>{const [x,z,f]=o.userData.wing,u=(1-k)*2;o.rotation.x=x+f*u;o.rotation.z=z*(1-.3*u);o.scale.setScalar(1-.25*u)};mech.wf=wf;mech.wings=[];bot.traverse(o=>{if(o.userData&&o.userData.wing!==undefined)mech.wings.push(o)});mech.wo=1;
+ // チェイス視点のカメラ倍率：機体の高さ（翼は半分にすぼめた状態）を標準機体と比べる（1〜1.3）
+ mech.wings.forEach(o=>wf(o,.5));bot.updateMatrixWorld(true);{const h=new THREE.Box3().setFromObject(bot).getSize(new THREE.Vector3()).y;const r=h/stdH();mech.camK=r<1.12?1:Math.min(1.3,r)}
+ mech.wings.forEach(o=>wf(o,1));
  tintDamage();if(camAuto&&mode==='garage')requestAnimationFrame(()=>fitGarageCam());
  if(mode==='play'){bot.position.set(P.pos.x,0,P.pos.z);bot.rotation.y=P.yaw}
  hlMech=null;
@@ -1798,12 +1805,14 @@ function renderSide(){
   el.innerHTML=`<div class="shd"><span class="code">SYS</span><span class="ttl en">CONFIG</span></div><div class="rule"></div>
   <div class="sec">RESOLUTION</div><div class="seg">${['240p','480p','HIGH'].map((n,i)=>`<button data-r="${i}" aria-pressed="${res===i}">${n}</button>`).join('')}</div>
   <div class="sec">DISPLAY</div><div class="seg"><button id="cJit" aria-pressed="${jitOn.value===1}">VERTEX JITTER</button></div>
+  <div class="sec">DAMAGE NUMBER</div><div class="seg"><button data-dn="1" aria-pressed="${DMGNUM}">ON</button><button data-dn="0" aria-pressed="${!DMGNUM}">OFF</button></div>
   <div class="sec">CAMERA</div><div class="seg"><button data-cam="tps" aria-pressed="${CAMMODE==='tps'}">CHASE</button><button data-cam="top" aria-pressed="${CAMMODE==='top'}">OVERHEAD</button></div>
   <div class="sec">SOUND</div><div class="seg vol">${['bgm','se'].map(k=>`<span class="vl en">${k.toUpperCase()}</span><button data-vol="${k}" data-d="-1" aria-label="${k} を下げる">−</button><span class="vv en">${SNDV[k]}</span><button data-vol="${k}" data-d="1" aria-label="${k} を上げる">＋</button>`).join('')}<button id="cMute" class="mu" aria-pressed="${SNDV.mute}">MUTE</button></div>
   <div class="note">240p が初代プレイステーションに近い見た目です。動作が重いときも 240p にしてください。</div>
   <div class="acts"><button class="btn-sub" id="back">BACK</button></div>`;
   el.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{res=+b.dataset.r;saveCfg();resize();renderSide()});
   $('cJit').onclick=()=>{jitOn.value=1-jitOn.value;saveCfg();renderSide()};
+  el.querySelectorAll('[data-dn]').forEach(b=>b.onclick=()=>{DMGNUM=b.dataset.dn==='1';saveCfg();renderSide()});
   el.querySelectorAll('[data-vol]').forEach(b=>b.onclick=()=>{const k=b.dataset.vol;SNDV[k]=Math.max(0,Math.min(10,SNDV[k]+(+b.dataset.d)));SND.apply();saveCfg();renderSide();if(k==='se')SND.play('click')});
   $('cMute').onclick=()=>{SNDV.mute=!SNDV.mute;SND.apply();saveCfg();renderSide()};
   el.querySelectorAll('[data-cam]').forEach(b=>b.onclick=()=>{setCam(b.dataset.cam);saveCfg();renderSide()});
@@ -2708,7 +2717,7 @@ CTR.flash=(P,K)=>{
  each([-1,1],q=>{box(t,.7,.12,.12,K.main,q*.28,.5,.52,0,0,q*.75);box(t,.66,.03,.13,K.trim,q*.28,.56,.53,0,0,q*.75);
 });
  each(P.arms,a=>{const s=a.s;
-  [[.0,1.6,.5],[.16,1.15,.4]].forEach(([dy,len,w],i)=>{const g=grp(a.sh,s*(.3+i*.08),.5+dy,-.05);g.rotation.set(0,0,-s*(.7+i*.22));
+  [[.0,1.6,.5],[.16,1.15,.4]].forEach(([dy,len,w],i)=>{const g=grp(a.sh,s*(.3+i*.08),.5+dy,-.05);g.rotation.set(0,0,-s*(.7+i*.22));g.userData.wing=[g.rotation.x,g.rotation.z,-.9];
    box(g,.12,len,w,i?K.sub:K.main,0,len/2,0);box(g,.03,len*.9,.03,K.trim,0,len/2,w/2+.01);box(g,.13,.14,w*.6,K.main,0,len+.02,0,PI/4,0,0)});
   const f=grp(a.el,s*.3,-.5,-.1);f.rotation.set(.35,0,s*.2);box(f,.06,.9,.36,K.main,0,0,0);box(f,.02,.8,.03,K.trim,s*.03,0,.17)});
  each(P.legs,l=>{const s=l.s;
@@ -2724,7 +2733,7 @@ CTR.flash=(P,K)=>{
  box(P.hip,.9,.1,.1,K.trim,0,.1,-.4);
 };
 /* 刃の翼：根元から先へ細くなる板を3枚つなぎ、縁にシアン、先は銀のとがり */
-function wing(t,K,s,pos,rot,L,w){const g=grp(t,...pos);g.rotation.set(...rot);box(g,.34,.34,.34,K.frame,0,0,0);
+function wing(t,K,s,pos,rot,L,w){const g=grp(t,...pos);g.rotation.set(...rot);g.userData.wing=[g.rotation.x,g.rotation.z,-.75];box(g,.34,.34,.34,K.frame,0,0,0);
  let y=0;[[.42,1],[.33,.8],[.24,.58]].forEach(([f,k],i)=>{const l=L*f,ww=w*k;box(g,ww,l,.07,i%2?K.sub:K.main,s*ww*.15,y+l/2,0);
   box(g,.05,l*.96,.08,K.trim,s*(ww*.65),y+l/2,0);box(g,ww*.5,l*.9,.09,K.sub,-s*ww*.1,y+l/2,-.02);y+=l*.98});
  const tip=cyl(g,0,w*.3,L*.24,K.metal,0,y+L*.11,0,0,0,4);tip.scale.z=.2}
@@ -3125,6 +3134,7 @@ const SND=(()=>{
   lockable(d,t){osc('sine',2093,t,.04,d,{peak:.5})},
   lockOn(d,t){osc('sine',1568,t,.05,d,{peak:.5});osc('sine',2349,t+.06,.08,d,{peak:.45})},
   lockAtk(d,t){osc('sine',1100,t,.2,d,{f2:3000,peak:.3});osc('sine',3000,t+.18,.04,d,{peak:.22})},
+  ehit(d,t){snap(t,d,{f:5000,peak:.7,dur:.012});noise(t,.07,d,{type:'bandpass',f:jit(3200,.08),q:3,peak:.6});osc('sine',jit(2100,.05),t,.09,d,{f2:900,peak:.18});sub(t,170,70,.09,d,.6)},
   ricochet(d,t){snap(t,d,{f:4000,peak:.8});osc('sine',jit(4500,.2),t,.4,d,{f2:jit(1500,.2),peak:.25});noise(t,.1,d,{type:'bandpass',f:6000,q:2,peak:.3})},
  };
  const VOICE={
@@ -3208,8 +3218,8 @@ function bgmI(v){if(cur)cur.set(v)}
 const SND_CANCEL=/^(◀|BACK|閉じる|やめる|戻る|キャンセル|考えておく|入力し直す|いいえ)|◀ |BACK$/,SND_DECIDE=/SORTIE|出撃|購入|装備する|REGISTER|はい|修理する|強化|依頼を受ける|適用|削除して始める|START|NEW GAME|CONTINUE|BRIEFING ▶|GARAGE ▶|再開/;
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled||b.id==='bootBtn')return;const tx=(b.textContent||'').trim();
  SND.play(SND_CANCEL.test(tx)?'cancel':SND_DECIDE.test(tx)?'decide':'click',{g:.35})},true);
-function saveCfg(){try{localStorage.setItem(CFG_KEY,JSON.stringify({res,jit:jitOn.value,cam:CAMMODE,bgm:SNDV.bgm,se:SNDV.se,mute:SNDV.mute}))}catch(e){}}
-function loadCfg(){try{const d=JSON.parse(localStorage.getItem(CFG_KEY)||'null');if(!d)return;if([0,1,2].includes(d.res))res=d.res;if(d.jit===0||d.jit===1)jitOn.value=d.jit;if(d.cam==='top'||d.cam==='tps')setCam(d.cam);if(d.bgm>=0&&d.bgm<=10)SNDV.bgm=d.bgm;if(d.se>=0&&d.se<=10)SNDV.se=d.se;SNDV.mute=!!d.mute}catch(e){}}
+function saveCfg(){try{localStorage.setItem(CFG_KEY,JSON.stringify({res,jit:jitOn.value,cam:CAMMODE,bgm:SNDV.bgm,se:SNDV.se,mute:SNDV.mute,dnum:DMGNUM}))}catch(e){}}
+function loadCfg(){try{const d=JSON.parse(localStorage.getItem(CFG_KEY)||'null');if(!d)return;if([0,1,2].includes(d.res))res=d.res;if(d.jit===0||d.jit===1)jitOn.value=d.jit;if(d.cam==='top'||d.cam==='tps')setCam(d.cam);if(d.bgm>=0&&d.bgm<=10)SNDV.bgm=d.bgm;if(d.se>=0&&d.se<=10)SNDV.se=d.se;SNDV.mute=!!d.mute;DMGNUM=d.dnum===true}catch(e){}}
 
 /* ===== SHOP ===== */
 const fmtCR=n=>Math.round(n).toLocaleString('ja-JP');
@@ -3839,9 +3849,27 @@ function makeEnemy(type,sp){if(type==='boss')return makeBoss();if(type==='gear')
 function placeEnemy(e){const a=Math.random()*Math.PI*2,r=22+Math.random()*40;setTimeout(()=>{if(e.type==='turret'){pushOut(e.home,e.r+.6,0);e.g.position.copy(e.home)}},0);
  e.home.set(Math.sin(a)*r,e.type==='drone'?6:0,Math.cos(a)*r);e.g.position.copy(e.home);e.hp=e.max;e.alive=true;e.g.visible=true;e.cd=2+Math.random()*2}
 for(let i=0;i<4;i++)makeEnemy('drone').tr=true;for(let i=0;i<3;i++)makeEnemy('turret').tr=true;
+/* 被弾の振動：全敵共通。最後に当たってから0.12秒、本体を小さく（0.08m）震わせる。連射でも振れ幅は足さない */
+function vibPre(){ENEMIES.forEach(e=>{if(e.jo){e.g.position.sub(e.jo);e.jo=null}})}
+function vibPost(dt){ENEMIES.forEach(e=>{if(!(e.vib>0)||!e.alive||e.off){e.vib=0;return}e.vib-=dt;const a=.08*Math.max(0,e.vib/.12);e.jo=new THREE.Vector3((Math.random()-.5)*2*a,(Math.random()-.5)*a,(Math.random()-.5)*2*a);e.g.position.add(e.jo)})}
+/* ダメージの数字（CONFIG の DAMAGE NUMBER、初期は OFF）：体の中心やや下から上へ飛び出し、落ちて1回だけ弾んで消える（約0.7秒） */
+let DMGNUM=false;const DN=[];
+function dmgNum(e,v){if(!DMGNUM||mode!=='play')return;const live=DN.filter(d=>d.on);if(live.length>=16)return;
+ let d=DN.find(x=>!x.on);if(!d){const el=document.createElement('div');el.className='dnum';$('dnums').appendChild(el);d={el};DN.push(d)}
+ const p=e.center(new THREE.Vector3());p.y-=.6;d.on=true;d.t=0;d.p=p;d.dx=((DN.filter(x=>x.on&&x.e===e&&x!==d).length%5)-2)*24;d.e=e;d.el.textContent=Math.max(1,Math.round(v));d.el.hidden=false}
+function dmgNumTick(dt){DN.forEach(d=>{if(!d.on)return;d.t+=dt;const u=d.t;if(u>.7){d.on=false;d.el.hidden=true;return}
+ _q.copy(d.p).project(C);if(_q.z>=1){d.el.hidden=true;return}d.el.hidden=false;
+ // 高さ（px）：0〜0.32秒で 34px まで飛び上がり、0.48秒で落ちきる → 0.6秒まで小さく1回弾む
+ const h=u<.32?34*Math.sin(u/.32*Math.PI/2):u<.48?34*Math.cos((u-.32)/.16*Math.PI/2):u<.6?8*Math.sin((u-.48)/.12*Math.PI):0;
+ d.el.style.left=((_q.x+1)/2*100)+'%';d.el.style.top=((1-_q.y)/2*100)+'%';d.el.style.transform=`translate(calc(-50% + ${d.dx}px),${-h}px)`;d.el.style.opacity=u>.6?1-(u-.6)/.1:1})}
+function dmgNumClear(){DN.forEach(d=>{d.on=false;d.el.hidden=true})}
 const IMP={S:{st:.8,kb:4,p:1},A:{st:.6,kb:2.5,p:1},B:{st:.45,kb:1.5,p:1},C:{st:.35,kb:.8,p:.5},D:{st:.3,kb:.4,p:.25}};
 let HITSRC=null;
-function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(e.type==='boss')dmg=bossDmg(e,dmg,pos);e.hp-=dmg;e.hit=.08;spawn(0xffffff,.5,pos,{life:.08});
+function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(e.type==='boss')dmg=bossDmg(e,dmg,pos);e.hp-=dmg;
+ // 命中の演出：共通の命中音・威力に応じた光と火花・小さな振動・ダメージの数字（CONFIG で ON のとき）
+ const pw=Math.max(0,Math.min(1,(dmg-30)/700));e.hit=Math.max(e.hit,.06+.09*pw);e.vib=.12;spawn(0xffffff,.5,pos,{life:.08});
+ for(let i=0,n=Math.round(3+7*pw);i<n;i++)spawn(i%2?0xffa040:0xffd070,.1+.06*pw,pos,{vel:new THREE.Vector3((Math.random()-.5)*10,2+Math.random()*6,(Math.random()-.5)*10),grav:16,life:.25+Math.random()*.2});
+ if(sOnce('ehit',.05))sAt('ehit',pos,{g:.5});dmgNum(e,dmg);
  const I=e.type==='boss'?null:IMP[imp];if(I&&Math.random()<I.p){e.stun=Math.max(e.stun,I.st);e.kb.copy(e.g.position).sub(P.pos).setY(0).normalize().multiplyScalar(I.kb*3)}
  if(e.hp<=0){if(RUN&&RUN.kills)RUN.kills[e.type]=(RUN.kills[e.type]||0)+1;e.alive=false;e.g.visible=e.type==='boss';if(e.type==='boss'){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.head.rotation.x=.08;e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a)}e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN){const rw=e.type==='gear'?(e.spec.rw||2000):e.type==='drone'?REWARD.drone:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
 // 索敵レーダー（RD-3）：壁の向こうでも敵の輪郭が見える（奥行きを無視して描く線）
@@ -4526,7 +4554,7 @@ $('pzAb').onclick=()=>{pauseSet(false);if(RUN)misAbort();else fadeTo(()=>setMode
 $('pause').addEventListener('pointerdown',e=>e.stopPropagation());
 addEventListener('keydown',e=>{if(e.key==='Escape'&&mode==='play'){e.preventDefault();pauseSet(!PAUSED)}});
 /* ===== ガレージ／出撃の切り替え ===== */
-function setMode(m,training=false,mis=null,tt=false){
+function setMode(m,training=false,mis=null,tt=false){dmgNumClear();ENEMIES.forEach(e=>{e.jo=null;e.vib=0});
  if(m==='play')chkSet(null);
  const wasTT=TRT;TRT=m==='play'&&tt;
  PAUSED=false;$('pause').hidden=true;
@@ -4666,7 +4694,7 @@ R.setAnimationLoop(()=>{
   // ロックオン（照準の中心付近の敵を自動で捕捉し、視点をゆっくり向ける）
   updateLock();
   if(lockT&&!top){lockT.center(_q).sub(P.pos);const ty=Math.atan2(_q.x,_q.z);camYaw+=Math.atan2(Math.sin(ty-camYaw),Math.cos(ty-camYaw))*Math.min(1,dt*(attacking?9:2.5))}
-  updateEnemies(dt);tickHold();
+  vibPre();updateEnemies(dt);vibPost(dt);tickHold();
  }else if(auto&&!reduce)az+=dt*.25;
  const hov=am===1&&is00Set(cfg),walk=am===1&&!hov,dash=am===2;
  const k=walk?1:Math.min(1,dt*6);let wk=null,scroll=0,boost=moveBoost;
@@ -4729,6 +4757,7 @@ R.setAnimationLoop(()=>{
    if(w>.001){m.torso.rotation.x=L(m.torso.rotation.x,LN,w);m.arms.forEach(a=>a.sh.rotation.x+=w*LN*.6);
     m.legs.forEach(l=>{l.th.rotation.x=L(l.th.rotation.x,TH,w);l.kn.rotation.x=L(l.kn.rotation.x,KN,w);l.ft.rotation.x=L(l.ft.rotation.x,-(TH+KN)+TO,w)})}
    m.legs.forEach(l=>l.ft.scale.z=L(.75,.6,w))}}
+ if(m.wings&&m.wings.length){const want=mode==='play'&&CAMMODE!=='top'&&!(dash||P.qb||active.jump)?.5:1;m.wo=L(m.wo,want,Math.min(1,dt*(want>m.wo?4:2.5)));m.wings.forEach(o=>m.wf(o,m.wo))}
  if(mode==='play'){
   // アクションの踏み込み・反動（scroll）は機体の前後移動として反映
   if(scroll&&P.stun<=0||scroll<0)P.pos.addScaledVector(new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw)),scroll*dt);
@@ -4754,8 +4783,8 @@ R.setAnimationLoop(()=>{
   }else{
    const f=_q.set(Math.sin(camYaw),0,Math.cos(camYaw));
    // 肩越し：機体の真後ろ・頭より少し上から前方を見る（上半身から上だけが画面下に入る、FPS寄りの見え方）
-   _v.set(P.pos.x-f.x*5.4,8.6+y,P.pos.z-f.z*5.4);C.position.lerp(_v,Math.min(1,dt*12));
-   C.lookAt(P.pos.x+f.x*26,5.4+y*.7,P.pos.z+f.z*26);
+   const K=m.camK||1;_v.set(P.pos.x-f.x*5.4*K,8.6*K+y,P.pos.z-f.z*5.4*K);C.position.lerp(_v,Math.min(1,dt*12));
+   C.lookAt(P.pos.x+f.x*26,5.4*K+y*.7,P.pos.z+f.z*26);
   }
  }else{C.position.set(Math.sin(az)*dist*Math.cos(el2),camTY+Math.sin(el2)*dist,Math.cos(az)*dist*Math.cos(el2));C.lookAt(0,camTY,0)}
  updateFX(dt);
@@ -4782,6 +4811,7 @@ R.setAnimationLoop(()=>{
     const behind=_q.z>1;let x=behind?-_q.x:_q.x,y=behind?-1:_q.y;x=Math.max(-.95,Math.min(.95,x));y=Math.max(-.9,Math.min(.9,y));
     d.hidden=false;d.style.left=((x+1)/2*100)+'%';d.style.top=((1-y)/2*100)+'%'})}
   else [...marks.children].forEach(d=>d.hidden=true);
+  dmgNumTick(dt);
   if(msgT>0){msgT-=dt;if(msgT<=0)$('msg').textContent=''}
  }
 });
