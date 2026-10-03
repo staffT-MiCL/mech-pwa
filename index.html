@@ -4309,6 +4309,8 @@ function visitNext(){clearInterval(VS.iv);VS.iv=null;
  VS.done=()=>{clearInterval(VS.iv);VS.iv=null;el.textContent=txt;if(VS.q.length||VS.fin)$('vNx').hidden=false;else visitChoices()};
  el.textContent='';VS.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip(sp==='c'?(VS.d.voice||'adultM'):sp==='n'?'nona':'doll',n);if(n>=txt.length)VS.done()},TXT_SPD)}
 function visitChoices(){const ch=$('vCh');if(ch.childElementCount||VS.fin)return;const d=VS.d;
+ if(d.cv!=null){[['◀ 前',()=>charStep(-1)],['次 ▶',()=>charStep(1)],['DEBUG へ戻る',()=>{visitEnd();setTimeout(dbgOpen,680)}]]
+  .forEach(([lab,fn])=>{const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=e=>{e.stopPropagation();if(!VS.busy)fn()};ch.appendChild(b)});return}
  // 見返し：選択肢は出さず、最後のセリフのあとタップで依頼一覧へ戻る
  if(VS.replay){VS.fin=()=>{visitEnd();openBoard(d.id)};$('vNx').hidden=false;return}
  const ok=()=>{visitEnd();openBoard(d.id)},later=()=>{visitEnd();nonaSay([['依頼一覧に入れておきました。MENU の <em>MISSION</em> から、いつでも確認できます。']])};
@@ -4839,6 +4841,7 @@ function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).m
   <div class="dl"><div class="dt"><span>チュートリアル完了（ガレージ案内・初回 TRAINING）</span><span class="sg"><button data-t="0" class="${DW.tut?'':'on'}">未完了</button><button data-t="1" class="${DW.tut?'on':''}">完了</button></span></div>
   ${chs.map(c=>`<div class="dc">CHAPTER ${c}${CHAPTERS[c]?'　'+CHAPTERS[c]:''}</div>`+MLIST.filter(d=>d.ch===c).map(d=>`<div class="dr${d.story?' st':''}${d.ready?'':' na'}"><span><b>${d.id}</b>${d.title}${d.ready?'':'（準備中）'}</span>${seg(d.id,DW.m[d.id],!d.ready)}</div>`).join('')).join('')}
   ${dbgParts()}
+  ${dbgChars()}
   <div class="dc">PLAY</div><div class="dt"><span>無敵モード（自機・護衛対象がダメージを受けない）</span><span class="sg"><button data-i="0" class="${DW.inv?'':'on'}">OFF</button><button data-i="1" class="${DW.inv?'on':''}">ON</button></span></div></div>
   <div class="note">いまの状態：CLASS ${CLS} ／ CH.${CH}　→　適用後：CLASS ${dbgDerive().cls} ／ CH.${dbgDerive().ch}</div>
   <div class="ft"><button class="go" id="dbgGo">適用して保存</button><button class="btn-sub" id="dbgOff">デバッグを終了</button><button class="btn-sub x" id="dbgX">閉じる</button></div>`;
@@ -4848,9 +4851,25 @@ function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).m
  box.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{DW.inv=b.dataset.i==='1';dbgRender()});
  box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const ids=b.dataset.p.split(','),on=!ids.every(i=>DW.own.has(i));ids.forEach(i=>on?DW.own.add(i):DW.own.delete(i));const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
  box.querySelectorAll('[data-pall]').forEach(b=>b.onclick=()=>{if(b.dataset.pall==='1')dbgAllParts().forEach(i=>DW.own.add(i));else{DW.own=new Set(START_OWN)}const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
+ box.querySelectorAll('[data-cv]').forEach(b=>b.onclick=()=>{dbgClose();charView(+b.dataset.cv)});
  $('dbgX').onclick=dbgClose;$('dbgGo').onclick=dbgApply;
  $('dbgOff').onclick=()=>{DBG.on=false;DBG.inv=false;dbgSave();dbgMenu();dbgClose();nonaSay([['デバッグモードを終了しました。']])}}
 /* パーツ取得：フレーム・兵装を問わず、好きな品を所持品にする（開放前の系列・00 COUNTER・ラスト・オーダーも可）。最初から持っている品は外せない */
+/* キャラクターのイラスト確認（DEBUG の CHARACTERS）：来訪と同じ表示で1人ずつ見る。◀ ▶ で順送り。
+   イラストは頭のてっぺん〜あごの長さをそろえた 600×803 の背景透過 PNG（手順は claude/キャラクターイラスト処理手順.md） */
+const CHARS=[
+ {g:'依頼人',name:'オットー',sub:'行商人 ／ 1-2 の依頼人',img:'img/clients/client-merchant-otto.png',voice:'youthM'},
+ {g:'依頼人',name:'ヴァルター',sub:'元整備兵 ／ ★1-S の依頼人',img:'img/clients/client-veteran-walter.png',voice:'adultM'},
+ {g:'ライバル',name:'ガイウス・ハーラン',sub:'01 JOSHUA ／ 無敗の皇帝',img:'img/rivals/rival-joshua-gaius.png',voice:'adultM'},
+ {g:'ライバル',name:'レナード・クロウ',sub:'02 SOLOMON ／ 黒金の商人',img:'img/rivals/rival-solomon-leonard.png',voice:'adultM'},
+ {g:'ライバル',name:'セレナ・ヴァルデス',sub:'03 DAVID ／ 緋色の喝采',img:'img/rivals/rival-david-serena.png',voice:'youthF'},
+ {g:'ライバル',name:'ティモ・アルケン',sub:'04 NOAH ／ 砂原の使者',img:'img/rivals/rival-noah-timo.png',voice:'youthM'},
+ {g:'ライバル',name:'エーリヒ・ブラント',sub:'05 DEBORAH ／ 鉄血の天秤',img:'img/rivals/rival-deborah-erich.png',voice:'adultM'},
+ {g:'ライバル',name:'ヴィクトル・ザイン',sub:'06 NIMROD ／ 尖塔の狂犬',img:'img/rivals/rival-nimrod-viktor.png',voice:'youthM'}];
+function dbgChars(){return `<div class="dc">CHARACTERS（イラストの確認）</div>`+[...new Set(CHARS.map(c=>c.g))].map(g=>`<div class="pr"><span>${g}</span><span class="sg">${CHARS.map((c,i)=>c.g===g?`<button data-cv="${i}">${c.name}</button>`:'').join('')}</span></div>`).join('')}
+function charView(i){const n=CHARS.length;i=(i+n)%n;const c=CHARS[i];
+ MDEF._cv={id:'_cv',cv:i,talk:[['c',c.sub+'（'+(i+1)+'/'+n+'）']],img:c.img,imgF:'',from:c.name,client:c.name,voice:c.voice};visitPlay('_cv')}
+function charStep(k){const i=VS.d.cv;visitEnd();setTimeout(()=>charView(i+k),680)}
 function dbgAllParts(){return [HEADS,CORES,ARMS,LEGS,HAND,SHOULDER,EXT].flatMap(c=>Object.keys(c).filter(id=>id!=='none'&&PN[id]))}
 function dbgParts(){const all=dbgAllParts(),st=new Set(START_OWN),btn=(ids,lab)=>{const on=ids.every(i=>DW.own.has(i)),dis=ids.every(i=>st.has(i));return `<button data-p="${ids.join(',')}" class="${on?'on':''}" ${dis?'disabled':''}>${lab}</button>`};
  const fr=all.filter(isFrameId),ser=[...new Set(fr.map(i=>PN[i][0]))],wp=all.filter(i=>!isFrameId(i)),cats=[...new Set(wp.map(i=>PN[i][0]))];
