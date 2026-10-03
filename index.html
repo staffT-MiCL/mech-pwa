@@ -1212,9 +1212,9 @@ function flash(obj,size,color=0xffe080){obj.getWorldPosition(_p);spawn(color,siz
 function smoke(pos,n,size){const o=pos.clone();for(let i=0;i<n;i++)spawn(0x6a6a66,size,o.clone().add(new THREE.Vector3((Math.random()-.5)*.6,Math.random()*.4,(Math.random()-.5)*.6)),{vel:new THREE.Vector3((Math.random()-.5),1+Math.random(),(Math.random()-.5)),life:.8+Math.random()*.4,grow:1.2,spin:true})}
 // 照準：出撃中でロックオンしていれば標的へ、それ以外は銃口の向き
 function aimDir(from,obj,tgt,speed=0){if(mode==='play'&&tgt&&tgt.alive){const c=tgt.center(new THREE.Vector3());if(SS.lead&&speed&&tgt.vel){c.addScaledVector(tgt.vel,c.distanceTo(from)/speed)}return c.sub(from).normalize()}if(mode==='play')return new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw));return obj.getWorldDirection(new THREE.Vector3())}
-function shoot(obj,{size=.1,speed=40,color=0xffe080,life=.8,len=5,trail=0,dmg=0,splash=0,range=0,imp='なし',tgt=null,src=null}={}){
+function shoot(obj,{size=.1,speed=40,color=0xffe080,life=.8,len=5,trail=0,dmg=0,splash=0,range=0,imp='なし',tgt=null,src=null,pierce=false}={}){
  obj.getWorldPosition(_p);const dir=aimDir(_p,obj,tgt,speed);
- spawn(color,size,_p,{vel:dir.multiplyScalar(speed),life:range?range/speed:life,len,trail,team:'p',dmg,splash,imp,src});
+ const f=spawn(color,size,_p,{vel:dir.multiplyScalar(speed),life:range?range/speed:life,len,trail,team:'p',dmg,splash,imp,src});if(pierce)f.pierce=new Set();
 }
 function ring(obj){obj.getWorldPosition(_p);
  const m=new THREE.Mesh(new THREE.RingGeometry(.9,1,24),new THREE.MeshBasicMaterial({color:0x8cf06e,transparent:true,side:THREE.DoubleSide}));
@@ -1264,7 +1264,7 @@ function updateFX(dt){
    if(f.team==='p'&&f.splash){HITSRC=f.src;splashAt(pos,f.splash,f.dmg,f.imp)}f.age=f.life}
   if(mode==='play'&&f.team&&f.age<f.life){const pos=f.m.position;
    if(f.team==='p'){
-    for(const e of ENEMIES){if(!e.alive)continue;if(e.center(_q).distanceTo(pos)<e.r+f.base+.4){HITSRC=f.src;hitEnemy(e,f.dmg,pos.clone(),f.imp);if(f.splash)splashAt(pos,f.splash,f.dmg,f.imp,e);f.age=f.life;break}}
+    for(const e of ENEMIES){if(!e.alive||(f.pierce&&f.pierce.has(e)))continue;if(e.center(_q).distanceTo(pos)<e.r+f.base+.4){HITSRC=f.src;if(f.pierce){f.pierce.add(e);hitEnemy(e,f.dmg,pos.clone(),f.imp);continue}hitEnemy(e,f.dmg,pos.clone(),f.imp);if(f.splash)splashAt(pos,f.splash,f.dmg,f.imp,e);f.age=f.life;break}}
     if(f.age<f.life&&pos.y<.05){HITSRC=f.src;if(f.splash)splashAt(pos,f.splash,f.dmg,f.imp);f.age=f.life}
    }else if(f.team==='e'){const by=mech.bot.position.y;if(Math.hypot(pos.x-P.pos.x,pos.z-P.pos.z)<(f.hr||1.9)&&pos.y>by+.2&&pos.y<by+7.6){hitPlayer(f.dmg,f.imp,pos.clone());f.age=f.life}
     else if(RUN&&RUN.tr&&RUN.tr.hp>0&&pos.y<3.8&&Math.hypot(pos.x-TRUCK.position.x,pos.z-TRUCK.position.z)<2.8){truckHit(f.dmg,pos.clone());f.age=f.life}else if(pos.y<.05)f.age=f.life}
@@ -1642,8 +1642,10 @@ const DESC={
  'AR-03':'旧軍制式の精密な腕。どの兵装も素早く再装填できる。','LG-03':'旧軍制式の高機動二脚。よく跳び、着地の隙が小さい。',
  'RF3':'徹甲弾を撃つレール付きの小銃。厚い装甲にも食い込む。','MG3':'6本の銃身を回す重火器。回り始めれば止まらない。',
  'BL3':'推進器付きのブレード。遠くから一気に間合いを詰める。','MS3':'真上に打ち上げる誘導弾。物陰の敵の頭上から落ちる。',
+ 'BZ3':'大口径の炸裂弾を撃つ。爆発で群れをまとめて吹き飛ばす。','SH3':'3枚重ねの大型の盾。真横近くまで守り、何度も耐える。','GC3':'電磁加速の長砲身。弾が敵を突き抜けて並んだ敵を貫く。',
+ 'BT3':'2基の大型噴射口を持つ推進器。速さと距離をまとめて伸ばす。','IC3':'3基の小砲塔で広い範囲の敵弾を落とす迎撃装置。',
  'RD3':'回転リングの索敵装置。壁の向こうの敵まで捉える。'};
-const EN={'HD-01':'SENSOR HEAD','HD-02':'MONO-EYE HEAD','HD-03':'COMPOUND HEAD','CR-03':'HIGH OUTPUT CORE','AR-03':'PRECISION ARMS','LG-03':'HIGH MOBILITY BIPED','RF3':'AP RIFLE','MG3':'GATLING','BL3':'RUSH BLADE','MS3':'VERTICAL MISSILE','RD3':'SEARCH RADAR','CR-01':'STANDARD CORE','CR-02':'HEAVY CORE','AR-01':'STANDARD ARMS','AR-02':'HEAVY ARMS',
+const EN={'HD-01':'SENSOR HEAD','HD-02':'MONO-EYE HEAD','HD-03':'COMPOUND HEAD','CR-03':'HIGH OUTPUT CORE','AR-03':'PRECISION ARMS','LG-03':'HIGH MOBILITY BIPED','RF3':'AP RIFLE','MG3':'GATLING','BL3':'RUSH BLADE','MS3':'VERTICAL MISSILE','RD3':'SEARCH RADAR','BZ3':'BURST BAZOOKA','SH3':'TOWER SHIELD','GC3':'PIERCING CANNON','BT3':'HIGH OUTPUT BOOSTER','IC3':'WIDE INTERCEPTOR','CR-01':'STANDARD CORE','CR-02':'HEAVY CORE','AR-01':'STANDARD ARMS','AR-02':'HEAVY ARMS',
  'LG-01':'MEDIUM BIPED','LG-02':'HEAVY BIPED','none':'EMPTY','RF':'RIFLE','MG':'MACHINE GUN','BZ':'BAZOOKA','BL':'BLADE','SH':'SHIELD',
  'MS':'MISSILE POD','RD':'RADAR','GC':'GRENADE CANNON','BT':'BOOSTER','IC':'INTERCEPTOR'};
 const SLOTINFO={head:['01','センサーと特殊能力'],core:['02','装甲の中心、ブーストの容量'],arms:['03','積める兵装の重さ（全兵装の合計）'],legs:['04','歩行・ダッシュ・急加速・跳躍の速さ'],
@@ -1961,8 +1963,43 @@ Object.assign(EXT,{
    cyl(dish,.14,.18,.16,VW.steel2,0,.04,0,0,0,8);const dm=new THREE.Mesh(new THREE.SphereGeometry(.1,8,4,0,Math.PI*2,0,Math.PI/2),VW.lens);dm.position.y=.12;dish.add(dm);return {dish}}},
 });
 
+/* ===== CLASS C の兵装（各種類の3段階目：BAZOOKA・SHIELD・CANNON・BOOSTER・INTERCEPTOR）=====
+ VANGUARD 系と同じ VW の素材。動き（act）は同じ種類と共通 */
+Object.assign(HAND,{
+ // 炸裂バズーカ：太い砲身に4本の補強帯、大きな弾倉、砲口に光る輪
+ 'BZ3':{...HAND.BZ,act:{...HAND.BZ.act,dur:2.4},st:{kind:'射撃',dmg:650,range:50,area:6,rate:'1発／2.4秒',count:1,ammo:5,reload:6,wt:32,imp:'S',spd:22,hom:'なし',note:'爆発の範囲が広い。弾が遅いので、群れや動きの遅い敵に向く'},
+  build(g){cyl(g,.22,.22,1.8,VW.steel,0,-.75,.1,0,0,8);for(let i=0;i<4;i++)cyl(g,.24,.24,.06,VW.dark,0,-.1-i*.45,.1,0,0,8);
+   cyl(g,.28,.22,.3,VW.steel2,0,-1.72,.1,0,0,8);const r=new THREE.Mesh(new THREE.TorusGeometry(.2,.03,4,10),VW.glow);r.rotation.x=Math.PI/2;r.position.set(0,-1.86,.1);g.add(r);
+   box(g,.34,.4,.3,VW.steel2,0,-.35,-.24);box(g,.36,.07,.32,VW.warn,0,-.18,-.24);box(g,.12,.3,.14,VW.dark,0,-.25,.32);
+   const muzzle=grp(g,0,-1.9,.1);muzzle.rotation.x=Math.PI/2;return {muzzle}}},
+ // 大型シールド：縦長の板を3枚重ね、左右の縁を前へ折った形。中央に青いセンサー
+ 'SH3':{...HAND.SH,st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:10,reload:9,wt:18,imp:'なし',spd:0,hom:'－',front:-.3,note:'正面の広い範囲（ほぼ真横まで）を防ぐ。使用回数が多い'},
+  build(g){const p=grp(g,0,-.5,-.34);box(p,1.1,1.8,.12,VW.steel,0,0,0);box(p,.9,1.5,.06,VW.steel2,0,0,-.08);
+   [-1,1].forEach(q=>box(p,.16,1.8,.3,VW.steel2,q*.6,0,-.1,0,q*.5,0));box(p,1.14,.1,.16,VW.warn,0,.82,0);box(p,1.14,.1,.16,VW.warn,0,-.82,0);
+   box(p,.22,.14,.06,VW.lens,0,.3,-.12);box(g,.22,.5,.22,VW.dark,0,-.3,-.15);return {plate:p}}},
+});
+Object.assign(SHOULDER,{
+ // 貫通砲：長い角形の砲身に光るコイル3つ、後ろの大きな蓄電箱
+ 'GC3':{...SHOULDER.GC,act:{...SHOULDER.GC.act,dur:2.8},st:{kind:'射撃',dmg:900,range:90,area:0,rate:'1発／2.8秒',count:1,ammo:5,reload:7,wt:30,imp:'S',spd:70,hom:'なし',pierce:true,note:'弾が敵を突き抜けて、後ろの敵にも当たる。しゃがんで撃つ（発射中は移動不可）'},
+  build(g){const gun=grp(g,0,.3,0);box(gun,.55,.5,.8,VW.steel2,0,0,-.2);box(gun,.57,.07,.82,VW.warn,0,.27,-.2);
+   box(gun,.2,.2,1.9,VW.dark,0,.05,.95);[-1,1].forEach(q=>box(gun,.06,.28,1.9,VW.steel,q*.13,.05,.95));
+   for(let i=0;i<3;i++)box(gun,.34,.34,.08,VW.glow,0,.05,.4+i*.45);box(gun,.32,.32,.18,VW.steel,0,.05,1.9);
+   const muzzle=grp(gun,0,.05,2.0);return {gun,muzzle}}},
+});
+Object.assign(EXT,{
+ // 大出力ブースター：左右に大きな噴射口2基、上に小さな補助噴射口
+ 'BT3':{...EXT.BT,st:{kind:'常時',wt:14,pass:{dash:.2,qb:4,boost:10},note:'ダッシュがとても速く、急加速が遠くまで届き、ブースト容量も増える'},
+  build(g){box(g,1.3,.42,.4,VW.steel2,0,0,-.1);box(g,1.32,.07,.42,VW.warn,0,.22,-.1);const flames=[];
+   [-1,1].forEach(s=>{cyl(g,.22,.32,.6,VW.steel,s*.46,0,-.42,Math.PI/2,0,8);cyl(g,.2,.2,.02,VW.glow,s*.46,0,-.73,Math.PI/2,0,8);flames.push(flameAt(g,s*.46,0,-.74,.22,1.2))});
+   cyl(g,.1,.12,.3,VW.steel,0,.3,-.35,Math.PI/2,0,6);flames.push(flameAt(g,0,.3,-.52,.1,.7));return {flames}}},
+ // 広域迎撃装置：肩の上に3基の小砲塔、中央に青いセンサー
+ 'IC3':{...EXT.IC,act:{...EXT.IC.act,dur:5},st:{kind:'常時',wt:14,pass:{icInt:.9,icR:18},note:'広い範囲で、近づく敵弾を短い間隔で撃ち落とす'},
+  build(g){box(g,.95,.34,.4,VW.steel2,0,.35,-.1);box(g,.97,.06,.42,VW.warn,0,.53,-.1);box(g,.16,.1,.16,VW.lens,0,.58,-.1);const turrets=[];
+   [-1,1].forEach(s=>{const t=grp(g,s*.34,.62,-.1);box(t,.16,.16,.16,VW.steel,0,0,0);box(t,.04,.04,.4,VW.dark,0,0,.22);t.muzzle=grp(t,0,0,.44);turrets.push(t)});return {turrets}}},
+});
+
 // CLASS D で入荷（SHOP に並ぶ等級）
-const ITEM_CLS={'HD-03':'D','CR-03':'D','AR-03':'D','LG-03':'D','RF3':'D','MG3':'D','BL3':'D','MS3':'D','RD3':'D'};
+const ITEM_CLS={'HD-03':'D','CR-03':'D','AR-03':'D','LG-03':'D','RF3':'D','MG3':'D','BL3':'D','MS3':'D','RD3':'D','BZ3':'C','SH3':'C','GC3':'C','BT3':'C','IC3':'C'};
 // 'X'＝SHOP に並ばない（00 COUNTER・ラスト・オーダー）
 const clsOk=id=>!ITEM_CLS[id]||(ITEM_CLS[id]!=='X'&&CLASSES.indexOf(CLS)>=CLASSES.indexOf(ITEM_CLS[id]));
 
@@ -1974,6 +2011,7 @@ const PN={
  'AR-01':['MILITIA 01','標準型','','AM-150'],'AR-02':['BULWARK 02','重装型','','AH-260'],'AR-03':['VANGUARD 03','精密型','','AV-310'],
  'LG-01':['MILITIA 01','中量二脚','','LM-200'],'LG-02':['BULWARK 02','重量二脚','','LH-350'],'LG-03':['VANGUARD 03','高機動二脚','','LV-380'],
  'RF3':['RIFLE','徹甲ライフル','','WR-30AP'],'MG3':['MACHINE GUN','ガトリング','','WM-60G'],'BL3':['BLADE','突進ブレード','','WL-12R'],'MS3':['MISSILE','垂直ミサイル','','SM-4V'],'RD3':['RADAR','索敵レーダー','','SR-09'],
+ 'BZ3':['BAZOOKA','炸裂バズーカ','','WB-40X'],'SH3':['SHIELD','大型シールド','','WS-10T'],'GC3':['CANNON','貫通砲','','SG-90P'],'BT3':['BOOSTER','大出力ブースター','','XB-20'],'IC3':['INTERCEPTOR','広域迎撃装置','','XI-20'],
  'RF':['RIFLE','ライフル','','WR-07A'],'MG':['MACHINE GUN','マシンガン','','WM-12'],'BZ':['BAZOOKA','バズーカ','','WB-40'],
  'BL':['BLADE','ブレード','','WL-03'],'SH':['SHIELD','シールド','','WS-08'],
  'MS':['MISSILE','ミサイル','','SM-6X'],'RD':['RADAR','レーダー','','SR-02'],'GC':['CANNON','グレネード砲','','SG-90'],
@@ -2807,7 +2845,7 @@ const is00Set=c=>c.head==='HD-00'&&c.core==='CR-00'&&c.arms==='AR-00'&&c.legs===
 function gxPost(c,o){if(!is00Set(c))return;GX.CTR.slim({torso:o.torso,head:o.head,hip:o.hip,legs:o.legs,arms:o.arms.map(a=>({s:a.s,up:a.el.parent}))},gxK('CTR'))}
 /* 系列ごとの性能（仮）。フレーム系列メモの「なだらか案」。00 は入手時に TUNE が全 MAX になる元の値 */
 const GXF=[
- {n:'04',ser:'GLA',name:'GLADIATOR 04',cls:'C',price:28000,ml:'G',types:['兜型','軽装型','近接型','軽量二脚'],
+ {n:'04',ser:'GLA',name:'GLADIATOR 04',cls:'X',price:28000,ml:'G',types:['兜型','軽装型','近接型','軽量二脚'],
   head:{wt:9,ability:'duel',abName:'一騎打ちロック',abEn:'DUEL LOCK',lockDeg:25,lockAdd:10,abDesc:'正面の1体を逃さない。ロック角度 ±25°、距離＋10m（特性の動きは開放時に実装）'},
   core:{armor:820,boost:140,wt:46,trait:'瞬発力が高い（特性の動きは開放時に実装）'},arms:{armor:260,load:100,wt:22},legs:{armor:470,mob:115,wt:48}},
  {n:'05',ser:'CEN',name:'CENTURION 05',cls:'B',price:34000,ml:'C',types:['一文字型','制式型','重ね板型','中重量二脚'],
@@ -2971,6 +3009,7 @@ const DEFAULT_CFG={...cfg};  // NEW GAME で戻す初期装備
 const START_OWN=['HD-01','CR-01','AR-01','LG-01','RF','MG','BZ','BL','SH','MS','GC','RD','BT','IC'];
 const PRICE={'HD-02':12000,'CR-02':18000,'AR-02':15000,'LG-02':16000,
  'HD-03':20000,'CR-03':26000,'AR-03':22000,'LG-03':24000,'RF3':16000,'MG3':18000,'BL3':15000,'MS3':21000,'RD3':12000,
+ 'BZ3':17000,'SH3':12000,'GC3':20000,'BT3':14000,'IC3':15000,
  'RF2':9000,'MG2':8500,'BZ2':9800,'BL2':11000,'SH2':6000,'MS2':14000,'GC2':13000,'RD2':7000,'BT2':7500,'IC2':9000};
 GXF.forEach(f=>['HD','CR','AR','LG'].forEach(k=>PRICE[k+'-'+f.n]=f.price));
 const START_CREDIT=30000,REWARD={drone:800,turret:1200};
@@ -3695,6 +3734,7 @@ function openShop(){
  openMenu(false);startShop3D();closeModal();$('shop').hidden=false;SND.bgm('shop');smode='buy';rview='equip';rsel=null;ramt=null;spath=[];scat=null;ssel=null;renderShop();setMood('normal');
  if(TUT!=='done'){shopVisits++;saveGame();return firstShop()}
  const first=shopVisits===0;shopVisits++;const ci=CLASSES.indexOf(CLS),newArr=!first&&ci>SHOPCLS&&Object.values(ITEM_CLS).includes(CLS);SHOPCLS=Math.max(SHOPCLS,ci);saveGame();
+ if(newArr&&CLS==='C')return talk([['あっ、'+SAMA()+'！ メールはお読みいただけましたか？ <em>兵装の3つ目の型</em>が入荷いたしました！','happy'],['炸裂バズーカに大型シールド、貫通砲……どれも重たいので、積載にはお気をつけくださいませ。','normal'],['わたくしも、棚に載せるときに腰の関節が……いえ、何でもございません。','sorry']]);
  if(newArr)return talk([['あっ、'+SAMA()+'！ 新しい部品が入荷いたしました！ 旧軍の<em>制式部品</em>、VANGUARD 03 です。','happy'],['……どこから流れてきたのかは、聞かないでくださいませ。登録等級が上がると、仕入れられる品も増えるのです。','sorry'],['フレームも兵装も、棚に並べておきました。ゆっくりご覧くださいませ。','normal']]);
  if(first)talk([['ようこそ、'+SAMA()+'！ 第7整備区画の部品倉庫へ。わたくし、整備管理AIの <em>D-06</em>、ドールと申します。','happy'],['こちらでは、ガレージにない部品や兵装をお売りしております。品ぞろえは万全です。……<em>たぶん</em>万全です。','normal']]);
  else talk([pick([['おかえりなさいませ、'+SAMA()+'！ 今日はどの部品をお探しでしょう？','happy'],['あ、'+SAMA()+'！ ちょうど棚を拭いていたところです。拭くたびに部品を<em>落とす</em>のですが。','sorry'],['いらっしゃいませ。本日も在庫は数えておきました。<em>4回</em>ほど。','normal']])]);
@@ -3917,7 +3957,7 @@ function hitPlayer(dmg,imp,pos){if(P.down>0)return;if(DBG.inv){spawn(0xc0a8ff,.6
  // シールド：正面からの弾を防ぐ（衝撃も無効）
  const from=_d.copy(pos).sub(P.pos).setY(0).normalize(),front=from.x*Math.sin(P.yaw)+from.z*Math.cos(P.yaw);
  for(const sd of [-1,1]){const key=sd<0?'rHand':'lHand';
-  if(guarding(sd)&&front>.2){ammoUse(key);SND.play('shield',{g:.55});spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});spawn(0xffffff,.6,pos,{life:.06});shake=Math.max(shake,.08);return}}
+  if(guarding(sd)&&front>(HAND[cfg[key]].st.front??.2)){ammoUse(key);SND.play('shield',{g:.55});spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});spawn(0xffffff,.6,pos,{life:.06});shake=Math.max(shake,.08);return}}
  // 当たった高さで部位を決める：腰より下＝LEGS、上半身の外側＝ARMS、中央＝CORE。0の部位に当たった分は CORE が受ける
  const h=pos.y-mech.bot.position.y,rt=_q.set(-Math.cos(P.yaw),0,Math.sin(P.yaw)),lat=Math.abs((pos.x-P.pos.x)*rt.x+(pos.z-P.pos.z)*rt.z);
  let zone=h<3.1?'legs':lat>1.15?'arms':'core',left=dmg,take0=zone!=='core'?P.hp[zone]:0;
@@ -4130,7 +4170,17 @@ const MLIST=[
    ['n','……戦役から一度も動かなかった兵器が、いまになって。理由が気になります。お受けしましょう、○○。']]},
  {id:'n-cls-d',ch:0,kind:'mail',notice:true,ready:false,title:'登録等級 更新',from:'第7区画管理局',fromFull:'第7区画管理局（'+PASTOR07+' '+JONAH+' 管轄）',reward:0,
   subj:'登録等級 更新 CLASS E → CLASS D',body:'登録ギア乗り 殿<br>貴殿の登録等級を CLASS E から <b>CLASS D</b> に更新した。<br>受注できる依頼の範囲が広がる。<br><span class="end">── 以上</span>',
-  mailNona:'等級の通知です。……やはり、要件だけですね。'}];
+  mailNona:'等級の通知です。……やはり、要件だけですね。'},
+ // SHOP の入荷のお知らせ（ドールから。shop＝届く等級。既存のセーブにも1回ずつ届く）
+ {id:'n-shop-e',ch:0,kind:'mail',notice:true,shop:'E',ready:false,title:'入荷のお知らせ',from:'部品倉庫 D-06',fromFull:'第7整備区画 部品倉庫（整備管理AI D-06）',reward:0,
+  subj:'入荷のお知らせ',body:'○○様<br>部品倉庫より、品ぞろえのご案内でございます。<br>拠点防衛用の重装フレーム <b>BULWARK 02</b> の4部位と、兵装の2つ目の型（ライフル・マシンガン・バズーカ・ブレード・シールド・ミサイル・グレネード砲・レーダー・追加ブースター・迎撃装置）を棚に並べております。<br>ぜひお立ち寄りくださいませ。<br><span class="end">── D-06</span>',
+  mailNona:'部品倉庫のドールさんからです。いま棚に並んでいる品の案内のようですね。'},
+ {id:'n-shop-d',ch:0,kind:'mail',notice:true,shop:'D',ready:false,title:'入荷のお知らせ',from:'部品倉庫 D-06',fromFull:'第7整備区画 部品倉庫（整備管理AI D-06）',reward:0,
+  subj:'新しい部品が入荷いたしました！！！',body:'○○様<br>新しい品が入荷いたしました！ 旧軍の制式フレーム <b>VANGUARD 03</b> の4部位と、兵装の3つ目の型5点（徹甲ライフル・ガトリング・突進ブレード・垂直ミサイル・索敵レーダー）でございます。<br>出どころは……どうか、お聞きにならないでくださいませ。<br>ぜひ、ぜひお立ち寄りを！<br><span class="end">── D-06</span>',
+  mailNona:'……件名に感嘆符が三つ付いています。ドールさん、嬉しそうですね。'},
+ {id:'n-shop-c',ch:0,kind:'mail',notice:true,shop:'C',ready:false,title:'入荷のお知らせ',from:'部品倉庫 D-06',fromFull:'第7整備区画 部品倉庫（整備管理AI D-06）',reward:0,
+  subj:'新しい兵装が入荷いたしました！！！',body:'○○様<br>新しい兵装が入荷いたしました！ 3つ目の型5点、<b>炸裂バズーカ・大型シールド・貫通砲・大出力ブースター・広域迎撃装置</b>でございます。<br>登録等級が上がりましたので、仕入れられる品も増えたのです。<br>ぜひ、ぜひお立ち寄りを！<br><span class="end">── D-06</span>',
+  mailNona:'……件名に、感嘆符が三つ。今回は兵装だけのようですね。'}];
 const MDEF=Object.fromEntries(MLIST.map(d=>[d.id,d]));
 const FIELD_BG={city:0x26241f,road:0x2b2721,ruins:0x2a2e2a,factory:0x23261f};
 const nameIn=s=>s.replace(/○○/g,esc(PILOT||'操縦者'));
@@ -4289,9 +4339,13 @@ function misDeps(d){const r=new Set((d.need||[]));
  if(!r.size)r.add('tut');return [...r]}
 const tutOk=()=>TUT==='done'&&TTUT>=TT_N;
 const depOk=(k,st)=>k==='tut'?(st?st.tut:tutOk()):(st?st.m[k]===2:!!(MIS[k]&&MIS[k].clear));
+// 入荷のお知らせ：いまの等級までの分で、まだ届いていないものを届ける（古い等級から順に、時刻を1ずつずらす）
+function shopNotice(){const ci=CLASSES.indexOf(CLS),out=[];let t=Date.now();
+ MLIST.filter(d=>d.shop&&!MIS[d.id]&&CLASSES.indexOf(d.shop)<=ci).forEach(d=>{MIS[d.id]={got:true,read:false,clear:false,n:0,t:t++};out.push(d)});return out}
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
  if(['train','continue','mission','shop','ttdone'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;
   MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)});
+ out.push(...shopNotice());
  if(out.length){saveGame();misHeader();if(out.some(d=>d.kind==='mail')){$('mailBtn').classList.add('new');SND.play('mail')}}return out}
 function misHeader(){const u=unreadMail().length,got=anyGot();
  $('hCls').textContent='CLASS '+CLS;$('hCh').textContent='CH.'+CH;
@@ -4309,9 +4363,9 @@ function mailList(){const box=$('mailBox'),L=gotMails(),u=unreadMail().length;
   <div class="acts"><button class="btn-sub" id="mailX" style="margin-left:auto;width:90px">閉じる</button></div>`,'sr');
  nbClose();box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>mailOpen(b.dataset.m));$('mailX').onclick=mailClose}
 function mailOpen(id){const d=MDEF[id];if(!d)return;
- const box=$('mailBox');mailShow(box,`<div class="mh"><span>MAIL</span><span>${d.notice?'NOTICE':'CH.'+d.ch+' MISSION'}${MIS[d.id].clear?' ／ CLEARED':''}</span></div>
+ const box=$('mailBox');mailShow(box,`<div class="mh"><span>MAIL</span><span>${d.shop?'SHOP':d.notice?'NOTICE':'CH.'+d.ch+' MISSION'}${MIS[d.id].clear?' ／ CLEARED':''}</span></div>
   <div class="mk"><span>FROM</span><span>${d.fromFull||d.from}</span><span>SUBJ</span><span class="sj">${d.subj}</span></div>
-  <div class="mb">${d.body}</div><div class="acts"><button class="btn-sub" id="mailBk" style="width:84px">◀ 一覧</button>${d.notice?'':'<button class="go" id="mailGo">MISSION を開く</button>'}<button class="btn-sub" id="mailX" style="width:80px">閉じる</button></div>`,'sl');
+  <div class="mb">${nameIn(d.body)}</div><div class="acts"><button class="btn-sub" id="mailBk" style="width:84px">◀ 一覧</button>${d.notice?'':'<button class="go" id="mailGo">MISSION を開く</button>'}<button class="btn-sub" id="mailX" style="width:80px">閉じる</button></div>`,'sl');
  MIS[d.id].read=true;saveGame();misHeader();$('mailBtn').classList.remove('new');
  if(!d.notice)$('mailGo').onclick=()=>{mailClose();openBoard(d.id)};$('mailX').onclick=mailClose;$('mailBk').onclick=mailList;
  nonaSay([[nameIn(d.mailNona)]],{hold:true})}
@@ -4722,7 +4776,7 @@ R.setAnimationLoop(()=>{
    once:(id,u0)=>c.u>=u0&&!a.fired.has(id)&&(a.fired.add(id),true),
    tgt:fireTgt(key),
    use:(n=1)=>ammoUse(key,n),
-   shot:(obj,vis)=>{if(!ammoUse(key))return false;markAtk(c.tgt);{const n=WSND(cfg[key]);if(n)SND.play(n,{g:.5})}shoot(obj,{...vis,dmg:S0.dmg,speed:S0.spd,range:S0.range,splash:S0.area,imp:S0.imp,tgt:c.tgt,src:key});return true},
+   shot:(obj,vis)=>{if(!ammoUse(key))return false;markAtk(c.tgt);{const n=WSND(cfg[key]);if(n)SND.play(n,{g:.5})}shoot(obj,{...vis,dmg:S0.dmg,speed:S0.spd,range:S0.range,splash:S0.area,imp:S0.imp,tgt:c.tgt,src:key,pierce:!!S0.pierce});return true},
    missile:(obj,i)=>{if(!ammoUse(key))return false;if(S0.vert?!(i|0):(i|0)%2===0)SND.play(S0.vert?'vmissile':'missile',{g:.45});const L2=byDist(),tg=L2.length?L2[(i|0)%L2.length]:null;markAtk(tg);missile(obj,S0,tg,key);return true},
    melee:()=>{HITSRC=key;markAtk(c.tgt);melee(S0.range,S0.dmg,S0.imp)}};
   if(c.u>=1){endOf(a.def)?.(c.w);delete active[key];continue}
@@ -4841,8 +4895,8 @@ function classBand(from,to,done){const b=$('clsBand');$('clsTx').innerHTML=`CLAS
  setTimeout(()=>{b.classList.add('out')},2600);setTimeout(()=>{b.classList.remove('on','out');done&&done()},3200)}
 function classUpSeq(d){const N=esc(PILOT||'操縦者'),from=CLS;
  nonaSay([[N+'。あの砲台の信号ですが……止まる直前、送り先がありました。どこかに、まだ命令を出しているものがいます。'],['記録には、何もありません。……それなのに、なぜか、聞き覚えがある気がするのです。']],{hold:true});
- NB.then=()=>{CLS=d.cls;CH=d.ch+1;const nid='n-cls-'+d.cls.toLowerCase();if(MDEF[nid]&&!MIS[nid])MIS[nid]={got:true,read:false,clear:false,n:0,t:Date.now()};saveGame();misHeader();$('mailBtn').classList.add('new');
-  classBand(from,d.cls,()=>nonaSay([['管理局からの通知です。等級が上がりました。……返信より先に、こういう連絡だけは早いのですね。'],['ヘッダーの <em>MAIL</em> に、通知が届いています。']]))}}
+ NB.then=()=>{CLS=d.cls;CH=d.ch+1;const nid='n-cls-'+d.cls.toLowerCase();if(MDEF[nid]&&!MIS[nid])MIS[nid]={got:true,read:false,clear:false,n:0,t:Date.now()};const sn=shopNotice();saveGame();misHeader();$('mailBtn').classList.add('new');
+  classBand(from,d.cls,()=>nonaSay([['管理局からの通知です。等級が上がりました。……返信より先に、こういう連絡だけは早いのですね。'],['ヘッダーの <em>MAIL</em> に、通知が届いています。'+(sn.length?'……部品倉庫のドールさんからも、一通。':'')]]))}}
 /* ===== デバッグモード（タイトルのロゴを5回タップで有効。MENU に DEBUG が出る）=====
  依頼の状態（未着／届いた／クリア）を選べる。進行の矛盾は misDeps から自動でそろえる：
  「届いた・クリア」にする→条件の依頼をさかのぼってクリアに／「クリア」から外す→それを条件にしている依頼を未着に。
@@ -4954,7 +5008,7 @@ function garageGreet(kind,info={}){
  else{const dmg=PART_KEYS.some(k=>partNow(k)<partMax(k));L=[[dmg?'おかえりなさい、'+N+'。前回の損傷が残っています。修理は SHOP でどうぞ。':'おかえりなさい、'+N+'。本機に異常はありません。']]}
  if(SS.over)L.push(['積載が上限を超えています。このままでは出撃できません。']);
  const nm=misDeliver(kind),nmail=nm.filter(d=>d.kind==='mail'),nvis=nm.find(d=>d.kind==='visit');
- if(nmail.length)L.push(['……通信です。'+nmail.map(d=>d.from).join('、')+'から、メールが届いています。ヘッダーの <em>MAIL</em> からお読みください。']);
+ if(nmail.length)L.push(['……通信です。'+[...new Set(nmail.map(d=>d.from))].join('、')+'から、メールが届いています。ヘッダーの <em>MAIL</em> からお読みください。']);
  if(nvis){setTimeout(()=>{nonaSay([['……ハンガーの入口に、来客です。お通ししますね。']],{hold:true});NB.then=()=>visitPlay(nvis.id)},500);return}
  if(L.length)nonaSay(L);
 }
