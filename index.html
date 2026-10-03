@@ -3033,19 +3033,32 @@ const SNDV={bgm:6,se:8,mute:false};
  SE は同時に最大20。超えた分は鳴らさない。距離で音量と高音を下げる（10m まで等倍→60m で約1割）。
  文字送りは2文字に1回（SND.blip）。声は nona／doll と、依頼人6種（childF/childM/youthF/youthM/adultF/adultM） */
 const SND=(()=>{
- let A=null,M,BGM,SE,NB,VO=0;const VMAX=20;
+ let A=null,M,BGM,SE,NB,VO=0,SND_FIX=0;const VMAX=20;
  const T=()=>A.currentTime,jit=(v,p=.04)=>v*(1+(Math.random()*2-1)*p);
- function init(){if(A||!AUDIO.ctx)return;A=AUDIO.ctx;
+ let CH=null,AN=null;
+ function chain(){ // 共通の出口：低域・高域の整え → コンプ → リミッター → 音量。作り直せるように関数にした
+  if(CH){try{BGM.disconnect();SE.disconnect();CH.forEach(n=>n.disconnect())}catch(e){}}
   const ls=A.createBiquadFilter();ls.type='lowshelf';ls.frequency.value=90;ls.gain.value=3;
   const air=A.createBiquadFilter();air.type='highshelf';air.frequency.value=9000;air.gain.value=2;
   const glue=A.createDynamicsCompressor();glue.threshold.value=-18;glue.ratio.value=2.5;glue.attack.value=.01;glue.release.value=.15;glue.knee.value=8;
   const lim=A.createDynamicsCompressor();lim.threshold.value=-1.5;lim.ratio.value=12;lim.attack.value=.003;lim.release.value=.1;lim.knee.value=3;
-  M=A.createGain();BGM=A.createGain();SE=A.createGain();BGM.connect(ls);SE.connect(ls);ls.connect(air).connect(glue).connect(lim).connect(M).connect(A.destination);
+  M=A.createGain();M.gain.value=SNDV.mute?0:.85;AN=A.createAnalyser();AN.fftSize=256;
+  BGM.connect(ls);SE.connect(ls);ls.connect(air).connect(glue).connect(lim).connect(M).connect(A.destination);M.connect(AN);
+  CH=[ls,air,glue,lim,M,AN]}
+ function init(){if(A||!AUDIO.ctx)return;A=AUDIO.ctx;
+  BGM=A.createGain();SE=A.createGain();chain();
+  // 見張り：出口の波形に NaN（数値の壊れ）が出たら、整え・コンプ・リミッターを作り直す（一度 NaN が入ると無音のまま戻らないため）。
+  // 端末の都合で止められた（interrupted／suspended）ときは、画面が見えていれば再開を試みる
+  const buf=new Float32Array(256);
+  setInterval(()=>{if(!A)return;if(A.state!=='running'){if(document.visibilityState==='visible')A.resume().catch(()=>{});return}
+   AN.getFloatTimeDomainData(buf);for(let i=0;i<buf.length;i++)if(!Number.isFinite(buf[i])){chain();SND_FIX++;break}},1000);
+  const wake=()=>{if(A&&A.state!=='running'&&document.visibilityState==='visible')A.resume().catch(()=>{})};
+  addEventListener('pointerdown',wake,true);addEventListener('keydown',wake,true);
   NB=A.createBuffer(1,A.sampleRate*2,A.sampleRate);const nd=NB.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
   apply()}
  function apply(){if(!A)return;const t=T();M.gain.setTargetAtTime(SNDV.mute?0:.85,t,.03);BGM.gain.setTargetAtTime(SNDV.bgm/10*.6,t,.05);SE.gain.setTargetAtTime(SNDV.se/10,t,.03)}
  // 1回分の出口（音量・距離・左右）。上限を超えたら null
- function out(g=1,{pan=0,dist=0}={}){if(!A||SNDV.mute||!SNDV.se)return null;if(VO>=VMAX)return null;VO++;setTimeout(()=>VO--,600);
+ function out(g=1,{pan=0,dist=0}={}){if(!A||SNDV.mute||!SNDV.se)return null;if(!Number.isFinite(g))g=.4;if(!Number.isFinite(dist))dist=0;if(!Number.isFinite(pan))pan=0;pan=Math.max(-1,Math.min(1,pan));if(VO>=VMAX)return null;VO++;setTimeout(()=>VO--,600);
   const far=dist>10,n=A.createGain();n.gain.value=g*(far?Math.max(.08,1-(dist-10)/50*.92):1);let h=n;
   if(far){const lp=A.createBiquadFilter();lp.type='lowpass';lp.frequency.value=Math.max(1200,16000-dist*230);n.connect(lp);h=lp}
   if(pan){const p=A.createStereoPanner();p.pan.value=pan;h.connect(p);h=p}h.connect(SE);return n}
@@ -3132,7 +3145,8 @@ function makeSong(def){
   const pb=A.createGain();pb.connect(g); // ducked bus for pads/bass
   let step=0,next=T()+.1,alive=true,I=0;const spb=60/def.bpm/4;
   const st={g,set:v=>I=v};
-  (function tick(){if(!alive)return;while(next<T()+.2){def.play(step,next,g,spb,I,pb);step++;next+=spb;}setTimeout(tick,25);})();
+  (function tick(){if(!alive)return;if(next<T()-.05)next=T()+.05; // 処理が止まって遅れた分は飛ばす（遅れを一度に鳴らすと音が大量に重なって詰まる）
+   while(next<T()+.2){def.play(step,next,g,spb,I,pb);step++;next+=spb;}setTimeout(tick,25);})();
   st.stop=()=>{alive=false;};return st;
 }
 function supersaw(t,notes,dur,dst,{v=.03,cut=1800,cut2,a,r}={}){const f=A.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(cut,t);if(cut2)f.frequency.linearRampToValueAtTime(cut2,t+dur);f.Q.value=.8;f.connect(dst);notes.forEach(n=>[-14,0,14].forEach((dt,i)=>osc('sawtooth',N(n),t,dur,f,{a:a??dur*.25,h:dur*.35,r:r??dur*.4,peak:v*1.4,detune:dt})));}
@@ -3178,8 +3192,8 @@ function bgmI(v){if(cur)cur.set(v)}
    if(!v&&it){const g=A.createGain();g.gain.value=0;const p=A.createStereoPanner(),f=A.createBiquadFilter();f.type='lowpass';f.frequency.value=420;f.Q.value=.5;f.connect(g).connect(p).connect(SE);
     const fr=140+i*9,os=[[fr,'triangle'],[fr*1.01,'triangle'],[fr*2,'sine']].map(([q,ty])=>{const o=A.createOscillator();o.type=ty;o.frequency.value=q;o.connect(f);o.start();return o});
     const l=A.createOscillator();l.frequency.value=4+i;const lg=A.createGain();lg.gain.value=60;l.connect(lg).connect(f.frequency);l.start();v=LP.hum[i]={g,p,os:[...os,l]}}
-   if(v){v.g.gain.setTargetAtTime(it?.065*att(it.dist):0,T(),.1);if(it)v.p.pan.setTargetAtTime(it.pan||0,T(),.1)}}}
- function truck(on,dd=0,pan=0,moving=false){if(!A)return;let v=LP.truck;
+   if(v){const dd=it&&Number.isFinite(it.dist)?it.dist:999,pn=it&&Number.isFinite(it.pan)?Math.max(-1,Math.min(1,it.pan)):0;v.g.gain.setTargetAtTime(it?.065*att(dd):0,T(),.1);if(it)v.p.pan.setTargetAtTime(pn,T(),.1)}}}
+ function truck(on,dd=0,pan=0,moving=false){if(!A)return;let v=LP.truck;if(!Number.isFinite(dd))dd=999;if(!Number.isFinite(pan))pan=0;pan=Math.max(-1,Math.min(1,pan));
   if(on&&!v){const g=A.createGain();g.gain.value=0;const p=A.createStereoPanner();g.connect(p).connect(SE);const o=A.createOscillator();o.type='sawtooth';o.frequency.value=42;const f=A.createBiquadFilter();f.type='lowpass';f.frequency.value=420;f.Q.value=3;
    const am=A.createGain();am.gain.value=.5;const l=A.createOscillator();l.frequency.value=14;const lg=A.createGain();lg.gain.value=.35;l.connect(lg).connect(am.gain);o.connect(f).connect(am).connect(g);o.start();l.start();v=LP.truck={g,p,o,l}}
   if(!on){if(v){v.g.gain.setTargetAtTime(0,T(),.08);v.o.stop(T()+.5);v.l.stop(T()+.5);LP.truck=null}return}
@@ -3188,7 +3202,7 @@ function bgmI(v){if(cur)cur.set(v)}
  // 文字送りの音：2文字に1回
  function blip(voice,n){if(!A||n%2!==1)return;(VOICE[voice]||VOICE.nona)()}
  document.addEventListener('visibilitychange',()=>{if(!A)return;if(document.visibilityState==='visible')A.resume().catch(()=>{});else A.suspend().catch(()=>{})});
- return {init,apply,play,blip,dash,hover,hum,truck,stopLoops,bgm:playBGM,bgmI,bgmPause,bgmStop,get ctx(){return A},_:{out,osc,noise,snap,sub,jit,env,T:()=>T()}};
+ return {init,apply,play,blip,dash,hover,hum,truck,stopLoops,bgm:playBGM,bgmI,bgmPause,bgmStop,get ctx(){return A},get fixes(){return SND_FIX},get voices(){return VO},_:{out,osc,noise,snap,sub,jit,env,T:()=>T()}};
 })();
 // ボタンの音：押したボタンの種類で鳴らし分ける（戻る・閉じる＝キャンセル、出撃・購入・決定など＝決定、ほか＝クリック）
 const SND_CANCEL=/^(◀|BACK|閉じる|やめる|戻る|キャンセル|考えておく|入力し直す|いいえ)|◀ |BACK$/,SND_DECIDE=/SORTIE|出撃|購入|装備する|REGISTER|はい|修理する|強化|依頼を受ける|適用|削除して始める|START|NEW GAME|CONTINUE|BRIEFING ▶|GARAGE ▶|再開/;
