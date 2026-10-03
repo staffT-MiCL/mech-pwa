@@ -2790,7 +2790,7 @@ function gxHead(ser,h){const B=GX[ser],K=gxK(ser);B.head(h,K);gxDeco(B,gxP({head
 function gxCore(ser,t){const B=GX[ser],K=gxK(ser),so=B.core(t,K);so.boost=so.boost||[.5,.55,-1.0];gxDeco(B,gxP({torso:t}),K);return so}
 function gxArms(ser,sh,s){const B=GX[ser],K=gxK(ser),r=B.arms(sh,s,K),a={s,sh,up:r.up||r.el.parent,el:r.el,hand:r.hand};
  const P=gxP({});P.arms=[a];gxDeco(B,P,K);return {el:r.el,hand:r.hand}}
-function gxLegs(ser,hip){const B=GX[ser],K=gxK(ser),legs=B.legs(hip,K);if(B.stance)legs.forEach(l=>{l.tb=-.22;l.kb=.4;l.sz=l.s*(ser==='CTR'?.15:.13)});const P=gxP({hip,legs});gxDeco(B,P,K);if(B.skirt)B.skirt(P,K);return legs}
+function gxLegs(ser,hip){const B=GX[ser],K=gxK(ser),legs=B.legs(hip,K);legs.forEach(l=>{l.gx=1;if(ser==='CTR')l.ft.scale.set(1,.9,.75)});if(B.stance)legs.forEach(l=>{l.tb=-.22;l.kb=.4;l.sz=l.s*(ser==='CTR'?.15:.13)});const P=gxP({hip,legs});gxDeco(B,P,K);if(B.skirt)B.skirt(P,K);return legs}
 // 00 COUNTER：4部位そろい（必ずそろう）のときだけ、胴と腕を細く絞り、足を大きくする
 const C00=['HD-00','CR-00','AR-00','LG-00'];
 const is00=id=>C00.includes(id);
@@ -3803,7 +3803,7 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,keep=sp.keep||22,spd=(sp
  // 歩き（左右の脚を交互に振る）と接地
  const walk=Math.min(1,Math.abs(mv)+Math.abs(side)*.6)*(spd>0?1:0);e.ph+=dt*spd*.9*(walk>0?1:0);
  m.legs.forEach((l,i)=>{const q=Math.sin(e.ph+(i?Math.PI:0))*.5*walk;if(l.dg){digiPose(l,-q*.8,Math.max(0,-q)*1.6,0);return}l.th.rotation.x=-.12+q+(l.tb||0);l.kn.rotation.x=.24+Math.max(0,-q)*1.2+(l.kb||0);l.th.rotation.z=l.sz||0;l.ft.rotation.z=-(l.sz||0);l.ft.rotation.x=-(l.th.rotation.x+l.kn.rotation.x)});
- m.position.y=0;m.updateMatrixWorld(true);let mn=1e9;m.legs.forEach(l=>{l.ft.getWorldPosition(_v);mn=Math.min(mn,_v.y)});m.position.y=SOLE-mn;
+ m.position.y=0;m.updateMatrixWorld(true);m.position.y=-soleY(m.legs);
  e.mat.emissive.setRGB(e.hit>0?1:0,e.hit>0?1:0,e.hit>0?1:0);e.hit-=dt;
  e.hpBar.scale.set(2.4*e.hp/e.max,.12,.12);e.hpBar.lookAt(C.position);
  if(e.stun<=0)e.cd-=dt;
@@ -4587,7 +4587,9 @@ const B={tX:0,tY:0,hY:0,lift:0,arms:[{x:0,z:0,e:0},{x:0,z:0,e:0}],legs:[{th:0,kn
 const _ab=new THREE.Box3();
 function armGroundFix(m,dt){m.bot.updateMatrixWorld(true);m.arms.forEach((a,i)=>{_ab.setFromObject(a.sh);const lim=SOLE+.25,lo=_ab.min.y;
  if(lo<lim)m.armLift[i]=Math.max(-1.3,m.armLift[i]-Math.min(.15,(lim-lo)*.3+.01));else if(lo>lim+.35)m.armLift[i]=Math.min(0,m.armLift[i]+dt*.8)})}
-const _v=new THREE.Vector3(),SOLE=.24;let lastT=performance.now();
+const _v=new THREE.Vector3(),SOLE=.24,_sb=new THREE.Box3();
+// 足裏の高さ（ワールド）：新系列の脚は足の形を実際に測る、旧来の脚は足首から SOLE 下
+function soleY(legs){let mn=Infinity;legs.forEach(l=>{if(l.gx){_sb.setFromObject(l.ft);mn=Math.min(mn,_sb.min.y+.02)}else{l.ft.getWorldPosition(_v);mn=Math.min(mn,_v.y-SOLE)}});return mn}let lastT=performance.now();
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let dustT=0,boostNow=0,icT=0,stepI=-1;
 // EXTRA の常時発動：レーダーは回り続け、ブースターはブースト中に噴射、迎撃装置は首を振りつつ敵弾を撃ち落とす
@@ -4662,7 +4664,7 @@ R.setAnimationLoop(()=>{
  if(dash){if(mode==='garage')scroll=22;boost=Math.max(boost,1);dustT+=dt;if(dustT>.08){dustT=0;dust(.4)}}
  // 2) 基本動作
  B.tX=L(B.tX,dash?.3:hov?.12:walk?0:br,k);B.tY=L(B.tY,0,k);B.hY=L(B.hY,dash||walk||mode==='play'?0:Math.sin(t*.5)*.1,k);
- B.lift=L(B.lift,dash?.2+Math.sin(t*9)*.03:hov?.3+Math.sin(t*3)*.05:0,Math.min(1,dt*(hov?4:6)));
+ const h00=is00Set(m.cfgUsed||cfg)&&(hov||dash);B.lift=L(B.lift,h00?.45+Math.sin(t*3)*.05:dash?.2+Math.sin(t*9)*.03:0,Math.min(1,dt*(h00?4:6)));
  m.arms.forEach((a,i)=>{const b=B.arms[i],sw=walk?(a.s===wk.lead?1:-1)*(wk.u-.5)*.5:0;
   b.x=L(b.x,dash?-.55:-.28+sw*.35,k);b.z=L(b.z,a.s*(dash?.12:.12),k);b.e=L(b.e,dash?-.95:walk?-.92:-.82,k)});
  m.legs.forEach((l,i)=>{const b=B.legs[i];let th=0,kn=0;
@@ -4705,14 +4707,19 @@ R.setAnimationLoop(()=>{
   if(l.dg){digiPose(l,b.th,b.kn,crouch);l.th.rotation.z=b.tz;l.ft.rotation.z=-l.th.rotation.z;return}
   l.th.rotation.x=L(b.th+(l.tb||0),-.8,crouch);l.kn.rotation.x=L(b.kn+(l.kb||0),1.55,crouch);l.th.rotation.z=b.tz+(l.sz||0);
   l.ft.rotation.x=-(l.th.rotation.x+l.kn.rotation.x);l.ft.rotation.z=-l.th.rotation.z});
+ // 00 のホバー姿勢（ふだんの移動・ダッシュ）：上体を前傾、脚全体を後ろへ流し、足の甲を地面へ向けて足先を縮める
+ {const on=is00Set(m.cfgUsed||cfg);m.hw=L(m.hw||0,on&&(hov||dash)?1:0,Math.min(1,dt*6));m.hd=L(m.hd||0,dash?1:0,Math.min(1,dt*6));
+  if(on){const w=m.hw,d=m.hd,LN=L(.55,.7,d),TH=L(.38,.52,d),KN=L(.3,.35,d),TO=L(1.35,1.5,d);
+   if(w>.001){m.torso.rotation.x=L(m.torso.rotation.x,LN,w);m.arms.forEach(a=>a.sh.rotation.x+=w*LN*.6);
+    m.legs.forEach(l=>{l.th.rotation.x=L(l.th.rotation.x,TH,w);l.kn.rotation.x=L(l.kn.rotation.x,KN,w);l.ft.rotation.x=L(l.ft.rotation.x,-(TH+KN)+TO,w)})}
+   m.legs.forEach(l=>l.ft.scale.z=L(.75,.6,w))}}
  if(mode==='play'){
   // アクションの踏み込み・反動（scroll）は機体の前後移動として反映
   if(scroll&&P.stun<=0||scroll<0)P.pos.addScaledVector(new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw)),scroll*dt);
   m.bot.position.x=P.pos.x;m.bot.position.z=P.pos.z;m.bot.rotation.y=P.yaw;
  }else gt.offset.y=((gt.offset.y-scroll*dt/6)%1+1)%1;
  m.bot.position.y=0;m.bot.updateMatrixWorld(true);
- let minY=Infinity;m.legs.forEach(l=>{l.ft.getWorldPosition(_v);minY=Math.min(minY,_v.y)});
- m.bot.position.y=SOLE-minY+lift;
+ m.bot.position.y=-soleY(m.legs)+lift;
  armGroundFix(m,dt);
  const bs=1/(1+lift*.3);blob.scale.set(bs,bs,bs);blob.material.opacity=.45*bs;blob.position.x=m.bot.position.x;blob.position.z=m.bot.position.z;
  boostNow=L(boostNow,boost,Math.min(1,dt*12));
