@@ -1088,6 +1088,9 @@ function mountExt(g){ // 背面ハードポイント
  return grp(g,0,0,-.12);
 }
 // ブースターの噴射炎：噴射口（x,y,z）を根元に、後ろ（−Z）へ伸びる円すい。scale.y で長さが変わり、0 に近いと噴射口の中に隠れる
+/* 逆関節（06）：太ももは後ろ・関節は後ろへ突き出る・かかとは後ろ。th/kn は通常脚の値（th<0＝脚を前へ、kn＞0＝足を引き上げる）を受けて変換 */
+function digiPose(l,th,kn,cr){const T=.55+th*.85,K=-1.25-kn*.75;
+ l.th.rotation.x=L(T,1.05,cr);l.kn.rotation.x=L(K,-2.05,cr);l.ft.rotation.x=-(l.th.rotation.x+l.kn.rotation.x+(l.hk?l.hk.rotation.x:0))}
 function flameAt(g,x,y,z,r,len){const pv=grp(g,x,y,z);pv.rotation.x=-Math.PI/2;cyl(pv,.02,r,len,Wp.glow,0,len/2,0,0,0,6);pv.scale.set(1,.01,1);return pv}
 function mountHand(hand){ // 手首の武器ラッチ
  box(hand,.4,.08,.4,Sk.hazard,0,-.24,0);[-1,1].forEach(q=>cyl(hand,.035,.035,.06,Sk.bolt,q*.2,-.24,.12,Math.PI/2));
@@ -2127,15 +2130,15 @@ const REV={
  legs(hip,K){
   box(hip,.9,.4,.7,K.frame,0,0,0);
   return [-1,1].map(s=>{
-   const th=grp(hip,s*.55,-.15,0);th.rotation.x=-.6;cyl(th,.2,.2,.4,K.frame,0,0,0,0,Math.PI/2);
+   const th=grp(hip,s*.55,-.15,0);th.rotation.x=.6;cyl(th,.2,.2,.4,K.frame,0,0,0,0,Math.PI/2);
    box(th,.24,1.3,.24,K.frame,0,-.65,0);box(th,.44,.6,.46,K.main,0,-.36,.08,0,0,s*.08);box(th,.3,.26,.4,K.main,s*.05,-.86,.12,.25,0,0);
-   const kn=grp(th,0,-1.3,0);kn.rotation.x=1.3;cyl(kn,.16,.16,.34,K.frame,0,0,0,0,Math.PI/2);
-   box(kn,.24,1.3,.24,K.frame,0,-.65,0);cyl(kn,.06,.06,1.1,K.metal,0,-.6,.2);box(kn,.42,.5,.36,K.sub,0,-.32,-.14);
-   const hk=grp(kn,0,-1.3,0);hk.rotation.x=-.8;cyl(hk,.14,.14,.3,K.frame,0,0,0,0,Math.PI/2);
+   const kn=grp(th,0,-1.3,0);kn.rotation.x=-1.3;cyl(kn,.16,.16,.34,K.frame,0,0,0,0,Math.PI/2);
+   box(kn,.24,1.3,.24,K.frame,0,-.65,0);cyl(kn,.06,.06,1.1,K.metal,0,-.6,.2);box(kn,.42,.5,.36,K.sub,0,-.32,.14);
+   const hk=grp(kn,0,-1.3,0);hk.rotation.x=.8;cyl(hk,.14,.14,.3,K.frame,0,0,0,0,Math.PI/2);
    box(hk,.22,.9,.22,K.frame,0,-.45,0);box(hk,.36,.5,.3,K.main,0,-.4,.1,0,0,-s*.1);
-   const ft=grp(hk,0,-.9,0);ft.rotation.x=.1;
+   const ft=grp(hk,0,-.9,0);ft.rotation.x=-.1;
    box(ft,.6,.2,.6,K.frame,0,-.1,.1);[-1,0,1].forEach(q=>box(ft,.14,.14,.55,K.metal,q*.2,-.12,.55,.15));box(ft,.12,.12,.35,K.metal,0,-.1,-.32,-.3);
-   return {th,kn,ft,s};
+   return {th,kn,hk,ft,s,dg:1};
   });
  },
  core(t,K){
@@ -3166,6 +3169,9 @@ function bgmI(v){if(cur)cur.set(v)}
   if(on&&!L){const g=A.createGain();g.gain.value=0;g.gain.setTargetAtTime(.28,T(),.04);g.connect(SE);
    const n1=noise(T(),600,g,{type:'bandpass',f:600,q:.6,a:.12,h:599,peak:.45}),n2=noise(T(),600,g,{type:'lowpass',f:220,a:.1,h:599,peak:.9});LP.dash={g,ns:[n1,n2]}}
   else if(!on&&L){L.g.gain.setTargetAtTime(0,T(),.06);L.ns.forEach(x=>x.stop(T()+.4));LP.dash=null}}
+ let HV=null;function hover(on){if(!A)return;
+  if(on&&!HV){const g=A.createGain();g.gain.value=0;g.gain.setTargetAtTime(.07,T(),.08);g.connect(SE);HV={g,ns:[noise(T(),600,g,{type:'lowpass',f:380,a:.15,h:599,peak:.8})]}}
+  else if(!on&&HV){HV.g.gain.setTargetAtTime(0,T(),.08);HV.ns.forEach(x=>x.stop(T()+.5));HV=null}}
  function hum(list){if(!A)return;
   for(let i=0;i<3;i++){let v=LP.hum[i];const it=list[i];
    if(!v&&it){const g=A.createGain();g.gain.value=0;const p=A.createStereoPanner(),f=A.createBiquadFilter();f.type='lowpass';f.frequency.value=420;f.Q.value=.5;f.connect(g).connect(p).connect(SE);
@@ -3177,11 +3183,11 @@ function bgmI(v){if(cur)cur.set(v)}
    const am=A.createGain();am.gain.value=.5;const l=A.createOscillator();l.frequency.value=14;const lg=A.createGain();lg.gain.value=.35;l.connect(lg).connect(am.gain);o.connect(f).connect(am).connect(g);o.start();l.start();v=LP.truck={g,p,o,l}}
   if(!on){if(v){v.g.gain.setTargetAtTime(0,T(),.08);v.o.stop(T()+.5);v.l.stop(T()+.5);LP.truck=null}return}
   v.g.gain.setTargetAtTime(.32*att(dd)*(moving?1:.45),T(),.15);v.p.pan.setTargetAtTime(pan,T(),.15);v.o.frequency.setTargetAtTime(moving?46:34,T(),.3)}
- function stopLoops(){dash(false);truck(false);LP.hum.forEach(v=>{v.g.gain.setTargetAtTime(0,T(),.05);v.os.forEach(o=>o.stop(T()+.3))});LP.hum=[]}
+ function stopLoops(){dash(false);hover(false);truck(false);LP.hum.forEach(v=>{v.g.gain.setTargetAtTime(0,T(),.05);v.os.forEach(o=>o.stop(T()+.3))});LP.hum=[]}
  // 文字送りの音：2文字に1回
  function blip(voice,n){if(!A||n%2!==1)return;(VOICE[voice]||VOICE.nona)()}
  document.addEventListener('visibilitychange',()=>{if(!A)return;if(document.visibilityState==='visible')A.resume().catch(()=>{});else A.suspend().catch(()=>{})});
- return {init,apply,play,blip,dash,hum,truck,stopLoops,bgm:playBGM,bgmI,bgmPause,bgmStop,get ctx(){return A},_:{out,osc,noise,snap,sub,jit,env,T:()=>T()}};
+ return {init,apply,play,blip,dash,hover,hum,truck,stopLoops,bgm:playBGM,bgmI,bgmPause,bgmStop,get ctx(){return A},_:{out,osc,noise,snap,sub,jit,env,T:()=>T()}};
 })();
 // ボタンの音：押したボタンの種類で鳴らし分ける（戻る・閉じる＝キャンセル、出撃・購入・決定など＝決定、ほか＝クリック）
 const SND_CANCEL=/^(◀|BACK|閉じる|やめる|戻る|キャンセル|考えておく|入力し直す|いいえ)|◀ |BACK$/,SND_DECIDE=/SORTIE|出撃|購入|装備する|REGISTER|はい|修理する|強化|依頼を受ける|適用|削除して始める|START|NEW GAME|CONTINUE|BRIEFING ▶|GARAGE ▶|再開/;
@@ -3795,7 +3801,7 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,keep=sp.keep||22,spd=(sp
  let dy=yaw-e.g.rotation.y;dy=Math.atan2(Math.sin(dy),Math.cos(dy));e.g.rotation.y+=dy*Math.min(1,dt*3);
  // 歩き（左右の脚を交互に振る）と接地
  const walk=Math.min(1,Math.abs(mv)+Math.abs(side)*.6)*(spd>0?1:0);e.ph+=dt*spd*.9*(walk>0?1:0);
- m.legs.forEach((l,i)=>{const q=Math.sin(e.ph+(i?Math.PI:0))*.5*walk;l.th.rotation.x=-.12+q;l.kn.rotation.x=.24+Math.max(0,-q)*1.2;l.ft.rotation.x=-(l.th.rotation.x+l.kn.rotation.x)});
+ m.legs.forEach((l,i)=>{const q=Math.sin(e.ph+(i?Math.PI:0))*.5*walk;if(l.dg){digiPose(l,-q*.8,Math.max(0,-q)*1.6,0);return}l.th.rotation.x=-.12+q;l.kn.rotation.x=.24+Math.max(0,-q)*1.2;l.ft.rotation.x=-(l.th.rotation.x+l.kn.rotation.x)});
  m.position.y=0;m.updateMatrixWorld(true);let mn=1e9;m.legs.forEach(l=>{l.ft.getWorldPosition(_v);mn=Math.min(mn,_v.y)});m.position.y=SOLE-mn;
  e.mat.emissive.setRGB(e.hit>0?1:0,e.hit>0?1:0,e.hit>0?1:0);e.hit-=dt;
  e.hpBar.scale.set(2.4*e.hp/e.max,.12,.12);e.hpBar.lookAt(C.position);
@@ -4635,7 +4641,7 @@ R.setAnimationLoop(()=>{
   if(!dashing&&!P.qb&&!air){P.regen-=dt;if(P.regen<=0)P.boost=Math.min(SS.boost,P.boost+35*dt)}
   am=(dashing||P.qb)?2:(P.vel.length()>1.5&&!air?1:0);
   if(dashing)moveBoost=1;
-  SND.dash(dashing&&P.down<=0);
+  SND.dash(dashing&&P.down<=0);SND.hover(!dashing&&P.down<=0&&am===1&&is00Set(cfg)&&!air);
   {const hs=ENEMIES.filter(e=>e.alive&&!e.off&&e.type==='drone').map(e=>sPan(e.g.position.x,e.g.position.z)).sort((a,b)=>a[0]-b[0]).slice(0,3).map(([dist,pan])=>({dist,pan}));SND.hum(hs)}
   if(TRT)ttMove(dt,dashing,!dashing&&!P.qb&&!air&&P.vel.length()>1.5);
   // ロックオン（照準の中心付近の敵を自動で捕捉し、視点をゆっくり向ける）
@@ -4643,7 +4649,7 @@ R.setAnimationLoop(()=>{
   if(lockT&&!top){lockT.center(_q).sub(P.pos);const ty=Math.atan2(_q.x,_q.z);camYaw+=Math.atan2(Math.sin(ty-camYaw),Math.cos(ty-camYaw))*Math.min(1,dt*(attacking?9:2.5))}
   updateEnemies(dt);tickHold();
  }else if(auto&&!reduce)az+=dt*.25;
- const walk=am===1,dash=am===2;
+ const hov=am===1&&is00Set(cfg),walk=am===1&&!hov,dash=am===2;
  const k=walk?1:Math.min(1,dt*6);let wk=null,scroll=0,boost=moveBoost;
  if(walk){
   const tq=Math.floor(t*12)/12,p=(tq*.55)%1,lead=p<.5?1:-1,h=(p%.5)*2;
@@ -4651,10 +4657,11 @@ R.setAnimationLoop(()=>{
   wk={lead,u,mv,land};if(h>.6&&h<.64&&!reduce)shake=Math.max(shake,.1);{const si=Math.floor(tq*1.1);if(mode==='play'&&h>.6&&si!==stepI){stepI=si;SND.play('step',{g:.6,size:cfg.legs==='LG-02'?1.25:cfg.legs==='LG-03'?.9:1})}}
   if(mv<1&&mode==='garage')scroll=6.5;
  }
+ if(hov){if(mode==='garage')scroll=6.5;boost=Math.max(boost,.3);dustT+=dt;if(dustT>.16){dustT=0;dust(.2)}}
  if(dash){if(mode==='garage')scroll=22;boost=Math.max(boost,1);dustT+=dt;if(dustT>.08){dustT=0;dust(.4)}}
  // 2) 基本動作
- B.tX=L(B.tX,dash?.3:walk?0:br,k);B.tY=L(B.tY,0,k);B.hY=L(B.hY,dash||walk||mode==='play'?0:Math.sin(t*.5)*.1,k);
- B.lift=L(B.lift,dash?.2+Math.sin(t*9)*.03:0,Math.min(1,dt*6));
+ B.tX=L(B.tX,dash?.3:hov?.12:walk?0:br,k);B.tY=L(B.tY,0,k);B.hY=L(B.hY,dash||walk||mode==='play'?0:Math.sin(t*.5)*.1,k);
+ B.lift=L(B.lift,dash?.2+Math.sin(t*9)*.03:hov?.3+Math.sin(t*3)*.05:0,Math.min(1,dt*(hov?4:6)));
  m.arms.forEach((a,i)=>{const b=B.arms[i],sw=walk?(a.s===wk.lead?1:-1)*(wk.u-.5)*.5:0;
   b.x=L(b.x,dash?-.55:-.28+sw*.35,k);b.z=L(b.z,a.s*(dash?.12:.12),k);b.e=L(b.e,dash?-.95:walk?-.92:-.82,k)});
  m.legs.forEach((l,i)=>{const b=B.legs[i];let th=0,kn=0;
@@ -4694,6 +4701,7 @@ R.setAnimationLoop(()=>{
  if(!m.armLift)m.armLift=[0,0];
  m.arms.forEach((a,i)=>{a.sh.rotation.set(armF[i].x+m.armLift[i],0,armF[i].z);a.el.rotation.x=armF[i].e});
  m.legs.forEach((l,i)=>{const b=legF[i];
+  if(l.dg){digiPose(l,b.th,b.kn,crouch);l.th.rotation.z=b.tz;l.ft.rotation.z=-l.th.rotation.z;return}
   l.th.rotation.x=L(b.th,-.8,crouch);l.kn.rotation.x=L(b.kn,1.55,crouch);l.th.rotation.z=b.tz;
   l.ft.rotation.x=-(l.th.rotation.x+l.kn.rotation.x);l.ft.rotation.z=-l.th.rotation.z});
  if(mode==='play'){
