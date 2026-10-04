@@ -176,6 +176,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .en{font-family:var(--mech);letter-spacing:.08em}
 .shd .ttl.en{font-size:18px;font-weight:700;letter-spacing:.14em}
 .detail .en{font-family:var(--mech)!important;letter-spacing:.12em}
+.sec.lr{display:flex;align-items:center}.lrt{margin-left:auto;display:inline-flex;gap:3px}.lrt button{min-width:26px;height:18px;padding:0 6px;font-size:10px;font-weight:700;letter-spacing:.1em;line-height:1}.lrt button[aria-pressed="true"]{background:var(--fire);color:#1a1006;border-color:var(--fire)}
 .secj{margin-left:8px;letter-spacing:0;color:var(--faint);font-family:var(--body)}
 .orow .k{font-family:var(--mech);letter-spacing:.14em}
 .sec{font-family:var(--disp)}
@@ -1706,7 +1707,7 @@ const SLOTOF=k=>SLOTS.find(s=>s.key===k);
 let view='overview',selSlot=null,cand=null;
 let hlOff=false; // 装備した直後は輪郭線を出さない（候補を選び直すとまた出す）
 let wcat=null; // 兵装の一覧で開いている種類（null＝種類の一覧）
-function openSlot(k){if(TUT!=='done')return;view='slot';selSlot=k;cand=cfg[k];wcat=null;hlOff=false;renderGarage()}
+function openSlot(k){if(TUT!=='done')return;cmpSide=null;view='slot';selSlot=k;cand=cfg[k];wcat=null;hlOff=false;renderGarage()}
 function renderGarage(){renderHeader();renderGStats();renderSide()}
 // ガレージでは、選択中（未装備）の装備を仮に組んだ見た目にする
 function syncPreviewMech(){
@@ -1767,7 +1768,9 @@ function renderSide(){
  }else if(view==='slot'){
   const sl=SLOTOF(selSlot),cur=cfg[selSlot],[no,sub]=SLOTINFO[selSlot];
   const items=Object.keys(sl.cat).filter(id=>id==='none'||OWN.has(id));
-  const cd=sl.cat[cand],cu=sl.cat[cur];
+  const lr=LRSLOT(selSlot),side=lr?(cmpSide||selSlot[0].toUpperCase()):null,bsl=lr?sideSlot(selSlot,side):selSlot;
+  const cd=sl.group==='F'?effPart(selSlot,cand):sl.cat[cand],cu=sl.group==='F'?effPart(selSlot,cur):SLOTOF(bsl).cat[cfg[bsl]];
+  const secj=sl.group==='F'?`TUNE+${tSum(cur)} → TUNE+${tSum(cand)}`:lr?`${SLOT_JA[bsl]} → 選択中`:'現在 → 選択中';
   const P2=statsFor(withPart(selSlot,cand));
   let part='',brief='';
   if(sl.group==='F'){
@@ -1831,14 +1834,15 @@ function renderSide(){
     return `<button class="pitem${s?' sel':''}${ov?' ovw':''}" data-id="${id}"><span class="pc fit"><span class="nw">${pn(selSlot,id)[0]}</span><small>${pn(selSlot,id)[1]}</small></span><span class="n">${esc(ENM(selSlot,id).trim())}${tPlus(id)}</span>${e?'<span class="t eq">装備中</span>':ov?'<span class="t ov">過積載</span>':`<span class="t">重量${w||0}</span>`}</button>`}).join('')}
     ${sl.group==='W'?'':items.length<5?'<div class="pitem lock"><span class="pc">－</span><span class="n">未入手（SHOP で購入）</span><span class="t"></span></div>':''}</div>
    <div class="detail"><div class="dtop">${sl.group==='W'&&cand!=='none'?'<div class="pv" id="pv"></div>':''}<div class="dtxt"><span class="en fit"><span class="nw">${pn(selSlot,cand)[0]}</span> ／ ${pn(selSlot,cand)[1]}</span><span class="nm">${esc(ENM(selSlot,cand).trim())}</span><p>${esc(DESC[cand]||'')}</p></div></div>
-    <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${brief}</div>
+    <div class="sec${lr?' lr':''}">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">${secj}</span>${lr?lrBtns(side):''}</div><div class="cmp">${brief}</div>
     ${P2.over&&cand!==cur?`<div class="ovn">積載 +${P2.weap-P2.load} 超過</div>`:''}<div class="acts"><button class="btn-main cut${P2.over&&cand!==cur?' ov':''}" id="equip" ${cand===cur||P2.over?'disabled':''}>${cand===cur?'装備中':P2.over?'積載オーバー':'装備する'}</button><button class="btn-sub" id="more">詳しく見る</button><button class="btn-sub" id="back">戻る</button></div></div></div>`;
   $('more').onclick=()=>openModal(`<div class="shd"><span class="code"><span class="nw">${pn(selSlot,cand)[0]}</span> ／ ${pn(selSlot,cand)[1]}</span><span class="ttl">${esc(ENM(selSlot,cand).trim())}</span></div><div class="rule"></div>
    <p class="note" style="margin:0">${esc(DESC[cand]||'')}${cd.st&&cd.st.note?'<br>'+esc(cd.st.note):''}${cd.trait?'<br>特性：'+esc(cd.trait):''}</p>
-   <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">現在 → 選択中</span></div><div class="cmp">${part}</div>
+   <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">${secj}</span></div><div class="cmp">${part}</div>
    <div class="sec">機体全体<span class="secj">現在 → 装備後</span></div><div class="cmp">${whole}${cmpRow('歩行速度',+SS.walk.toFixed(1),+P2.walk.toFixed(1))}${cmpRow('ダッシュ速度',+SS.dash.toFixed(1),+P2.dash.toFixed(1))}${cmpRow('急加速距離',+SS.qb.toFixed(1),+P2.qb.toFixed(1))}${cmpRow('ロック距離',SS.lockRange,P2.lockRange,'hi',v=>v+'m')}</div>
    ${P2.over?`<div class="warn-msg">この装備にすると積載を ${P2.weap-P2.load} 超えます（出撃不可）</div>`:''}`);
   el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{cand=b.dataset.id;hlOff=false;renderGarage()});
+  el.querySelectorAll('[data-lr]').forEach(b=>b.onclick=()=>{cmpSide=b.dataset.lr;renderGarage()});
   el.querySelectorAll('.detail p').forEach(setupTicker);
   el.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{wcat=b.dataset.cat;const ids=CATS.get(wcat);cand=ids.includes(cur)?cur:ids[0];hlOff=false;renderGarage()});
   const cb=$('catBack');if(cb)cb.onclick=()=>{wcat=null;cand=cur;renderGarage()};
@@ -3111,6 +3115,17 @@ function eff(slot,id){const b=SLOTOF(slot).cat[id];if(!b)return b;
  if(slot==='arms')return {...b,load:Math.round(b.load*(1+tMul(slot,id,0))),armor:ARC(b.armor*(1+tMul(slot,id,1)))};
  if(slot==='legs')return {...b,mob:Math.round(b.mob*(1+tMul(slot,id,0))),armor:ARC(b.armor*(1+tMul(slot,id,1)))};
  return b}
+// 比較表用：改造（TUNE）を反映したフレームの値。ロック距離は「そのヘッドが機体全体に足す分」（改造で全体の距離が伸びる分を含む）
+function effPart(slot,id){const b=SLOTOF(slot).cat[id];if(!b||!FRAME_CAT[slot])return b;
+ if(slot==='head'){const S=statsFor({...cfg,head:id}),k=1+tMul('head',id,0),r0=S.lockRange/k-b.lockAdd;
+  return {...b,lockDeg:Math.round(b.lockDeg*(1+tMul('head',id,1))),lockAdd:Math.round(S.lockRange-r0)}}
+ return eff(slot,id)}
+// 手持ち武器・肩の比較：R／L の切り替え（ガレージとショップで共通）
+const LRSLOT=k=>/^[rl](Hand|Shoulder)$/.test(k);
+const sideSlot=(k,side)=>side.toLowerCase()+k.slice(1);
+let cmpSide=null,scmpSide='R';
+const lrBtns=side=>`<span class="lrt" role="group" aria-label="比較する側">${['R','L'].map(x=>`<button data-lr="${x}" aria-pressed="${x===side}">${x}</button>`).join('')}</span>`;
+const tTag=id=>isFrameId(id)?'TUNE+'+tSum(id):'';
 function loadGame(){
  try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!d)return;
   (d.own||[]).forEach(id=>{if(PRICE[id])OWN.add(id)});
@@ -3580,7 +3595,7 @@ function renderShop(){fitSoon($('shopR'));
   return `<button data-c="${c}" class="${c===scat?'on':''}${n?'':' none'}${leaf?'':' br'}"><b class="fit">${scLab(c)}</b>${leaf?'':'<span>▶</span>'}</button>`}).join('');
  $('sCats').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{const c=b.dataset.c;
   if(TREE(c)){spath=[...spath,c];scat=null;ssel=null;renderShop();return}
-  scat=c;ssel=null;renderShop();
+  scat=c;ssel=null;scmpSide='R';renderShop();
   const st=stockOf(scat);talk([[CAT_TALK[scLab(scat)]||'',null]].concat(st.length&&st.every(i=>OWN.has(i))?[['この種類は、もう<strong>すべてお持ち</strong>ですね。さすがでございます。','happy']]:[]))});
  const bk=$('sCats').querySelector('[data-back]');if(bk)bk.onclick=()=>{spath=spath.slice(0,-1);scat=null;ssel=null;renderShop()};
  const det=$('sDet');
@@ -3589,13 +3604,14 @@ function renderShop(){fitSoon($('shopR'));
  const items=stock.map(id=>{const sl=slotOfItem(id),own=OWN.has(id),ov=statsFor(withPart(sl,id)).over,ng=PRICE[id]>CREDIT;
   const tag=own?(isEquipped(id)?'装備中':'所持'):ng?'資金不足':ov?'過積載':'NEW';
   return `<button class="sitem${own?' own':''}${id===ssel?' sel':''}" data-i="${id}"><span class="a"><small class="fit">${isFrameId(id)?SER(id)+' ・ ':''}${esc(pn(sl,id)[1]||scLab(scat))}</small><b>${esc(ENM(sl,id).trim())}</b></span><span class="p"><small class="${own?'':ng?'ng':ov?'ov':''}">${tag}</small><b>${own?'購入済み':fmtCR(PRICE[id])}</b></span></button>`}).join('');
- const sl=slotOfItem(ssel),cur=cfg[sl],P2=statsFor({...cfg,[sl]:ssel});
+ const sl0=slotOfItem(ssel),lr=LRSLOT(sl0),sl=lr?sideSlot(sl0,scmpSide):sl0,cur=cfg[sl],P2=statsFor({...cfg,[sl]:ssel});
  det.innerHTML=`<div class="sitems">${items}</div>
-  <div class="scmp"><div class="sec">${SLOT_JA[sl]}（${SER(cur)?SER(cur)+' ':''}<span class="nw">${esc(ENM(sl,cur).trim())}</span>）との比較</div><div class="cmp">${shopRows(sl,cur,ssel)}</div>
+  <div class="scmp"><div class="sec${lr?' lr':''}">${SLOT_JA[sl]}（${SER(cur)?SER(cur)+' ':''}<span class="nw">${esc(ENM(sl,cur).trim())}</span>）との比較${isFrameId(ssel)?`<span class="secj">${tTag(cur)} → ${tTag(ssel)}</span>`:''}${lr?lrBtns(scmpSide):''}</div><div class="cmp">${shopRows(sl,cur,ssel)}</div>
    <div class="sec">機体全体<span class="secj">現在 → 装備後</span></div><div class="cmp">${cmpRow('機動力',Math.round(SS.mob),Math.round(P2.mob))}${cmpRow('積載',`${SS.weap}/${SS.load}`,`${P2.weap}/${P2.load}`)}${sl==='core'||sl==='arms'||sl==='legs'?cmpRow('装甲',SS.armor,P2.armor):''}</div></div>
   <div class="sbuy">${OWN.has(ssel)?`<small>購入済み</small><span class="grow" style="flex:1"></span><button class="btn-eq cut" id="sEq" ${isEquipped(ssel)?'disabled':''}>${isEquipped(ssel)?'装備中':'装備する'}</button>`:
    `<small>価格</small><span class="pr">${fmtCR(PRICE[ssel])}<i>CR</i></span><span class="grow" style="flex:1"></span>${PRICE[ssel]>CREDIT?`<span class="lack">不足 −${fmtCR(PRICE[ssel]-CREDIT)} CR</span>`:'<button class="btn-main cut" id="sBuy">購入</button>'}`}</div>`;
  det.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{ssel=b.dataset.i;renderShop();explainItem(ssel)});
+ det.querySelectorAll('[data-lr]').forEach(b=>b.onclick=()=>{scmpSide=b.dataset.lr;renderShop()});
  const bb=$('sBuy'),be=$('sEq');if(bb)bb.onclick=()=>openConfirm(ssel);else if(be)be.onclick=()=>openConfirm(ssel);
  else if(det.querySelector('.lack'))det.querySelector('.lack').onclick=()=>talk([['大変申し上げにくいのですが……所持金が <em>'+fmtCR(PRICE[ssel]-CREDIT)+' CR</em> ほど足りないようです。','sorry'],['計算は3回確かめました。4回目もしましょうか？','normal']]);
 }
@@ -3698,7 +3714,7 @@ function renderAlt(){
 // 比較表（ガレージと同じ項目から、主要なものだけ）
 function shopRows(sl,a,b){return shopRows0(sl,a,b)+extraRows(sl,b)}
 function shopRows0(sl,a,b){
- const ca=SLOTOF(sl).cat[a],cb=SLOTOF(sl).cat[b],R=[];
+ const ca=FRAME_CAT[sl]?effPart(sl,a):SLOTOF(sl).cat[a],cb=FRAME_CAT[sl]?effPart(sl,b):SLOTOF(sl).cat[b],R=[];
  if(FRAME_CAT[sl]){
   if(sl==='head'){R.push(cmpRow('能力',ca.abName,cb.abName));R.push(cmpRow('ロック角度',ca.lockDeg,cb.lockDeg,'hi',v=>'±'+v+'°'));R.push(cmpRow('ロック距離',ca.lockAdd,cb.lockAdd,'hi',v=>'+'+v+'m'))}
   if(cb.armor!=null)R.push(cmpRow('装甲',ca.armor,cb.armor));
@@ -3733,8 +3749,8 @@ function explainItem(id){
 }
 /* 購入の確認（モーダル）：手と肩は付ける側を選べる */
 function openConfirm(id){
- const base=slotOfItem(id);stgt=base;
- const sides=base==='rHand'?['rHand','lHand']:base==='rShoulder'?['rShoulder','lShoulder']:[base];
+ const base=slotOfItem(id);
+ const sides=base==='rHand'?['rHand','lHand']:base==='rShoulder'?['rShoulder','lShoulder']:[base];stgt=scmpSide==='L'&&sides.length>1?sides[1]:base;
  const draw=()=>{const P2=statsFor(withPart(stgt,id)),old=cfg[stgt],after=CREDIT-PRICE[id];
   $('sconfBox').innerHTML=`<div class="shd"><span class="code">CONFIRM</span><span class="ttl">${esc(ENM(base,id).trim())} を購入</span>${SER(id)?`<span class="sub" style="width:100%">${SER(id)}</span>`:''}</div><div class="rule"></div>
   <div class="bal"><span>所持金</span><span>${fmtCR(CREDIT)} CR</span><span>価格</span><span class="dn">− ${fmtCR(PRICE[id])} CR</span><span class="tot">購入後</span><span class="tot"><b>${fmtCR(after)} CR</b></span></div>
@@ -3789,7 +3805,7 @@ function closeEquipModal(){if(!document.body.classList.contains('eqm'))return;do
  $('shop').hidden=false;startShop3D();renderShop();talk([['装備の調子はいかがですか？ ……おお、よくお似合いです。機体に似合う、という言い方で合っていますよね？','happy']])}
 $('eqClose').onclick=()=>fadeTo(closeEquipModal,'SHOP');
 function openShop(){
- openMenu(false);startShop3D();closeModal();$('shop').hidden=false;SND.bgm('shop');smode='buy';rview='equip';rsel=null;ramt=null;spath=[];scat=null;ssel=null;renderShop();setMood('normal');
+ openMenu(false);startShop3D();closeModal();$('shop').hidden=false;SND.bgm('shop');smode='buy';scmpSide='R';rview='equip';rsel=null;ramt=null;spath=[];scat=null;ssel=null;renderShop();setMood('normal');
  if(TUT!=='done'){shopVisits++;saveGame();return firstShop()}
  const first=shopVisits===0;shopVisits++;const ci=CLASSES.indexOf(CLS),newArr=!first&&ci>SHOPCLS&&Object.values(ITEM_CLS).includes(CLS);SHOPCLS=Math.max(SHOPCLS,ci);saveGame();
  if(newArr&&CLS==='C')return talk([['あっ、'+SAMA()+'！ メールはお読みいただけましたか？ <em>兵装の3つ目の型</em>が入荷いたしました！','happy'],['炸裂バズーカに大型シールド、貫通砲……どれも重たいので、積載にはお気をつけくださいませ。','normal'],['わたくしも、棚に載せるときに腰の関節が……いえ、何でもございません。','sorry']]);
