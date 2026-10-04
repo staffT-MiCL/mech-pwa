@@ -4153,12 +4153,17 @@ function sPan(x,z){_sr.setFromMatrixColumn(C.matrixWorld,0);const dx=x-P.pos.x,d
 function sAt(name,pos,o={}){if(mode!=='play')return;const [d,pan]=sPan(pos.x,pos.z);SND.play(name,{g:.5,...o,dist:d*(o.dk??1),pan})}
 const WSND=id=>/^RF3/.test(id)?'ap':/^RF/.test(id)?'rifle':id==='MG3'?'gat':/^MG/.test(id)?'mg':/^BZ/.test(id)?'bazooka':/^GC/.test(id)?'grenade':null;
 const SNDT={};const sOnce=(k,gap)=>{const n=performance.now();if(n-(SNDT[k]||0)<gap*1000)return false;SNDT[k]=n;return true};
+// 出撃の終わり：帯・通信・（予約した）演出がすべて終わってから2秒おいてリザルトへ。RUN.hold＝あとから始まる演出の予約（ms）
+const fxBusy=()=>bnBusy||COMM.busy||COMM.q.length>0||performance.now()<(RUN&&RUN.hold||0);
+function finishWait(dt){RUN.fa=(RUN.fa||0)+dt;if(RUN.fa>40)return true;  // 念のための上限
+ if(fxBusy()){RUN.fw=2;return false}
+ if(RUN.fw==null)RUN.fw=2;RUN.fw-=dt;return RUN.fw<=0}
 // 中央の帯（MISSION COMPLETE／FAILED）：帯が広がり、文字を一文字ずつ打ち込み、白く光ってから消える
-let bnT=[];function banner(txt,sub='',ng=false,dur=3){const B=$('banner'),b=B.querySelector('b');bnT.forEach(clearTimeout);bnT=[];
+let bnT=[],bnBusy=false;function banner(txt,sub='',ng=false,dur=3){const B=$('banner'),b=B.querySelector('b');bnT.forEach(clearTimeout);bnT=[];bnBusy=true;bnT.push(setTimeout(()=>{bnBusy=false},(dur+.9)*1000));
  B.className=ng?'ng':'';void B.offsetWidth;B.classList.add('on');B.querySelector('small').textContent=sub;b.textContent='';
  [...txt].forEach((ch,i)=>bnT.push(setTimeout(()=>{b.textContent+=ch;if(ch!==' '&&sOnce('bnk',.03))SND.play('tick',{g:.15})},120+i*45)));
  bnT.push(setTimeout(()=>{B.classList.remove('on');B.classList.add('off')},(dur+.4)*1000))}
-function bannerClear(){bnT.forEach(clearTimeout);bnT=[];$('banner').className=''}
+function bannerClear(){bnT.forEach(clearTimeout);bnT=[];bnBusy=false;$('banner').className=''}
 let msgT=0;function say(s,d=.8){$('msg').textContent=s;msgT=d}
 function hitPlayer(dmg,imp,pos){if(P.down>0)return;if(DBG.inv){spawn(0xc0a8ff,.6,pos,{life:.08});return}
  // シールド：正面からの弾を防ぐ（衝撃も無効）
@@ -4907,7 +4912,7 @@ function misSpawn(sp){const e=(sp.type==='gear'?ENEMIES.find(x=>x.type==='gear'&
 function misStartEnemies(){
  ENEMIES.forEach(e=>{e.off=true;e.alive=false;e.g.visible=false;e.cargo=false});
  RUN.def.enemies.forEach(misSpawn);
- RUN.total=RUN.left=RUN.def.goal?RUN.def.enemies.filter(e=>e.type===RUN.def.goal).length:RUN.def.enemies.length;RUN.hits=[];RUN.hotT=-99;RUN.ok=false;RUN.leaving=false;RUN.tr=null;RUN.wave=0;RUN.time=0;RUN.kills={};commClear();
+ RUN.total=RUN.left=RUN.def.goal?RUN.def.enemies.filter(e=>e.type===RUN.def.goal).length:RUN.def.enemies.length;RUN.hits=[];RUN.hotT=-99;RUN.ok=false;RUN.leaving=false;RUN.fa=0;RUN.fw=null;RUN.hold=0;RUN.tr=null;RUN.wave=0;RUN.time=0;RUN.kills={};commClear();
  const es=RUN.def.escort,rc=RUN.def.reach,df=RUN.def.defend;$('esc').hidden=!es&&!RUN.def.boss&&!rc&&!df;RUN.boss=null;RUN.rf=0;RUN.chgSaid=false;RUN.reachD0=0;RUN.halfSaid=false;RUN.nearSaid=false;RUN.wkSaid=false;
  $('escL').textContent=es?'CARGO':rc?'POINT':df?'BASE':'TARGET';$('escS').textContent=es?'配給所まで':rc?'中継アンテナまで':df?'防衛 残り':'大型無人砲台';$('escHp').classList.remove('lo');$('escHp').style.width='100%';
  if(RUN.def.boss){RUN.boss=ENEMIES.find(e=>e.type==='boss'&&!e.off);const B=RUN.boss;B.mat.color.setHex(0xffffff);B.head.rotation.x=0;B.g.rotation.y=Math.PI;B.head.rotation.y=0;B.mc=9;B.chg=0;B.bq=0;B.front=0;B.cd=4;B.line.visible=B.glow.visible=false;$('escD').textContent='100%'}
@@ -4930,11 +4935,11 @@ function bossMisTick(dt){const B=RUN.boss,d=RUN.def,k=Math.max(0,B.hp/B.max);
  if(!B.alive&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=6.2;B.line.visible=B.glow.visible=false;
   ENEMIES.forEach(e=>{if(e!==B&&!e.off&&e.alive){e.alive=false;e.g.visible=false;explode(e.center(new THREE.Vector3()),1.4)}});
   for(let i=0;i<5;i++)setTimeout(()=>{if(RUN)explode(B.center(new THREE.Vector3()).add(new THREE.Vector3((Math.random()-.5)*6,Math.random()*3,(Math.random()-.5)*6)),2.5)},i*260);
-  comm(d.comm.clear,2.8);setTimeout(()=>{if(RUN&&RUN.ok)comm(d.comm.clear2,3)},3000);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},1400)}
- if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
+  comm(d.comm.clear,2.8);setTimeout(()=>{if(RUN&&RUN.ok)comm(d.comm.clear2,3)},3000);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},1400);RUN.hold=performance.now()+3200}
+ if(RUN.ok){if(finishWait(dt))misFinish(true)}}
 // 護衛：荷車を進める・波を出す・到着／破壊を判定
 function escortTick(dt){const T=RUN.tr,d=RUN.def,es=d.escort;if(!T)return;
- if(RUN.lost){RUN.endT-=dt;if(RUN.endT<=0)misFinish(false,'荷車の破壊');return}
+ if(RUN.lost){if(finishWait(dt))misFinish(false,'荷車の破壊');return}
  while(RUN.wave<d.waves.length&&T.z>=d.waves[RUN.wave].at){d.waves[RUN.wave].en.forEach(misSpawn);RUN.wave++}
  const near=ENEMIES.some(e=>!e.off&&e.alive&&Math.hypot(e.g.position.x-TRUCK.position.x,e.g.position.z-TRUCK.position.z)<34),far=Math.hypot(P.pos.x-TRUCK.position.x,P.pos.z-TRUCK.position.z)>46;
  if(near!==T.stop){T.stop=near;if(!RUN.ok)comm(near?d.comm.stop:d.comm.go,2.4)}
@@ -4945,10 +4950,10 @@ function escortTick(dt){const T=RUN.tr,d=RUN.def,es=d.escort;if(!T)return;
  truckHB.scale.set(3*T.hp/T.max,.12,.12);truckHB.lookAt(C.position);
  $('escHp').style.width=(100*T.hp/T.max)+'%';$('escHp').classList.toggle('lo',T.hp<T.max*.35);$('escD').textContent=Math.max(0,Math.round(es.z1-T.z))+' m';
  if(T.z>=es.z1&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=3.4;comm(d.comm.clear,3);banner('MISSION COMPLETE',RUN.def.title)}
- if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
+ if(RUN.ok){if(finishWait(dt))misFinish(true)}}
 // 拠点防衛（2-1）：決めた時間、監視所を守る。時間で波が来る。監視所の耐久が0で失敗、時間いっぱい守れば成功（残った敵は引いていく）
 function defendTick(dt){const T=RUN.tr,d=RUN.def,df=d.defend;
- if(RUN.lost){RUN.endT-=dt;if(RUN.endT<=0)misFinish(false,'監視所の破壊');return}
+ if(RUN.lost){if(finishWait(dt))misFinish(false,'監視所の破壊');return}
  while(RUN.wave<d.waves.length&&RUN.time>=d.waves[RUN.wave].at){d.waves[RUN.wave].en.forEach(misSpawn);if(RUN.wave>0){SND.play('reinf',{g:.4});comm(d.comm.wave,2.2)}RUN.wave++}
  const rem=Math.max(0,df.time-RUN.time);
  if(!RUN.mineSaid&&ENEMIES.some(e=>e.type==='crawler'&&e.alive&&!e.off&&Math.hypot(e.g.position.x-POST.position.x,e.g.position.z-POST.position.z)<30)){RUN.mineSaid=true;comm(d.comm.mine,2.6)}
@@ -4958,7 +4963,7 @@ function defendTick(dt){const T=RUN.tr,d=RUN.def,df=d.defend;
  POST.userData.tick(t);
  if(rem<=0&&!RUN.ok&&P.down<=0&&T.hp>0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=4.2;comm(d.comm.clear,3);banner('MISSION COMPLETE',RUN.def.title);
   ENEMIES.forEach(e=>{if(!e.off&&e.alive){e.alive=false;e.g.visible=false;if(e.shadow)e.shadow.visible=false}})}
- if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
+ if(RUN.ok){if(finishWait(dt))misFinish(true)}}
 // 中継局（★2-S）：アンテナが生きている間、指揮型ギアは被ダメージ 1/4、一定間隔で護衛を呼ぶ。アンテナ全滅で守りが消える。ギア撃破で成功（記憶①の演出）
 function relayTick(dt){const d=RUN.def,B=RUN.cmd,k=Math.max(0,B.hp/B.max),al=RUN.ants.filter(a=>a.alive).length;
  if(al!==RUN.antLeft){RUN.antLeft=al;comm(al?d.comm.ant.replace('{n}',al):d.comm.down,2.6);if(!al)SND.play('unlock',{g:.4})}
@@ -4967,8 +4972,8 @@ function relayTick(dt){const d=RUN.def,B=RUN.cmd,k=Math.max(0,B.hp/B.max),al=RUN
  if(!RUN.halfSaid&&k<=.5&&B.alive){RUN.halfSaid=true;comm(d.comm.half,2.2)}
  if(!B.alive&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=8.4;
   ENEMIES.forEach(e=>{if(e!==B&&!e.off&&e.alive){e.alive=false;e.g.visible=false;if(e.type!=='antenna')explode(e.center(new THREE.Vector3()),1.4)}});
-  comm(d.comm.clear,2.6);setTimeout(()=>{if(!RUN||!RUN.ok)return;const m=$('memFx');m.classList.remove('on');void m.offsetWidth;m.classList.add('on');SND.play('holo',{g:.5});SND.play('online',{g:.4});comm(d.comm.clear2,3.6)},2800);setTimeout(()=>{if(RUN&&RUN.ok)say('MISSION COMPLETE',2.4)},6400)}
- if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0){$('memFx').classList.remove('on');misFinish(true)}}}
+  comm(d.comm.clear,2.6);setTimeout(()=>{if(!RUN||!RUN.ok)return;const m=$('memFx');m.classList.remove('on');void m.offsetWidth;m.classList.add('on');SND.play('holo',{g:.5});SND.play('online',{g:.4});comm(d.comm.clear2,3.6)},2800);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},6400);RUN.hold=performance.now()+6600}
+ if(RUN.ok){if(finishWait(dt)){$('memFx').classList.remove('on');misFinish(true)}}}
 // 回収：積み荷に近づくと拾う（1つずつ。持つと遅くなる）→ 回収地点の輪に入ると下ろす。拾うたびに伏兵（ambush）。全部で成功
 function collectTick(dt){const d=RUN.def,c=d.collect,dr=DROPM.position;
  RUN.cr.forEach((k,i)=>{if(k.st===0){k.g.rotation.y+=dt*.6;k.g.userData.bc.material.opacity=.25+Math.sin(t*4+i)*.12;
@@ -4980,7 +4985,7 @@ function collectTick(dt){const d=RUN.def,c=d.collect,dr=DROPM.position;
  if(P.hp.core<=0&&RUN.carry){const k=RUN.carry;k.st=0;RUN.carry=null;k.g.position.y=0;k.g.scale.setScalar(1);k.g.userData.bc.visible=true}
  $('escD').textContent=RUN.got+' / '+c.items.length+(RUN.carry?'（運搬中）':'');$('escHp').style.width=(100*RUN.got/c.items.length)+'%';
  if(RUN.got>=c.items.length&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=4.6;comm(d.comm.clear,3.4);banner('MISSION COMPLETE',RUN.def.title)}
- if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
+ if(RUN.ok){if(finishWait(dt))misFinish(true)}}
 // 到達：地点までの距離を上部に表示。半分・近づいた・着いたで通信。着いたら成功（敵が残っていてもよい）
 function reachTick(dt){const d=RUN.def,g=d.reach,dist=Math.hypot(P.pos.x-g.x,P.pos.z-g.z);if(!RUN.reachD0)RUN.reachD0=dist;
  $('escD').textContent=Math.max(0,Math.round(dist-g.r))+' m';$('escHp').style.width=(100*Math.max(0,Math.min(1,1-(dist-g.r)/(RUN.reachD0-g.r))))+'%';
@@ -4988,15 +4993,15 @@ function reachTick(dt){const d=RUN.def,g=d.reach,dist=Math.hypot(P.pos.x-g.x,P.p
  if(!RUN.wkSaid&&d.comm.walker&&ENEMIES.some(e=>e.type==='walker'&&e.alive&&!e.off&&Math.hypot(e.g.position.x-P.pos.x,e.g.position.z-P.pos.z)<45)){RUN.wkSaid=true;comm(d.comm.walker,2.4)}
  if(!RUN.halfSaid&&dist<RUN.reachD0*.5){RUN.halfSaid=true;comm(d.comm.half,2.2)}
  if(!RUN.nearSaid&&dist<g.r+16){RUN.nearSaid=true;comm(d.comm.near,2.2)}
- if(dist<=g.r&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=6.4;comm(d.comm.clear,2.6);setTimeout(()=>{if(RUN&&RUN.ok)comm(d.comm.clear2,3.2)},2800);banner('MISSION COMPLETE',RUN.def.title)}
- if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
+ if(dist<=g.r&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=6.4;comm(d.comm.clear,2.6);setTimeout(()=>{if(RUN&&RUN.ok)comm(d.comm.clear2,3.2)},2800);RUN.hold=performance.now()+3000;banner('MISSION COMPLETE',RUN.def.title)}
+ if(RUN.ok){if(finishWait(dt))misFinish(true)}}
 const misLeft=()=>ENEMIES.filter(e=>!e.off&&e.alive&&(!RUN||!RUN.def.goal||e.type===RUN.def.goal)).length;
 function misTick(dt){if(COMM.t>0){COMM.t-=dt;if(COMM.t<=0){COMM.busy=false;if(COMM.q.length)commNext();else $('comm').hidden=true}}
  if(RUN&&!RUN.leaving&&!RUN.ok)RUN.time=(RUN.time||0)+dt;
  if(!RUN||RUN.leaving)return;if(RUN.tr){if(RUN.def.defend)defendTick(dt);else escortTick(dt);return}if(RUN.boss){bossMisTick(dt);return}if(RUN.def.reach){reachTick(dt);return}if(RUN.def.collect){collectTick(dt);return}if(RUN.def.relay){relayTick(dt);return}const n=misLeft();
  if(n!==RUN.left){const dn=n<RUN.left;RUN.left=n;if(dn&&n>0&&RUN.def.comm.left)comm(RUN.def.comm.left.replace('{n}',n));else if(n===1&&RUN.total>1&&RUN.def.comm.last)comm(RUN.def.comm.last,2.4)}
  if(n===0&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=3.4;comm(RUN.def.comm.clear,3);banner('MISSION COMPLETE',RUN.def.title)}
- if(RUN.ok){RUN.endT-=dt;if(RUN.endT<=0)misFinish(true)}}
+ if(RUN.ok){if(finishWait(dt))misFinish(true)}}
 function misAbort(){if(!RUN||RUN.leaving)return;misFinish(false,'撤退')}
 function misFinish(ok,reason=''){if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;
  const def=RUN.def,tm=RUN.time||0,r={def,ok,reason,earned:P.earned||0,reward:ok?def.reward:0,time:tm,kills:{...(RUN.kills||{})},best:(MIS[def.id]&&MIS[def.id].best)||0,rec:false};commClear();
@@ -5178,7 +5183,7 @@ R.setAnimationLoop(()=>{
  if(mode==='play'){
   const inp=readInput(dt);
   P.stun=Math.max(0,P.stun-dt);
-  if(P.down>0){P.down-=dt;if(P.down<=0&&RUN){misFinish(false,'CORE 大破')}else if(P.down<=0){fadeTo(()=>{setMode('garage');openModal(`<div class="shd"><span class="code">MISSION FAILED</span><span class="ttl">CORE 大破</span></div><div class="rule"></div><p class="note" style="margin:0">コアが破壊され、機体は回収されました。SHOP の REPAIR で修理するまで、攻撃ありの TRAINING には出撃できません。</p>`)},'GARAGE')}}
+  if(P.down>0){P.down-=dt;if(P.down<=0&&RUN){if(finishWait(dt))misFinish(false,'CORE 大破');else P.down=.01}else if(P.down<=0){fadeTo(()=>{setMode('garage');openModal(`<div class="shd"><span class="code">MISSION FAILED</span><span class="ttl">CORE 大破</span></div><div class="rule"></div><p class="note" style="margin:0">コアが破壊され、機体は回収されました。SHOP の REPAIR で修理するまで、攻撃ありの TRAINING には出撃できません。</p>`)},'GARAGE')}}
   tickAmmo(dt);reveal=Math.max(0,reveal-dt);
   const guard=guarding(-1)||guarding(1),rooted=Object.values(active).some(a=>a.def.act.root);
   const can=P.stun<=0&&!rooted,air=!!active.jump;
