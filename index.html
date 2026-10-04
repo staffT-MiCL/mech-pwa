@@ -424,6 +424,17 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 @keyframes bnOut{0%{opacity:1;transform:translateY(-50%) scaleY(1)}100%{opacity:0;transform:translateY(-50%) scaleY(0)}}
 @keyframes bnFl{0%,100%{filter:none}15%{filter:brightness(2.4)}}
 @media (max-height:500px){#banner b{font-size:46px}}
+/* 出撃前の演出：暗転 → 区画と日時 → 視界が開く → HUD が上から順に点灯 */
+#intro{position:absolute;inset:0;z-index:6;pointer-events:auto}#intro[hidden]{display:none}
+#intro .bk{position:absolute;inset:0;background:#030504;opacity:1;transition:opacity 1s ease-out}#intro.open .bk{opacity:0}
+#intro .loc{position:absolute;left:0;right:0;top:40%;text-align:center;opacity:0;transition:opacity .6s ease}#intro.txt .loc{opacity:1}
+#intro .loc small{display:block;font-size:13px;letter-spacing:.34em;color:#9fc9cf}
+#intro .loc b{display:block;margin-top:10px;font-family:var(--disp);font-size:22px;letter-spacing:.22em;color:#e8fbff;text-shadow:0 0 10px rgba(111,211,224,.6)}
+#play.intro :is(#hudp,#extChip,#topC,#esc,#pauseBtn,#garage,#camBtn,#map,#bTgt,#score,#wS,#wL,#wR,.jbtn,#stickArea){transition:opacity .45s ease}
+#play.ih1 :is(#topC,#esc,#pauseBtn,#garage,#camBtn,#map,#bTgt,#score){opacity:0}
+#play.ih2 :is(#hudp,#extChip){opacity:0}
+#play.ih3 :is(#wS,#wL,#wR,.jbtn,#stickArea){opacity:0}
+@media (max-height:500px){#intro .loc b{font-size:19px}}
 #msg{position:absolute;left:0;right:0;top:30%;text-align:center;font-size:22px;color:var(--fire);letter-spacing:.2em;pointer-events:none}
 #stickArea{position:absolute;left:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:200px;height:200px;pointer-events:none}
 #stick{position:absolute;left:50%;top:50%;width:104px;height:104px;margin:-52px 0 0 -52px;border:2px solid rgba(140,240,110,.35);border-radius:50%;pointer-events:none}
@@ -926,6 +937,7 @@ body.eqm #visit{display:none}
   <div id="reticle"></div>
   <div id="lkC"></div><div id="dnums"></div>
   <div id="msg"></div><div id="banner"><b></b><small></small></div><div id="memFx"><b>NONA</b><span>── 糸を、紡ぐ者</span></div>
+  <div id="intro" hidden><div class="bk"></div><div class="loc"><small id="inLoc"></small><b id="inTm"></b></div></div>
   <div id="pause" hidden role="dialog" aria-label="ポーズ"><div class="box"><span class="h">PAUSE</span><span class="s" id="pzSub"></span><button class="go" id="pzGo">再開する</button><button class="cam" id="pzCam">視点：CHASE</button><button class="ab" id="pzAb">撤退する</button></div></div>
   <div id="comm" hidden role="status" aria-live="polite"><b>N-07</b><span id="commTx"></span><em id="commSt" hidden></em></div>
   <div id="stickArea"><div id="stick"><div id="knob"></div></div>
@@ -3203,6 +3215,7 @@ const SND=(()=>{
   unlock(d,t){[784,1175,1568].forEach((f,i)=>osc('sine',f,t+i*.07,.5,d,{peak:.35}));snap(t,d,{peak:.3})},
   classup(d,t){noise(t,.6,d,{type:'bandpass',f:400,f2:10000,q:2,a:.55,r:.05,peak:.45});sub(t+.6,120,40,1.4,d,.9);snap(t+.6,d,{peak:.6});[392,587,784,1175].forEach(f=>[-12,12].forEach(dt=>osc('sawtooth',f,t+.6,2.4,d,{a:.01,h:.5,r:1.9,peak:.06,detune:dt})));[1,1.5,2].forEach((m,i)=>osc('sine',1568*m,t+.6,2,d,{a:.005,peak:.1/(i+1)}))},
   comm(d,t){noise(t,.06,d,{type:'bandpass',f:2400,q:2,peak:.5});osc('sine',1760,t+.06,.05,d,{peak:.35});osc('sine',2637,t+.11,.12,d,{peak:.35})},
+  hudon(d,t){[1320,1760,2349].forEach((f,i)=>osc('sine',f,t+i*.07,.1,d,{peak:.3}));snap(t,d,{f:7000,peak:.15,dur:.006})},
   coin(d,t,p=1){osc('sine',jit(2400*p,.04),t,.03,d,{peak:.4});osc('square',1200*p,t,.015,d,{peak:.05})},
   coinEnd(d,t,p=1){[1568,2349,3136].forEach((f,i)=>osc('sine',f*p,t+i*.05,.35,d,{peak:.35/(i+1)}));snap(t,d,{f:6000,peak:.2})},
   // ---- 演出（第4回）----
@@ -4798,7 +4811,7 @@ function renderBoard(sel){
  const sRow=stOpen?row(story):'';
  // CHAPTER ごとに折りたたみ（CHAPTER 1 から順。最初は今の CHAPTER だけ開く。開閉は CHO に保存）
  const chOpen=c=>CHO[c]??(c===CH),chs=Object.keys(CHAPTERS).map(Number).filter(c=>c<=CH).sort((a,b)=>a-b);
- const chBlock=c=>{const op=chOpen(c),old=c<CH,rows=old?MLIST.filter(d=>d.ch===c&&MIS[d.id]&&MIS[d.id].got).map(row).join(''):list.map(row).join('')+sRow+(none?none:'');
+ const chBlock=c=>{const op=chOpen(c),old=c<CH,rows=old?MLIST.filter(d=>d.ch===c&&MIS[d.id]&&MIS[d.id].got).sort((a,b)=>(a.story?1:0)-(b.story?1:0)).map(row).join(''):list.map(row).join('')+sRow+(none?none:'');
   return `<button class="chh${old?' old':''}" data-ch="${c}"><i>${op?'▼':'▶'}</i><b>CHAPTER ${c}</b><span>${CHAPTERS[c]||''}</span>${old?'<small>CLEAR ・ 再挑戦可</small>':''}</button>`+(op?rows:'')};
  const none=!list.length&&!sRow?`<div class="mnone">── 依頼はまだ届いていません</div>`:'';
  const d=MDEF[misSel];
@@ -4922,7 +4935,9 @@ function misStartEnemies(){
  if(RUN.def.collect){const c=RUN.def.collect;RUN.carry=null;RUN.got=0;RUN.picks=0;RUN.cr=c.items.map((it,i)=>{const g=CRATES[i],x=roadX(it.z)+it.o;g.position.set(x,0,it.z);g.scale.setScalar(1);g.rotation.set(0,i*.7,0);g.visible=true;g.userData.bc.visible=true;return {g,st:0}});
   DROPM.position.set(roadX(c.drop.z),0,c.drop.z);WRECKG.position.set(roadX(c.wreck.z)+c.wreck.o,0,c.wreck.z);WRECKG.rotation.y=.5;$('esc').hidden=false;$('escL').textContent='CARGO';$('escS').textContent='積み荷 回収';$('escD').textContent='0 / '+c.items.length;$('escHp').style.width='0%'}
  if(df){RUN.tr={hp:df.hp,max:df.hp,hr:4.6,hy:9,obj:POST,hurt:false};POST.userData.fix();RUN.lost=false;RUN.mineSaid=false;RUN.lastSaid=false;RUN.total=RUN.def.waves.reduce((a,w)=>a+w.en.length,0)}
- say('MISSION START',1.4);SND.play('start',{g:.5});setTimeout(()=>{if(RUN)comm(RUN.def.comm.start)},700)}
+}
+// 出撃前の演出が終わって操作できるようになった瞬間（MISSION START と、登録済みのノーナの通信）
+function misGo(){if(!RUN)return;say('MISSION START',1.4);SND.play('start',{g:.5});setTimeout(()=>{if(RUN)comm(RUN.def.comm.start)},700)}
 function truckPlace(){const z=RUN.tr.z;TRUCK.position.set(roadX(z)+2,0,z);TRUCK.rotation.y=Math.atan(roadDX(z))}
 function truckHit(dmg,pos){const T=RUN.tr;if(!T||T.hp<=0||RUN.ok)return;if(DBG.inv){spawn(0xc0a8ff,.6,pos,{life:.08});return}T.hp=Math.max(0,T.hp-dmg);spawn(0xffffff,.7,pos,{life:.1});
  if(!T.hurt&&T.hp<T.max*.5){T.hurt=true;comm(RUN.def.comm.hurt,2.6)}
@@ -5061,6 +5076,25 @@ function ttEvt(ev,src){const i=TTS.step;if(TTS.busy||i<0)return;
   if(i===9){TTS.kills++;if(TTS.kills>=5)ttDone(9);else comm(TT_STEPS[9].t()+'（'+TTS.kills+'/5）',0)}}}
 /* ----- ポーズ（TRAINING・MISSION 共通）：時間を止め、再開・視点・撤退を選ぶ。撤退は MISSION なら失敗として結果へ、TRAINING はガレージへ ----- */
 let PAUSED=false;
+/* ----- 出撃前の演出（MISSION・TRAINING 共通）：暗転 → 区画と日時 → 視界が開き HUD が上から順に点灯 → ノーナの一言 → 操作可能（go）。
+ この間は敵も時間も止まる（ループで操作・敵の処理と misTick を飛ばす）。飛ばせない。時間は dt で数えるのでポーズ中は進まない ----- */
+const INTRO={on:false,t:0,go:null,f:{}};
+const INTRO_T={txt:.4,off:1.5,open:1.7,h1:1.8,h2:2.1,h3:2.4,say:2.2,go:3.8};
+function introClear(){INTRO.on=false;INTRO.go=null;const el=$('intro');el.hidden=true;el.classList.remove('txt','open');play.classList.remove('intro','ih1','ih2','ih3')}
+function introStart(loc,tm,go){const el=$('intro');INTRO.on=true;INTRO.t=0;INTRO.go=go;INTRO.f={};
+ $('inLoc').textContent=loc;$('inTm').textContent=tm;el.classList.remove('txt','open');el.hidden=false;
+ play.classList.add('intro','ih1','ih2','ih3');
+ HOLD.rHand=HOLD.lHand=HOLD.sh=false;GUARD[-1]=GUARD[1]=false;keys.clear();IN.x=IN.y=0}
+function introTick(dt){const I=INTRO,T=INTRO_T,el=$('intro');I.t+=dt;
+ const at=(k,fn)=>{if(!I.f[k]&&I.t>=T[k]){I.f[k]=1;fn()}};
+ at('txt',()=>el.classList.add('txt'));
+ at('off',()=>el.classList.remove('txt'));
+ at('open',()=>el.classList.add('open'));
+ at('h1',()=>{play.classList.remove('ih1');SND.play('hudon',{g:.4})});
+ at('h2',()=>play.classList.remove('ih2'));
+ at('h3',()=>play.classList.remove('ih3'));
+ at('say',()=>commShow((PILOT||'HX-07')+'、システム、オールグリーン。……ミッション開始。',0));
+ if(I.t>=T.go){const f=I.go;introClear();if(f)f()}}
 function pauseSet(on){if(mode!=='play'||(RUN&&RUN.leaving)||fading){on=false}
  PAUSED=on;$('pause').hidden=!on;if(on)SND.stopLoops();SND.bgmPause(on);if(on){HOLD.rHand=HOLD.lHand=HOLD.sh=false;GUARD[-1]=GUARD[1]=false;keys.clear();IN.x=IN.y=0;
   $('pzSub').textContent=RUN?'MISSION '+RUN.def.id+' ／ '+RUN.def.title:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';
@@ -5072,7 +5106,7 @@ $('pzAb').onclick=()=>{pauseSet(false);if(RUN)misAbort();else fadeTo(()=>setMode
 $('pause').addEventListener('pointerdown',e=>e.stopPropagation());
 addEventListener('keydown',e=>{if(e.key==='Escape'&&mode==='play'){e.preventDefault();pauseSet(!PAUSED)}});
 /* ===== ガレージ／出撃の切り替え ===== */
-function setMode(m,training=false,mis=null,tt=false){dmgNumClear();bannerClear();ENEMIES.forEach(e=>{e.jo=null;e.vib=0});
+function setMode(m,training=false,mis=null,tt=false){introClear();dmgNumClear();bannerClear();ENEMIES.forEach(e=>{e.jo=null;e.vib=0});
  if(m==='play')chkSet(null);
  const wasTT=TRT;TRT=m==='play'&&tt;
  PAUSED=false;$('pause').hidden=true;
@@ -5091,8 +5125,9 @@ function setMode(m,training=false,mis=null,tt=false){dmgNumClear();bannerClear()
  if(p&&RUN&&RUN.def.start){P.pos.set(RUN.def.start.x,0,RUN.def.start.z);mech.bot.position.copy(P.pos)}
  $('dbgInv').hidden=!(p&&DBG.inv);$('modeBadge').textContent=TRT?'TRAINING ／ TUTORIAL':RUN?'MISSION '+RUN.def.id:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';$('garage').textContent=RUN?'撤退':'ガレージ';$('comm').hidden=true;
  if(p){untintDamage();hudCache={};updateHUD();P.kills=0;P.earned=0;
-  if(RUN)misStartEnemies();else{const useG=TSEL.target==='gear'&&!TRT;if(useG&&!ENEMIES.some(e=>e.tg))['militia','bulwark','vanguard'].forEach(k=>makeEnemy('gear',{gear:k}).tg=true);
-  ENEMIES.forEach(e=>{if(useG?e.tg:e.tr){e.off=false;placeEnemy(e)}else{e.off=true;e.alive=false;e.g.visible=false}});say(TRT?'TUTORIAL':TRAIN?'演習開始（攻撃なし）':'演習開始（攻撃あり）',1.2);if(TRT)ttStart()}}
+  if(RUN){misStartEnemies();introStart('第7区画 ／ '+RUN.def.fieldJa,prDate(DAY).replace(' ／ ',' ')+' ／ '+prTime(RUN.def.id),misGo)}else{const useG=TSEL.target==='gear'&&!TRT;if(useG&&!ENEMIES.some(e=>e.tg))['militia','bulwark','vanguard'].forEach(k=>makeEnemy('gear',{gear:k}).tg=true);
+  ENEMIES.forEach(e=>{if(useG?e.tg:e.tr){e.off=false;placeEnemy(e)}else{e.off=true;e.alive=false;e.g.visible=false}});
+  introStart('第7区画 ／ 演習場',prDate(DAY).replace(' ／ ',' ')+' ／ 09:00',()=>{say(TRT?'TUTORIAL':TRAIN?'演習開始（攻撃なし）':'演習開始（攻撃あり）',1.2);if(TRT)ttStart();else setTimeout(()=>{if(mode==='play'&&!RUN&&!TRT&&!INTRO.on)commClear()},1200)})}}
  else{ENEMIES.forEach(e=>{e.off=true;e.alive=false;e.g.visible=false;if(e.shadow)e.shadow.visible=false});view='overview';selSlot=null;renderGarage();tintDamage();ttClear();if(wasPlay&&!wasMis)garageGreet(wasTT&&TTUT>=TT_N?'ttdone':'train',{fire:wasFire,earned,tt:wasTT})}
  applyGarageView();
  requestAnimationFrame(resize);resize();
@@ -5180,7 +5215,8 @@ R.setAnimationLoop(()=>{
  const m=mech,br=Math.sin(t*1.6)*.02;
  let am=pose,moveBoost=0;
  // 1) 出撃中の移動
- if(mode==='play'){
+ if(mode==='play'&&INTRO.on)introTick(dt); // 出撃前の演出中は操作・敵・時間を止める
+ else if(mode==='play'){
   const inp=readInput(dt);
   P.stun=Math.max(0,P.stun-dt);
   if(P.down>0){P.down-=dt;if(P.down<=0&&RUN){if(finishWait(dt))misFinish(false,'CORE 大破');else P.down=.01}else if(P.down<=0){fadeTo(()=>{setMode('garage');openModal(`<div class="shd"><span class="code">MISSION FAILED</span><span class="ttl">CORE 大破</span></div><div class="rule"></div><p class="note" style="margin:0">コアが破壊され、機体は回収されました。SHOP の REPAIR で修理するまで、攻撃ありの TRAINING には出撃できません。</p>`)},'GARAGE')}}
@@ -5318,7 +5354,7 @@ R.setAnimationLoop(()=>{
    [['hpA','arms'],['hpL','legs']].forEach(([id,k])=>{const el=$(id),r=P.hp[k]/P.hpMax[k];el.querySelector('b').textContent=Math.round(P.hp[k]);
     setCells(el.querySelector('.hcells'),Math.ceil(r*10),'');el.classList.toggle('dmg',r<=.5&&r>.25);el.classList.toggle('crit',r<=.25&&r>0);el.classList.toggle('dead',r<=0)});
    setCells($('bsCells'),Math.ceil(P.boost/SS.boost*25),'');$('bsNum').textContent=Math.round(P.boost);$('hudp').classList.toggle('low',P.boost<30)}
-  $('score').textContent=RUN?(RUN.tr||RUN.boss||RUN.def.collect||RUN.def.relay?`撃破 ${P.kills}`:`残り ${misLeft()}`):`撃破 ${P.kills}`;misTick(dt);
+  $('score').textContent=RUN?(RUN.tr||RUN.boss||RUN.def.collect||RUN.def.relay?`撃破 ${P.kills}`:`残り ${misLeft()}`):`撃破 ${P.kills}`;if(!INTRO.on)misTick(dt);
   drawMap();
   setWeaponBtn('wR','cR',['rHand']);setWeaponBtn('wL','cL',['lHand']);setWeaponBtn('wS','cS',['rShoulder','lShoulder']);
   $('guardMsg').textContent=(guarding(-1)||guarding(1))?'防御中':'';
