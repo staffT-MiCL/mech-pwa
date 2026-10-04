@@ -851,7 +851,7 @@ body.eqm #visit{display:none}
 .mrw{display:grid;grid-template-columns:12px auto minmax(0,9em) minmax(0,1fr) auto auto;gap:8px;align-items:center;height:36px;padding:0 10px;background:rgba(14,30,32,.9);border:1px solid #2d6068;color:#eef2ef;text-align:left;font-family:var(--disp);font-size:13px}
 .mrw i{font-style:normal;color:var(--fire);font-size:10px}.mrw .dt{font-family:var(--mech);font-size:10px;letter-spacing:.06em;color:#7fb0b4;white-space:nowrap}.mrw.rd .dt{color:#58767a}.mrw .fr{color:#9fe6ee;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mrw .sj{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mrw em{font-style:normal;font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:var(--accent)}
-.mrw .rs{font-family:var(--body);font-size:9px;font-weight:400;padding:0 5px;line-height:15px;border:1px solid currentColor}.mrw .rs.u{color:var(--fire)}.mrw .rs.r{color:#6a7a76}
+.mrw em{grid-column:5;justify-self:end}.mrw .rs{grid-column:6;justify-self:end;font-family:var(--body);font-size:9px;font-weight:400;padding:0 5px;line-height:15px;border:1px solid currentColor}.mrw .rs.u{color:var(--fire)}.mrw .rs.r{color:#6a7a76}
 .mrw.rd{background:rgba(10,16,16,.85);border-color:#1f3a3e;color:#8a9a96}.mrw.rd .sj{font-weight:400}.mrw.rd .fr{color:#5f8a8e}
 /* ポーズ（出撃中・TRAINING／MISSION 共通） */
 #topC{position:absolute;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);display:flex;align-items:center;gap:8px;z-index:3}
@@ -1035,15 +1035,15 @@ const key=new THREE.DirectionalLight(0xfff0d8,2.8);key.position.set(4,8,5);S.add
 const rim=new THREE.DirectionalLight(0x9fb8ff,1.0);rim.position.set(-5,3,-6);S.add(rim);
 /* ===== 時間帯と天候（依頼ごとに d.wx で選ぶ）=====
  bg＝地平線と霧の色、top＝空の上の色、fog＝[近,遠]、amb／key／rim＝光の色と強さ、fx＝rain（雨）／dust（砂ぼこり）／null。快晴の明るさにはしない */
-const WX={
- dusk:{bg:0x3a2c26,top:0x1a1a22,fog:[34,110],amb:[0x8a7468,2.0],key:[0xffb070,2.3],rim:[0x6a7ab0,.8],fx:null},
- overcast:{bg:0x3c4042,top:0x2a2e32,fog:[36,115],amb:[0x7c8488,2.3],key:[0xe0e6ea,1.9],rim:[0x9aa8b8,.8],fx:null},
- drizzle:{bg:0x2a3034,top:0x1a1e22,fog:[26,95],amb:[0x6a747c,2.0],key:[0xc8d4e0,1.7],rim:[0x8a9ab0,.7],fx:'rain'},
- night:{bg:0x0e1218,top:0x05070c,fog:[30,100],amb:[0x40506a,1.7],key:[0x8aa0d0,1.5],rim:[0x5a6a9a,.8],fx:null},
- dust:{bg:0x4a3a28,top:0x2e261c,fog:[20,85],amb:[0x8a7a60,2.1],key:[0xffd8a0,2.2],rim:[0x8a7a6a,.6],fx:'dust'},
- evening:{bg:0x48382e,top:0x262230,fog:[36,115],amb:[0x8a7a6c,2.1],key:[0xffc890,2.5],rim:[0x7a80b0,.8],fx:null},
- nightfog:{bg:0x1a1e24,top:0x0a0c10,fog:[14,72],amb:[0x506070,1.8],key:[0x9ab0c8,1.4],rim:[0x5a6a8a,.7],fx:null},
- dawn:{bg:0x2a303a,top:0x141a26,fog:[30,105],amb:[0x6a7488,1.9],key:[0xe0c8d0,2.0],rim:[0x7a8ab8,.8],fx:'dust'}};
+const WX={ // v116：暗すぎたため全体を底上げ（一番暗い夜を基準に、ステージ同士の明るさの差は保つ）
+ dusk:{bg:0x44342c,top:0x1e1e28,fog:[36,112],amb:[0x8e7a6e,2.4],key:[0xffb070,2.5],rim:[0x6a7ab0,.9],fx:null},
+ overcast:{bg:0x464a4c,top:0x30343a,fog:[38,118],amb:[0x80888c,2.5],key:[0xe0e6ea,2.0],rim:[0x9aa8b8,.9],fx:null},
+ drizzle:{bg:0x343c42,top:0x1e2428,fog:[30,100],amb:[0x707a84,2.5],key:[0xc8d4e0,2.0],rim:[0x8a9ab0,.8],fx:'rain'},
+ night:{bg:0x222b3a,top:0x0e1422,fog:[34,110],amb:[0x7a88a8,2.7],key:[0xb4c6e8,2.3],rim:[0x7a8ac0,1.0],fx:null},
+ dust:{bg:0x52422e,top:0x32281e,fog:[22,88],amb:[0x8e7e64,2.4],key:[0xffd8a0,2.3],rim:[0x8a7a6a,.7],fx:'dust'},
+ evening:{bg:0x50402f,top:0x2a2634,fog:[38,118],amb:[0x8e7e70,2.4],key:[0xffc890,2.6],rim:[0x7a80b0,.9],fx:null},
+ nightfog:{bg:0x343a44,top:0x161a22,fog:[22,85],amb:[0x8090a2,2.6],key:[0xb0c4d8,2.0],rim:[0x7a8aa8,.9],fx:null},
+ dawn:{bg:0x323a46,top:0x182030,fog:[32,108],amb:[0x707a90,2.5],key:[0xe0c8d0,2.3],rim:[0x7a8ab8,.9],fx:'dust'}};
 const WXJA={dusk:'夕暮れ',overcast:'曇り',drizzle:'小雨',night:'夜',dust:'砂ぼこり',evening:'夕方',nightfog:'夜霧',dawn:'明け方'};
 const WX0={amb:[0x707a80,2.2],key:[0xfff0d8,2.8],rim:[0x9fb8ff,1.0]};
 // 空：カメラについていく半球（上の色→地平線の色）。霧と同じ色で地平線が溶ける
