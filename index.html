@@ -1857,7 +1857,8 @@ function renderSide(){
   el.innerHTML=`<div class="shd"><span class="code">SYS</span><span class="ttl en">CONFIG</span></div><div class="rule"></div>
   <div class="sec">RESOLUTION</div><div class="seg">${['240p','480p','HIGH'].map((n,i)=>`<button data-r="${i}" aria-pressed="${res===i}">${n}</button>`).join('')}</div>
   <div class="sec">DISPLAY</div><div class="seg"><button id="cJit" aria-pressed="${jitOn.value===1}">VERTEX JITTER</button></div>
-  <div class="sec">DAMAGE NUMBER</div><div class="seg"><button data-dn="1" aria-pressed="${DMGNUM}">ON</button><button data-dn="0" aria-pressed="${!DMGNUM}">OFF</button></div>
+  <div class="sec">DAMAGE NUMBER ／ 敵</div><div class="seg"><button data-dn="1" aria-pressed="${DMGNUM}">ON</button><button data-dn="0" aria-pressed="${!DMGNUM}">OFF</button></div>
+  <div class="sec">DAMAGE NUMBER ／ 自機</div><div class="seg"><button data-pdn="1" aria-pressed="${PDMGNUM}">ON</button><button data-pdn="0" aria-pressed="${!PDMGNUM}">OFF</button></div>
   <div class="sec">CAMERA</div><div class="seg"><button data-cam="tps" aria-pressed="${CAMMODE==='tps'}">CHASE</button><button data-cam="top" aria-pressed="${CAMMODE==='top'}">OVERHEAD</button></div>
   <div class="sec">SOUND</div><div class="seg vol">${['bgm','se'].map(k=>`<span class="vl en">${k.toUpperCase()}</span><button data-vol="${k}" data-d="-1" aria-label="${k} を下げる">−</button><span class="vv en">${SNDV[k]}</span><button data-vol="${k}" data-d="1" aria-label="${k} を上げる">＋</button>`).join('')}<button id="cMute" class="mu" aria-pressed="${SNDV.mute}">MUTE</button></div>
   <div class="note">240p が初代プレイステーションに近い見た目です。動作が重いときも 240p にしてください。</div>
@@ -1865,6 +1866,7 @@ function renderSide(){
   el.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{res=+b.dataset.r;saveCfg();resize();renderSide()});
   $('cJit').onclick=()=>{jitOn.value=1-jitOn.value;saveCfg();renderSide()};
   el.querySelectorAll('[data-dn]').forEach(b=>b.onclick=()=>{DMGNUM=b.dataset.dn==='1';saveCfg();renderSide()});
+  el.querySelectorAll('[data-pdn]').forEach(b=>b.onclick=()=>{PDMGNUM=b.dataset.pdn==='1';if(!PDMGNUM)DN.forEach(d=>{if(d.pl){d.on=false;d.el.hidden=true}});saveCfg();renderSide()});
   el.querySelectorAll('[data-vol]').forEach(b=>b.onclick=()=>{const k=b.dataset.vol;SNDV[k]=Math.max(0,Math.min(10,SNDV[k]+(+b.dataset.d)));SND.apply();saveCfg();renderSide();if(k==='se')SND.play('click')});
   $('cMute').onclick=()=>{SNDV.mute=!SNDV.mute;SND.apply();saveCfg();renderSide()};
   el.querySelectorAll('[data-cam]').forEach(b=>b.onclick=()=>{setCam(b.dataset.cam);saveCfg();renderSide()});
@@ -3309,8 +3311,8 @@ function bgmI(v){if(cur)cur.set(v)}
 const SND_CANCEL=/^(◀|BACK|閉じる|やめる|戻る|キャンセル|考えておく|入力し直す|いいえ)|◀ |BACK$/,SND_DECIDE=/SORTIE|出撃|購入|装備する|REGISTER|はい|修理する|強化|依頼を受ける|適用|削除して始める|START|NEW GAME|CONTINUE|BRIEFING ▶|GARAGE ▶|再開/;
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled||b.id==='bootBtn')return;const tx=(b.textContent||'').trim();
  SND.play(SND_CANCEL.test(tx)?'cancel':SND_DECIDE.test(tx)?'decide':'click',{g:.35})},true);
-function saveCfg(){try{localStorage.setItem(CFG_KEY,JSON.stringify({res,jit:jitOn.value,cam:CAMMODE,bgm:SNDV.bgm,se:SNDV.se,mute:SNDV.mute,dnum:DMGNUM}))}catch(e){}}
-function loadCfg(){try{const d=JSON.parse(localStorage.getItem(CFG_KEY)||'null');if(!d)return;if([0,1,2].includes(d.res))res=d.res;if(d.jit===0||d.jit===1)jitOn.value=d.jit;if(d.cam==='top'||d.cam==='tps')setCam(d.cam);if(d.bgm>=0&&d.bgm<=10)SNDV.bgm=d.bgm;if(d.se>=0&&d.se<=10)SNDV.se=d.se;SNDV.mute=!!d.mute;DMGNUM=d.dnum===true}catch(e){}}
+function saveCfg(){try{localStorage.setItem(CFG_KEY,JSON.stringify({res,jit:jitOn.value,cam:CAMMODE,bgm:SNDV.bgm,se:SNDV.se,mute:SNDV.mute,dnum:DMGNUM,pdnum:PDMGNUM}))}catch(e){}}
+function loadCfg(){try{const d=JSON.parse(localStorage.getItem(CFG_KEY)||'null');if(!d)return;if([0,1,2].includes(d.res))res=d.res;if(d.jit===0||d.jit===1)jitOn.value=d.jit;if(d.cam==='top'||d.cam==='tps')setCam(d.cam);if(d.bgm>=0&&d.bgm<=10)SNDV.bgm=d.bgm;if(d.se>=0&&d.se<=10)SNDV.se=d.se;SNDV.mute=!!d.mute;DMGNUM=d.dnum===true;PDMGNUM=d.pdnum!==false}catch(e){}}
 
 /* ===== SHOP ===== */
 const fmtCR=n=>Math.round(n).toLocaleString('ja-JP');
@@ -4063,13 +4065,13 @@ for(let i=0;i<4;i++)makeEnemy('drone').tr=true;for(let i=0;i<3;i++)makeEnemy('tu
 function vibPre(){ENEMIES.forEach(e=>{if(e.jo){e.g.position.sub(e.jo);e.jo=null}})}
 function vibPost(dt){ENEMIES.forEach(e=>{if(!(e.vib>0)||!e.alive||e.off){e.vib=0;return}e.vib-=dt;const a=.08*Math.max(0,e.vib/.12);e.jo=new THREE.Vector3((Math.random()-.5)*2*a,(Math.random()-.5)*a,(Math.random()-.5)*2*a);e.g.position.add(e.jo)})}
 /* ダメージの数字（CONFIG の DAMAGE NUMBER、初期は OFF）：体の中心やや下から上へ飛び出し、落ちて1回だけ弾んで消える（約0.7秒） */
-let DMGNUM=false;const DN=[];
+let DMGNUM=false,PDMGNUM=true;const DN=[]; // 敵のダメージ表示／自機のダメージ表示（CONFIG で別々に切り替え。自機は初期 ON）
 function dmgNum(e,v){if(!DMGNUM||mode!=='play')return;const live=DN.filter(d=>d.on&&!d.pl);if(live.length>=16)return;
  let d=DN.find(x=>!x.on);if(!d){const el=document.createElement('div');el.className='dnum';$('dnums').appendChild(el);d={el};DN.push(d)}
  d.pl=false;d.el.className='dnum';
  const p=e.center(new THREE.Vector3());p.y-=.6;d.on=true;d.t=0;d.p=p;d.dx=((DN.filter(x=>x.on&&x.e===e&&x!==d).length%5)-2)*24;d.e=e;d.el.textContent=Math.max(1,Math.round(v));{const ds=e.center(new THREE.Vector3()).distanceTo(P.pos);d.el.style.fontSize=Math.round(18-8*Math.max(0,Math.min(1,(ds-10)/50)))+'px'}d.el.hidden=false}
 // 自機のダメージ：画面の横の中央・自機の腰の上に固定して、敵と同じ跳ね方で出す（数字は赤橙、部位名は数字の左。シールドで防いだら GUARD）
-function pDmgNum(v,zone){if(!DMGNUM||mode!=='play'||(RUN&&RUN.ok)||$('banner').classList.contains('on'))return;
+function pDmgNum(v,zone){if(!PDMGNUM||mode!=='play'||(RUN&&RUN.ok)||$('banner').classList.contains('on'))return;
  let d=DN.find(x=>!x.on);if(!d){const el=document.createElement('div');el.className='dnum';$('dnums').appendChild(el);d={el};DN.push(d)}
  const gd=v==='GUARD',n=DN.filter(x=>x.on&&x.pl).length;d.on=true;d.t=0;d.pl=true;d.e=null;d.dx=[0,-60,60,-120,120][n%5];
  d.el.className='dnum pl'+(gd?' gd':v>P.hpMax.core*.1?' big':'');d.el.style.fontSize='';d.el.innerHTML=gd?'GUARD':`<i>${zone.toUpperCase()}</i>${Math.max(1,Math.round(v))}`;d.el.hidden=false}
