@@ -39,6 +39,8 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 #hdr{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:0 12px;background:#101513;border-bottom:1px solid var(--line);position:relative;min-width:0}
 #hdr::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:4px;background:linear-gradient(var(--olive),var(--olive)) 0 0/100% 1px no-repeat,repeating-linear-gradient(90deg,var(--khaki) 0 1px,transparent 1px 16px) 0 1px/100% 3px no-repeat,repeating-linear-gradient(90deg,var(--khaki) 0 2px,transparent 2px 80px) 0 0/100% 4px no-repeat;opacity:.6;pointer-events:none;z-index:4}
 .logo{display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+.dnum.pl{color:#ff5a3c;font-size:20px;text-shadow:0 0 3px #000,1px 1px 0 #000,0 0 8px rgba(255,60,30,.7)}.dnum.pl.big{font-size:30px}.dnum.pl i{position:absolute;right:100%;top:50%;transform:translateY(-50%);margin-right:6px;font-style:normal;font-size:10px;letter-spacing:.18em;color:#ff5a3c;text-shadow:0 0 2px #000,1px 1px 0 #000}
+.dnum.pl.gd{color:#7fd0ff;font-size:16px;letter-spacing:.2em;text-shadow:0 0 3px #000,0 0 8px rgba(80,180,255,.8)}
 .logo .jp{font-family:var(--disp);font-size:17px;color:#eef2ef;letter-spacing:2px}
 .logo .en{font-family:var(--sten);font-size:13px;color:var(--fire);letter-spacing:3px}
 .sep{width:1px;height:18px;background:var(--line)}
@@ -4062,11 +4064,17 @@ function vibPre(){ENEMIES.forEach(e=>{if(e.jo){e.g.position.sub(e.jo);e.jo=null}
 function vibPost(dt){ENEMIES.forEach(e=>{if(!(e.vib>0)||!e.alive||e.off){e.vib=0;return}e.vib-=dt;const a=.08*Math.max(0,e.vib/.12);e.jo=new THREE.Vector3((Math.random()-.5)*2*a,(Math.random()-.5)*a,(Math.random()-.5)*2*a);e.g.position.add(e.jo)})}
 /* ダメージの数字（CONFIG の DAMAGE NUMBER、初期は OFF）：体の中心やや下から上へ飛び出し、落ちて1回だけ弾んで消える（約0.7秒） */
 let DMGNUM=false;const DN=[];
-function dmgNum(e,v){if(!DMGNUM||mode!=='play')return;const live=DN.filter(d=>d.on);if(live.length>=16)return;
+function dmgNum(e,v){if(!DMGNUM||mode!=='play')return;const live=DN.filter(d=>d.on&&!d.pl);if(live.length>=16)return;
  let d=DN.find(x=>!x.on);if(!d){const el=document.createElement('div');el.className='dnum';$('dnums').appendChild(el);d={el};DN.push(d)}
+ d.pl=false;d.el.className='dnum';
  const p=e.center(new THREE.Vector3());p.y-=.6;d.on=true;d.t=0;d.p=p;d.dx=((DN.filter(x=>x.on&&x.e===e&&x!==d).length%5)-2)*24;d.e=e;d.el.textContent=Math.max(1,Math.round(v));{const ds=e.center(new THREE.Vector3()).distanceTo(P.pos);d.el.style.fontSize=Math.round(18-8*Math.max(0,Math.min(1,(ds-10)/50)))+'px'}d.el.hidden=false}
+// 自機のダメージ：画面の横の中央・自機の腰の上に固定して、敵と同じ跳ね方で出す（数字は赤橙、部位名は数字の左。シールドで防いだら GUARD）
+function pDmgNum(v,zone){if(!DMGNUM||mode!=='play'||(RUN&&RUN.ok)||$('banner').classList.contains('on'))return;
+ let d=DN.find(x=>!x.on);if(!d){const el=document.createElement('div');el.className='dnum';$('dnums').appendChild(el);d={el};DN.push(d)}
+ const gd=v==='GUARD',n=DN.filter(x=>x.on&&x.pl).length;d.on=true;d.t=0;d.pl=true;d.e=null;d.dx=[0,-60,60,-120,120][n%5];
+ d.el.className='dnum pl'+(gd?' gd':v>P.hpMax.core*.1?' big':'');d.el.style.fontSize='';d.el.innerHTML=gd?'GUARD':`<i>${zone.toUpperCase()}</i>${Math.max(1,Math.round(v))}`;d.el.hidden=false}
 function dmgNumTick(dt){DN.forEach(d=>{if(!d.on)return;d.t+=dt;const u=d.t;if(u>.7){d.on=false;d.el.hidden=true;return}
- _q.copy(d.p).project(C);if(_q.z>=1){d.el.hidden=true;return}d.el.hidden=false;
+ if(d.pl){_q.set(0,-.16,0)}else{_q.copy(d.p).project(C);if(_q.z>=1){d.el.hidden=true;return}}d.el.hidden=false;
  // 高さ（px）：0〜0.32秒で 34px まで飛び上がり、0.48秒で落ちきる → 0.6秒まで小さく1回弾む
  const h=u<.32?34*Math.sin(u/.32*Math.PI/2):u<.48?34*Math.cos((u-.32)/.16*Math.PI/2):u<.6?8*Math.sin((u-.48)/.12*Math.PI):0;
  d.el.style.left=((_q.x+1)/2*100)+'%';d.el.style.top=((1-_q.y)/2*100)+'%';d.el.style.transform=`translate(calc(-50% + ${d.dx}px),${-h}px)`;d.el.style.opacity=u>.6?1-(u-.6)/.1:1})}
@@ -4134,12 +4142,12 @@ function hitPlayer(dmg,imp,pos){if(P.down>0)return;if(DBG.inv){spawn(0xc0a8ff,.6
  // シールド：正面からの弾を防ぐ（衝撃も無効）
  const from=_d.copy(pos).sub(P.pos).setY(0).normalize(),front=from.x*Math.sin(P.yaw)+from.z*Math.cos(P.yaw);
  for(const sd of [-1,1]){const key=sd<0?'rHand':'lHand';
-  if(guarding(sd)&&front>(HAND[cfg[key]].st.front??.2)){ammoUse(key);SND.play('shield',{g:.55});spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});spawn(0xffffff,.6,pos,{life:.06});shake=Math.max(shake,.08);return}}
+  if(guarding(sd)&&front>(HAND[cfg[key]].st.front??.2)){ammoUse(key);SND.play('shield',{g:.55});pDmgNum('GUARD');spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});spawn(0xffffff,.6,pos,{life:.06});shake=Math.max(shake,.08);return}}
  // 当たった高さで部位を決める：腰より下＝LEGS、上半身の外側＝ARMS、中央＝CORE。0の部位に当たった分は CORE が受ける
  const h=pos.y-mech.bot.position.y,rt=_q.set(-Math.cos(P.yaw),0,Math.sin(P.yaw)),lat=Math.abs((pos.x-P.pos.x)*rt.x+(pos.z-P.pos.z)*rt.z);
  let zone=h<3.1?'legs':lat>1.15?'arms':'core',left=dmg,take0=zone!=='core'?P.hp[zone]:0;
  if(zone!=='core'&&P.hp[zone]>0){const take=Math.min(left,P.hp[zone]);P.hp[zone]-=take;left-=take;if(P.hp[zone]<=0)say(zone==='arms'?'ARMS 損壊：手持ち兵装 使用不能':'LEGS 損壊：ダッシュ・急加速・跳躍 不能',1.6)}
- if(left>0)P.hp.core=Math.max(0,P.hp.core-left);
+ if(left>0)P.hp.core=Math.max(0,P.hp.core-left);pDmgNum(dmg,zone);
  if(P.hp.core>0)SND.play(zone!=='core'&&P.hp[zone]<=0&&take0>0?'broken':'hit',{g:.55});
  if(RUN&&RUN.def.comm.hot&&RUN.hits){RUN.hits=RUN.hits.filter(x=>t-x<3);RUN.hits.push(t);if(RUN.hits.length>=3&&t-RUN.hotT>10){RUN.hotT=t;RUN.hits=[];comm(RUN.def.comm.hot)}}
  PART_KEYS.forEach(k=>{DMG[cfg[k]]=P.hpMax[k]-P.hp[k];if(DMG[cfg[k]]<=0)delete DMG[cfg[k]]});saveGame();
