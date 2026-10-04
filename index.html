@@ -2053,7 +2053,9 @@ Object.assign(EXT,{
 // CLASS D で入荷（SHOP に並ぶ等級）
 const ITEM_CLS={'HD-03':'D','CR-03':'D','AR-03':'D','LG-03':'D','RF3':'D','MG3':'D','BL3':'D','MS3':'D','RD3':'D','BZ3':'C','SH3':'C','GC3':'C','BT3':'C','IC3':'C'};
 // 'X'＝SHOP に並ばない（00 COUNTER・ラスト・オーダー）
-const clsOk=id=>!ITEM_CLS[id]||(ITEM_CLS[id]!=='X'&&CLASSES.indexOf(CLS)>=CLASSES.indexOf(ITEM_CLS[id]));
+// 02系（BULWARK 02 と2ndタイプ武器）は最初のトレーニング完了後に入荷
+const is02=id=>/^(HD|CR|AR|LG)-02$/.test(id)||/^(RF|MG|BZ|BL|SH|MS|GC|RD|BT|IC)2$/.test(id);
+const clsOk=id=>(!is02(id)||TTUT>=TT_N)&&(!ITEM_CLS[id]||(ITEM_CLS[id]!=='X'&&CLASSES.indexOf(CLS)>=CLASSES.indexOf(ITEM_CLS[id])));
 
 /* 名前の体系：CAT＝種類（英語の項目名）、TYPE＝種類の日本語、MODEL＝型番、NAME＝固有名。
    同じ種類の装備が増えたら、同じ CAT で型番と固有名だけ変えて追加する */
@@ -3059,8 +3061,10 @@ applyColors();
  最初から持っているのは各種類の1つ目。2つ目以降は SHOP で買う。お金は TRAINING（攻撃あり）で標的機を倒すと入る */
 const SAVE_KEY='mech-pwa-save-1';
 const DEFAULT_CFG={...cfg};  // NEW GAME で戻す初期装備
-const START_OWN=['HD-01','CR-01','AR-01','LG-01','RF','MG','BZ','BL','SH','MS','GC','RD','BT','IC'];
-const PRICE={'HD-02':12000,'CR-02':18000,'AR-02':15000,'LG-02':16000,
+const START_OWN=['HD-01','CR-01','AR-01','LG-01','RF','BL','MS','RD'];  // 初期所持＝初期装備のみ
+const PRICE={'HD-01':6000,'CR-01':9000,'AR-01':7500,'LG-01':8000,
+ 'RF':4500,'MG':4500,'BZ':5000,'BL':5500,'SH':3000,'MS':7000,'GC':6500,'RD':3500,'BT':3500,'IC':4500,
+ 'HD-02':12000,'CR-02':18000,'AR-02':15000,'LG-02':16000,
  'HD-03':20000,'CR-03':26000,'AR-03':22000,'LG-03':24000,'RF3':16000,'MG3':18000,'BL3':15000,'MS3':21000,'RD3':12000,
  'BZ3':17000,'SH3':12000,'GC3':20000,'BT3':14000,'IC3':15000,
  'RF2':9000,'MG2':8500,'BZ2':9800,'BL2':11000,'SH2':6000,'MS2':14000,'GC2':13000,'RD2':7000,'BT2':7500,'IC2':9000};
@@ -3532,7 +3536,7 @@ function openTalk(){talk([['お話ですか！ 喜んで。わたくし、おし
  ['戻る',()=>talk([['はい、いつでもどうぞ。','normal']])]])}
 const talkMenu=()=>[['ほかの話を聞く',openTalk],['品物を買う',()=>setSMode('buy')],['ガレージへ戻る',leaveShop]];
 function talkRecommend(){
- const left=Object.keys(PRICE).filter(id=>!OWN.has(id));
+ const left=Object.keys(PRICE).filter(id=>!OWN.has(id)&&clsOk(id));
  if(!left.length)return talk([['なんと、在庫がすべて<strong>売り切れ</strong>です！ '+SAMA()+'のおかげです。','happy'],['次の入荷まで、わたくしは棚を磨いております。','normal']],talkMenu());
  const ok=left.filter(id=>PRICE[id]<=CREDIT&&!statsFor({...cfg,[slotOfItem(id)]:id}).over);
  if(!ok.length){const c=left.reduce((a,b)=>PRICE[a]<PRICE[b]?a:b);
@@ -4691,7 +4695,8 @@ function misDeps(d){const r=new Set((d.need||[]));
 const tutOk=()=>TUT==='done'&&TTUT>=TT_N;
 const depOk=(k,st)=>k==='tut'?(st?st.tut:tutOk()):(st?st.m[k]===2:!!(MIS[k]&&MIS[k].clear));
 // 入荷のお知らせ：いまの等級までの分で、まだ届いていないものを届ける（古い等級から順に、時刻を1ずつずらす）
-function shopNotice(){const ci=CLASSES.indexOf(CLS),out=[];let t=Date.now();
+function shopNotice(){const ci=CLASSES.indexOf(CLS),out=[];let t=Date.now();if(TTUT<TT_N)return out;  // 最初のトレーニングが済むまで入荷のお知らせは届かない
+
  MLIST.filter(d=>d.shop&&!MIS[d.id]&&CLASSES.indexOf(d.shop)<=ci).forEach(d=>{MIS[d.id]={got:true,read:false,clear:false,n:0,t:t++};out.push(d)});return out}
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
  if(['train','continue','mission','shop','ttdone'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;
