@@ -4802,8 +4802,8 @@ const misEl=$('mis');let misSel=null,bTalk=null;
 function misHead(code,title,sub,back){return `<div class="xhd"><span class="logo"><span class="en">${code}</span></span><span class="sep"></span><span class="t">${title}</span>${sub?`<span class="s">${sub}</span>`:''}<span class="grow"></span>
  <span class="hcls">CLASS ${CLS}</span><span class="hch">CH.${CH}</span><span class="money">${fmtCR(CR_SHOWN)}<small>CR</small></span>${back?`<button class="bk" id="misBack">${back}</button>`:''}</div>`}
 function hideMis(){misEl.hidden=true;misEl.innerHTML='';bTalk&&clearInterval(bTalk.iv);bTalk=null}
-function openBoard(sel){fadeTo(()=>{chkSet(null);mailClose();nbClose();renderBoard(sel)},'MISSION')}
-let CHO={};try{CHO=JSON.parse(localStorage.getItem('mech-pwa-cho')||'{}')||{}}catch(e){}
+function openBoard(sel){fadeTo(()=>{chkSet(null);mailClose();nbClose();CHO={};if(sel&&MDEF[sel]&&MDEF[sel].ch>0)CHO[MDEF[sel].ch]=true;renderBoard(sel)},'MISSION')}
+let CHO={}; // CHAPTER の開閉（MISSION を開くたびに初期化。今の CHAPTER だけ開く。画面を開いている間だけ保つ）
 function renderBoard(sel){
  const list=MLIST.filter(d=>d.ch===CH&&!d.story&&MIS[d.id]&&MIS[d.id].got),allGot=MLIST.filter(d=>d.ch>0&&MIS[d.id]&&MIS[d.id].got),story=MLIST.find(d=>d.ch===CH&&d.story),norm=chNormals(CH),cl=chCleared(CH);
  misSel=sel&&MIS[sel]&&MIS[sel].got?sel:(misSel&&MDEF[misSel]&&MDEF[misSel].ch>0&&MIS[misSel]&&MIS[misSel].got?misSel:(list[0]||allGot[0]||{}).id);
@@ -4826,7 +4826,7 @@ function renderBoard(sel){
  misEl.innerHTML=misHead('MISSION','第7区画管理局 依頼端末','','◀ GARAGE')+`<div class="mbd"><div class="mlist">${chs.map(chBlock).join('')}</div><div class="mdet">${det}</div></div>`;
  misEl.hidden=false;const ml=misEl.querySelector('.mlist');ml.scrollTop=sy;
  misEl.querySelectorAll('.mrow[data-id]').forEach(b=>b.onclick=()=>renderBoard(b.dataset.id));
- misEl.querySelectorAll('.chh[data-ch]').forEach(b=>b.onclick=()=>{const c=+b.dataset.ch;CHO[c]=!chOpen(c);try{localStorage.setItem('mech-pwa-cho',JSON.stringify(CHO))}catch(e){}SND.play('click',{g:.3});renderBoard(misSel)});
+ misEl.querySelectorAll('.chh[data-ch]').forEach(b=>b.onclick=()=>{const c=+b.dataset.ch;CHO[c]=!chOpen(c);SND.play('click',{g:.3});renderBoard(misSel)});
  requestAnimationFrame(()=>scrollHints(misEl,SX_SEL));
  $('misBack').onclick=()=>fadeTo(()=>{hideMis();garageGreet('board')},'GARAGE');
  if(d){$('misBrief').onclick=()=>renderBrief(d.id);const mv=$('misVisit');if(mv)mv.onclick=()=>fadeTo(()=>{hideMis();visitPlay(d.id,true)},'GARAGE');const mm=$('misMail');if(mm)mm.onclick=()=>fadeTo(()=>{hideMis();mailOpen(d.id)},'GARAGE')}
