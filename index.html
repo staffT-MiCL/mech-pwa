@@ -829,10 +829,10 @@ input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:d
 .detail .acts .btn-main{flex:1 1 0;padding:0 6px;letter-spacing:.12em}
 #equip.ov{background:transparent;border:1px dashed var(--alert);color:var(--alert);opacity:1;letter-spacing:.06em;font-size:12px}
 .ovn{font-family:var(--body);font-size:11px;color:var(--alert);text-align:right;flex-shrink:0;margin-bottom:-3px}
-#comm{position:absolute;left:50%;top:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:min(380px,calc(100% - 580px));min-width:180px;display:flex;align-items:center;gap:7px;height:22px;padding:0 10px 0 0;background:rgba(8,30,34,.42);border:1px solid rgba(111,211,224,.35);pointer-events:none;z-index:3;text-shadow:0 1px 2px #000}
+#comm{position:absolute;left:50%;top:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:min(380px,calc(100% - 604px));min-width:180px;display:flex;align-items:center;gap:7px;height:22px;padding:0 10px 0 0;background:rgba(8,30,34,.42);border:1px solid rgba(111,211,224,.35);pointer-events:none;z-index:3;text-shadow:0 1px 2px #000}
 #comm b{align-self:stretch;display:flex;align-items:center;padding:0 6px;background:rgba(45,96,104,.6);color:#d8f6fa;font-family:var(--mech);font-size:9px;letter-spacing:.14em;white-space:nowrap}
 #comm em{font-style:normal;align-self:stretch;display:flex;align-items:center;padding-left:8px;border-left:1px solid rgba(111,211,224,.3);font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:#9fe6ee;white-space:nowrap}
-#comm.tt{height:auto;min-height:22px;max-width:min(380px,calc(100% - 580px))}
+#comm.tt{height:auto;min-height:22px;max-width:min(380px,calc(100% - 604px))}
 @media (pointer:fine){#comm{bottom:calc(120px + env(safe-area-inset-bottom,0px))}}#comm.tt span{white-space:normal;padding:3px 0}
 #comm.ok b{background:rgba(140,240,110,.55);color:#0b1408}
 .tth{animation:tthl .7s ease-in-out infinite alternate}@keyframes tthl{from{filter:none}to{filter:drop-shadow(0 0 6px #6fd3e0) brightness(1.5)}}
@@ -876,6 +876,8 @@ body.eqm #visit{display:none}
 #bTgt{right:54px!important;width:82px!important;padding:0 8px!important;letter-spacing:1px!important}
 @media (max-height:420px){#pauseBtn{top:calc(120px + env(safe-area-inset-top,0px))}#bTgt{width:62px!important;padding:0 6px!important}#bTgt span:last-child{display:none}}
 #camBtn{top:calc(10px + env(safe-area-inset-top,0px))!important}#score{top:calc(46px + env(safe-area-inset-top,0px))!important}
+/* ターゲット変更：タッチ操作では左手で押せるよう、スティックの右下へ（通信 #comm の左端 284px と重ならない幅） */
+@media (pointer:coarse){#bTgt{left:226px!important;right:auto!important;top:auto!important;bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;width:58px!important;height:32px!important;padding:0 6px!important;justify-content:center!important;font-size:10px!important;letter-spacing:1.5px!important}#bTgt span:last-child{display:none!important}}
 #pause{position:absolute;inset:0;z-index:8;background:rgba(3,5,4,.62);display:flex;align-items:center;justify-content:center;font-family:var(--mech);text-shadow:none}
 #pause .box{width:min(300px,80%);padding:16px 18px;display:flex;flex-direction:column;gap:10px;border:1px solid var(--khaki);background:linear-gradient(225deg,transparent 9.4px,var(--khaki) 9.4px,var(--khaki) 10.8px,transparent 10.8px) top right/24px 24px no-repeat,rgba(14,18,17,.96);clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
 #pause .h{font-size:16px;font-weight:700;letter-spacing:.5em;color:var(--khaki);text-align:center}
@@ -1546,7 +1548,7 @@ function statsFor(c){
  const px=(EXT[c.ext].st&&EXT[c.ext].st.pass)||{};
  return {armor:co.armor+ar.armor+lg.armor,armorCore:co.armor,boost:co.boost+(px.boost||0),load:ar.load,icInt:px.icInt||0,icR:px.icR||0,weap,total,legMob:lg.mob,pen,mob,
   walk:4+mob*.08,dash:(12+mob*.15)*(1+(px.dash||0)),qb:8+mob*.1+(px.qb||0),jump:(.6+mob*.008)*(LEGS[c.legs].jumpK||1),
-  regenK:CORES[c.core].regenK||1,reloadK:ARMS[c.arms].reloadK||1,landK:LEGS[c.legs].landK||1,lead:hd.ability==='lead'||!!hd.lead,xray:!!px.xray,
+  regenK:CORES[c.core].regenK||1,reloadK:ARMS[c.arms].reloadK||1,landK:LEGS[c.legs].landK||1,lead:hd.ability==='lead'||!!hd.lead,quick:hd.ability==='quick',xray:!!px.xray,
   lockRange:Math.round((Math.max(40,...ranges)+(px.lockRange||0)+hd.lockAdd)*tLR),lockDeg:Math.round((hd.lockDeg+(px.lockDeg||0))*tLD),cone:Math.round((hd.lockDeg+(px.lockDeg||0))*tLD)*Math.PI/180,multi:hd.ability==='multi',over:weap>ar.load};
 }
 function calcStats(){SS=statsFor(cfg);renderGarage()}
@@ -1701,7 +1703,7 @@ const DESC={
  'SH2':'小型の盾。防げる回数は少ないが、軽くて復帰が早い。','MS2':'大型弾2発を同時に撃つ。誘導は弱めだが爆発が大きい。',
  'RD2':'2本マストの長距離型レーダー。ロック距離を大きく伸ばす。','GC2':'短砲身の軽量砲。威力は落ちるが弾数が多い。',
  'BT2':'小型の推進器。ブースト容量を補い、とても軽い。','IC2':'速射型の迎撃装置。範囲は狭いが撃ち落とす間隔が短い。',
- 'HD-03':'旧軍制式の複眼センサー。動く敵の未来位置を読んで撃つ。','CR-03':'旧軍制式の高出力コア。ブースト容量が大きく、回復も早い。',
+ 'HD-03':'旧軍制式の複眼センサー。ロックした敵へ視点がすばやく向き、外れにくい。','CR-03':'旧軍制式の高出力コア。ブースト容量が大きく、回復も早い。',
  'AR-03':'旧軍制式の精密な腕。どの兵装も素早く再装填できる。','LG-03':'旧軍制式の高機動二脚。よく跳び、着地の隙が小さい。',
  'RF3':'徹甲弾を撃つレール付きの小銃。厚い装甲にも食い込む。','MG3':'6本の銃身を回す重火器。回り始めれば止まらない。',
  'BL3':'推進器付きのブレード。遠くから一気に間合いを詰める。','MS3':'真上に打ち上げる誘導弾。物陰の敵の頭上から落ちる。',
@@ -1896,7 +1898,7 @@ const id2code=id=>id==='none'?'―':id;
  装甲は「重ね板」：外側の大きなくさび板（main）＋内側の板（sub）＋暗い継ぎ目（dark）で厚みを出す。
  肩・胸・膝・すねにオレンジの山形ライン（warn）。そろえると肩→胸→膝のくさびが同じ角度でつながる */
 Object.assign(HEADS,{
- 'HD-03':{name:'HD-03 複眼型',wt:10,ability:'lead',abName:'先読みロック',abEn:'PREDICTIVE LOCK',lockDeg:25,lockAdd:15,abDesc:'動いている敵の未来位置へ撃つ。ロック角度 ±25°、距離＋15m',build(h){
+ 'HD-03':{name:'HD-03 複眼型',wt:10,ability:'quick',abName:'高速ロック',abEn:'QUICK LOCK',lockDeg:25,lockAdd:15,abDesc:'ロックした敵へ視点がすばやく向き、ロックが外れにくい。ロック角度 ±25°、距離＋15m',build(h){
   box(h,.24,.2,.24,M.frame,0,.05,0);
   box(h,.56,.3,.62,M.main,0,.28,-.02);box(h,.6,.1,.5,M.sub,0,.47,-.08,.12);
   box(h,.36,.1,.42,M.main,0,.54,-.02,.3);box(h,.06,.12,.46,M.warn,0,.6,-.04,.3);          // 頭頂のとさか
@@ -4254,7 +4256,7 @@ function switchTarget(){
 function updateLock(){
  const cone=SS.cone,range=SS.lockRange,c=[];playerCenter(_p);
  ENEMIES.forEach(e=>{if(!e.alive)return;e.center(_q).sub(_p);const d=_q.length();if(d>range)return;
-  let a=Math.atan2(_q.x,_q.z)-camYaw;a=Math.atan2(Math.sin(a),Math.cos(a));const lim=(e===lockT||e===pinned)?cone*1.6:cone;
+  let a=Math.atan2(_q.x,_q.z)-camYaw;a=Math.atan2(Math.sin(a),Math.cos(a));const lim=(e===lockT||e===pinned)?cone*(SS.quick?2.2:1.6):cone;
   if(Math.abs(a)<lim)c.push([Math.abs(a),e])});
  c.sort((a,b)=>a[0]-b[0]);lockCands=c.map(x=>x[1]);
  if(pinned&&!lockCands.includes(pinned))pinned=null;
@@ -5247,7 +5249,7 @@ R.setAnimationLoop(()=>{
   if(TRT)ttMove(dt,dashing,!dashing&&!P.qb&&!air&&P.vel.length()>1.5);
   // ロックオン（照準の中心付近の敵を自動で捕捉し、視点をゆっくり向ける）
   updateLock();
-  if(lockT&&!top){lockT.center(_q).sub(P.pos);const ty=Math.atan2(_q.x,_q.z);camYaw+=Math.atan2(Math.sin(ty-camYaw),Math.cos(ty-camYaw))*Math.min(1,dt*(attacking?9:2.5))}
+  if(lockT&&!top){lockT.center(_q).sub(P.pos);const ty=Math.atan2(_q.x,_q.z);camYaw+=Math.atan2(Math.sin(ty-camYaw),Math.cos(ty-camYaw))*Math.min(1,dt*(SS.quick?(attacking?14:6):(attacking?9:2.5)))}
   vibPre();updateEnemies(dt);vibPost(dt);tickHold();
  }else if(auto&&!reduce)az+=dt*.25;
  const hov=am===1&&is00Set(cfg),walk=am===1&&!hov,dash=am===2;
