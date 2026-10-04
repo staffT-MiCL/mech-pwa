@@ -5458,7 +5458,11 @@ function garageGreet(kind,info={}){
  else{const dmg=PART_KEYS.some(k=>partNow(k)<partMax(k));L=[[dmg?'おかえりなさい、'+N+'。前回の損傷が残っています。修理は SHOP でどうぞ。':'おかえりなさい、'+N+'。本機に異常はありません。']]}
  if(SS.over)L.push(['積載が上限を超えています。このままでは出撃できません。']);
  const nm=misDeliver(kind),nmail=nm.filter(d=>d.kind==='mail'),nvis=nm.find(d=>d.kind==='visit');
- if(nmail.length)L.push(['……通信です。'+[...new Set(nmail.map(d=>d.from))].join('、')+'から、メールが届いています。ヘッダーの <em>MAIL</em> からお読みください。']);
+ if(nmail.length===1)L.push(['……通信です。'+nmail[0].from+'から、メールが届いています。ヘッダーの <em>MAIL</em> からお読みください。']);
+ else if(nmail.length>1){const kd=d=>d.notice?'入荷のお知らせのようです。':'依頼のメールです。',sh=nmail.slice(0,3);  // 2通以上：1通ずつ別の文で伝える
+  sh.forEach((d,i)=>L.push([i===0?'……通信です。<em>メールが'+nmail.length+'通</em>届いています。まず、'+d.from+'から。'+kd(d):(i===sh.length-1&&nmail.length===sh.length?'それと、':'つづけて、')+d.from+'からも。'+kd(d)]));
+  if(nmail.length>sh.length)L.push(['ほかにも'+(nmail.length-sh.length)+'通届いています。']);
+  L.push(['ヘッダーの <em>MAIL</em> からお読みください。'])}
  if(nvis){setTimeout(()=>{nonaSay([['……ハンガーの入口に、来客です。お通ししますね。']],{hold:true});NB.then=()=>visitPlay(nvis.id)},500);return}
  if(L.length)nonaSay(L);
 }
