@@ -949,7 +949,7 @@ body.eqm #visit{display:none}
   <div class="wbtn" id="wL"><svg viewBox="0 0 92 92"></svg><button id="bL" aria-label="左手の兵装"><span class="wl">L-HAND</span><b id="cL"></b><small id="nL"></small></button></div>
   <div class="wbtn" id="wR"><svg viewBox="0 0 92 92"></svg><button id="bR" aria-label="右手の兵装"><span class="wl">R-HAND</span><b id="cR"></b><small id="nR"></small></button></div>
   <div class="jbtn"><button id="bJ" aria-label="跳躍"></button><div class="ji"><svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#6fc8ff" stroke-width="2.4"><path d="M2 9 L9 3 L16 9"/><path d="M2 13 L9 7 L16 13" opacity=".5"/></svg><span>JUMP</span></div></div>
-  <div id="pcHelp">移動 WASD（同じキー2回で急加速）／ダッシュ Shift<br>跳躍 Space／右手 J・左クリック／左手 K・右クリック／肩 L<br>シールドはボタンを押している間だけ構える<br>視点 マウスドラッグ・Q E・← →／V で俯瞰と切替／Tab でターゲット変更<br>攻撃ボタンは長押しで弾が尽きるまで撃ち続ける</div>
+  <div id="pcHelp">移動 WASD（同じキー2回で急加速）／ダッシュ Shift<br>跳躍 Space／右手 J・左クリック／左手 K・右クリック／肩 L<br>シールドはボタンを押している間だけ構える（他の兵装を撃つと自動で構える）<br>視点 マウスドラッグ・Q E・← →／V で俯瞰と切替／Tab でターゲット変更<br>攻撃ボタンは長押しで弾が尽きるまで撃ち続ける</div>
  </div>
  <div id="err" hidden></div>
 </div>
@@ -1042,7 +1042,9 @@ body.eqm #visit{display:none}
 import * as THREE from 'three';
 
 const W=document.getElementById('wrap');
-const R=new THREE.WebGLRenderer({antialias:false});R.setPixelRatio(1);W.appendChild(R.domElement);
+// どの描画でも、描く直前にシールドの向きを合わせる（shieldSync は下の兵装の定義にある）
+const WGL=o=>{const r=new THREE.WebGLRenderer(o),f=r.render;r.render=function(a,b){shieldSync();return f.call(r,a,b)};return r};
+const R=WGL({antialias:false});R.setPixelRatio(1);W.appendChild(R.domElement);
 const S=new THREE.Scene();S.background=new THREE.Color(0x0c100e);S.fog=new THREE.Fog(0x0c100e,20,70);
 const C=new THREE.PerspectiveCamera(40,1,.1,80);
 S.add(new THREE.AmbientLight(0x707a80,2.2));
@@ -1353,6 +1355,15 @@ const GUARD_POSE=s=>({x:-1.25,z:s*.25,e:-1.55});
  st：性能表（威力dmg・射程range・範囲area・連射rate・同時count・弾数ammo・リロードreload・重量wt・衝撃imp・弾速spd・誘導hom）
  act.run(c)：c.u（0→1）に応じて関節の上書きを返す。発射は c.shot()／c.missile()／c.use() を通すと弾数が減る */
 const INF=Infinity;
+/* シールドの姿勢：待機＝正面向き・垂直（腕の外側）／構え＝胸の前へ上げて、わずかに前傾。構え始めは一瞬ぐっと前へ（br）。
+   どの腕の曲がり方でも向きが変わらないよう、描画の直前に世界の向きへ合わせ直す。盾を増やすときは shieldBase() で作れば同じ姿勢になる */
+const SHRIG=new Set(),_sq=new THREE.Quaternion(),_sp=new THREE.Quaternion(),_sx=new THREE.Vector3(),_se=new THREE.Euler();
+function shieldBase(g,s){const pv=grp(g,0,0,0),p=grp(pv,0,.3,.3),bar=box(p,1,.16,.16,Wp.frame,0,-.3,-.3);const r={pv,p,bar,s:s||1,gd:0,br:0};SHRIG.add(r);return r}
+function shieldSync(){SHRIG.forEach(r=>{let top=r.pv;while(top.parent)top=top.parent;if(!top.isScene){SHRIG.delete(r);return}
+ r.pv.parent.updateWorldMatrix(true,false);r.pv.parent.getWorldQuaternion(_sp);
+ _sx.set(1,0,0).applyQuaternion(_sp);const psi=Math.atan2(-_sx.z,_sx.x),e=sm(Math.min(1,Math.max(0,r.gd||0))),ph=.26*e+(r.br||0)*.14;
+ _se.set(ph,psi,0,'YXZ');_sq.setFromEuler(_se);r.pv.quaternion.copy(_sp).invert().multiply(_sq);
+ const px=r.s*(.45-1.35*e),py=.3-.9*e,pz=.3+.1*e;r.p.position.set(px,py,pz);r.bar.position.set(-px/2,-py,-pz);r.bar.scale.x=Math.max(.01,Math.abs(px))})}
 const HAND={
  'none':{name:'素手',st:{kind:'近接',dmg:300,range:5,area:0,rate:'1回／1秒',count:1,ammo:INF,reload:0,wt:0,imp:'B',spd:0,hom:'－'},
   build(g){for(let i=0;i<3;i++)box(g,.07,.22,.07,Wp.frame,-.08+i*.08,-.06,.06,.3);const muzzle=grp(g,0,-.3,0);muzzle.rotation.x=Math.PI/2;return {muzzle}},
@@ -1403,9 +1414,9 @@ const HAND={
     legs:legsFor(s,kf(u,[[0,0],[.3,.35],[.45,-.8],[.8,-.6],[1,0]]),kf(u,[[0,0],[.3,.2],[.45,.7],[1,0]]),kf(u,[[0,0],[.3,-.3],[.45,.5],[.8,.4],[1,0]]),kf(u,[[0,0],[.3,.5],[.45,.15],[1,0]])),
     crouch:kf(u,[[0,0],[.28,.45],[.45,.25],[.8,.3],[1,0]]),scroll:kf(u,[[.28,0],[.38,20],[.55,3],[.7,0]])}},
    end(w){w.blade.scale.set(1,1,1)}}},
- 'SH':{name:'シールド',st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:6,reload:8,wt:12,imp:'なし',spd:0,hom:'－',note:'正面の弾を防ぐ。1発防ぐごとに1回減る'},
-  build(g){const p=grp(g,0,-.45,-.32);box(p,1.0,1.5,.12,Wp.body,0,0,0);box(p,1.04,.14,.16,Wp.warn,0,.62,0);box(p,1.04,.14,.16,Wp.warn,0,-.62,0);box(p,.3,.3,.06,Wp.metal,0,0,-.08);
-   box(g,.2,.5,.2,Wp.frame,0,-.3,-.15);return {plate:p}},
+ 'SH':{name:'シールド',st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:400,reload:40,wt:12,imp:'なし',spd:0,hom:'－',grd:{walk:.5,dash:0,qb:0,jump:1,opp:1},note:'正面の攻撃を耐久で受け止める。構え中は歩きが半分・ダッシュと急加速は不可。反対の手や肩の兵装を撃つと自動で構える'},
+  build(g,s){const R=shieldBase(g,s),p=R.p;box(p,1.0,1.5,.12,Wp.body,0,0,0);box(p,1.04,.14,.16,Wp.warn,0,.62,0);box(p,1.04,.14,.16,Wp.warn,0,-.62,0);box(p,.3,.3,.06,Wp.metal,0,0,.08);
+   return {plate:p,pv:R.pv,rig:R}},
   act:{name:'防御',dur:1.4,run(c){return {w:env(c.u,.15,.8),arm:GUARD_POSE(c.s),crouch:.2}}}},
 };
 const SHOULDER={
@@ -1480,9 +1491,9 @@ Object.assign(HAND,{
  'BL2':{...HAND.BL,st:{kind:'近接',dmg:1000,range:8,area:0,rate:'1回／1.3秒',count:1,ammo:INF,reload:0,wt:15,imp:'S',spd:0,hom:'－'},
   build(g){box(g,.34,.6,.4,Wp.body,0,-.3,0);box(g,.4,.12,.44,Wp.frame,0,-.06,0);box(g,.24,.16,.24,Wp.warn,0,-.62,0);
    const blade=box(g,.1,1.5,.32,Wp.glow,0,-1.35,0);const muzzle=grp(g,0,-2.0,0);muzzle.rotation.x=Math.PI/2;return {muzzle,blade}}},
- 'SH2':{...HAND.SH,st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:3,reload:4,wt:6,imp:'なし',spd:0,hom:'－',note:'正面の弾を防ぐ。回数は少ないが復帰が早い'},
-  build(g){const p=grp(g,0,-.4,-.3);box(p,.7,1.0,.1,Wp.body,0,0,0);box(p,.74,.1,.14,Wp.warn,0,.42,0);box(p,.5,.06,.14,Wp.metal,0,-.1,-.02);
-   box(g,.18,.4,.18,Wp.frame,0,-.25,-.15);return {plate:p}}},
+ 'SH2':{...HAND.SH,st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:200,reload:30,wt:6,imp:'なし',spd:0,hom:'－',grd:{walk:1,dash:0,qb:0,jump:1,opp:1},note:'正面の攻撃を耐久で受け止める。耐久は低いが、構え中も普通に歩ける（ダッシュと急加速は不可）。反対の手や肩の兵装を撃つと自動で構える'},
+  build(g,s){const R=shieldBase(g,s),p=R.p;box(p,.7,1.0,.1,Wp.body,0,0,0);box(p,.74,.1,.14,Wp.warn,0,.42,0);box(p,.5,.06,.14,Wp.metal,0,-.1,.02);
+   return {plate:p,pv:R.pv,rig:R}}},
 });
 Object.assign(SHOULDER,{
  'MS2':{...SHOULDER.MS,st:{kind:'射撃',dmg:480,range:80,area:4,rate:'1斉射／2秒',count:2,ammo:8,reload:10,wt:24,imp:'A',spd:22,hom:'中',arc:true,note:'山なりの弾道：高さ約4m までの低い障害物は越える'},
@@ -1558,7 +1569,7 @@ function resetAmmo(){WSLOTS.forEach(sl=>{const st=stOf(sl.key);AM[sl.key]={ammo:
 function ammoReady(key){const a=AM[key],st=stOf(key);if(!st)return false;if(mode!=='play')return true;return a.rl<=0&&a.ammo>0}
 function ammoUse(key,n=1){if(mode!=='play')return true;const a=AM[key],st=stOf(key);if(!st)return false;if(a.ammo===INF)return true;
  if(a.rl>0||a.ammo<n)return false;a.ammo-=n;if(a.ammo<=0){a.ammo=0;a.rl=st.reload;SND.play('reload',{g:.4});if(HOLD[key])HOLD[key]=false}return true}
-function tickAmmo(dt){WSLOTS.forEach(sl=>{const a=AM[sl.key];if(a&&a.rl>0){a.rl-=dt/(SS.reloadK||1);if(a.rl<=0){a.rl=0;a.ammo=stOf(sl.key).ammo;SND.play('reloaded',{g:.4})}}})}
+function tickAmmo(dt){WSLOTS.forEach(sl=>{const a=AM[sl.key];if(a&&a.rl>0){a.rl-=dt/(stOf(sl.key).kind==='防御'?1:(SS.reloadK||1));if(a.rl<=0){a.rl=0;a.ammo=stOf(sl.key).ammo;SND.play('reloaded',{g:.4})}}})}
 let mech=null;const active={};
 let builtKey='';
 // 機体の3Dモデルを組む（c＝構成。ガレージでは選択中の装備を仮に組んで見せる）
@@ -1651,6 +1662,7 @@ function trigger(key){
  const sl=WSLOTS.find(s=>s.key===key),def=sl.cat[cfg[key]];
  if(!def.act)return false;
  if(mode==='play'&&(P.stun>0||active[key]||!ammoReady(key)||def.st.kind==='防御'))return false;
+ if(mode==='play'&&(key==='rHand'||key==='lHand')){const o=HAND[cfg[key==='rHand'?'lHand':'rHand']];if(o&&o.st&&o.st.kind==='防御'&&o.st.grd&&o.st.grd.opp===0){say('大型シールド装備中：反対の手は使えません',.6);return false}}
  if(active[key])endOf(def)?.(mech.weps[key]);
  run(key,def,sl.side);if(def.st&&def.st.kind==='近接')SND.play(cfg[key]==='BL3'?'rush':cfg[key]==='none'?'punch':'blade',{g:.5});return true;
 }
@@ -1672,6 +1684,7 @@ function tickHold(){
 function jump(){
  if(active.jump)return;
  if(mode==='play'&&P.hp.legs<=0){say('LEGS 損壊：跳躍不能',.6);return}
+ if(mode==='play'&&!guardRes().jump){say('構え中は跳躍できません',.5);return}
  if(mode==='play'){if(P.stun>0||P.boost<20){if(P.boost<20)say('BOOST 不足',.6);return}P.boost-=20;P.regen=.8*SS.regenK}
  run('jump',JUMP);if(TRT)ttEvt('jump');
 }
@@ -1697,19 +1710,19 @@ const DESC={
  'AR-01':'軽くて素直な腕。中量までの兵装向け。','AR-02':'太い骨格の腕。重い兵装をまとめて積める。',
  'LG-01':'バランスの良い二脚。重量を抑えればよく走る。','LG-02':'装甲が厚く崩れにくい二脚。自重があり足は遅い。',
  'none':'何も装備しない。','RF':'扱いやすい主力の小銃。3点射で確実に削る。','MG':'威力は低いが連射で相手を止め続ける。',
- 'BZ':'一撃が重い大砲。弾が遅く、当てるには距離が要る。','BL':'踏み込んで斬る近接兵装。弾切れがない。','SH':'正面の弾を防ぐ盾。押している間だけ構える。',
+ 'BZ':'一撃が重い大砲。弾が遅く、当てるには距離が要る。','BL':'踏み込んで斬る近接兵装。弾切れがない。','SH':'正面の攻撃を耐久で受け止める標準の盾。構え中は歩きが半分になる。',
  'MS':'6発を同時に撃ち出す誘導弾。','RD':'背中に背負う索敵装置。ロックの角度と距離を広げる。','GC':'しゃがんで撃つ大口径砲。撃つ間は動けない。',
  'BT':'背中の追加推進器。ダッシュと急加速を強化する。','IC':'背中の小型砲台。近づく敵弾を自動で撃ち落とす。',
  'RF2':'長い銃身の狙撃型。一発が重く遠くまで届くが、弾数は少ない。','MG2':'3本の銃身を持つ重機関銃。威力は高いが重い。',
  'BZ2':'軽量の箱型ランチャー。威力は控えめだが、連射と弾数で補う。','BL2':'幅広の重いブレード。動きは同じでも一撃がとても重い。',
- 'SH2':'小型の盾。防げる回数は少ないが、軽くて復帰が早い。','MS2':'大型弾2発を同時に撃つ。誘導は弱めだが爆発が大きい。',
+ 'SH2':'小型の盾。耐久は低いが軽く、構えたまま普通に歩ける。','MS2':'大型弾2発を同時に撃つ。誘導は弱めだが爆発が大きい。',
  'RD2':'2本マストの長距離型レーダー。ロック距離を大きく伸ばす。','GC2':'短砲身の軽量砲。威力は落ちるが弾数が多い。',
  'BT2':'小型の推進器。ブースト容量を補い、とても軽い。','IC2':'速射型の迎撃装置。範囲は狭いが撃ち落とす間隔が短い。',
  'HD-03':'旧軍制式の複眼センサー。ロックした敵へ視点がすばやく向き、外れにくい。','CR-03':'旧軍制式の高出力コア。ブースト容量が大きく、回復も早い。',
  'AR-03':'旧軍制式の精密な腕。どの兵装も素早く再装填できる。','LG-03':'旧軍制式の高機動二脚。よく跳び、着地の隙が小さい。',
  'RF3':'徹甲弾を撃つレール付きの小銃。厚い装甲にも食い込む。','MG3':'6本の銃身を回す重火器。回り始めれば止まらない。',
  'BL3':'推進器付きのブレード。遠くから一気に間合いを詰める。','MS3':'真上に打ち上げる誘導弾。物陰の敵の頭上から落ちる。',
- 'BZ3':'大口径の炸裂弾を撃つ。爆発で群れをまとめて吹き飛ばす。','SH3':'3枚重ねの大型の盾。真横近くまで守り、何度も耐える。','GC3':'電磁加速の長砲身。弾が敵を突き抜けて並んだ敵を貫く。',
+ 'BZ3':'大口径の炸裂弾を撃つ。爆発で群れをまとめて吹き飛ばす。','SH3':'3枚重ねの大型の盾。真横近くまで守り、とても硬い。構え中は動けない。','GC3':'電磁加速の長砲身。弾が敵を突き抜けて並んだ敵を貫く。',
  'BT3':'2基の大型噴射口を持つ推進器。速さと距離をまとめて伸ばす。','IC3':'3基の小砲塔で広い範囲の敵弾を落とす迎撃装置。',
  'RD3':'回転リングの索敵装置。壁の向こうの敵まで捉える。'};
 const EN={'HD-01':'SENSOR HEAD','HD-02':'MONO-EYE HEAD','HD-03':'COMPOUND HEAD','CR-03':'HIGH OUTPUT CORE','AR-03':'PRECISION ARMS','LG-03':'HIGH MOBILITY BIPED','RF3':'AP RIFLE','MG3':'GATLING','BL3':'RUSH BLADE','MS3':'VERTICAL MISSILE','RD3':'SEARCH RADAR','BZ3':'BURST BAZOOKA','SH3':'TOWER SHIELD','GC3':'PIERCING CANNON','BT3':'HIGH OUTPUT BOOSTER','IC3':'WIDE INTERCEPTOR','CR-01':'STANDARD CORE','CR-02':'HEAVY CORE','AR-01':'STANDARD ARMS','AR-02':'HEAVY ARMS',
@@ -1735,7 +1748,7 @@ function renderHeader(){
  const dead=partNow('core')<=0;$('mTrain').disabled=SS.over;misHeader();$('mWarn').textContent=SS.over?'積載オーバーのため出撃できません。兵装を見直してください':dead?'CORE が大破しています。修理するまで、攻撃ありの TRAINING はできません':'';applyTut();
 }
 // 比較表の1行（better='hi'：大きいほど良い、'lo'：小さいほど良い）
-const KEN={'能力':'ABILITY','装甲':'ARMOR','ブースト容量':'BOOST CAP','積載':'LOAD','基本機動力':'BASE MOB.','機動力':'MOBILITY','重量':'WEIGHT','総重量':'TOTAL WT','種類':'TYPE','使用回数':'USES','効果時間':'DURATION','リロード':'RELOAD','威力':'POWER','射程':'RANGE','範囲':'BLAST','同時発射':'SALVO','弾数':'AMMO','衝撃':'IMPACT','弾速':'VELOCITY','誘導':'HOMING','連射':'RATE','歩行速度':'WALK','ダッシュ速度':'DASH','急加速距離':'QUICK BOOST','ロック距離':'LOCK RANGE'};
+const KEN={'能力':'ABILITY','装甲':'ARMOR','ブースト容量':'BOOST CAP','積載':'LOAD','基本機動力':'BASE MOB.','機動力':'MOBILITY','重量':'WEIGHT','総重量':'TOTAL WT','種類':'TYPE','耐久':'DURABILITY','使用回数':'USES','効果時間':'DURATION','リロード':'RELOAD','威力':'POWER','射程':'RANGE','範囲':'BLAST','同時発射':'SALVO','弾数':'AMMO','衝撃':'IMPACT','弾速':'VELOCITY','誘導':'HOMING','連射':'RATE','歩行速度':'WALK','ダッシュ速度':'DASH','急加速距離':'QUICK BOOST','ロック距離':'LOCK RANGE'};
 const VEN={'射撃':'FIRE','近接':'MELEE','補助':'SUPPORT','防御':'DEFENSE','なし':'NONE','－':'—','弱':'LOW','中':'MID','強':'HIGH','多重ロック':'MULTI-LOCK','遠距離ロック':'LONG LOCK'};
 const RATEN={'1回／1秒':'1 / 1.0s','3点射／1.3秒':'3-RND BURST / 1.3s','12発／秒':'12 RND / s','1発／2秒':'1 / 2.0s','1回／1.3秒':'1 / 1.3s','押している間':'WHILE HELD','1斉射／2秒':'1 SALVO / 2.0s','1発／3秒':'1 / 3.0s'};
 const ven=v=>typeof v==='string'&&VEN[v]?VEN[v]:v;
@@ -1803,7 +1816,7 @@ function renderSide(){
    const kind=b.kind||a.kind;
    if(kind==='補助'||kind==='防御'||a.kind==='補助'||a.kind==='防御'){
     rows.push(cmpRow('種類',a.kind||'－',b.kind||'－'));
-    rows.push(cmpRow('使用回数',a.ammo??0,b.ammo??0));
+    rows.push(cmpRow((b.kind||a.kind)==='防御'?'耐久':'使用回数',a.ammo??0,b.ammo??0));
     if(a.dur||b.dur)rows.push(cmpRow('効果時間',a.dur||0,b.dur||0));
     rows.push(cmpRow('リロード',a.reload||0,b.reload||0,'lo',v=>v+'秒'));
    }
@@ -1822,7 +1835,7 @@ function renderSide(){
    rows.push(cmpRow('重量',a.wt||0,b.wt||0,'lo'));
    if(b.rate)rows.push(`<div class="c"><span class="k">連射</span><span class="v">${esc(b.rate)}</span></div>`);
    part=rows.join('');
-   const KEYS=(b.kind==='補助'||b.kind==='防御'||(!b.kind&&(a.kind==='補助'||a.kind==='防御')))?['使用回数','効果時間','リロード','重量']:['威力','射程'].concat((a.count||0)>=2||(b.count||0)>=2?['同時発射']:[],['弾数','リロード','衝撃']).concat(traitOf(selSlot,cand)?[]:['重量']);
+   const KEYS=(b.kind==='補助'||b.kind==='防御'||(!b.kind&&(a.kind==='補助'||a.kind==='防御')))?['使用回数','耐久','効果時間','リロード','重量']:['威力','射程'].concat((a.count||0)>=2||(b.count||0)>=2?['同時発射']:[],['弾数','リロード','衝撃']).concat(traitOf(selSlot,cand)?[]:['重量']);
    brief=rows.filter(r=>KEYS.some(k=>r.includes(`class="k">${k}<`))).join('');
   }
   if(selSlot==='ext'){
@@ -2045,10 +2058,10 @@ Object.assign(HAND,{
    box(g,.34,.4,.3,VW.steel2,0,-.35,-.24);box(g,.36,.07,.32,VW.warn,0,-.18,-.24);box(g,.12,.3,.14,VW.dark,0,-.25,.32);
    const muzzle=grp(g,0,-1.9,.1);muzzle.rotation.x=Math.PI/2;return {muzzle}}},
  // 大型シールド：縦長の板を3枚重ね、左右の縁を前へ折った形。中央に青いセンサー
- 'SH3':{...HAND.SH,st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:10,reload:9,wt:18,imp:'なし',spd:0,hom:'－',front:-.3,note:'正面の広い範囲（ほぼ真横まで）を防ぐ。使用回数が多い'},
-  build(g){const p=grp(g,0,-.5,-.34);box(p,1.1,1.8,.12,VW.steel,0,0,0);box(p,.9,1.5,.06,VW.steel2,0,0,-.08);
-   [-1,1].forEach(q=>box(p,.16,1.8,.3,VW.steel2,q*.6,0,-.1,0,q*.5,0));box(p,1.14,.1,.16,VW.warn,0,.82,0);box(p,1.14,.1,.16,VW.warn,0,-.82,0);
-   box(p,.22,.14,.06,VW.lens,0,.3,-.12);box(g,.22,.5,.22,VW.dark,0,-.3,-.15);return {plate:p}}},
+ 'SH3':{...HAND.SH,st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:900,reload:60,wt:18,imp:'なし',spd:0,hom:'－',front:-.3,grd:{walk:0,dash:0,qb:0,jump:0,opp:0},note:'正面の広い範囲（ほぼ真横まで）を、とても高い耐久で受け止める。構え中は動けない（向きは変えられる）・反対の手の兵装は使えない。肩の兵装を撃つと自動で構える'},
+  build(g,s){const R=shieldBase(g,s),p=R.p;box(p,1.1,1.8,.12,VW.steel,0,0,0);box(p,.9,1.5,.06,VW.steel2,0,0,.08);
+   [-1,1].forEach(q=>box(p,.16,1.8,.3,VW.steel2,q*.6,0,.1,0,-q*.5,0));box(p,1.14,.1,.16,VW.warn,0,.82,0);box(p,1.14,.1,.16,VW.warn,0,-.82,0);
+   box(p,.22,.14,.06,VW.lens,0,.3,.12);return {plate:p,pv:R.pv,rig:R}}},
 });
 Object.assign(SHOULDER,{
  // 貫通砲：長い角形の砲身に光るコイル3つ、後ろの大きな蓄電箱
@@ -3021,7 +3034,7 @@ function highlight(k){
  slotMeshes(k).forEach(m=>{let eg=EDGES.get(m.geometry);if(!eg){eg=new THREE.EdgesGeometry(m.geometry,20);EDGES.set(m.geometry,eg)}const o=new THREE.LineSegments(eg,HL);o.userData.hl=true;o.scale.setScalar(1.015);m.add(o);hlMeshes.push(o)});
 }
 // 兵装プレビュー：選択中（未装備）の兵装を小さな画面で回して見せる
-const PR=new THREE.WebGLRenderer({antialias:false,alpha:true});PR.setPixelRatio(1);PR.setSize(124,84,false);
+const PR=WGL({antialias:false,alpha:true});PR.setPixelRatio(1);PR.setSize(124,84,false);
 const PS=new THREE.Scene();PS.add(new THREE.AmbientLight(0x8890a0,2.4));{const l=new THREE.DirectionalLight(0xfff0d8,3);l.position.set(3,5,4);PS.add(l)}
 const PC=new THREE.PerspectiveCamera(30,124/84,.05,50);
 const pvSpin=new THREE.Group();PS.add(pvSpin);let pvOn=false,pvKey='';
@@ -3372,7 +3385,7 @@ const CAT_TALK={
  'MACHINE GUN':'マシンガンは弾をたくさんばらまきます。<em>近い距離で押し切る</em>のに向いています。',
  BAZOOKA:'バズーカは重い一撃です。当てると相手が大きく<em>よろけます</em>。わたくしも一度よろけました。試し撃ちの流れ弾で。',
  BLADE:'ブレードは近接武器です。弾が<em>尽きない</em>のが自慢でございます。',
- SHIELD:'シールドは押している間だけ構えます。<em>正面の弾</em>を防ぎます。後ろからは……防げません。',
+ SHIELD:'シールドは押している間だけ構えます。<em>正面の攻撃</em>を耐久で受け止めます。後ろからは……防げません。反対の手や肩の兵装を撃つと、自動で構えます。',
  MISSILE:'ミサイルは肩の兵装です。<em>追いかけて</em>当たります。両肩同時に撃ちますので、ご注意を。',
  CANNON:'グレネード砲は<em>しゃがんで</em>撃つ大砲です。撃っている間は動けません。わたくしの昼寝と同じですね。',
  RADAR:'レーダーは背中に積むだけで効きます。<em>ロックできる範囲</em>が広がります。',
@@ -3387,7 +3400,7 @@ const keeper=$('keeper');
 /* ===== SHOP の3D：整備工場（ハンガー）と店主ドール =====
  ガレージと同じ PS 風の素材（psMat・低解像度・頂点ガタつき）で描く。ショップを開いている間だけ描画する */
 const SH3=(()=>{
- const r=new THREE.WebGLRenderer({antialias:false});r.setPixelRatio(1);$('sceneGL').appendChild(r.domElement);
+ const r=WGL({antialias:false});r.setPixelRatio(1);$('sceneGL').appendChild(r.domElement);
  const sc=new THREE.Scene();sc.background=new THREE.Color(0x0c100f);sc.fog=new THREE.Fog(0x0c100f,14,34);
  const cam=new THREE.PerspectiveCamera(34,2,.1,60);
  sc.add(new THREE.AmbientLight(0x6a7470,2.0));
@@ -3745,7 +3758,7 @@ function shopRows0(sl,a,b){
   pr('lockDeg','ロック角度',v=>v?'+'+v+'°':'－');pr('lockRange','ロック距離',v=>v?'+'+v+'m':'－');pr('dash','ダッシュ速度',v=>v?'+'+Math.round(v*100)+'%':'－');pr('qb','急加速',v=>v?'+'+v+'m':'－');pr('boost','ブースト容量',v=>v?'+'+v:'－');
   if(p.icInt||q.icInt){R.push(cmpRow('迎撃間隔',p.icInt||0,q.icInt||0,'lo',v=>v?v+'秒':'－'));R.push(cmpRow('迎撃範囲',p.icR||0,q.icR||0,'hi',v=>v?v+'m':'－'))}
   R.push(cmpRow('重量',x.wt||0,y.wt||0,'lo'));return R.join('')}
- if(y.kind==='防御'){R.push(cmpRow('使用回数',x.ammo??0,y.ammo??0,'hi',R0));R.push(cmpRow('リロード',x.reload||0,y.reload||0,'lo',v=>v?v+'秒':'－'))}
+ if(y.kind==='防御'){R.push(cmpRow('耐久',x.ammo??0,y.ammo??0,'hi',R0));R.push(cmpRow('リロード',x.reload||0,y.reload||0,'lo',v=>v?v+'秒':'－'))}
  else{R.push(cmpRow('威力',x.dmg||0,y.dmg||0));R.push(cmpRow('射程',x.range||0,y.range||0,'hi',v=>v+'m'));R.push(cmpRow('弾数',x.ammo??0,y.ammo??0,'hi',R0));R.push(cmpRow('衝撃',x.imp||'－',y.imp||'－'))}
  R.push(cmpRow('重量',x.wt||0,y.wt||0,'lo'));return R.join('');
 }
@@ -4031,7 +4044,9 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
   if(o.arms)armF.forEach(f=>mixArm(f,o.arms,o.arms.w??w));if(o.arm)mixArm(armF[ai],o.arm,w);if(o.off)mixArm(armF[1-ai],o.off,w);
   if(o.legs){const lw=o.legs.w??w;legF.forEach((f,i)=>{f.th=L(f.th,o.legs.th[i],lw);f.kn=L(f.kn,o.legs.kn[i],lw)})}
   if(o.torsoY!=null)tY=L(tY,o.torsoY,w);if(o.torsoX!=null)tX=L(tX,o.torsoX,w);if(o.headY!=null)hY=L(hY,o.headY,w);if(o.crouch)crouch=Math.max(crouch,o.crouch*w);if(o.lift)lift+=o.lift}
- if(e.guardT>0&&shw){mixArm(armF[shw.s<0?0:1],GUARD_POSE(shw.s),1);crouch=Math.max(crouch,.15)}
+ {const on=e.guardT>0&&shw,old=e.gd||0;e.gd=Math.max(0,Math.min(1,old+(on?1:-1)*dt/.2));if(on&&old<=0)e.gb=0;e.gb=(e.gb==null?1:e.gb)+dt;
+  if(shw){const br=on?Math.sin(Math.PI*Math.min(1,e.gb/.4)):0,q=sm(e.gd);if(shw.w&&shw.w.rig){shw.w.rig.gd=e.gd;shw.w.rig.br=br}
+   if(q>0){const gp=GUARD_POSE(shw.s);mixArm(armF[shw.s<0?0:1],{x:gp.x-br*.12,z:gp.z,e:gp.e},q);crouch=Math.max(crouch,.15*q)}}}
  m.torso.rotation.set(tX+e.lean,tY,0);m.head.rotation.y=hY;
  m.arms.forEach((a,i)=>{a.sh.rotation.set(armF[i].x+e.lean*.6,0,armF[i].z);a.el.rotation.x=armF[i].e});
  m.legs.forEach((l,i)=>{const b=legF[i];if(l.dg){digiPose(l,b.th,b.kn,crouch);return}
@@ -4185,8 +4200,12 @@ let msgT=0;function say(s,d=.8){$('msg').textContent=s;msgT=d}
 function hitPlayer(dmg,imp,pos){if(P.down>0)return;if(DBG.inv){spawn(0xc0a8ff,.6,pos,{life:.08});return}
  // シールド：正面からの弾を防ぐ（衝撃も無効）
  const from=_d.copy(pos).sub(P.pos).setY(0).normalize(),front=from.x*Math.sin(P.yaw)+from.z*Math.cos(P.yaw);
- for(const sd of [-1,1]){const key=sd<0?'rHand':'lHand';
-  if(guarding(sd)&&front>(HAND[cfg[key]].st.front??.2)){ammoUse(key);SND.play('shield',{g:.55});pDmgNum('GUARD');spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});spawn(0xffffff,.6,pos,{life:.06});shake=Math.max(shake,.08);return}}
+ {const sh=[-1,1].map(sd=>({sd,key:sd<0?'rHand':'lHand'})).filter(o=>guarding(o.sd)&&front>(HAND[cfg[o.key]].st.front??.2)).sort((a,b)=>AM[a.key].ammo-AM[b.key].ammo);
+  if(sh.length){let left=dmg;
+   for(const o of sh){const a=AM[o.key];if(left<=0)break;const take=Math.min(left,a.ammo);a.ammo-=take;left-=take;if(a.ammo<=0){a.ammo=0;a.rl=stOf(o.key).reload;SND.play('reload',{g:.4})}}
+   SND.play('shield',{g:.55});spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});spawn(0xffffff,.6,pos,{life:.06});shake=Math.max(shake,.08);
+   if(left<=0){pDmgNum('GUARD');return}
+   dmg=left;say('シールド大破：貫通',.6)}}
  // 当たった高さで部位を決める：腰より下＝LEGS、上半身の外側＝ARMS、中央＝CORE。0の部位に当たった分は CORE が受ける
  const h=pos.y-mech.bot.position.y,rt=_q.set(-Math.cos(P.yaw),0,Math.sin(P.yaw)),lat=Math.abs((pos.x-P.pos.x)*rt.x+(pos.z-P.pos.z)*rt.z);
  let zone=h<3.1?'legs':lat>1.15?'arms':'core',left=dmg,take0=zone!=='core'?P.hp[zone]:0;
@@ -4198,9 +4217,15 @@ function hitPlayer(dmg,imp,pos){if(P.down>0)return;if(DBG.inv){spawn(0xc0a8ff,.6
  shake=Math.max(shake,.2);spawn(0xffffff,.8,pos,{life:.1});
  if(P.hp.core<=0){P.down=3.2;P.stun=4;if(RUN)banner('MISSION FAILED','CORE 大破',true,2.4);else say('CORE 大破',3);SND.play('coreDown',{g:.7});explode(playerCenter(new THREE.Vector3()),2.5);return}
  const I=IMP[imp];if(I&&Math.random()<I.p){P.stun=Math.max(P.stun,I.st);say('被弾',.5);run('hit',STAGGER);P.vel.addScaledVector(from,-I.kb*4)}}
-function guarding(sd){const key=sd<0?'rHand':'lHand';return mode==='play'&&P.hp.arms>0&&GUARD[sd]&&HAND[cfg[key]].st.kind==='防御'&&ammoReady(key)&&P.stun<=0}
+function autoGuard(sd){const key=sd<0?'rHand':'lHand',other=sd<0?'lHand':'rHand',g=HAND[cfg[key]].st.grd||{};
+ const oa=active[other]&&HAND[cfg[other]].st&&HAND[cfg[other]].st.kind!=='防御',sa=['rShoulder','lShoulder'].some(k=>active[k]&&stOf(k)&&stOf(k).kind==='射撃');
+ return !!((oa&&g.opp!==0)||sa)}
+function guarding(sd){const key=sd<0?'rHand':'lHand';return mode==='play'&&P.hp.arms>0&&HAND[cfg[key]].st.kind==='防御'&&(GUARD[sd]||autoGuard(sd))&&ammoReady(key)&&P.stun<=0}
+// 構え中の制限（盾ごとの grd：歩きの倍率・ダッシュ・急加速・跳躍）。2枚構えているときは厳しいほう
+function guardRes(){const r={walk:1,dash:true,qb:true,jump:true};for(const sd of[-1,1])if(guarding(sd)){const g=HAND[cfg[sd<0?'rHand':'lHand']].st.grd||{walk:.5,dash:0,qb:0,jump:1};r.walk=Math.min(r.walk,g.walk);if(!g.dash)r.dash=false;if(!g.qb)r.qb=false;if(!g.jump)r.jump=false}return r}
 function onLand(){if(mode!=='play')return;P.stun=Math.max(P.stun,.4*(SS.landK||1));say('着地硬直',.4)}
-function quickBoost(x,y,mult=1,free=false){ // x=右+ / y=前+ （画面基準）
+function quickBoost(x,y,mult=1,free=false){
+ if(mode==='play'&&!free&&!guardRes().qb)return; // x=右+ / y=前+ （画面基準）
  if(mode!=='play'||P.stun>0||(P.qb&&!free))return;
  if(P.hp.legs<=0){if(!free)say('LEGS 損壊：急加速不能',.6);return}
  if(!free){if(P.boost<30){say('BOOST 不足',.6);return}P.boost-=30;P.regen=.8*SS.regenK}
@@ -5225,7 +5250,7 @@ R.setAnimationLoop(()=>{
   P.stun=Math.max(0,P.stun-dt);
   if(P.down>0){P.down-=dt;if(P.down<=0&&RUN){if(finishWait(dt))misFinish(false,'CORE 大破');else P.down=.01}else if(P.down<=0){fadeTo(()=>{setMode('garage');openModal(`<div class="shd"><span class="code">MISSION FAILED</span><span class="ttl">CORE 大破</span></div><div class="rule"></div><p class="note" style="margin:0">コアが破壊され、機体は回収されました。SHOP の REPAIR で修理するまで、攻撃ありの TRAINING には出撃できません。</p>`)},'GARAGE')}}
   tickAmmo(dt);reveal=Math.max(0,reveal-dt);
-  const guard=guarding(-1)||guarding(1),rooted=Object.values(active).some(a=>a.def.act.root||a.def.act.lock);
+  const GR=guardRes(),rooted=GR.walk===0||Object.values(active).some(a=>a.def.act.root||a.def.act.lock);
   const can=P.stun<=0&&!rooted,air=!!active.jump;
   const top=CAMMODE==='top',attacking=WSLOTS.some(s=>active[s.key]);
   if(top){ // 俯瞰：画面の上＝奥(-Z)。機体は操作した方向を向く（弾はロック中の敵へ飛ぶ）
@@ -5234,10 +5259,10 @@ R.setAnimationLoop(()=>{
   }else P.yaw+=Math.atan2(Math.sin(camYaw-P.yaw),Math.cos(camYaw-P.yaw))*Math.min(1,dt*(attacking?14:8));
   const f=top?topF():new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw)),r=top?topR():new THREE.Vector3(-Math.cos(P.yaw),0,Math.sin(P.yaw));
   const mag=Math.hypot(inp.x,inp.y);
-  const dashing=can&&!guard&&inp.dash&&mag>.1&&P.boost>0&&P.hp.legs>0;
+  const dashing=can&&GR.dash&&inp.dash&&mag>.1&&P.boost>0&&P.hp.legs>0;
   if(dashing){P.boost=Math.max(0,P.boost-12*dt);P.regen=.6*SS.regenK;if(P.boost<=0)say('BOOST 切れ',.6)}
   const heavyFire=Object.values(active).some(a=>a.def===HAND.MG3);
-  const sp=(dashing?SS.dash:SS.walk*(air?.9:1)*1)*(guard?.5:1)*(RUN&&RUN.carry?.7:1);
+  const sp=(dashing?SS.dash:SS.walk*(air?.9:1))*GR.walk*(RUN&&RUN.carry?.7:1);
   const want=can?f.multiplyScalar(inp.y*sp).add(r.multiplyScalar(inp.x*sp)):new THREE.Vector3();
   P.vel.lerp(want,Math.min(1,dt*(dashing?4:6)));
   if(P.qb){P.qb.u+=dt/.4;const v=2*P.qb.dist/.4*(1-P.qb.u);if(P.qb.u>=1)P.qb=null;else P.vel.copy(P.qb.dir).multiplyScalar(v)}
@@ -5294,7 +5319,12 @@ R.setAnimationLoop(()=>{
   if(o.boost)boost=Math.max(boost,o.boost);if(o.scroll)scroll+=o.scroll;
  }
  // シールドを構えている腕
- if(mode==='play')[-1,1].forEach(sd=>{if(guarding(sd)){const i=sd<0?0:1;mixArm(armF[i],GUARD_POSE(sd),1);crouch=Math.max(crouch,.15)}});
+ // 構え：構えの度合い gd（0→1を約0.2秒）でなめらかに上げ下げ。構え始めに一瞬ぐっと前へ（br）
+ if(!m.gd)m.gd=[0,0];if(!m.gb)m.gb=[1,1];
+ [-1,1].forEach(sd=>{const i=sd<0?0:1,on=mode==='play'&&guarding(sd),old=m.gd[i];m.gd[i]=Math.max(0,Math.min(1,old+(on?1:-1)*dt/.2));
+  if(on&&old<=0)m.gb[i]=0;m.gb[i]+=dt;const br=on?Math.sin(Math.PI*Math.min(1,m.gb[i]/.4)):0,e=sm(m.gd[i]);
+  const w=m.weps[sd<0?'rHand':'lHand'];if(w&&w.rig){w.rig.gd=m.gd[i];w.rig.br=br}
+  if(e>0){const gp=GUARD_POSE(sd);mixArm(armF[i],{x:gp.x-br*.12,z:gp.z,e:gp.e},e);crouch=Math.max(crouch,.15*e)}});
  // 損壊した部位の姿勢（出撃中のみ）：ARMS＝両腕がだらりと下がる／LEGS＝膝を曲げて腰を落とす／CORE＝前のめりに崩れて膝をつく
  if(mode==='play'){
   if(P.hp.arms<=0||P.hp.core<=0)armF.forEach((f,i)=>mixArm(f,{x:.18,z:m.arms[i].s*.06,e:-.05},.92));
@@ -5591,7 +5621,7 @@ function firstShop(){
 const OP={skip:false,noSkip:false,tap:false,on:false,sc:-1,t0:0,dur:1};
 const SKIP={};
 const opEl=$('op'),opVeil=$('opVeil');
-const OR=new THREE.WebGLRenderer({antialias:false});OR.setPixelRatio(1);$('opGL').appendChild(OR.domElement);
+const OR=WGL({antialias:false});OR.setPixelRatio(1);$('opGL').appendChild(OR.domElement);
 const OC=new THREE.PerspectiveCamera(42,1,.1,220);
 let OS=null,OSC=[];
 function opSize(){const w=innerWidth,h=innerHeight;const rh=RES[res]?RES[res][1]:Math.round(h*Math.min(devicePixelRatio,2));OR.setSize(Math.round(rh*w/h),rh,false);OC.aspect=w/h;OC.updateProjectionMatrix()}
@@ -5762,7 +5792,7 @@ const BOOT=[['> POWER ................ ','RESTORED','ok'],['> MEMORY BANK A ....
 /* フレームチェックのホログラム：いまの機体（cfg）を線画で組み、部位ごとに点灯させながら回す */
 let HOLO=null;
 function buildHolo(){
- if(HOLO){HOLO.sc.remove(HOLO.root)}else{const r=new THREE.WebGLRenderer({antialias:false,alpha:true});r.setPixelRatio(1);$('opHolo').prepend(r.domElement);
+ if(HOLO){HOLO.sc.remove(HOLO.root)}else{const r=WGL({antialias:false,alpha:true});r.setPixelRatio(1);$('opHolo').prepend(r.domElement);
   HOLO={r,sc:new THREE.Scene(),cam:new THREE.PerspectiveCamera(32,1,.1,100)}}
  const H=HOLO,root=grp(H.sc);H.root=root;const parts={head:[],core:[],arms:[],legs:[]};
  const take=k=>root.traverse(o=>{if(o.isMesh&&!o.userData.p){o.userData.p=k;parts[k].push(o)}});
@@ -5863,7 +5893,7 @@ opEl.addEventListener('pointerdown',e=>{if(e.target.closest('button,input,form')
  ガレージと同じ3Dの場面（整備ドックと自機）を、別のカメラでゆっくり回りながら映す。機体は画面の右寄り。
  NEW GAME：保存データがあれば、削除してよいかをモーダルで確認してから始める。CONTINUE：保存データがあるときだけ押せる */
 const TT={on:false,ang:.6};
-const TR=new THREE.WebGLRenderer({antialias:false});TR.setPixelRatio(1);$('title').prepend(TR.domElement);
+const TR=WGL({antialias:false});TR.setPixelRatio(1);$('title').prepend(TR.domElement);
 const TC=new THREE.PerspectiveCamera(36,1,.1,120);
 function titleSize(){const w=innerWidth,h=innerHeight;const rh=RES[res]?RES[res][1]:Math.round(h*Math.min(devicePixelRatio,2));const rw=Math.round(rh*w/h);
  TR.setSize(rw,rh,false);TC.aspect=w/h;
