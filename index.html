@@ -1357,13 +1357,31 @@ const GUARD_POSE=s=>({x:-1.25,z:s*.25,e:-1.55});
 const INF=Infinity;
 /* シールドの姿勢：待機＝正面向き・垂直（腕の外側）／構え＝胸の前へ上げて、わずかに前傾。構え始めは一瞬ぐっと前へ（br）。
    どの腕の曲がり方でも向きが変わらないよう、描画の直前に世界の向きへ合わせ直す。盾を増やすときは shieldBase() で作れば同じ姿勢になる */
-const SHRIG=new Set(),_sq=new THREE.Quaternion(),_sp=new THREE.Quaternion(),_sx=new THREE.Vector3(),_se=new THREE.Euler();
-function shieldBase(g,s){const pv=grp(g,0,0,0),p=grp(pv,0,.3,.3),bar=box(p,1,.16,.16,Wp.frame,0,-.3,-.3);const r={pv,p,bar,s:s||1,gd:0,br:0};SHRIG.add(r);return r}
+let SHFREE=false;const SHRIG=new Set(),_sq=new THREE.Quaternion(),_sp=new THREE.Quaternion(),_sx=new THREE.Vector3(),_se=new THREE.Euler();
+function shieldBase(g,s){const pv=grp(g,0,0,0),p=grp(pv,0,.3,.3),bar=box(p,1,.16,.16,Wp.frame,0,-.3,-.3);const r={pv,p,bar,s:s||1,gd:0,br:0,h:2,free:SHFREE};SHRIG.add(r);return r}
+/* 盾の形（共通）：下が尖り、中央が一番広く、上へすぼまって2本の角。重ね板・横帯・縁の側板。m＝{back,mid,panel,band,acc,fin} の材質で色を変える */
+function shieldPlate(R,w,h,m){const p=R.p,th=.3,top=w*.42,n=16,hh=h*.94/n,y0=-h/2,u0=.5;R.h=h;
+ const B=(x,y,z,W,H,D,mat,rz=0)=>box(p,W,H,D,mat,x,y,z,0,0,rz);
+ const wAt=u=>u>=u0?w+(top-w)*((u-u0)/(1-u0)):Math.max(.14,w*(.06+.94*(u/u0)));
+ for(let i=0;i<n;i++)B(0,y0+hh*(i+.5),0,wAt((i+.5)/n),hh*1.04,th,m.back);
+ [-1,1].forEach(q=>{B(q*top*.34,h/2-h*.02,0,top*.3,h*.1,th,m.back);B(q*top*.42,h/2+h*.06,0,top*.16,h*.1,th,m.back)});
+ for(let i=0;i<8;i++){const u=(i+.5)/8,k=u<.5?(.15+.85*Math.pow(u/.5,.9)):1;B(0,-h*.34+h*.58*u,th*.9,w*.6*k,h*.58/8*1.05,th*.9,m.mid)}
+ [-1,1].forEach(q=>B(q*w*.26,h*.3,th*.9,w*.2,h*.1,th*.9,m.panel,q*.6));
+ B(0,h*.1,th*1.6,w*.34,h*.22,th*.7,m.mid);
+ [-.2,.06,.28].forEach(f=>{const ww=wAt(f+.5)*.95;B(0,h*f,th*1.7,ww,h*.045,th*.9,m.band);[-1,1].forEach(q=>B(q*ww*.48,h*f,th*1.9,.14,h*.06,th*.7,m.acc))});
+ [-1,1].forEach(q=>[0,1,2].forEach(j=>{const uy=.34-j*.1,x=wAt(uy)*.5+.05;B(q*x,-h/2+h*uy,-th*.9,.07,h*.2,th*.5,m.fin,q*(.28+j*.06))}));
+ B(0,y0+h*.05,th*.3,wAt(.1)*1.05,h*.035,th*1.2,m.acc)}
+/* 描画の直前に盾を合わせる：向きは機体全体の向きだけを基準に（腕の傾きに左右されない）、高さは「構え＝ヘッドが半分隠れる」「待機＝腕の外側」、どちらも板の下端が地面（+0.05m）より下へ行かないようにする */
+const _sv=new THREE.Vector3(),_ss=new THREE.Vector3();
 function shieldSync(){SHRIG.forEach(r=>{let top=r.pv;while(top.parent)top=top.parent;if(!top.isScene){SHRIG.delete(r);return}
- r.pv.parent.updateWorldMatrix(true,false);r.pv.parent.getWorldQuaternion(_sp);
- _sx.set(1,0,0).applyQuaternion(_sp);const psi=Math.atan2(-_sx.z,_sx.x),e=sm(Math.min(1,Math.max(0,r.gd||0))),ph=.26*e+(r.br||0)*.14;
+ let rt=r.pv;while(rt.parent&&!rt.parent.isScene)rt=rt.parent;rt.updateWorldMatrix(true,false);rt.getWorldQuaternion(_sq);_sx.set(1,0,0).applyQuaternion(_sq);
+ const psi=Math.atan2(-_sx.z,_sx.x),e=sm(Math.min(1,Math.max(0,r.gd||0))),ph=.26*e+(r.br||0)*.14;
+ r.pv.parent.updateWorldMatrix(true,false);r.pv.parent.getWorldQuaternion(_sp);r.pv.parent.getWorldScale(_ss);const sc=_ss.x||1;
  _se.set(ph,psi,0,'YXZ');_sq.setFromEuler(_se);r.pv.quaternion.copy(_sp).invert().multiply(_sq);
- const px=r.s*(.45-1.35*e),py=.3-.9*e,pz=.3+.1*e;r.p.position.set(px,py,pz);r.bar.position.set(-px/2,-py,-pz);r.bar.scale.x=Math.max(.01,Math.abs(px))})}
+ r.pv.updateWorldMatrix(true,false);r.pv.getWorldPosition(_sv);
+ const px=r.s*(.45-1.45*e),pz=.3+.1*e,half=r.h*sc/2,idleC=_sv.y+.3*sc,guardC=5.8-half,minC=.05+half*Math.cos(ph)+.1*sc;
+ const cw=r.free?idleC:Math.max(minC,idleC+(guardC-idleC)*e),py=(cw-_sv.y)/sc;
+ r.p.position.set(px,py,pz);r.bar.position.set(-px/2,-py,-pz);r.bar.scale.x=Math.max(.01,Math.abs(px))})}
 const HAND={
  'none':{name:'素手',st:{kind:'近接',dmg:300,range:5,area:0,rate:'1回／1秒',count:1,ammo:INF,reload:0,wt:0,imp:'B',spd:0,hom:'－'},
   build(g){for(let i=0;i<3;i++)box(g,.07,.22,.07,Wp.frame,-.08+i*.08,-.06,.06,.3);const muzzle=grp(g,0,-.3,0);muzzle.rotation.x=Math.PI/2;return {muzzle}},
@@ -1414,8 +1432,8 @@ const HAND={
     legs:legsFor(s,kf(u,[[0,0],[.3,.35],[.45,-.8],[.8,-.6],[1,0]]),kf(u,[[0,0],[.3,.2],[.45,.7],[1,0]]),kf(u,[[0,0],[.3,-.3],[.45,.5],[.8,.4],[1,0]]),kf(u,[[0,0],[.3,.5],[.45,.15],[1,0]])),
     crouch:kf(u,[[0,0],[.28,.45],[.45,.25],[.8,.3],[1,0]]),scroll:kf(u,[[.28,0],[.38,20],[.55,3],[.7,0]])}},
    end(w){w.blade.scale.set(1,1,1)}}},
- 'SH':{name:'シールド',st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:400,reload:40,wt:12,imp:'なし',spd:0,hom:'－',grd:{walk:.5,dash:0,qb:0,jump:1,opp:1},note:'正面の攻撃を耐久で受け止める。構え中は歩きが半分・ダッシュと急加速は不可。反対の手や肩の兵装を撃つと自動で構える'},
-  build(g,s){const R=shieldBase(g,s),p=R.p;box(p,1.0,1.5,.12,Wp.body,0,0,0);box(p,1.04,.14,.16,Wp.warn,0,.62,0);box(p,1.04,.14,.16,Wp.warn,0,-.62,0);box(p,.3,.3,.06,Wp.metal,0,0,.08);
+ 'SH':{name:'シールド',st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:400,reload:40,wt:12,imp:'なし',spd:0,hom:'－',front:0,grd:{walk:.5,dash:0,qb:0,jump:1,opp:1},note:'正面の攻撃を耐久で受け止める。構え中は歩きが半分・ダッシュと急加速は不可。反対の手や肩の兵装を撃つと自動で構える'},
+  build(g,s){const R=shieldBase(g,s),p=R.p;shieldPlate(R,1.8,3.4,{back:Wp.body,mid:Wp.frame,panel:Wp.body,band:Wp.metal,acc:Wp.warn,fin:Wp.metal});
    return {plate:p,pv:R.pv,rig:R}},
   act:{name:'防御',dur:1.4,run(c){return {w:env(c.u,.15,.8),arm:GUARD_POSE(c.s),crouch:.2}}}},
 };
@@ -1491,8 +1509,8 @@ Object.assign(HAND,{
  'BL2':{...HAND.BL,st:{kind:'近接',dmg:1000,range:8,area:0,rate:'1回／1.3秒',count:1,ammo:INF,reload:0,wt:15,imp:'S',spd:0,hom:'－'},
   build(g){box(g,.34,.6,.4,Wp.body,0,-.3,0);box(g,.4,.12,.44,Wp.frame,0,-.06,0);box(g,.24,.16,.24,Wp.warn,0,-.62,0);
    const blade=box(g,.1,1.5,.32,Wp.glow,0,-1.35,0);const muzzle=grp(g,0,-2.0,0);muzzle.rotation.x=Math.PI/2;return {muzzle,blade}}},
- 'SH2':{...HAND.SH,st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:200,reload:30,wt:6,imp:'なし',spd:0,hom:'－',grd:{walk:1,dash:0,qb:0,jump:1,opp:1},note:'正面の攻撃を耐久で受け止める。耐久は低いが、構え中も普通に歩ける（ダッシュと急加速は不可）。反対の手や肩の兵装を撃つと自動で構える'},
-  build(g,s){const R=shieldBase(g,s),p=R.p;box(p,.7,1.0,.1,Wp.body,0,0,0);box(p,.74,.1,.14,Wp.warn,0,.42,0);box(p,.5,.06,.14,Wp.metal,0,-.1,.02);
+ 'SH2':{...HAND.SH,st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:200,reload:30,wt:6,imp:'なし',spd:0,hom:'－',front:.09,grd:{walk:1,dash:0,qb:0,jump:1,opp:1},note:'正面の攻撃を耐久で受け止める。耐久は低いが、構え中も普通に歩ける（ダッシュと急加速は不可）。反対の手や肩の兵装を撃つと自動で構える'},
+  build(g,s){const R=shieldBase(g,s),p=R.p;shieldPlate(R,1.5,2.6,{back:Wp.metal,mid:Wp.frame,panel:Wp.metal,band:Wp.body,acc:Wp.warn,fin:Wp.body});
    return {plate:p,pv:R.pv,rig:R}}},
 });
 Object.assign(SHOULDER,{
@@ -2058,10 +2076,9 @@ Object.assign(HAND,{
    box(g,.34,.4,.3,VW.steel2,0,-.35,-.24);box(g,.36,.07,.32,VW.warn,0,-.18,-.24);box(g,.12,.3,.14,VW.dark,0,-.25,.32);
    const muzzle=grp(g,0,-1.9,.1);muzzle.rotation.x=Math.PI/2;return {muzzle}}},
  // 大型シールド：縦長の板を3枚重ね、左右の縁を前へ折った形。中央に青いセンサー
- 'SH3':{...HAND.SH,st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:900,reload:60,wt:18,imp:'なし',spd:0,hom:'－',front:-.3,grd:{walk:0,dash:0,qb:0,jump:0,opp:0},note:'正面の広い範囲（ほぼ真横まで）を、とても高い耐久で受け止める。構え中は動けない（向きは変えられる）・反対の手の兵装は使えない。肩の兵装を撃つと自動で構える'},
-  build(g,s){const R=shieldBase(g,s),p=R.p;box(p,1.1,1.8,.12,VW.steel,0,0,0);box(p,.9,1.5,.06,VW.steel2,0,0,.08);
-   [-1,1].forEach(q=>box(p,.16,1.8,.3,VW.steel2,q*.6,0,.1,0,-q*.5,0));box(p,1.14,.1,.16,VW.warn,0,.82,0);box(p,1.14,.1,.16,VW.warn,0,-.82,0);
-   box(p,.22,.14,.06,VW.lens,0,.3,.12);return {plate:p,pv:R.pv,rig:R}}},
+ 'SH3':{...HAND.SH,st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:900,reload:60,wt:18,imp:'なし',spd:0,hom:'－',front:-.57,grd:{walk:0,dash:0,qb:0,jump:0,opp:0},note:'正面から斜め後ろ寄りまでの広い範囲（約±125°）を、とても高い耐久で受け止める。構え中は動けない（向きは変えられる）・反対の手の兵装は使えない。肩の兵装を撃つと自動で構える'},
+  build(g,s){const R=shieldBase(g,s),p=R.p;shieldPlate(R,1.9,5.9,{back:VW.steel,mid:VW.steel2,panel:VW.steel,band:VW.dark,acc:VW.warn,fin:VW.steel2});box(p,.3,.16,.08,VW.lens,0,.1,.62);
+   return {plate:p,pv:R.pv,rig:R}}},
 });
 Object.assign(SHOULDER,{
  // 貫通砲：長い角形の砲身に光るコイル3つ、後ろの大きな蓄電箱
@@ -3046,9 +3063,9 @@ function setPreview(slot,id){
  // 回転の中心＝兵装の中心：組んだ形の中心を原点へ動かしてから、回転用グループに入れる
  const g=new THREE.Group();
  if(slot==='rHand'||slot==='lHand')g.rotation.z=Math.PI/2;
- sl.cat[id].build(g,sl.side||1);g.updateMatrixWorld(true);
+ SHFREE=true;sl.cat[id].build(g,sl.side||1);SHFREE=false;pvSpin.rotation.set(0,0,0);pvSpin.add(g);shieldSync();g.updateMatrixWorld(true);
  const box=new THREE.Box3().setFromObject(g),c=box.getCenter(new THREE.Vector3()),r=box.getBoundingSphere(new THREE.Sphere()).radius;
- g.position.sub(c);pvSpin.rotation.set(0,0,0);pvSpin.add(g);
+ g.position.sub(c);
  const d=r/Math.sin(PC.fov*Math.PI/360)*1.05;PC.position.set(0,d*.35,d);PC.lookAt(0,0,0);pvOn=true;
 }
 /* 説明文のコマ送り：欄に収まらない文はタッチで1文字ずつ左へ送り、最後まで出したら先頭に戻す */
@@ -5211,7 +5228,7 @@ addEventListener('resize',()=>{resize();fitSoon(document)});resize();
 const B={tX:0,tY:0,hY:0,lift:0,arms:[{x:0,z:0,e:0},{x:0,z:0,e:0}],legs:[{th:0,kn:0,tz:0},{th:0,kn:0,tz:0}]};
 // 腕・手の武器が地面に刺さらないように：腕（肩から先）のいちばん低い点が地面＋0.25m より下なら、肩を前へ少しずつ持ち上げる。余裕ができたらゆっくり戻す
 const _ab=new THREE.Box3();
-function armGroundFix(m,dt){m.bot.updateMatrixWorld(true);m.arms.forEach((a,i)=>{_ab.setFromObject(a.sh);const lim=SOLE+.25,lo=_ab.min.y;
+function armGroundFix(m,dt){m.bot.updateMatrixWorld(true);m.arms.forEach((a,i)=>{SHRIG.forEach(r=>r.pv.scale.setScalar(.0001));_ab.setFromObject(a.sh);SHRIG.forEach(r=>r.pv.scale.setScalar(1));const lim=SOLE+.25,lo=_ab.min.y;
  if(lo<lim)m.armLift[i]=Math.max(-1.3,m.armLift[i]-Math.min(.15,(lim-lo)*.3+.01));else if(lo>lim+.35)m.armLift[i]=Math.min(0,m.armLift[i]+dt*.8)})}
 const _v=new THREE.Vector3(),SOLE=.24,DOCK_TOP=.24,_sb=new THREE.Box3();
 // 足裏の高さ（ワールド）：新系列の脚は足の形を実際に測る、旧来の脚は足首から SOLE 下
