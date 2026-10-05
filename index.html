@@ -1223,7 +1223,7 @@ const CORES={
  }},
 };
 const HEADS={
- 'HD-01':{name:'HD-01 センサー型',wt:8,ability:'multi',abName:'多重ロック',abEn:'MULTI-LOCK',lockDeg:30,lockAdd:0,abDesc:'ロック角度が広い（±30°）。2体を同時にロックし、左手とミサイルは2体目も狙う',build(h){
+ 'HD-01':{name:'HD-01 センサー型',wt:8,ability:'none',abName:'標準センサー',abEn:'STANDARD',lockDeg:30,lockAdd:0,abDesc:'特殊な能力はない。ロック角度は広め（±30°）、距離の補正なし',build(h){
   box(h,.24,.2,.24,M.frame,0,.05,0);box(h,.62,.24,.6,M.main,0,.25,.02);box(h,.5,.14,.3,M.sub,0,.22,.36,-.35);
   box(h,.46,.05,.04,M.eye,0,.25,.47,-.35);box(h,.03,.55,.03,Wp.metal,.26,.55,-.15,-.25);box(h,.03,.3,.03,Wp.metal,-.2,.45,-.2,-.4);
  }},
@@ -1375,9 +1375,8 @@ const HAND={
  'MG':{name:'マシンガン',st:{kind:'射撃',dmg:40,range:40,area:0,rate:'12発／秒',count:1,ammo:90,reload:4,wt:15,imp:'B',spd:60,hom:'なし'},
   build(g){box(g,.24,.75,.3,Wp.frame,0,-.4,0);box(g,.1,.7,.1,Wp.metal,0,-1.1,0);cyl(g,.2,.2,.18,Wp.dark,0,-.5,.28,0,Math.PI/2,8);box(g,.26,.08,.32,Wp.warn,0,-.15,0);
    const muzzle=grp(g,0,-1.48,0);muzzle.rotation.x=Math.PI/2;return {muzzle}},
-  act:{name:'連射',dur:2.0,run(c){const s=c.s;
-   const n=Math.floor((c.u-.18)/.042);
-   if(c.u>.18&&c.u<.85&&n!==c.st.n){c.st.n=n;if(c.shot(c.w.muzzle,{size:.09})){flash(c.w.muzzle,.32);c.st.kick=1;shake=Math.max(shake,.03)}}
+  act:{name:'連射',dur:2.0,lock:true,sus:[.18,.85],min:3,run(c){const s=c.s;
+   if(c.sus){c.st.acc=(c.st.acc==null?.042:c.st.acc+c.dt);while(c.st.acc>=.042){c.st.acc-=.042;if(c.shot(c.w.muzzle,{size:.09})){c.st.cnt=(c.st.cnt||0)+1;flash(c.w.muzzle,.32);c.st.kick=1;shake=Math.max(shake,.03)}else break}}
    const k=c.st.kick=(c.st.kick||0)*.7,j=(Math.random()-.5)*.06*k,sw=Math.sin(c.u*9)*.12*env(c.u,.3,.7);
    return {w:env(c.u,.15,.85),arm:{x:AIM.x+j-k*.06,z:s*.05+j,e:AIM.e-k*.15},off:brace(s),
     torsoY:twist(s,.4)+sw+j,torsoX:.1-k*.04,headY:twist(s,-.3)+sw*.5,legs:stance(s,1.2),crouch:.3}}}},
@@ -1417,7 +1416,7 @@ const SHOULDER={
    const cells=[];for(let j=0;j<2;j++)for(let i=0;i<3;i++){const m=grp(pod,-.2+i*.2,.12-j*.24,.48);cells.push(m)}
    return {cells}},
   act:{name:'ミサイル',dur:2.0,run(c){
-   c.w.cells.forEach((m,i)=>{if(c.once('m'+i,.2+i*.07)&&c.missile(m,i)){flash(m,.3,0xffb060);shake=Math.max(shake,.05)}});
+   c.w.cells.forEach((m,i)=>{if(c.once('m'+i,.2)&&c.missile(m,i)){flash(m,.3,0xffb060);shake=Math.max(shake,.05)}});
    return {w:env(c.u,.15,.7),torsoX:.18,torsoY:twist(c.s,.15),headY:twist(c.s,-.15),crouch:.25,legs:stance(c.s,.6)}}}},
  'GC':{name:'グレネード砲',st:{kind:'射撃',dmg:800,range:60,area:6,rate:'1発／2.6秒',count:1,ammo:4,reload:7,wt:35,imp:'S',spd:30,hom:'なし',note:'しゃがんで撃つ（発射中は移動不可）'},
   build(g){const gun=grp(g,0,.3,0);box(gun,.45,.45,.8,Wp.body,0,0,-.15);cyl(gun,.13,.13,1.5,Wp.metal,0,.06,.7,Math.PI/2,0,8);cyl(gun,.17,.17,.2,Wp.frame,0,.06,1.45,Math.PI/2,0,8);box(gun,.47,.08,.8,Wp.warn,0,.24,-.15);
@@ -1549,7 +1548,7 @@ function statsFor(c){
  return {armor:co.armor+ar.armor+lg.armor,armorCore:co.armor,boost:co.boost+(px.boost||0),load:ar.load,icInt:px.icInt||0,icR:px.icR||0,weap,total,legMob:lg.mob,pen,mob,
   walk:4+mob*.08,dash:(12+mob*.15)*(1+(px.dash||0)),qb:8+mob*.1+(px.qb||0),jump:(.6+mob*.008)*(LEGS[c.legs].jumpK||1),
   regenK:CORES[c.core].regenK||1,reloadK:ARMS[c.arms].reloadK||1,landK:LEGS[c.legs].landK||1,lead:hd.ability==='lead'||!!hd.lead,quick:hd.ability==='quick',xray:!!px.xray,
-  lockRange:Math.round((Math.max(40,...ranges)+(px.lockRange||0)+hd.lockAdd)*tLR),lockDeg:Math.round((hd.lockDeg+(px.lockDeg||0))*tLD),cone:Math.round((hd.lockDeg+(px.lockDeg||0))*tLD)*Math.PI/180,multi:hd.ability==='multi',over:weap>ar.load};
+  lockRange:Math.round((Math.max(40,...ranges)+(px.lockRange||0)+hd.lockAdd)*tLR),lockDeg:Math.round((hd.lockDeg+(px.lockDeg||0))*tLD),cone:Math.round((hd.lockDeg+(px.lockDeg||0))*tLD)*Math.PI/180,multi:hd.ability==='multi'||hd.ability==='triple',nLock:hd.ability==='triple'?3:hd.ability==='multi'?2:1,over:weap>ar.load};
 }
 function calcStats(){SS=statsFor(cfg);renderGarage()}
 /* 弾数：兵装ごとに残弾とリロード残り時間を持つ。0になったときだけ自動でリロード */
@@ -1643,6 +1642,9 @@ function setWeaponBtn(id,cid,keys){
  const ci=svg.querySelector('.rl');ci.setAttribute('opacity',reloading?1:0);ci.setAttribute('stroke-dasharray',`${(reloading?rl:0)*264} 264`);
 }
 const endOf=d=>d.end||d.act?.end;
+// 連射の持続：射撃区間 sus=[u0,u1] の間、ボタンを押している（または最低弾数 min に届かない）かぎり u0 に留まって撃ち続ける
+function sustainTick(key,a){const A=a.def.act;a.sus=false;if(!A.sus)return;const u=(t-a.t0)/A.dur,[u0,u1]=A.sus;if(u<u0||u>=u1)return;
+ if(ammoReady(key)&&(HOLD[key]||(a.st.cnt||0)<(A.min||0))){a.t0=t-u0*A.dur;a.sus=true}else a.t0=t-u1*A.dur}
 function run(key,def,side=0){active[key]={def,sl:{side},t0:t,st:{},fired:new Set()}}
 // 兵装の発動（出撃中は、硬直中と同じ兵装の動作中は受け付けない）
 function trigger(key){
@@ -1690,13 +1692,13 @@ function updateActs(){}
 
 /* パーツ・兵装の説明文 */
 const DESC={
- 'HD-01':'広い視野のセンサー群を持つ頭部。2体を同時に捕捉できる。','HD-02':'単眼の長距離センサー。捕捉距離が長い。',
+ 'HD-01':'広い視野のセンサー群を持つ標準的な頭部。クセがなく扱いやすい。','HD-02':'単眼の長距離センサー。捕捉距離が長い。',
  'CR-01':'扱いやすい標準のコア。ブースト容量に余裕がある。','CR-02':'分厚い装甲のコア。硬いぶん重く、ブースト容量は少なめ。',
  'AR-01':'軽くて素直な腕。中量までの兵装向け。','AR-02':'太い骨格の腕。重い兵装をまとめて積める。',
  'LG-01':'バランスの良い二脚。重量を抑えればよく走る。','LG-02':'装甲が厚く崩れにくい二脚。自重があり足は遅い。',
  'none':'何も装備しない。','RF':'扱いやすい主力の小銃。3点射で確実に削る。','MG':'威力は低いが連射で相手を止め続ける。',
  'BZ':'一撃が重い大砲。弾が遅く、当てるには距離が要る。','BL':'踏み込んで斬る近接兵装。弾切れがない。','SH':'正面の弾を防ぐ盾。押している間だけ構える。',
- 'MS':'6発を順に撃ち出す誘導弾。','RD':'背中に背負う索敵装置。ロックの角度と距離を広げる。','GC':'しゃがんで撃つ大口径砲。撃つ間は動けない。',
+ 'MS':'6発を同時に撃ち出す誘導弾。','RD':'背中に背負う索敵装置。ロックの角度と距離を広げる。','GC':'しゃがんで撃つ大口径砲。撃つ間は動けない。',
  'BT':'背中の追加推進器。ダッシュと急加速を強化する。','IC':'背中の小型砲台。近づく敵弾を自動で撃ち落とす。',
  'RF2':'長い銃身の狙撃型。一発が重く遠くまで届くが、弾数は少ない。','MG2':'3本の銃身を持つ重機関銃。威力は高いが重い。',
  'BZ2':'軽量の箱型ランチャー。威力は控えめだが、連射と弾数で補う。','BL2':'幅広の重いブレード。動きは同じでも一撃がとても重い。',
@@ -1820,7 +1822,7 @@ function renderSide(){
    rows.push(cmpRow('重量',a.wt||0,b.wt||0,'lo'));
    if(b.rate)rows.push(`<div class="c"><span class="k">連射</span><span class="v">${esc(b.rate)}</span></div>`);
    part=rows.join('');
-   const KEYS=(b.kind==='補助'||b.kind==='防御'||(!b.kind&&(a.kind==='補助'||a.kind==='防御')))?['使用回数','効果時間','リロード','重量']:['威力','射程','弾数','リロード','衝撃'].concat(traitOf(selSlot,cand)?[]:['重量']);
+   const KEYS=(b.kind==='補助'||b.kind==='防御'||(!b.kind&&(a.kind==='補助'||a.kind==='防御')))?['使用回数','効果時間','リロード','重量']:['威力','射程'].concat((a.count||0)>=2||(b.count||0)>=2?['同時発射']:[],['弾数','リロード','衝撃']).concat(traitOf(selSlot,cand)?[]:['重量']);
    brief=rows.filter(r=>KEYS.some(k=>r.includes(`class="k">${k}<`))).join('');
   }
   if(selSlot==='ext'){
@@ -1898,7 +1900,7 @@ const id2code=id=>id==='none'?'―':id;
  装甲は「重ね板」：外側の大きなくさび板（main）＋内側の板（sub）＋暗い継ぎ目（dark）で厚みを出す。
  肩・胸・膝・すねにオレンジの山形ライン（warn）。そろえると肩→胸→膝のくさびが同じ角度でつながる */
 Object.assign(HEADS,{
- 'HD-03':{name:'HD-03 複眼型',wt:10,ability:'quick',abName:'高速ロック',abEn:'QUICK LOCK',lockDeg:25,lockAdd:15,abDesc:'ロックした敵へ視点がすばやく向き、ロックが外れにくい。ロック角度 ±25°、距離＋15m',build(h){
+ 'HD-03':{name:'HD-03 複眼型',wt:10,ability:'triple',abName:'トリプルロック',abEn:'TRIPLE LOCK',lockDeg:25,lockAdd:0,abDesc:'最大3体を同時にロックする。ロック角度 ±25°、距離の補正なし',build(h){
   box(h,.24,.2,.24,M.frame,0,.05,0);
   box(h,.56,.3,.62,M.main,0,.28,-.02);box(h,.6,.1,.5,M.sub,0,.47,-.08,.12);
   box(h,.36,.1,.42,M.main,0,.54,-.02,.3);box(h,.06,.12,.46,M.warn,0,.6,-.04,.3);          // 頭頂のとさか
@@ -1991,9 +1993,9 @@ Object.assign(HAND,{
    const sc=grp(g,0,-.62,.24);box(sc,.12,.42,.14,VW.steel,0,0,0);box(sc,.1,.02,.1,VW.lens,0,-.22,0);
    const muzzle=grp(g,0,-2.45,0);muzzle.rotation.x=Math.PI/2;return {muzzle}}},
  // ガトリング：前の覆い輪と6本の銃身（回る）、大きなモーター箱、背中の弾薬箱へつながるベルト
- 'MG3':{...HAND.MG,st:{kind:'射撃',dmg:36,range:45,area:0,rate:'20発／秒',count:1,ammo:200,reload:6,wt:26,imp:'B',spd:70,hom:'なし',note:'銃身の回転が上がるまで約0.6秒。撃っている間は歩きが遅い'},
-  act:{name:'回転連射',dur:2.6,run(c){const s=c.s,on=c.u>.23&&c.u<.92;c.w.spin.rotation.y+=c.dt*Math.min(1,c.u/.23)*(c.u<.95?32:8);
-   const n=Math.floor((c.u-.23)/.0192);if(on&&n!==c.st.n){c.st.n=n;if(c.shot(c.w.muzzle,{size:.08})){flash(c.w.muzzle,.3);c.st.kick=1;shake=Math.max(shake,.035)}}
+ 'MG3':{...HAND.MG,st:{kind:'射撃',dmg:36,range:45,area:0,rate:'20発／秒',count:1,ammo:200,reload:6,wt:26,imp:'B',spd:70,hom:'なし',note:'銃身の回転が上がるまで約0.6秒。押している間（または弾切れまで）撃ち続ける。撃つ間は移動不可'},
+  act:{name:'回転連射',dur:2.6,lock:true,sus:[.23,.92],min:3,run(c){const s=c.s;c.w.spin.rotation.y+=c.dt*Math.min(1,c.u/.23)*(c.u<.92?32:8);
+   if(c.sus){c.st.acc=(c.st.acc==null?.0192:c.st.acc+c.dt);while(c.st.acc>=.0192){c.st.acc-=.0192;if(c.shot(c.w.muzzle,{size:.08})){c.st.cnt=(c.st.cnt||0)+1;flash(c.w.muzzle,.3);c.st.kick=1;shake=Math.max(shake,.035)}else break}}
    const k=c.st.kick=(c.st.kick||0)*.7,j=(Math.random()-.5)*.05*k;
    return {w:env(c.u,.12,.88),arm:{x:AIM.x+j-k*.05,z:s*.05+j,e:AIM.e-k*.12},off:brace(s),torsoY:twist(s,.4)+j,torsoX:.12-k*.04,headY:twist(s,-.3),legs:stance(s,1.3),crouch:.35}}},
   build(g){box(g,.4,.62,.46,VW.steel,0,-.38,0);for(let i=0;i<4;i++)box(g,.42,.04,.48,VW.dark,0,-.18-i*.12,0);
@@ -2918,7 +2920,7 @@ function gxPost(c,o){if(!is00Set(c))return;GX.CTR.slim({torso:o.torso,head:o.hea
 /* 系列ごとの性能（仮）。フレーム系列メモの「なだらか案」。00 は入手時に TUNE が全 MAX になる元の値 */
 const GXF=[
  {n:'04',ser:'GLA',name:'GLADIATOR 04',cls:'X',price:28000,ml:'G',types:['兜型','軽装型','近接型','軽量二脚'],
-  head:{wt:9,ability:'duel',abName:'一騎打ちロック',abEn:'DUEL LOCK',lockDeg:25,lockAdd:10,abDesc:'正面の1体を逃さない。ロック角度 ±25°、距離＋10m（特性の動きは開放時に実装）'},
+  head:{wt:9,ability:'quick',abName:'高速ロック',abEn:'QUICK LOCK',lockDeg:25,lockAdd:10,abDesc:'ロックした敵へ視点がすばやく向き、ロックが外れにくい。ロック角度 ±25°、距離＋10m'},
   core:{armor:820,boost:140,wt:46,trait:'瞬発力が高い（特性の動きは開放時に実装）'},arms:{armor:260,load:100,wt:22},legs:{armor:470,mob:115,wt:48}},
  {n:'05',ser:'CEN',name:'CENTURION 05',cls:'B',price:34000,ml:'C',types:['一文字型','制式型','重ね板型','中重量二脚'],
   head:{wt:12,ability:'wide',abName:'広角ロック',abEn:'WIDE LOCK',lockDeg:40,lockAdd:10,abDesc:'広い角度でロックする。ロック角度 ±40°、距離＋10m'},
@@ -4006,7 +4008,7 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
  // 兵装アクション
  const ry0=e.g.rotation.y;let dy=yaw-ry0;dy=Math.atan2(Math.sin(dy),Math.cos(dy));e.g.rotation.y+=dy*Math.min(1,dt*(A?5:3));
  const shk=shake;let o=null,scroll=0;
- if(A){const c={u:(t-A.t0)/A.def.act.dur,dt,s:A.s,w:A.w,st:A.st,S:A.def.st,tgt:null,use:()=>true,
+ if(A){const c={u:(t-A.t0)/A.def.act.dur,sus:(()=>{const q=A.def.act.sus,u=(t-A.t0)/A.def.act.dur;return !!q&&u>=q[0]&&u<q[1]})(),dt,s:A.s,w:A.w,st:A.st,S:A.def.st,tgt:null,use:()=>true,
    once:(id,u0)=>c.u>=u0&&!A.fired.has(id)&&(A.fired.add(id),true),
    shot:(obj,vis)=>{A.st.ns=(A.st.ns||0)+1;if(T.rf&&/^RF/.test(A.id)&&A.st.ns>T.rf)return false;gearShot(e,A,obj,vis);return true},missile:(obj,i)=>{A.st.nm=(A.st.nm||0)+1;if(A.st.nm>GEAR_MS_MAX)return false;gearMissile(e,A,obj,i);return true},melee:()=>gearMelee(e,A)};
   if(c.u>=1||e.stun>.3){endOf(A.def)?.(A.w);e.act=null;e.gapT=T.gap||0}else{o=A.def.act.run(c);if(o&&o.scroll)scroll=o.scroll}}
@@ -4070,7 +4072,7 @@ function crawlerTick(e,dt){const tr=RUN&&RUN.tr&&RUN.tr.hp>0,O=tr?TOBJ().positio
  e.g.position.set(e.home.x,0,e.home.z);e.g.rotation.y=Math.atan2(dx,dz);e.legs.forEach(q=>q.l.rotation.x=Math.sin(e.ph+q.ph)*.4);
  const near=Math.min(dO,dP);e.lamp.material.color.setHSL(.07,1,Math.floor(t*(near<12?10:3))%2?.55:.15);
  e.mat.emissive.setRGB(e.hit>0?1:0,e.hit>0?1:0,e.hit>0?1:0);e.hit-=dt;e.hpBar.scale.set(1.2*e.hp/e.max,.1,.1);e.hpBar.lookAt(C.position);
- const boom=hit=>{e.alive=false;e.g.visible=false;const p=e.center(new THREE.Vector3());explode(p,2.2);hit(p);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null};
+ const boom=hit=>{e.alive=false;e.g.visible=false;const p=e.center(new THREE.Vector3());explode(p,2.2);hit(p);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null;if(lockT3===e)lockT3=null};
  if(O&&dO<(RUN.tr.hr||3)+1.2&&!RUN.ok)boom(p=>truckHit(260,p));else if(dP<2.6&&P.hp.core>0)boom(p=>hitPlayer(110,'B',p))}
 /* 中継アンテナ（★2-S）：骨組みの塔に皿と赤いランプ、足元の制御箱。撃ってこない。全部倒すと指揮型ギアの守り（被ダメージ 1/4）が消える */
 function makeAntenna(){const g=grp(S),mat=psMat(0xffffff,{map:panel('#5a5e58','#2a2e2a')}),dk=psMat(0x1a1c18),hz=psMat(0xffffff,{map:stripes('#d8b020','#1a1a14')}),lamp=new THREE.MeshBasicMaterial({color:0xff3020});
@@ -4206,7 +4208,7 @@ function quickBoost(x,y,mult=1,free=false){ // x=右+ / y=前+ （画面基準�
  const dir=f.multiplyScalar(y).add(r.multiplyScalar(x));if(dir.lengthSq()<.01)dir.set(Math.sin(P.yaw),0,Math.cos(P.yaw));
  P.qb={dir:dir.normalize(),u:0,dist:SS.qb*mult};run('qb',QBA);SND.play('qboost',{g:.45});shake=Math.max(shake,.12);if(TRT)ttEvt('qb');
 }
-let lockT2=null,reveal=0;
+let lockT2=null,lockT3=null,reveal=0;
 let pinned=null,lockCands=[];
 // ロック候補：追従視点＝照準の中心に近い順、俯瞰＝近い順。ターゲット変更で選んだ敵（pinned）は候補にいる間は優先
 /* マップ：追従＝自機中心・上が自機の向き／俯瞰＝カメラ中心・上が画面の奥、画面に映る範囲を台形で表示 */
@@ -4236,7 +4238,7 @@ function drawMap(){
  ENEMIES.forEach(e=>{if(!e.alive)return;const [x,y]=toM(e.g.position.x,e.g.position.z);
   const inR=Math.hypot(x-cx,y-cy)<W0/2-4;const X=inR?x:cx+(x-cx)/Math.hypot(x-cx,y-cy)*(W0/2-5),Y=inR?y:cy+(y-cy)/Math.hypot(x-cx,y-cy)*(W0/2-5);
   MG.fillStyle=inR?'#ff5a3c':'rgba(255,90,60,.5)';if(e.type==='drone'){MG.beginPath();MG.moveTo(X,Y-3.5);MG.lineTo(X+3.5,Y+3);MG.lineTo(X-3.5,Y+3);MG.closePath();MG.fill()}else MG.fillRect(X-3,Y-3,6,6);
-  if(e===lockT){MG.strokeStyle='#f0a040';MG.lineWidth=1.5;MG.strokeRect(X-6,Y-6,12,12);MG.lineWidth=1}else if(e===lockT2){MG.strokeStyle='rgba(240,160,64,.6)';MG.setLineDash([2,2]);MG.strokeRect(X-6,Y-6,12,12);MG.setLineDash([])}});
+  if(e===lockT){MG.strokeStyle='#f0a040';MG.lineWidth=1.5;MG.strokeRect(X-6,Y-6,12,12);MG.lineWidth=1}else if(e===lockT2||e===lockT3){MG.strokeStyle='rgba(240,160,64,.6)';MG.setLineDash([2,2]);MG.strokeRect(X-6,Y-6,12,12);MG.setLineDash([])}});
  // 荷車（シアンの四角）
  if(RUN&&RUN.tr){const [x,y]=toM(TOBJ().position.x,TOBJ().position.z),inR=Math.hypot(x-cx,y-cy)<W0/2-4,dd=Math.hypot(x-cx,y-cy)||1,X=inR?x:cx+(x-cx)/dd*(W0/2-5),Y=inR?y:cy+(y-cy)/dd*(W0/2-5);MG.fillStyle=inR?'#6fd3e0':'rgba(111,211,224,.55)';MG.fillRect(X-3,Y-4.5,6,9)}
  // 積み荷（金の四角）と回収地点（シアンの輪）
@@ -4260,12 +4262,12 @@ function updateLock(){
   if(Math.abs(a)<lim)c.push([Math.abs(a),e])});
  c.sort((a,b)=>a[0]-b[0]);lockCands=c.map(x=>x[1]);
  if(pinned&&!lockCands.includes(pinned))pinned=null;
- lockT=pinned||lockCands[0]||null;const rest=lockCands.filter(e=>e!==lockT);lockT2=SS.multi&&rest[0]?rest[0]:null;
- LOCKS=[lockT,lockT2].filter(Boolean);
+ lockT=pinned||lockCands[0]||null;const rest=lockCands.filter(e=>e!==lockT);lockT2=SS.nLock>1&&rest[0]?rest[0]:null;lockT3=SS.nLock>2&&rest[1]?rest[1]:null;
+ LOCKS=[lockT,lockT2,lockT3].filter(Boolean);
  if(lockT&&lockT!==LSND.t){SND.play('lockOn',{g:.16})}else if(lockCands.some(e=>!LSND.c.includes(e))&&sOnce('lkc',.2))SND.play('lockable',{g:.1});LSND.t=lockT;LSND.c=lockCands.slice();
 }
 const LSND={t:null,c:[]};
-/* ロック中の敵（1体または複数ロックのヘッドで2体）。弾の狙い：
+/* ロック中の敵（1体、マルチ系ヘッドで2体、HD-03で3体）。弾の狙い：
  同時発射（ミサイルの i 発目）＝近い順に割り振り／連射・単発＝撃ち始めにいちばん近いロック中の敵を決め、撃ち続ける間は固定 */
 let LOCKS=[];const FTGT={};
 const byDist=()=>LOCKS.slice().sort((a,b)=>a.center(_q).distanceTo(P.pos)-b.center(_v).distanceTo(P.pos));
@@ -5122,7 +5124,7 @@ function setMode(m,training=false,mis=null,tt=false){introClear();dmgNumClear();
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
  S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}wxApply(p&&RUN?RUN.def.wx:null);C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
- P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=null;LOCKS=[];pinned=null;reveal=0;topYaw=topYawC=Math.PI;GUARD[-1]=GUARD[1]=false;resetAmmo();
+ P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=lockT3=null;LOCKS=[];pinned=null;reveal=0;topYaw=topYawC=Math.PI;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
  if(p&&RUN&&RUN.def.start){P.pos.set(RUN.def.start.x,0,RUN.def.start.z);mech.bot.position.copy(P.pos)}
  $('dbgInv').hidden=!(p&&DBG.inv);$('modeBadge').textContent=TRT?'TRAINING ／ TUTORIAL':RUN?'MISSION '+RUN.def.id:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';$('garage').textContent=RUN?'撤退':'ガレージ';$('comm').hidden=true;
@@ -5223,7 +5225,7 @@ R.setAnimationLoop(()=>{
   P.stun=Math.max(0,P.stun-dt);
   if(P.down>0){P.down-=dt;if(P.down<=0&&RUN){if(finishWait(dt))misFinish(false,'CORE 大破');else P.down=.01}else if(P.down<=0){fadeTo(()=>{setMode('garage');openModal(`<div class="shd"><span class="code">MISSION FAILED</span><span class="ttl">CORE 大破</span></div><div class="rule"></div><p class="note" style="margin:0">コアが破壊され、機体は回収されました。SHOP の REPAIR で修理するまで、攻撃ありの TRAINING には出撃できません。</p>`)},'GARAGE')}}
   tickAmmo(dt);reveal=Math.max(0,reveal-dt);
-  const guard=guarding(-1)||guarding(1),rooted=Object.values(active).some(a=>a.def.act.root);
+  const guard=guarding(-1)||guarding(1),rooted=Object.values(active).some(a=>a.def.act.root||a.def.act.lock);
   const can=P.stun<=0&&!rooted,air=!!active.jump;
   const top=CAMMODE==='top',attacking=WSLOTS.some(s=>active[s.key]);
   if(top){ // 俯瞰：画面の上＝奥(-Z)。機体は操作した方向を向く（弾はロック中の敵へ飛ぶ）
@@ -5235,7 +5237,7 @@ R.setAnimationLoop(()=>{
   const dashing=can&&!guard&&inp.dash&&mag>.1&&P.boost>0&&P.hp.legs>0;
   if(dashing){P.boost=Math.max(0,P.boost-12*dt);P.regen=.6*SS.regenK;if(P.boost<=0)say('BOOST 切れ',.6)}
   const heavyFire=Object.values(active).some(a=>a.def===HAND.MG3);
-  const sp=(dashing?SS.dash:SS.walk*(air?.9:1)*(heavyFire?.55:1))*(guard?.5:1)*(RUN&&RUN.carry?.7:1);
+  const sp=(dashing?SS.dash:SS.walk*(air?.9:1)*1)*(guard?.5:1)*(RUN&&RUN.carry?.7:1);
   const want=can?f.multiplyScalar(inp.y*sp).add(r.multiplyScalar(inp.x*sp)):new THREE.Vector3();
   P.vel.lerp(want,Math.min(1,dt*(dashing?4:6)));
   if(P.qb){P.qb.u+=dt/.4;const v=2*P.qb.dist/.4*(1-P.qb.u);if(P.qb.u>=1)P.qb=null;else P.vel.copy(P.qb.dir).multiplyScalar(v)}
@@ -5274,12 +5276,12 @@ R.setAnimationLoop(()=>{
  let tX=B.tX,tY=B.tY,hY=B.hY,crouch=0,lift=B.lift;
  const armF=B.arms.map(b=>({...b})),legF=B.legs.map(b=>({...b}));
  const mixArm=(f,o,w)=>{f.x=L(f.x,o.x,w);f.z=L(f.z,o.z,w);f.e=L(f.e,o.e,w)};
- for(const key in active){const a=active[key],S0=a.def.st,c={u:(t-a.t0)/a.def.act.dur,dt,s:a.sl.side,w:m.weps[key],st:a.st,S:S0,
+ for(const key in active){const a=active[key];sustainTick(key,a);const S0=a.def.st,c={u:(t-a.t0)/a.def.act.dur,sus:!!a.sus,dt,s:a.sl.side,w:m.weps[key],st:a.st,S:S0,
    once:(id,u0)=>c.u>=u0&&!a.fired.has(id)&&(a.fired.add(id),true),
    tgt:fireTgt(key),
    use:(n=1)=>ammoUse(key,n),
    shot:(obj,vis)=>{if(!ammoUse(key))return false;markAtk(c.tgt);{const n=WSND(cfg[key]);if(n)SND.play(n,{g:.5})}shoot(obj,{...vis,dmg:S0.dmg,speed:S0.spd,range:S0.range,splash:S0.area,imp:S0.imp,tgt:c.tgt,src:key,pierce:!!S0.pierce});return true},
-   missile:(obj,i)=>{if(!ammoUse(key))return false;if(S0.vert?!(i|0):(i|0)%2===0)SND.play(S0.vert?'vmissile':'missile',{g:.45});const L2=byDist(),tg=L2.length?L2[(i|0)%L2.length]:null;markAtk(tg);missile(obj,S0,tg,key);return true},
+   missile:(obj,i)=>{if(!ammoUse(key))return false;if(!(i|0))SND.play(S0.vert?'vmissile':'missile',{g:.45});const L2=byDist(),tg=L2.length?L2[(i|0)%L2.length]:null;markAtk(tg);missile(obj,S0,tg,key);return true},
    melee:()=>{HITSRC=key;markAtk(c.tgt);melee(S0.range,S0.dmg,S0.imp)}};
   if(c.u>=1){endOf(a.def)?.(c.w);delete active[key];continue}
   const o=a.def.act.run(c);if(!o)continue;const w=o.w??1,ai=c.s<0?0:1;
