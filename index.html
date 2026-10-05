@@ -1379,7 +1379,7 @@ function shieldSync(){SHRIG.forEach(r=>{let top=r.pv;while(top.parent)top=top.pa
  r.pv.parent.updateWorldMatrix(true,false);r.pv.parent.getWorldQuaternion(_sp);r.pv.parent.getWorldScale(_ss);const sc=_ss.x||1;
  _se.set(ph,psi,0,'YXZ');_sq.setFromEuler(_se);r.pv.quaternion.copy(_sp).invert().multiply(_sq);
  r.pv.updateWorldMatrix(true,false);r.pv.getWorldPosition(_sv);
- const px=r.s*(.45-1.45*e),pz=.1*e,half=r.h*sc/2,idleC=_sv.y+.3*sc,guardC=5.8-half,minC=.05+half*Math.cos(ph)+.1*sc;
+ const px=r.s*(.15-1.15*e),pz=.1*e,half=r.h*sc/2,idleC=_sv.y+.3*sc,guardC=5.8-half,minC=.05+half*Math.cos(ph)+.1*sc;
  const cw=r.free?idleC:Math.max(minC,idleC+(guardC-idleC)*e),py=(cw-_sv.y)/sc;
  r.p.position.set(px,py,pz);r.bar.position.set(-px/2,-py,-pz);r.bar.scale.x=Math.max(.01,Math.abs(px))})}
 const HAND={
