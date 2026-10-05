@@ -1379,7 +1379,7 @@ function shieldSync(){SHRIG.forEach(r=>{let top=r.pv;while(top.parent)top=top.pa
  r.pv.parent.updateWorldMatrix(true,false);r.pv.parent.getWorldQuaternion(_sp);r.pv.parent.getWorldScale(_ss);const sc=_ss.x||1;
  _se.set(ph,psi,0,'YXZ');_sq.setFromEuler(_se);r.pv.quaternion.copy(_sp).invert().multiply(_sq);
  r.pv.updateWorldMatrix(true,false);r.pv.getWorldPosition(_sv);
- const px=r.s*(.45-1.45*e),pz=.3+.1*e,half=r.h*sc/2,idleC=_sv.y+.3*sc,guardC=5.8-half,minC=.05+half*Math.cos(ph)+.1*sc;
+ const px=r.s*(.45-1.45*e),pz=.1*e,half=r.h*sc/2,idleC=_sv.y+.3*sc,guardC=5.8-half,minC=.05+half*Math.cos(ph)+.1*sc;
  const cw=r.free?idleC:Math.max(minC,idleC+(guardC-idleC)*e),py=(cw-_sv.y)/sc;
  r.p.position.set(px,py,pz);r.bar.position.set(-px/2,-py,-pz);r.bar.scale.x=Math.max(.01,Math.abs(px))})}
 const HAND={
@@ -1445,7 +1445,7 @@ const SHOULDER={
    const cells=[];for(let j=0;j<2;j++)for(let i=0;i<3;i++){const m=grp(pod,-.2+i*.2,.12-j*.24,.48);cells.push(m)}
    return {cells}},
   act:{name:'ミサイル',dur:2.0,run(c){
-   c.w.cells.forEach((m,i)=>{if(c.once('m'+i,.2)&&c.missile(m,i)){flash(m,.3,0xffb060);shake=Math.max(shake,.05)}});
+   c.w.cells.forEach((m,i)=>{if(c.once('m'+i,.2+i*.07)&&c.missile(m,i)){flash(m,.3,0xffb060);shake=Math.max(shake,.05)}});
    return {w:env(c.u,.15,.7),torsoX:.18,torsoY:twist(c.s,.15),headY:twist(c.s,-.15),crouch:.25,legs:stance(c.s,.6)}}}},
  'GC':{name:'グレネード砲',st:{kind:'射撃',dmg:800,range:60,area:6,rate:'1発／2.6秒',count:1,ammo:4,reload:7,wt:35,imp:'S',spd:30,hom:'なし',note:'しゃがんで撃つ（発射中は移動不可）'},
   build(g){const gun=grp(g,0,.3,0);box(gun,.45,.45,.8,Wp.body,0,0,-.15);cyl(gun,.13,.13,1.5,Wp.metal,0,.06,.7,Math.PI/2,0,8);cyl(gun,.17,.17,.2,Wp.frame,0,.06,1.45,Math.PI/2,0,8);box(gun,.47,.08,.8,Wp.warn,0,.24,-.15);
@@ -1729,7 +1729,7 @@ const DESC={
  'LG-01':'バランスの良い二脚。重量を抑えればよく走る。','LG-02':'装甲が厚く崩れにくい二脚。自重があり足は遅い。',
  'none':'何も装備しない。','RF':'扱いやすい主力の小銃。3点射で確実に削る。','MG':'威力は低いが連射で相手を止め続ける。',
  'BZ':'一撃が重い大砲。弾が遅く、当てるには距離が要る。','BL':'踏み込んで斬る近接兵装。弾切れがない。','SH':'正面の攻撃を耐久で受け止める標準の盾。構え中は歩きが半分になる。',
- 'MS':'6発を同時に撃ち出す誘導弾。','RD':'背中に背負う索敵装置。ロックの角度と距離を広げる。','GC':'しゃがんで撃つ大口径砲。撃つ間は動けない。',
+ 'MS':'6発を順に撃ち出す誘導弾。','RD':'背中に背負う索敵装置。ロックの角度と距離を広げる。','GC':'しゃがんで撃つ大口径砲。撃つ間は動けない。',
  'BT':'背中の追加推進器。ダッシュと急加速を強化する。','IC':'背中の小型砲台。近づく敵弾を自動で撃ち落とす。',
  'RF2':'長い銃身の狙撃型。一発が重く遠くまで届くが、弾数は少ない。','MG2':'3本の銃身を持つ重機関銃。威力は高いが重い。',
  'BZ2':'軽量の箱型ランチャー。威力は控えめだが、連射と弾数で補う。','BL2':'幅広の重いブレード。動きは同じでも一撃がとても重い。',
@@ -5323,7 +5323,7 @@ R.setAnimationLoop(()=>{
    tgt:fireTgt(key),
    use:(n=1)=>ammoUse(key,n),
    shot:(obj,vis)=>{if(!ammoUse(key))return false;markAtk(c.tgt);{const n=WSND(cfg[key]);if(n)SND.play(n,{g:.5})}shoot(obj,{...vis,dmg:S0.dmg,speed:S0.spd,range:S0.range,splash:S0.area,imp:S0.imp,tgt:c.tgt,src:key,pierce:!!S0.pierce});return true},
-   missile:(obj,i)=>{if(!ammoUse(key))return false;if(!(i|0))SND.play(S0.vert?'vmissile':'missile',{g:.45});const L2=byDist(),tg=L2.length?L2[(i|0)%L2.length]:null;markAtk(tg);missile(obj,S0,tg,key);return true},
+   missile:(obj,i)=>{if(!ammoUse(key))return false;if(S0.vert?!(i|0):(i|0)%2===0)SND.play(S0.vert?'vmissile':'missile',{g:.45});const L2=byDist(),tg=L2.length?L2[(i|0)%L2.length]:null;markAtk(tg);missile(obj,S0,tg,key);return true},
    melee:()=>{HITSRC=key;markAtk(c.tgt);melee(S0.range,S0.dmg,S0.imp)}};
   if(c.u>=1){endOf(a.def)?.(c.w);delete active[key];continue}
   const o=a.def.act.run(c);if(!o)continue;const w=o.w??1,ai=c.s<0?0:1;
