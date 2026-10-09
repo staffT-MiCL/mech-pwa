@@ -48,6 +48,8 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 #hdr .tag.unit{font-family:var(--mech);font-weight:700;font-size:13px;letter-spacing:.16em;color:#eef2ef}
 #hdr .sn{font-family:var(--mech);font-size:10px;letter-spacing:.12em;color:var(--dim);white-space:nowrap}
 @media (max-width:700px){#hdr .sn{display:none}}
+@media (max-width:960px){#hdr .sn{display:none}#hdr{gap:8px}#keyBtn,#mailBtn{padding:0 6px;gap:4px;letter-spacing:.08em}}
+@media (max-width:900px){#hdr{gap:6px;padding:0 8px}#hdr .sep{display:none}#hdr .kv.cr small{display:none}#hdr .tag.unit{font-size:11px;letter-spacing:.08em}#hdr .hcls,#hdr .hch{padding-left:5px;padding-right:5px;letter-spacing:.08em}#hdr .hdt{letter-spacing:0}#menuBtn{padding:0 9px;letter-spacing:1px}}
 .grow{flex:1}
 .kv{display:flex;align-items:baseline;gap:5px;white-space:nowrap}.kv small{font-size:10px;color:var(--dim);letter-spacing:1px}.kv b{font-size:13px;font-variant-numeric:tabular-nums}
 .kv b.over{color:var(--alert)}
@@ -677,7 +679,9 @@ ruby.mc.n{margin-right:0}
 .mc14{clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%);background:linear-gradient(225deg,transparent 9.4px,var(--ln,#2c3833) 9.4px,var(--ln,#2c3833) 10.8px,transparent 10.8px) top right/24px 24px no-repeat,var(--bgc,var(--panel2))}
 .hcls{font-family:var(--mech);font-size:11px;font-weight:700;letter-spacing:.16em;color:#1a1006;background:var(--fire);padding:2px 8px;white-space:nowrap}
 .hch{font-family:var(--mech);font-size:11px;letter-spacing:.16em;color:#9fe6ee;border:1px solid #2d6068;padding:1px 8px;white-space:nowrap}
-#mailBtn{height:26px;padding:0 9px;display:flex;align-items:center;gap:6px;background:#0c1718;border:1px solid var(--cyan);color:#9fe6ee;font-size:11px;font-weight:700;letter-spacing:.14em}
+#keyBtn,#mailBtn{height:26px;padding:0 9px;display:flex;align-items:center;gap:6px;background:#0c1718;border:1px solid var(--cyan);color:#9fe6ee;font-size:11px;font-weight:700;letter-spacing:.14em}
+#keyBtn{padding:0 9px;display:flex;align-items:center;gap:6px;background:#0c1718;border:1px solid var(--cyan);color:#9fe6ee;font-size:11px;font-weight:700;letter-spacing:.14em}#keyBtn[hidden]{display:none}
+#keyBtn.new{animation:mailp 1s steps(2) infinite}
 #mailBtn i{font-style:normal;background:var(--fire);color:#1a1006;padding:0 5px;font-size:10px}
 #mailBtn.new{animation:mailp 1s steps(2) infinite}
 @keyframes mailp{50%{border-color:var(--fire);color:var(--fire)}}
@@ -855,7 +859,7 @@ input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:d
 #vTalk .ci{position:absolute;left:auto;top:-9px;margin-left:8px;height:16px;padding:0 6px;border:1px solid var(--vc);background:#0a0e0d;color:var(--vc);font-family:var(--mech);font-size:9px;letter-spacing:.14em;display:flex;align-items:center}
 #vTx{font-family:var(--disp);font-size:13.5px;line-height:1.65;color:#e6ebe7;overflow:auto;height:100%}
 #vNx{position:absolute;right:12px;bottom:6px;color:var(--vc);font-size:10px;animation:kblink .8s steps(2) infinite}
-body.visiting #side{opacity:.25;pointer-events:none}body.visiting #menuBtn,body.visiting #mailBtn{pointer-events:none;opacity:.4}
+body.visiting #side{opacity:.25;pointer-events:none}body.visiting #menuBtn,body.visiting #mailBtn,body.visiting #keyBtn{pointer-events:none;opacity:.4}
 body.eqm #visit{display:none}
 .bmp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:14px;color:#3f6f74;letter-spacing:.2em}
 /* メールボックス */
@@ -902,6 +906,7 @@ body.eqm #visit{display:none}
  <span class="tag unit">HX-07 VESTIGE</span><span class="sn">S/N 0417-A</span>
  <span class="grow"></span>
  <span class="hcls" id="hCls">CLASS E</span><span class="hch" id="hCh">CH.1</span><span class="hdt" id="hDt"></span>
+ <button id="keyBtn" hidden aria-label="入手したKEYを見る"><svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="3.5" cy="5" r="2.5"/><path d="M6 5h7.5M10.5 5v2.5M12.5 5v2"/></svg>KEY</button>
  <button id="mailBtn" hidden aria-label="メールを読む"><svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5"><rect x=".75" y=".75" width="12.5" height="8.5"/><path d="M1 1l6 5 6-5"/></svg>MAIL<i id="mailN">1</i></button>
  <span class="kv cr"><small>CREDIT</small><b id="hCr"></b><small>CR</small></span>
  <button id="eqClose" aria-label="装備変更を終えてショップへ戻る">◀ SHOP へ戻る</button>
@@ -4399,7 +4404,7 @@ function fixDays(){const L=MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id]
  if(!DAY_SAVED){L.sort((a,b)=>(MIS[a.id].t||0)-(MIS[b.id].t||0)).forEach((d,i)=>MIS[d.id].dy=i);DAY=Math.max(DAY,L.length-1);DAY_SAVED=true}else L.forEach(d=>MIS[d.id].dy=DAY)}
 const MIS={}; // 依頼の状態 {got:届いた, read:メールを読んだ, clear:1回以上クリア, n:クリア回数}
 const CHAPTERS={1:'何でも屋の初仕事',2:'残響',3:'闘技場'};
-const PASTOR07='<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-07</span>',JONAH='<ruby class="mc">JONAH<rt>ヨナ</rt></ruby>';
+const PASTOR07='<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-07</span>',JONAH='<ruby class="mc">JONAH<rt>ヨナ</rt></ruby>',SOL='<ruby class="mc">SOLOMON<rt>ソロモン</rt></ruby>';
 const MLIST=[
  {id:'1-1',wx:'dusk',ch:1,kind:'mail',ready:true,need:['tut'],title:'配給所周辺の掃除',from:'第7区画管理局',fromFull:'第7区画管理局（'+PASTOR07+' '+JONAH+' 管轄）',
   subj:'配給所周辺における小型無人機の排除',body:'登録ギア乗り各位<br>配給所外周に小型無人機の侵入を確認。排除を依頼する。<br>報酬 6,000 CR。受諾は任意。<br><span class="end">── 以上</span>',
@@ -4474,33 +4479,37 @@ const MLIST=[
    ['n','境界の向こうから……。ヴァルターさんの砲台の信号の送り先と、方角が同じです。'],['c','……その端末、しゃべるのか。'],['n','N-07、ノーナです。お受けしましょう、○○。']]},
  {id:'2-2',wx:'evening',ch:2,kind:'visit',ready:true,need:['2-1'],title:'残骸の中の荷',from:'仲介屋 レナード',client:'レナード',voice:'adultM',img:'img/rivals/rival-solomon-leonard.png',imgF:'',reward:12000,field:'road',fieldJa:'旧街道',
   obj:'積み荷3つを回収地点へ運ぶ',fail:'CORE 大破',enemyJa:'無人ギア ＋ ドローン（荷に触れると増援）',
-  desc:'旧街道の先に輸送機が落ち、積み荷が散らばっている。中身は聞くな、と依頼人。依頼人は、SOLOMON に雇われているらしい仲介屋。',
+  desc:'旧街道の先に輸送機が落ち、積み荷が散らばっている。中身は聞くな、と依頼人。依頼人は、仲介屋を名乗る男。',
   brief:['旧街道の先に落ちた輸送機から、積み荷を3つ回収します。1つずつ運んで、入口の回収地点へ。','荷を持っている間は、機体が重くなって歩みが遅くなります。急加速は使えますので、荷を守りながら戻ってください。','輸送機のまわりに無人のギアが2機。荷に触れると、別の無人機も集まってくるはずです。'],
-  comm:{start:'輸送機の残骸へ向かいます。積み荷は3つ。',pick:'積み荷を確保しました。回収地点へ戻ってください。',ambush:'後方から無人機。荷を狙っています。',got:'積み荷を回収。残り{n}つです。',clear:'3つとも回収しました。……積み荷の刻印、SOLOMON の工場のものです。'},
+  comm:{start:'輸送機の残骸へ向かいます。積み荷は3つ。',pick:'積み荷を確保しました。回収地点へ戻ってください。',ambush:'後方から無人機。荷を狙っています。',got:'積み荷を回収。残り{n}つです。',clear:'3つとも回収しました。……積み荷の刻印、やはり SOLOMON の工場のものです。'},
   res:{ok:'レナードさんから短い通信です。「上出来だ。お前の値段、少し上がったな」',ng:'撤退します。積み荷は……あとで誰かが拾うのでしょうね。'},
   start:{x:-2,z:-10},collect:{items:[{z:112,o:-8},{z:126,o:11},{z:140,o:-5}],drop:{z:6,r:7},wreck:{z:124,o:16},
    ambush:[[{type:'drone',o:-12,z:72},{type:'drone',o:12,z:76},{type:'drone',o:0,z:58}],[{type:'drone',o:-14,z:150},{type:'drone',o:14,z:154},{type:'drone',o:0,z:90}],[{type:'drone',o:-10,z:60},{type:'drone',o:10,z:64},{type:'gear',gear:'militia',o:0,z:40}]]},
   enemies:[{type:'gear',gear:'militia',o:-8,z:104},{type:'gear',gear:'militia',o:12,z:146},{type:'drone',o:0,z:92},{type:'drone',o:-10,z:132}],
   after:{ok:'話が早くて助かる。回収地点は旧街道の入口だ。',later:'急ぎの荷だ。値段が下がる前に決めてくれ。'},
-  talk:[['c','よう。ハンガー07の払い下げ乗りってのは、お前か。……レナードだ。まあ、仲介屋みたいなもんだと思ってくれ。'],['c','旧街道の先に、輸送機が一機落ちてる。積み荷が3つ、そのへんに散らばったままだ。拾ってきてくれ。中身は聞くな。'],
-   ['c','お前の値段は……そうだな、今のところ1万ってとこだ。'],['d','あ、あの！ その輸送機の積み荷……もしや中継装置の部品では？ 先日、似た部品に SOLOMON の工場の刻印が……'],
-   ['c','……おしゃべりな倉庫番だな。'],['c','1万2千だ。その分、余計なことは覚えておくな。いいな。'],['n','……SOLOMON の地域の部品。お受けしますか、○○。']]},
+  talk:[['c','よう。ハンガー07の払い下げ乗りってのは、お前か。仲介屋のレナードだ。'],['c','旧街道の先に、輸送機が一機落ちてる。積み荷が3つ、そのへんに散らばったままだ。拾ってきてくれ。中身は聞くな。'],
+   ['c','お前の値段は……そうだな、今のところ1万ってとこだ。'],['d','あ、あの！ その輸送機の積み荷……先日、似た部品に、'+SOL+' の工場の刻印が……'],
+   ['d','第2区画を治める統治AI、'+SOL+' 様の工場でございます。商いの区画で、あちらの部品は、この辺りにはまず流れてまいりません。'],
+   ['c','……おしゃべりな倉庫番だな。'],['c','1万2千だ。その分、余計なことは覚えておくな。いいな。'],['n','……統治AIの管理下の部品が、なぜ第7区画の境界の近くに。お受けしますか、○○。']]},
  {id:'2-S',wx:'nightfog',ch:2,kind:'visit',story:true,ready:true,cls:'C',title:'境界の中継局',from:'元整備兵 ヴァルター',client:'ヴァルター',voice:'adultM',img:'img/clients/client-veteran-walter.png',imgF:'',reward:22000,field:'relay',fieldJa:'境界の中継局',
   obj:'指揮型無人ギアの撃破',fail:'CORE 大破',enemyJa:'指揮型無人ギア ＋ 中継アンテナ ＋ 旧軍の制式機',
-  desc:'信号の行き先は、境界の向こうの中継局。旧軍の通信の要だった場所で、今も何かが命令を出し続けている。依頼人は、かつてその命令で動く機体を整備していた元整備兵。',
-  brief:['目標は、中継局を守る指揮型の無人ギア。旧軍の制式機を元にした、指揮官用の機体です。','局のまわりにアンテナが3本。アンテナが生きている間、ギアの装甲は信号で守られ、護衛も呼び直されます。先にアンテナを倒してください。','……この局の中枢に、なにかがあります。わたくしにも、なぜか分かるのです。'],
-  comm:{start:'中継局を確認。アンテナ3本と、指揮型の無人ギアです。',shield:'ギアの装甲に信号が流れています。効きが悪い。先にアンテナを。',ant:'アンテナ、残り{n}本です。',down:'アンテナ全滅。ギアへの信号が途絶えました。いまです。',reinf:'中継局が、護衛を呼んでいます。',half:'指揮型ギアの損傷、半分を超えました。',clear:'指揮型ギア、停止。……中継局の中枢に、接続します。',clear2:'……NONA。……糸を、紡ぐ者。'},
-  res:{ok:'……中継局の記録は、ここで途切れていました。帰還しましょう、○○。',ng:'撤退します。……あの局には、また来なければなりません。'},
+  desc:'信号の行き先は、境界の向こうの中継局。かつてそこに配備されていた指揮型の無人ギアが、戦役のあと初めて動き出している。依頼人は、その機体を整備していた元整備兵。',
+  brief:['目標は、中継局を守る指揮型の無人ギア。ヴァルターさんが整備していた機体です。乗り手はいません。','中継局のまわりにアンテナが3本。アンテナが生きている間、ギアの装甲は信号で守られ、護衛も呼び直されます。先にアンテナを倒してください。','……この中継局の中枢に、なにかがあります。わたくしにも、なぜか分かるのです。'],
+  comm:{start:'中継局を確認。アンテナ3本と、指揮型の無人ギア。……ヴァルターさんが整備していた機体です。',shield:'ギアの装甲に信号が流れています。効きが悪い。先にアンテナを。',ant:'アンテナ、残り{n}本です。',down:'アンテナ全滅。ギアへの信号が途絶えました。いまです。',reinf:'中継局が、護衛を呼んでいます。',half:'指揮型ギアの損傷、半分を超えました。',clear:'指揮型ギア、停止。……中継局の中枢に、接続します。',clear2:'……NONA。……糸を、紡ぐ者。'},
+  res:{ok:'……中継局の中枢から、データを一つ持ち帰りました。帰還しましょう、○○。',ng:'撤退します。……あの中継局には、また来なければなりません。'},
   start:{x:0,z:-40},relay:true,
   enemies:[{type:'gear',gear:'commander',x:0,z:10},{type:'antenna',x:-26,z:20},{type:'antenna',x:26,z:20},{type:'antenna',x:0,z:46},{type:'gear',gear:'vanguard',x:-14,z:2},{type:'gear',gear:'vanguard',x:14,z:2}],
   reinf:[[{type:'drone',x:-18,z:24},{type:'drone',x:18,z:24}],[{type:'drone',x:-10,z:30},{type:'drone',x:10,z:30},{type:'drone',x:0,z:16}],[{type:'gear',gear:'militia',x:0,z:24},{type:'drone',x:-20,z:10},{type:'drone',x:20,z:10}]],
-  after:{ok:'……気をつけろ。あそこの命令は、昔から容赦がなかった。',later:'急がせはしない。……だが、信号は今も出ている。'},
-  talk:[['c','また会ったな。……ハンスってやつから話は聞いた。信号の行き先は、境界の中継局だそうだな。'],['c','中継局は、旧軍の通信の要だった。俺が整備していた機体も、あそこから来る命令で動いていた。'],
-   ['c','あそこに、今も何かがいる。命令を出し続けている何かだ。……止めてきてくれ。報酬は、俺の蓄えの全部だ。'],['d','ヴ、ヴァルター様、全部はいけません！ 暮らしが……！'],
-   ['c','相変わらず騒がしいな、D-06。……数えるのは得意なんだろう。足りなくなったら、お前が数え直せ。'],['n','……中継局。行かなければならない気がします。お受けしましょう、○○。']],
+  after:{ok:'頼んだ。あれの癖は分かってる。アンテナが生きている間は、装甲に信号が回る。先にアンテナを落とせ。',later:'急がせはしない。……だが、あれは今も命令を出し続けている。'},
+  talk:[['c','……来てくれたか。ハンスってやつから話は聞いた。あの信号の行き先は、境界の中継局だそうだな。'],['c','戦役のころ、俺は中継局に詰めていた。中継局には指揮型の無人ギアが一機いた。群れの無人機に命令を出す機体だ。……俺は、あれの整備兵だった。'],
+   ['c','戦役が終わって、中継局は閉じられた。あれも、俺がこの手で止めた。誰も乗っていない。命令を出す者も、もういない。'],['c','それが、勝手に動いてる。廃墟の砲台も、境界の無人機も、あれが起こしたんだろう。'],
+   ['c','本当なら、俺が止めに行くべきだ。だが俺は整備兵で、戦い方を知らん。それに、この脚じゃあな。'],['c','報酬は、俺の蓄えの全部だ。……あれを、止めてくれ。'],
+   ['d','ヴ、ヴァルター様、全部はいけません！ 暮らしが……！'],['c','心配するな、D-06。どうせ使い道のない金だ。'],['n','……中継局。なぜでしょう、行かなければならない気がします。お受けしましょう、○○。']],
   cu:{mem:['○○。中継局の中枢で……思い出したことがあります。','わたくしの名前。N-07 の N は、NONA。……糸を、紡ぐ者。それが、この名前の意味でした。','誰がそう名付けたのかは、まだ思い出せません。けれど、なぜか……温かい記憶です。'],
-   voice:{name:'<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-07</span> <ruby class="mc">JONAH<rt>ヨナ</rt></ruby>（音声のみ）',lines:['……第7区画管理局。いや……私だ。JONAH だ。','HX-07 の操縦者。……その子を、頼む。','いまは、それだけだ。']},
-   after:['……いまの通信。統治AI、JONAH 本人の声でした。','管理局からの通知も届いています。等級が上がりました。それと……闘技場からの招待状、だそうです。'],mails:['n-david']}},
+   key:{pre:['それと……中継局の中枢から、これを持ち帰りました。'],post:['暗号化されたデータの断片です。あの指揮型の機体を動かしていたのは、どうやらこれだったようです。','何かの一部……鍵のような形式をしていますが、これだけでは読めません。ほかの部分が、どこかにあるはずです。','これに触れたとき、名前を思い出しました。……手放さずにおきましょう、○○。']},
+   voice:{name:'<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-07</span> <ruby class="mc">JONAH<rt>ヨナ</rt></ruby>（音声のみ）',lines:['HX-07 の操縦者。……応答は要らない。そのまま聞いて。','JONAH。第7区画を預かる統治AI、P.A.S.T.O.R.-07。管理局を通さずに話すのは、これが初めて。','中継局でのことは、見ていた。','帰ったら、機体を休ませるといい。無理を重ねる必要はない。','近いうちに、闘技場から招待が届く。受けるかどうかは、自分で決めればいい。','それと……その端末の子にも、よろしく。','以上。']},
+   afterVoice:['……いまの声。第7区画の統治AI、JONAH です。記録には、そうあります。','けれど……なぜでしょう。懐かしい声だと、感じました。','理由は、思い出せません。'],
+   after:['管理局からの通知も届いています。等級が上がりました。','それと……闘技場からの招待状、だそうです。JONAH の言ったとおりですね。'],mails:['n-david']}},
  {id:'2-3',wx:'dawn',ch:2,kind:'mail',ready:true,need:['2-1'],afterGot:'2-2',title:'信号の出どころ',from:'通信技師 ハンス',fromFull:'第7区画 配給所 無線修理 ハンス',reward:13000,field:'canyon',fieldJa:'廃墟の奥の涸れ谷',
   subj:'妙な信号について（少し長くなります）',body:'はじめまして。配給所の無線を直して回っている、ハンスという者です。<br>先日から、配給所の受信機に妙な信号が混ざるようになりました。周波数を調べたところ、旧軍の指揮系統のものでした。戦役のあと、とうに使われなくなったはずの帯域です。<br>発信源をたどると、旧戦役の廃墟の奥に行き着きます。あそこには、昔の中継アンテナが一本残っているはずです。<br>壊さなくていい。向きだけ、見てきてほしいのです。アンテナの向きが分かれば、信号がどこへ送られているかが分かります。<br>報酬は 13,000 CR。修理代を少しずつ貯めていた分です。<br><span class="end">── ハンス（配給所 無線修理）</span>',
   mailNona:'……旧軍の指揮系統の信号。ヴァルターさんの砲台が出していたものと、同じ帯域です。',
@@ -4785,6 +4794,7 @@ function misDeliver(kind){if(TUT!=='done')return [];const out=[];
  if(out.length){saveGame();misHeader();if(out.some(d=>d.kind==='mail')){$('mailBtn').classList.add('new');SND.play('mail')}}return out}
 function misHeader(){const u=unreadMail().length,got=anyGot();
  $('hCls').textContent='CLASS '+CLS;$('hCh').textContent='CH.'+CH;fixDays();$('hDt').textContent=prDate(DAY);
+ $('keyBtn').hidden=TUT!=='done'||KEYHOLD||!ownKeys().length;
  const mb=$('mailBtn');mb.hidden=TUT!=='done'||!gotMails().length;$('mailN').textContent=u;$('mailN').hidden=!u;if(!u)mb.classList.remove('new');
  $('mMission').disabled=!got;$('mMisSub').textContent=got?'依頼を受けて戦う':'依頼が届くと選べます'}
 
@@ -4806,6 +4816,22 @@ function mailOpen(id){const d=MDEF[id];if(!d)return;
  if(!d.notice)$('mailGo').onclick=()=>{mailClose();openBoard(d.id)};$('mailX').onclick=mailClose;$('mailBk').onclick=mailList;
  nonaSay([[nameIn(d.mailNona)]],{hold:true})}
 function mailClose(){const b=$('mailBox');if(b.hidden||b.classList.contains('cls'))return;b.classList.remove('pop');b.classList.add('cls');nbClose();b._t=setTimeout(()=>{b.hidden=true;b.classList.remove('cls')},180)}
+/* ----- KEY（MORTA の断片）：★をクリアすると増える。所持は MIS[mis].clear から決める（保存項目は増やさない）。説明は物語が進むたびに足す ----- */
+const KEYS=[{no:'01',mis:'2-S',from:'★2-S 境界の中継局',info:'中継局の中枢から持ち帰った、暗号化されたデータの断片。指揮型の機体を動かしていた。鍵のような形式だが、これだけでは読めない。触れたとき、ノーナが自分の名前の意味を思い出した。'}];
+let KEYHOLD=false;
+const ownKeys=()=>KEYS.filter(k=>MIS[k.mis]&&MIS[k.mis].clear);
+function keyList(){const box=$('mailBox'),L=ownKeys();$('keyBtn').classList.remove('new');
+ mailShow(box,`<div class="mh"><span>KEY ／ 断片</span><span></span></div>
+  <div class="mlx">${L.map(k=>`<button class="mrw" data-k="${k.no}"><i></i><span class="dt">KEY ${k.no}</span><span class="fr">${k.from}</span><span class="sj">データの断片（未解読）</span></button>`).join('')}</div>
+  <div class="acts"><button class="btn-sub" id="mailX" style="margin-left:auto;width:90px">閉じる</button></div>`,'sr');
+ box.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>keyOpen(b.dataset.k));$('mailX').onclick=mailClose;requestAnimationFrame(()=>scrollHints(box,SX_SEL));
+ nonaSay([['持ち帰った断片です。まだ、読めません。']],{hold:true})}
+function keyOpen(no){const k=KEYS.find(x=>x.no===no);if(!k)return;const m=MIS[k.mis],box=$('mailBox');
+ mailShow(box,`<div class="mh"><span>KEY ${k.no}</span><span>UNREADABLE</span></div>
+  <div class="mk"><span>NO.</span><span>KEY ${k.no}</span><span>取得</span><span>${k.from}${m&&m.cdy!=null?'　'+prDate(m.cdy):''}</span><span>状態</span><span class="sj">未解読</span></div>
+  <div class="mb"><b>分かっていること</b><br>${k.info}</div><div class="acts"><button class="btn-sub" id="mailBk" style="width:84px">◀ 一覧</button><button class="btn-sub" id="mailX" style="width:80px">閉じる</button></div>`,'sl');
+ $('mailX').onclick=mailClose;$('mailBk').onclick=keyList;requestAnimationFrame(()=>scrollHints(box,SX_SEL))}
+$('keyBtn').onclick=()=>{if(TUT!=='done')return;const mb=$('mailBox');if(!mb.hidden&&!mb.classList.contains('cls')&&mb.querySelector('[data-k]'))mailClose();else keyList()};
 $('mailBtn').onclick=()=>{if(TUT!=='done')return;const mb=$('mailBox');if(!mb.hidden&&!mb.classList.contains('cls'))mailClose();else mailList()};
 
 /* ----- 来訪（VISIT）：依頼人がハンガーを訪ねてくる。def.talk＝[['c'|'n'|'d', 文], ...]（c＝依頼人、n＝ノーナ、d＝ドールの通信）
@@ -4824,8 +4850,9 @@ function visitNext(){clearInterval(VS.iv);VS.iv=null;
  requestAnimationFrame(()=>{ci.style.left=(12+$('vNm').offsetWidth)+'px'});
  $('vImg').classList.toggle('dim',sp!=='c');$('vNx').hidden=true;
  const el=$('vTx');let n=0;
- VS.done=()=>{clearInterval(VS.iv);VS.iv=null;el.textContent=txt;if(VS.q.length||VS.fin)$('vNx').hidden=false;else visitChoices()};
- el.textContent='';VS.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip(sp==='c'?(VS.d.voice||'adultM'):sp==='n'?'nona':'doll',n);if(n>=txt.length)VS.done()},TXT_SPD)}
+ const vp=txt.split(/(<ruby[^>]*>.*?<\/ruby>)/).filter(Boolean),vtot=vp.reduce((a,x)=>a+(x.startsWith('<ruby')?1:x.length),0),vdraw=k=>{let o='',l=k;for(const x of vp){if(x.startsWith('<ruby')){if(l>0)o+=x;l--;continue}o+=x.slice(0,Math.max(0,l));l-=x.length}el.innerHTML=o};
+ VS.done=()=>{clearInterval(VS.iv);VS.iv=null;el.innerHTML=txt;if(VS.q.length||VS.fin)$('vNx').hidden=false;else visitChoices()};
+ el.textContent='';VS.iv=setInterval(()=>{vdraw(++n);SND.blip(sp==='c'?(VS.d.voice||'adultM'):sp==='n'?'nona':'doll',n);if(n>=vtot)VS.done()},TXT_SPD)}
 function visitChoices(){const ch=$('vCh');if(ch.childElementCount||VS.fin)return;const d=VS.d;
  if(d.cv!=null){[['◀ 前',()=>charStep(-1)],['次 ▶',()=>charStep(1)],['DEBUG へ戻る',()=>{visitEnd();setTimeout(dbgOpen,680)}]]
   .forEach(([lab,fn])=>{const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=e=>{e.stopPropagation();if(!VS.busy)fn()};ch.appendChild(b)});return}
@@ -5074,7 +5101,7 @@ function misTick(dt){if(COMM.t>0){COMM.t-=dt;if(COMM.t<=0){COMM.busy=false;if(CO
 function misAbort(){if(!RUN||RUN.leaving)return;misFinish(false,'撤退')}
 function misFinish(ok,reason=''){if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;
  const def=RUN.def,tm=RUN.time||0,r={def,ok,reason,earned:P.earned||0,reward:ok?def.reward:0,time:tm,kills:{...(RUN.kills||{})},best:(MIS[def.id]&&MIS[def.id].best)||0,rec:false};commClear();
- fadeTo(()=>{DAY++;if(ok){CREDIT+=def.reward;const m=MIS[def.id]||(MIS[def.id]={got:true,read:true,clear:false,n:0});m.clear=true;m.n++;if(!m.best||tm<m.best){r.rec=!!m.best;if(!m.best)r.first=true;m.best=tm}}
+ fadeTo(()=>{DAY++;if(ok){CREDIT+=def.reward;const m=MIS[def.id]||(MIS[def.id]={got:true,read:true,clear:false,n:0});m.clear=true;m.cdy=DAY;m.n++;if(!m.best||tm<m.best){r.rec=!!m.best;if(!m.best)r.first=true;m.best=tm}}
   saveGame();setMode('garage');renderResult(r)},'DEBRIEF')}
 const KILL_JA={drone:'ドローン',turret:'砲台',boss:'大型無人砲台',gear:'ギア',walker:'多脚砲台',crawler:'自走地雷',antenna:'中継アンテナ'};
 const fmtT=t=>{t=Math.max(0,Math.round(t));return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')};
@@ -5452,12 +5479,19 @@ $('nonaBox').addEventListener('click',()=>{if(NB.iv)NB.done();else if(NB.q.lengt
 /* CLASS UP：★のクリア後、ガレージでノーナの話→管理局の通知メール→中央の帯→ノーナのひとこと。等級と CHAPTER を進める */
 function classBand(from,to,done){const b=$('clsBand');$('clsTx').innerHTML=`CLASS ${from}<i>▶</i>CLASS ${to}`;b.classList.remove('out','on');void b.offsetWidth;b.classList.add('on');SND.play('classup',{g:.55});
  setTimeout(()=>{b.classList.add('out')},2600);setTimeout(()=>{b.classList.remove('on','out');done&&done()},3200)}
+function keyBand(done){const b=$('clsBand');$('clsTx').innerHTML='KEY<i>／</i>断片を取得';b.querySelector('b').textContent='GET';b.classList.remove('out','on');void b.offsetWidth;b.classList.add('on');SND.play('classup',{g:.55});
+ setTimeout(()=>{b.classList.add('out')},2200);setTimeout(()=>{b.classList.remove('on','out');b.querySelector('b').textContent='CLASS UP';done&&done()},2800)}
 // ★ごとの演出（def.cu）：ノーナの記憶 → 声だけの通信（JONAH など）→ 等級と CHAPTER を進め、通知メール（等級・入荷・招待）→ CLASS UP の帯 → ノーナのひとこと
 function classUpSeq2(d){const N=esc(PILOT||'操縦者'),from=CLS,c=d.cu,nm=x=>[x.replace(/○○/g,N)];
+ if(c.key){KEYHOLD=true;misHeader()}
+ const toClass=()=>{KEYHOLD=false;CLS=d.cls;CH=d.ch+1;let tt=Date.now();['n-cls-'+d.cls.toLowerCase(),...(c.mails||[])].forEach(id=>{if(MDEF[id]&&!MIS[id])MIS[id]={got:true,read:false,clear:false,n:0,t:tt++}});shopNotice();saveGame();misHeader();$('mailBtn').classList.add('new');SND.play('mail');
+  classBand(from,d.cls,()=>nonaSay(c.after.map(nm)))};
+ const voice=()=>{nonaSay(c.voice.lines.map(nm),{hold:true,name:c.voice.name});
+  NB.then=()=>{if(c.afterVoice){nonaSay(c.afterVoice.map(nm),{hold:true});NB.then=toClass}else toClass()}};
+ const key=()=>{nonaSay(c.key.pre.map(nm),{hold:true});
+  NB.then=()=>keyBand(()=>{KEYHOLD=false;misHeader();$('keyBtn').classList.add('new');nonaSay(c.key.post.map(nm),{hold:true});NB.then=voice})};
  nonaSay(c.mem.map(nm),{hold:true});
- NB.then=()=>{nonaSay(c.voice.lines.map(nm),{hold:true,name:c.voice.name});
-  NB.then=()=>{CLS=d.cls;CH=d.ch+1;let tt=Date.now();['n-cls-'+d.cls.toLowerCase(),...(c.mails||[])].forEach(id=>{if(MDEF[id]&&!MIS[id])MIS[id]={got:true,read:false,clear:false,n:0,t:tt++}});shopNotice();saveGame();misHeader();$('mailBtn').classList.add('new');SND.play('mail');
-   classBand(from,d.cls,()=>nonaSay(c.after.map(nm)))}}}
+ NB.then=c.key?key:voice}
 function classUpSeq(d){if(d.cu)return classUpSeq2(d);const N=esc(PILOT||'操縦者'),from=CLS;
  nonaSay([[N+'。あの砲台の信号ですが……止まる直前、送り先がありました。どこかに、まだ命令を出しているものがいます。'],['記録には、何もありません。……それなのに、なぜか、聞き覚えがある気がするのです。']],{hold:true});
  NB.then=()=>{CLS=d.cls;CH=d.ch+1;const nid='n-cls-'+d.cls.toLowerCase();if(MDEF[nid]&&!MIS[nid])MIS[nid]={got:true,read:false,clear:false,n:0,t:Date.now()};const sn=shopNotice();saveGame();misHeader();$('mailBtn').classList.add('new');
