@@ -4989,7 +4989,7 @@ COMM.q=[];COMM.busy=false;
 function comm(txt,dur=0.001){if(dur===0){COMM.q=[];commShow(txt,0);return}COMM.q.push([txt,dur]);if(!COMM.busy)commNext()}
 function commNext(){const it=COMM.q.shift();if(it)commShow(it[0],it[1])}
 function commShow(txt,dur){clearInterval(COMM.iv);SND.play('comm',{g:.3});const el=$('commTx');$('comm').hidden=false;let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
- COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip('nona',n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;
+ COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip('nona',n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;COMM.end=performance.now();
   if(dur===0){COMM.busy=false;COMM.t=0}else COMM.t=Math.max(1.5,1+txt.length*.12,dur)}},TXT_SPD)}
 function commClear(){COMM.q=[];clearInterval(COMM.iv);COMM.iv=null;COMM.busy=false;COMM.t=0;$('comm').hidden=true}
 function misSpawn(sp){const e=(sp.type==='gear'?ENEMIES.find(x=>x.type==='gear'&&!x.tg&&x.off&&typeof sp.gear==='string'&&x.gk===sp.gear):ENEMIES.find(x=>!x.tr&&x.off&&x.type===sp.type))||makeEnemy(sp.type,sp);
@@ -5010,14 +5010,19 @@ function misStartEnemies(){
  if(df){RUN.tr={hp:df.hp,max:df.hp,hr:4.6,hy:9,obj:POST,hurt:false};POST.userData.fix();RUN.lost=false;RUN.mineSaid=false;RUN.lastSaid=false;RUN.total=RUN.def.waves.reduce((a,w)=>a+w.en.length,0)}
 }
 // 出撃前の演出が終わって操作できるようになった瞬間（MISSION START と、登録済みのノーナの通信）
-/* 出撃演出のあと：ノーナの通信 → 文字が出きってから2秒 → 帯 → 帯が完全に終わってから自機・敵が動く（GOW中は演出中と同じく止める） */
+/* 出撃演出のあと：ノーナの通信（セリフの間は文字が出きってから2秒、v131）→ 文字が出きってから2秒 → 帯 → 帯が完全に終わってから自機・敵が動く（GOW中は演出中と同じく止める） */
 let GOW=false,GOWT=[];
 function goWaitClear(){GOWT.forEach(h=>{clearTimeout(h);clearInterval(h)});GOWT=[];GOW=false}
 function goSeq(title,sub,txt,fin,gap=2000){goWaitClear();GOW=true;const dur=1.8;
  const after=(f)=>{const iv=setInterval(()=>{if(!COMM.iv){clearInterval(iv);f()}},50);GOWT.push(iv)}; // 今の通信の文字が出きるまで待つ
  const ban=()=>{GOWT.push(setTimeout(()=>{banner(title,sub,false,dur);SND.play('start',{g:.5})},gap));
   GOWT.push(setTimeout(()=>{GOW=false;GOWT=[];if(fin)fin()},gap+(dur+.9)*1000))};
- after(()=>{if(txt){COMM.q=[];commShow(txt,1);setTimeout(()=>after(ban),0)}else ban()})}
+ // セリフが続くときは、文字が出きってから gap（2秒）おいて次へ。3つ以上でも各セリフの間に同じだけおく。txt は文字列でも配列でもよい
+ const lines=(Array.isArray(txt)?txt:[txt]).filter(Boolean);
+ const wait=()=>Math.max(0,gap-(performance.now()-(COMM.end||0))); // 文字が出きった時刻から数える（すでに出きっていた分は引く）
+ const step=()=>{if(!lines.length){ban();return}
+  GOWT.push(setTimeout(()=>{COMM.q=[];commShow(lines.shift(),1);after(step)},wait()))};
+ after(step)}
 function misGo(){if(!RUN)return;goSeq('MISSION START',RUN.def.title,RUN.def.comm.start)}
 function truckPlace(){const z=RUN.tr.z;TRUCK.position.set(roadX(z)+2,0,z);TRUCK.rotation.y=Math.atan(roadDX(z))}
 function truckHit(dmg,pos){const T=RUN.tr;if(!T||T.hp<=0||RUN.ok)return;if(DBG.inv){spawn(0xc0a8ff,.6,pos,{life:.08});return}T.hp=Math.max(0,T.hp-dmg);spawn(0xffffff,.7,pos,{life:.1});
