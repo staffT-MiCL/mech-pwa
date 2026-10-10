@@ -2195,7 +2195,7 @@ const ITEM_CLS={'HD-03':'D','CR-03':'D','AR-03':'D','LG-03':'D','RF3':'D','MG3':
 // 'X'＝SHOP に並ばない（00 COUNTER・ラスト・オーダー）
 // 02系（BULWARK 02 と2ndタイプ武器）は最初のトレーニング完了後に入荷
 const is02=id=>/^(HD|CR|AR|LG)-02$/.test(id)||/^(RF|MG|BZ|BL|SH|MS|GC|RD|BT|IC)2$/.test(id);
-const clsOk=id=>(!is02(id)||TTUT>=TT_N)&&(!ITEM_CLS[id]||(ITEM_CLS[id]!=='X'&&CLASSES.indexOf(CLS)>=CLASSES.indexOf(ITEM_CLS[id])));
+const clsOk=id=>(!is02(id)||TTUT>=TT_N)&&(!ITEM_CLS[id]||((ITEM_CLS[id]==='X'?(/-04$/.test(id)&&!!VSS.win[2]):CLASSES.indexOf(CLS)>=CLASSES.indexOf(ITEM_CLS[id]))));
 
 /* 名前の体系：CAT＝種類（英語の項目名）、TYPE＝種類の日本語、MODEL＝型番、NAME＝固有名。
    同じ種類の装備が増えたら、同じ CAT で型番と固有名だけ変えて追加する */
@@ -4139,8 +4139,8 @@ const VS3=(()=>{
 /* ===== VERSUS：受付の会話と画面 =====
  会話の行は [話し手, 文, ベルの姿勢]。話し手：b＝ベル／n＝ノーナ（携帯端末）／VCH のキー（セレナなど：受付の絵を暗くしてイラストを左に重ねる）。
  文の中は <em>強調</em> と <strong>良い知らせ</strong>、<ruby> だけ。○○ は操縦者名 */
-const VSP={b:{nm:'BELL-01 ベル',c:'#c9d4d8',f:'#0a0c0b',v:'bell'},n:{nm:'N-07 ノーナ（端末）',c:'#6fd3e0',f:'#06161a',v:'nona'}};
-const VCH={serena:{nm:'セレナ・ヴァルデス',c:'#c8435c',f:'#fff',v:'youthF',img:'img/rivals/rival-david-serena.png'},erich:{nm:'エーリヒ・ブラント',c:'#8a5a34',f:'#fff',v:'adultM',img:'img/rivals/rival-deborah-erich.png'}};
+const VSP={b:{nm:'BELL-01 ベル',c:'#c9d4d8',f:'#0a0c0b',v:'bell'},n:{nm:'N-07 ノーナ（端末）',c:'#6fd3e0',f:'#06161a',v:'nona'},j:{nm:'JONAH（無線）',c:'#8fb8c8',f:'#06161a',v:'adultF'}};
+const VCH={serena:{nm:'セレナ・ヴァルデス',c:'#c8435c',f:'#fff',v:'youthF',img:'img/rivals/rival-david-serena.png'},erich:{nm:'エーリヒ・ブラント',c:'#8a5a34',f:'#fff',v:'adultM',img:'img/rivals/rival-deborah-erich.png'},viktor:{nm:'ヴィクトル・ザイン',c:'#8a4aa8',f:'#fff',v:'youthM',img:'img/rivals/rival-nimrod-viktor.png'}};
 /* 場面に応じて一度だけ出る会話（VSS.seen に記録）。ok が真になった受付の訪問で、ベルの案内のあとに流れる。セリフは仮 */
 const VSEV=[
  {id:'c-semi-erich',ok:()=>!!VSS.win[0],lines:[   // 1回戦に勝った直後の受付：エーリヒ（現在の審判官のトップ）の初登場。このあと 3-2 のメールが届く
@@ -4151,6 +4151,24 @@ const VSEV=[
   ['b','第5区画を治める統治AIは、<ruby class="mc">DEBORAH<rt>デボラ</rt></ruby>。この闘技場の審判部は、<ruby class="mc">DEBORAH<rt>デボラ</rt></ruby>の管轄です。'],
   ['n','……審判の長が、C 大会の1回戦に、わざわざ。'],
   ['n','どこか、見られている気がします。○○、気をつけましょう。']]},
+ {id:'c-semi-viktor',ok:()=>!!VSS.win[1],lines:[   // 準決勝に勝った直後の受付：ヴィクトル（第6区画。ザラと同じ）が一度だけ。エーリヒが警告する。セリフは仮
+  ['viktor','おっと。ザラの機体を沈めたのは、お前か。……ははっ、いい音だったぜ、あの爆発は。'],
+  ['viktor','ヴィクトルだ。そのうち、ちゃんと遊んでやるよ。楽しみにしてな、第7区画。'],
+  ['erich','ヴィクトル殿。受付での私語は、規定により慎んでいただきます。'],
+  ['erich','これで、三度目です。次は、審判部として、正式に警告いたします。'],
+  ['viktor','へいへい。……おっかねぇ爺さんだ。'],
+  ['b','……ヴィクトル・ザイン様。<em>第6区画のエースパイロット</em>で、先ほどのザラ・クーン様と同じ区画の代表でいらっしゃいます。'],
+  ['b','試合の規定に抵触する行為で、<em>警告を重ねている</em>方です。第6区画を治める統治AIは、<ruby class="mc">NIMROD<rt>ニムロド</rt></ruby>。'],
+  ['n','……また、エース級の方が、C 大会に。'],
+  ['n','それに、あのエーリヒ様が、直々に警告を。……○○、気をつけましょう。']]},
+ {id:'c-final-serena-after',ok:()=>!!VSS.win[2],lines:[   // 決勝に勝った直後の受付：セレナ（観客に手を振るあと、一言）。セリフは仮
+  ['serena','……名無しさん、なんて呼べなくなったわね。'],
+  ['serena','今日のところは、拍手を譲ってあげる。……次に会うときは、観客席からかしら。それとも。'],
+  ['b','……優勝を確認いたしました。おめでとうございます、○○様。'],
+  ['n','……観客席の声が、まだ聞こえます。みんな、○○の名前を呼んでいます。']]},
+ {id:'c-final-jonah',ok:()=>!!VSS.win[2],lines:[   // 同じ訪問の最後：JONAH の声だけの無線（CH3）
+  ['j','勝ったか。……闘技場の観客は、勝った者の名前しか覚えない。それだけは、覚えておくといい。'],
+  ['n','……JONAH。やはり、見ていたのですね。']]},
  {id:'c-final-serena',ok:()=>vsCur()===2&&vsState(2)==='open',lines:[
   ['serena','あら。あなたが噂の、第7区画の代表さん？'],
   ['serena','聞いたことのない名前ね。……<em>名無しさん</em>でいいかしら。'],
@@ -5030,6 +5048,9 @@ const MLIST=[
   enemies:[{type:'arc',x:-9,z:-18},{type:'arc',x:11,z:-14},{type:'crawler',x:-4,z:-4},{type:'crawler',x:5,z:0},{type:'walker',x:-17,z:10,rng:60},{type:'arc',x:6,z:14},{type:'arc',x:-8,z:20},{type:'walker',x:17,z:24,rng:60},{type:'crawler',x:-3,z:32},{type:'crawler',x:4,z:36},{type:'arc',x:0,z:38}]}, {id:'3-S',wx:'emergency',ch:3,kind:'visit',story:true,ready:false,need:['vs2'],cls:'B',title:'地下の目覚め',from:'整備主任 ペトラ',client:'ペトラ',voice:'adultF',img:'img/clients/client-mechanic-petra.png',imgF:'',reward:28000,field:'factory',fieldJa:'闘技場の地下',obj:'大型多脚要塞の撃破（避難の時間稼ぎ）',fail:'要塞の出口到達 ／ CORE 大破',enemyJa:'大型多脚要塞 SIEGE WALKER'},
 
  // SHOP の入荷のお知らせ（ドールから。shop＝届く等級。既存のセーブにも1回ずつ届く）
+ {id:'n-shop-g',ch:0,kind:'mail',notice:true,shop:'G',ready:false,title:'入荷のお知らせ',from:'部品倉庫 D-06',fromFull:'第7整備区画 部品倉庫（整備管理AI D-06）',reward:0,
+  subj:'ご優勝おめでとうございます！！！ 新しい部位が入荷いたしました！！！',body:'○○様<br>ご優勝、おめでとうございます！ 中継で拝見しておりました。ドール、思わず棚の上から身を乗り出してしまいました。<br>そこで、といっては何ですが、新しい品が入荷いたしました。闘技場の花形の系統、<b>GLADIATOR 04</b> の4部位でございます。兜のような頭部に、軽い装甲、近接戦に向いた軽量の脚。……セレナ様の機体と、同じ系列でございます。<br>出どころは、今回も、どうか、お聞きにならないでくださいませ。<br>ぜひ、ぜひお立ち寄りを！<br><span class="end">── D-06</span>',
+  mailNona:'ドールさんからです。……「同じ系列」と書いてあります。'},
  {id:'n-shop-e',ch:0,kind:'mail',notice:true,shop:'E',ready:false,title:'入荷のお知らせ',from:'部品倉庫 D-06',fromFull:'第7整備区画 部品倉庫（整備管理AI D-06）',reward:0,
   subj:'入荷のお知らせ',body:'○○様<br>部品倉庫より、品ぞろえのご案内でございます。<br>拠点防衛用の重装フレーム <b>BULWARK 02</b> の4部位と、兵装の2つ目の型（ライフル・マシンガン・バズーカ・ブレード・シールド・ミサイル・グレネード砲・レーダー・追加ブースター・迎撃装置）を棚に並べております。<br>ぜひお立ち寄りくださいませ。<br><span class="end">── D-06</span>',
   mailNona:'部品倉庫のドールさんからです。いま棚に並んでいる品の案内のようですね。'},
@@ -5447,7 +5468,7 @@ const depOk=(k,st)=>k==='tut'?(st?st.tut:tutOk()):/^vs\d$/.test(k)?(st?st.vs.st[
 // 入荷のお知らせ：いまの等級までの分で、まだ届いていないものを届ける（古い等級から順に、時刻を1ずつずらす）
 function shopNotice(){const ci=CLASSES.indexOf(CLS),out=[];let t=Date.now();if(TTUT<TT_N)return out;  // 最初のトレーニングが済むまで入荷のお知らせは届かない
 
- MLIST.filter(d=>d.shop&&!MIS[d.id]&&CLASSES.indexOf(d.shop)<=ci).forEach(d=>{MIS[d.id]={got:true,read:false,clear:false,n:0,t:t++};out.push(d)});return out}
+ MLIST.filter(d=>d.shop&&!MIS[d.id]&&(d.shop==='G'?!!VSS.win[2]:CLASSES.indexOf(d.shop)<=ci)).forEach(d=>{MIS[d.id]={got:true,read:false,clear:false,n:0,t:t++};out.push(d)});return out}
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
  if(['train','continue','mission','shop','ttdone','versus'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(d.afterReg&&!VSS.reg)return;if(d.afterSeen&&!VSS.seen[d.afterSeen])return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;
   MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)});
