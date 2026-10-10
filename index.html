@@ -570,6 +570,8 @@ body.eqm #menuBtn{display:none}
 body.chk #menuBtn{display:none}body.chk #btnTrain{display:none}
 #eqClose{display:none;height:28px;padding:0 12px;align-items:center;gap:6px;background:#1c1409;border:1px solid var(--fire);color:var(--fire);font-size:12px;font-weight:700;letter-spacing:.12em}
 body.eqm #eqClose{display:flex}
+#eqClose{white-space:nowrap;flex:0 0 auto}
+@media (max-width:900px){#eqClose{padding:0 8px;font-size:11px;letter-spacing:.06em;gap:4px}}
 body.eqm #btnTrain{display:none}
 .tbtn{margin-top:auto;display:flex;gap:8px;align-items:center}.tbtn .btn-main,.tbtn .btn-sub{flex:1}
 .tsel{display:flex;gap:3px}.tsel button{flex:1;height:26px;padding:0;font-size:11px;font-weight:700;letter-spacing:.1em;background:#121816;border:1px solid var(--line);color:#aeb8b3}
@@ -4047,7 +4049,7 @@ const VS3=(()=>{
  /* ===== ホログラムの対戦カード（ベルの右）：英字だけで描く。setHolo で書き換え ===== */
  const hc=sign(96,52,()=>{});const holoM=new THREE.MeshBasicMaterial({map:hc.t,transparent:true,opacity:.85,depthWrite:false,side:THREE.DoubleSide});
  const holo=new THREE.Mesh(new THREE.PlaneGeometry(3.1,1.68),holoM);holo.position.set(8.0,5.5,.9);holo.rotation.y=-.3;root.add(holo);
- const beam=new THREE.Mesh(new THREE.CylinderGeometry(.02,.5,2.6,8,1,true),new THREE.MeshBasicMaterial({color:0x6fd3e0,transparent:true,opacity:.14,depthWrite:false}));beam.position.set(8.0,3.95,.9);root.add(beam);
+ const beam=new THREE.Mesh(new THREE.CylinderGeometry(1.1,.3,2.6,8,1,true),new THREE.MeshBasicMaterial({color:0x6fd3e0,transparent:true,opacity:.14,depthWrite:false}));beam.position.set(8.0,3.95,.9);root.add(beam);
  cyl(root,.5,.56,.12,T.dark,8.0,2.7,.9,0,0,10);cyl(root,.36,.36,.03,T.glowC,8.0,2.77,.9,0,0,10);
  box(root,.5,2.64,.5,T.steel,8.0,1.32,.9);
  function setHolo(top,mid,bot,dim){const g=hc.g,w=96,h=52;g.clearRect(0,0,w,h);g.fillStyle='rgba(6,22,26,.75)';g.fillRect(0,0,w,h);
@@ -4132,7 +4134,7 @@ function vtNext(){const ch=$('vtChoice');ch.innerHTML='';clearInterval(VT.iv);VT
 function vtChoices(){const ch=$('vtChoice');ch.innerHTML='';if(typeof VT.ch==='function'){const f=VT.ch;VT.ch=null;return f()}const list=VT.ch||vsMenu();VT.ch=null;
  list.forEach(([lab,fn])=>{const b=document.createElement('button');b.textContent=lab;b.onclick=fn;ch.appendChild(b)})}
 $('vtText').onclick=()=>{if(VT.iv&&VT.done)VT.done();else if(VT.q.length)vtNext()};
-const vsMenu=()=>[['対戦カードを見る',()=>{setVTab('card');vtSay(vsStatus(true))}],['対戦表を見る',()=>{setVTab('table');vtSay([['b','対戦表です。勝ち進むと、次の試合が表に加わります。','point']])}],['装備を変更する',vsEquip],['ルールを聞く',vsRules],['ガレージへ戻る',leaveVersus]];
+const vsMenu=()=>[['対戦カードを見る',()=>{setVTab('card');vtSay(vsStatus(true))}],['対戦表を見る',()=>{setVTab('table');vtSay([['b','対戦表です。勝ち進むと、次の試合が表に加わります。','point']])}],['ルールを聞く',vsRules]];
 function vsEquip(){if(vLeaving)return;fadeTo(()=>openEquipModal('versus'))}
 // ベルの案内：いまの試合の状態（日程調整中なら「追って連絡」）
 function vsStatus(card){const i=vsCur();
