@@ -4545,7 +4545,7 @@ function xrayMark(e){const on=mode==='play'&&SS.xray&&e.alive&&!e.off;
  if(e.xr)e.xr.visible=on}
 function updateEnemies(dt){
  ENEMIES.forEach(e=>{
-  if(e.shadow)e.shadow.visible=(e.alive||!!e.fin)&&!e.off;
+  if(e.shadow)e.shadow.visible=(e.alive||!!e.fin)&&!e.off&&e.g.visible;
   if(e.alive&&!e.off&&dt>0){if(!e.vel){e.vel=new THREE.Vector3();e.pv=e.g.position.clone()}e.vel.copy(e.g.position).sub(e.pv).divideScalar(dt);e.pv.copy(e.g.position)}
   xrayMark(e);
   if(e.off)return;
@@ -5667,7 +5667,7 @@ function vsEnd(ok){const V=RUN.vs,e=V.e;if(ok)RUN.ok=true;else RUN.lost=true;V.p
  RUN.hold=performance.now()+60000}
 function vsEndTick(dt){const V=RUN.vs,e=V.e,o=V.r.opp,ok=RUN.ok;V.pt+=dt;
  if(V.ph==='slump'&&e.finDone){V.ph='wait';V.pt=0}
- else if(V.ph==='wait'&&V.pt>=.35){V.ph='pose';V.pt=0;VSEND.k='me';FIN.me={t:0,from:finStart(mech),keys:FPOSE.me,fx:0}}
+ else if(V.ph==='wait'&&V.pt>=.35){V.ph='pose';V.pt=0;VSEND.k='me';e.g.visible=false;if(e.shadow)e.shadow.visible=false;FIN.me={t:0,from:finStart(mech),keys:FPOSE.me,fx:0}}
  else if(V.ph==='pose'&&V.pt>=FIN_T+.05){V.ph='done';
   banner(ok?'WIN':'LOSE',V.r.ja+(ok?' 勝利':' 敗北'),!ok,2.6);if(ok){SND.play('complete',{g:.55});SND.play('cheer',{g:.6,size:1.6})}else SND.play('groan',{g:.5});
   RUN.hold=performance.now()+3800;
