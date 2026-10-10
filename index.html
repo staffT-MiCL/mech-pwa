@@ -461,10 +461,10 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 @media (pointer:coarse){#pcHelp{display:none}}
 
 /* ===== SHOP：左（上＝整備工場と店主、下＝セリフ）を大きく、右（在庫と比較）をやや小さく ===== */
-#shop{position:fixed;inset:0;z-index:15;background:var(--bg);display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-rows:40px minmax(0,1fr);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
-#shop .shdr{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:0 12px;background:#101513;border-bottom:1px solid var(--line);min-width:0}
-#shop .money{display:flex;align-items:baseline;gap:6px;white-space:nowrap}#shop .money small{font-size:10px;color:var(--dim);letter-spacing:1px}
-#shop .money b{font-size:15px;font-variant-numeric:tabular-nums;color:#eef2ef}#shop .money i{font-style:normal;font-size:10px;color:var(--khaki)}
+#shop,#versus{position:fixed;inset:0;z-index:15;background:var(--bg);display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-rows:40px minmax(0,1fr);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
+#shop .shdr,#versus .shdr{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:0 12px;background:#101513;border-bottom:1px solid var(--line);min-width:0}
+#shop .money,#versus .money{display:flex;align-items:baseline;gap:6px;white-space:nowrap}#versus .money small,#shop .money small{font-size:10px;color:var(--dim);letter-spacing:1px}
+#versus .money b,#shop .money b{font-size:15px;font-variant-numeric:tabular-nums;color:#eef2ef}#versus .money i,#shop .money i{font-style:normal;font-size:10px;color:var(--khaki)}
 #shop .money b.flash{color:var(--accent)}
 #shopL{position:relative;display:grid;grid-template-rows:minmax(0,1fr) clamp(128px,36%,190px);min-height:0;min-width:0;border-right:1px solid var(--line)}
 #scene{position:relative;overflow:hidden;min-height:0;border-bottom:1px solid var(--line);background:#0d1110}
@@ -583,8 +583,8 @@ body.eqm #btnTrain{display:none}
 .tcard .tup{grid-column:2;grid-row:2;height:30px;padding:0 10px;font-size:11px;font-weight:700;color:#9fe6ee;border-color:#2d6068;white-space:nowrap}
 #sconf .acts{display:flex;gap:8px}#sconf .acts button{height:38px}
 #sconf .b2{flex:1;background:#1a201d;border:1px solid var(--fire);color:var(--fire);font-size:13px;letter-spacing:2px}
-@media (orientation:portrait){#shop{grid-template-columns:minmax(0,1fr);grid-template-rows:40px 50% minmax(0,1fr)}}
-@media (max-width:700px){#shop .loc{display:none}}
+@media (orientation:portrait){#shop,#versus{grid-template-columns:minmax(0,1fr);grid-template-rows:40px 50% minmax(0,1fr)}}
+@media (max-width:700px){#shop .loc,#versus .loc{display:none}}
 
 /* ===== ノーナのセリフ欄（ガレージ：左下のステータスに重ねる） ===== */
 html{-webkit-tap-highlight-color:transparent}
@@ -610,6 +610,55 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 /* SHOP 初回：歩いて近づく間はセリフ欄とメニューを隠す */
 #shop.walk #tbox,#shop.walk #shopR,#shop.walk #sExit,#shop.walk .opcard{visibility:hidden}
 #shop.greet #shopR,#shop.greet #sExit{opacity:.25;pointer-events:none}
+/* ===== VERSUS：闘技場の受付（ショップと同じ配置。左上＝受付とベルの3D、左下＝セリフ、右＝対戦カード／対戦表） ===== */
+#versus .logo .en{color:var(--cyan)}
+#vsL{position:relative;display:grid;grid-template-rows:minmax(0,1fr) clamp(128px,36%,190px);min-height:0;min-width:0;border-right:1px solid var(--line)}
+#vsScene{position:relative;overflow:hidden;min-height:0;border-bottom:1px solid var(--line);background:#0b1013}
+#vsGL{position:absolute;inset:0}#vsGL canvas{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+#vsScene::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:3;background:repeating-linear-gradient(0deg,rgba(0,0,0,.24) 0 1px,transparent 1px 3px)}
+#vsScene .opcard .r{color:var(--cyan)}
+/* 場面に応じたキャラクター：受付の絵を暗くして、左寄りにイラストを重ねる */
+#vsDim{position:absolute;inset:0;z-index:1;background:rgba(5,8,9,.74);opacity:0;transition:opacity .3s;pointer-events:none}
+#vsImg{position:absolute;left:4%;bottom:0;height:96%;width:auto;max-width:60%;object-fit:contain;object-position:bottom left;z-index:2;opacity:0;transform:translateY(14px);transition:opacity .35s ease,transform .35s ease-out,filter .2s;pointer-events:none}
+#versus.chr #vsDim{opacity:1}#versus.chr #vsImg{opacity:1;transform:none}#versus.chr .opcard{opacity:0}
+#vsImg.dim{filter:brightness(.42) saturate(.7)}
+#vtbox{position:relative;overflow:visible;margin:8px 10px 10px;min-height:0;padding:14px 14px 10px;background:rgba(12,16,15,.95);border:1px solid var(--line);display:flex;gap:12px}
+#vtbox .nm{position:absolute;left:12px;top:-1px;height:16px;padding:0 8px;background:var(--vc,#c9d4d8);color:var(--vf,#0a0c0b);font-size:10px;font-weight:700;letter-spacing:2px;display:flex;align-items:center;white-space:nowrap}
+#vtText{flex:1;min-width:0;overflow:auto;font-family:var(--disp);font-size:13.5px;line-height:1.65;color:#e6ebe7;padding-top:3px;cursor:pointer}
+#vtText em{font-style:normal;color:var(--cyan)}#vtText strong{font-weight:400;color:var(--accent)}
+#vtNext{position:absolute;right:12px;bottom:8px;color:var(--cyan);font-size:10px;animation:kblink .8s steps(2) infinite}
+#vtChoice{position:absolute;left:10px;bottom:calc(100% + 8px);z-index:4;display:flex;flex-direction:column;gap:4px;padding:6px;background:rgba(10,14,13,.9);border:1px solid var(--line);border-left:2px solid var(--cyan)}#vtChoice:empty{display:none}
+#vtChoice button{min-height:28px;padding:0 10px;text-align:left;background:#121816;border:1px solid #3a4540;color:#aeb8b3;font-size:11px;white-space:nowrap}
+#vtChoice button:first-child{background:#0c1718;border-color:var(--cyan);color:#cdf6fb}#vtChoice button:first-child::before{content:"▶ "}
+#vsR{position:relative;min-height:0;min-width:0;background:var(--panel);padding:8px 12px 10px;display:flex;flex-direction:column;gap:6px}
+#vsR .stabs button[aria-selected=true]{background:var(--cyan);border-color:var(--cyan);color:#06161a}
+#vBody{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:6px;scrollbar-width:none}#vBody::-webkit-scrollbar{display:none}
+.vcard{padding:8px 10px;background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--cyan)}
+.vcard.pend{border-left-color:var(--faint)}.vcard.won{border-left-color:var(--accent)}
+.vcard .rd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0 8px}
+.vcard .rd b{font-family:var(--mech);font-size:15px;font-weight:700;letter-spacing:.2em;color:var(--cyan);white-space:nowrap}.vcard.pend .rd b{color:var(--dim)}.vcard.won .rd b{color:var(--accent)}
+.vcard .rd small{font-size:10px;color:var(--dim);white-space:nowrap}
+.vsx{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:6px;margin-top:6px;text-align:center}
+.vsx .p{padding:5px 4px;background:#0b100e;border:1px solid var(--line);min-width:0}
+.vsx .p small{display:block;font-size:9px;color:var(--dim);white-space:nowrap}.vsx .p b{display:block;font-family:var(--disp);font-size:12px;font-weight:400;color:#eef2ef;white-space:nowrap}
+.vsx .p i{display:block;font-style:normal;font-family:var(--mech);font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--khaki);white-space:nowrap}
+.vsx .p.q b{color:var(--faint)}
+.vsx .x{font-family:var(--mech);font-size:15px;font-weight:700;color:var(--fire)}
+.vrows{display:grid;gap:3px;font-size:11px}.vrows div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted #26302c;padding-bottom:2px}
+.vrows span{color:#98a59f;white-space:nowrap}.vrows b{font-weight:400;text-align:right}
+.vnote{font-family:var(--body);font-size:11px;line-height:1.55;color:#9aa6a0;padding:6px 10px;background:var(--panel2);border-left:2px solid var(--cyan)}
+.vprog{display:flex;align-items:center;gap:5px;font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--faint);white-space:nowrap}
+.vprog i{flex:1;height:1px;background:var(--line)}.vprog .on{color:var(--cyan)}.vprog .ok{color:var(--accent)}
+.vtb{display:flex;flex-direction:column;gap:5px}
+.vtr{display:grid;grid-template-columns:6.4em minmax(0,1fr) auto;gap:2px 8px;align-items:center;padding:6px 10px;background:var(--panel2);border:1px solid var(--line);font-size:11px}
+.vtr .k{font-family:var(--mech);font-weight:700;letter-spacing:.12em;color:var(--cyan);white-space:nowrap}.vtr .k small{display:block;font-family:var(--body);font-weight:400;letter-spacing:0;font-size:9px;color:var(--dim)}
+.vtr .o{font-family:var(--disp);font-size:12px;white-space:nowrap;overflow:hidden}.vtr .o small{display:block;font-size:9px;color:var(--dim)}
+.vtr .s{font-size:10px;font-weight:700;letter-spacing:.1em;white-space:nowrap;color:var(--dim)}.vtr .s.ok{color:var(--accent)}.vtr .s.on{color:var(--cyan)}
+.vtr.pend .k,.vtr.pend .o{color:var(--faint)}
+.vacts{display:flex;gap:8px;flex:0 0 auto}.vacts .btn-main{flex:1;height:36px;background:var(--cyan);color:#06161a}
+.vacts .btn-main:disabled{background:#1a2427;color:#4f6266;opacity:1}
+#versus.walk #vtbox,#versus.walk #vsR,#versus.walk #vExit,#versus.walk .opcard{visibility:hidden}
+#versus.greet #vsR,#versus.greet #vExit{opacity:.25;pointer-events:none}
 #unlock{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:2;min-width:min(400px,calc(100% - 20px));max-width:calc(100% - 20px);padding:10px 16px 12px;background:rgba(10,14,13,.65);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);text-shadow:0 1px 2px #000;border:1px solid var(--accent);display:flex;flex-direction:column;gap:5px;animation:ulin .4s ease}
 #unlock b{font-family:var(--mech);font-size:12px;letter-spacing:.3em;color:var(--accent)}
 #unlock span{font-family:var(--body);font-size:12px;color:#d9e0dc}
@@ -967,7 +1016,7 @@ body.eqm #visit{display:none}
   <div style="height:1px;background:var(--line)"></div>
   <button class="mitem big" id="mTrain"><span class="no">01</span><span class="t en">TRAINING<br><small>演習場で標的機と戦う（攻撃あり／なし）</small></span></button>
   <button class="mitem" id="mMission" disabled><span class="no">02</span><span class="t en">MISSION<br><small id="mMisSub">依頼が届くと選べます</small></span></button>
-  <button class="mitem" disabled data-soon="1"><span class="no">03</span><span class="t en">VERSUS<br><small>闘技場で戦う（準備中）</small></span></button>
+  <button class="mitem" id="mVersus" disabled><span class="no">03</span><span class="t en">VERSUS<br><small id="mVsSub">招待が届くと選べます</small></span></button>
   <button class="mitem" id="mShop"><span class="no">04</span><span class="t en">SHOP<br><small>パーツや兵装を買う</small></span></button>
   <button class="mitem" id="mDebug" hidden><span class="no">DBG</span><span class="t en">DEBUG<br><small>依頼の進行・無敵モード（テスト用）</small></span></button>
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
@@ -1003,6 +1052,28 @@ body.eqm #visit{display:none}
   <div class="shd"><span class="code" id="sCode" hidden>BUY</span><span class="ttl en" id="sTitle">在庫一覧</span><span class="sub" id="sSub"></span></div><div class="rule"></div>
   <div class="body" id="sBody"><div class="scats" id="sCats"></div><div class="sdet" id="sDet"></div></div>
   <div class="salt" id="sAlt" hidden></div>
+ </div>
+</div>
+<div id="versus" hidden>
+ <div class="shdr">
+  <div class="logo"><span class="en">VERSUS</span></div>
+  <span class="sep"></span><span class="tag loc">闘技場 ／ 受付</span>
+  <span class="grow"></span>
+  <span class="money"><small>所持金</small><b id="vMoney"></b><i>CR</i></span>
+  <button class="btn-sub" id="vExit" style="height:28px">GARAGE へ</button>
+ </div>
+ <div id="vsL">
+  <div id="vsScene">
+   <div id="vsGL"></div><div id="vsDim"></div><img id="vsImg" alt="">
+   <div class="opcard"><span class="r">RECEPTION</span><span class="n">BELL-01 ベル</span><span class="d">闘技場 受付案内ロボ</span><span class="st" id="vState">応答中</span></div>
+  </div>
+  <div id="vtbox"><span class="nm" id="vtNm">BELL-01 ベル</span><div id="vtText" aria-live="polite"></div><div id="vtChoice"></div><span id="vtNext" hidden>▼</span></div>
+ </div>
+ <div id="vsR">
+  <div class="stabs" id="vTabs" role="tablist"><button data-t="card" role="tab">対戦カード</button><button data-t="table" role="tab">対戦表</button></div>
+  <div class="shd"><span class="ttl en" id="vTitle">CLASS C 大会</span><span class="sub" id="vSub"></span></div><div class="rule"></div>
+  <div id="vBody"></div>
+  <div class="vacts"><button class="btn-main cut" id="vGo" disabled>試合へ ▶</button></div>
  </div>
 </div>
 <div id="mis" hidden></div>
@@ -3127,6 +3198,9 @@ GXF.forEach(f=>['HD','CR','AR','LG'].forEach(k=>PRICE[k+'-'+f.n]=f.price));
 const START_CREDIT=30000,REWARD={drone:800,turret:1200};
 const OWN=new Set(START_OWN);let CREDIT=START_CREDIT,shopVisits=0;
 let PILOT='',TUT='intro',FIRE=true,TTUT=0,SHOPCLS=0;const TSEL={target:'std',field:'range'};
+// VERSUS の進行：reg＝受付で登録済み（初回の演出を見た）／win＝各試合の勝利（1回戦・準決勝・決勝）／seen＝一度だけ出す場面（キャラクターの登場など）
+const VSS={reg:false,win:[false,false,false],seen:{}};
+function vsReset(){VSS.reg=false;VSS.win=[false,false,false];VSS.seen={}}
 // 文字送りの速さ（1文字あたりのミリ秒）：セリフ／オープニングの字幕
 const TXT_SPD=62,SUB_SPD=85;
 /* 所持金の表示：ヘッダーは CR_SHOWN（表示中の値）。出撃の報酬はガレージに戻ってから数字が高速で増える（crCount）。
@@ -3190,12 +3264,13 @@ function loadGame(){
   if(d.col&&typeof d.col==='object'){Object.keys(COL).forEach(k=>{if(typeof d.col[k]==='string'&&/^#[0-9a-f]{6}$/i.test(d.col[k]))COL[k]=d.col[k]});applyColors()}
   if(d.mis)Object.entries(d.mis).forEach(([k,v])=>{if(!MDEF[k]&&v&&typeof v==='object'){MIS_X[k]=v;return}if(MDEF[k]&&v&&typeof v==='object')MIS[k]={got:!!v.got,read:!!v.read,clear:!!v.clear,n:v.n|0,t:+v.t||0,best:+v.best||0,dy:typeof v.dy==='number'?v.dy:null}});
   if(typeof d.day==='number'){DAY=Math.max(0,d.day|0);DAY_SAVED=true}
+  if(d.vs&&typeof d.vs==='object'){VSS.reg=!!d.vs.reg;if(Array.isArray(d.vs.win))VSS.win=[0,1,2].map(i=>!!d.vs.win[i]);if(d.vs.seen&&typeof d.vs.seen==='object')Object.keys(d.vs.seen).forEach(k=>{if(d.vs.seen[k])VSS.seen[k]=true})}
   if(d.cfg)SLOTS.forEach(sl=>{const v=d.cfg[sl.key];if(v&&sl.cat[v]&&(v==='none'||OWN.has(v)))cfg[sl.key]=v});
  }catch(e){}
 }
 // MIS_X：いまの版が知らない依頼の記録（古い版・新しい版のどちらで起動しても消さずに残す）
 const MIS_X={};
-function saveGame(){try{fixDays();DAY_SAVED=true;localStorage.setItem(SAVE_KEY,JSON.stringify({day:DAY,own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG,tune:TUNE,pilot:PILOT,tut:TUT,fire:FIRE,tsel:TSEL,ttut:TTUT,cls:CLS,ch:CH,mis:{...MIS_X,...MIS},col:COL,shopcls:SHOPCLS}))}catch(e){}}
+function saveGame(){try{fixDays();DAY_SAVED=true;localStorage.setItem(SAVE_KEY,JSON.stringify({day:DAY,own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG,tune:TUNE,pilot:PILOT,tut:TUT,fire:FIRE,tsel:TSEL,ttut:TTUT,cls:CLS,ch:CH,mis:{...MIS_X,...MIS},col:COL,shopcls:SHOPCLS,vs:VSS}))}catch(e){}}
 // CONFIG（画質・頂点のゆれ・視点）は本体のセーブとは別に保存（NEW GAME でも消えない）
 const CFG_KEY='mech-pwa-config';
 // 音量（BGM・SE は 0〜10）とミュート。CONFIG と同じキーに保存
@@ -3307,6 +3382,7 @@ const SND=(()=>{
   childF(){cv(907,'sine',4200,.07,.04)},childM(){cv(706,'triangle',3600,.07,.04)},
   youthF(){cv(592,'sine',3200,.04,.045)},youthM(){cv(328,'triangle',2400,.04,.05)},
   adultF(){cv(479,'triangle',2800,.03,.055)},adultM(){cv(189,'sawtooth',1700,.025,.065)},
+  bell(){const d=out(.13);if(!d)return;const t=T(),f=jit(1480,.02);osc('square',f,t,.022,d,{peak:.3});osc('sine',f*1.5,t+.012,.02,d,{peak:.22})},  // 受付ロボ ベル：短く澄んだ電子音
  };
 const sat=()=>{const g=A.createGain();g.gain.value=1.15;return g};
 function shimmer(t,d,base,dur=1,peak=.08){[1,1.5,2,3].forEach((m,i)=>osc('sine',base*m,t,dur,d,{a:.005,r:dur,peak:peak/(i+1)}))}
@@ -3336,6 +3412,7 @@ const SONGS={
  title:{bpm:72,rev:0.32,dly:.2,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,ch=[[50,57,62,65],[46,53,58,62],[48,55,60,63],[45,52,57,60]][bar];if(s%16===0){supersaw(t,ch,b*16.5,pb,{v:.018,cut:600,cut2:1400});osc('sine',N(ch[0]-24),t,b*16,pb,{a:1,h:b*10,r:2,peak:.35});}if(s===0)impact(t,d,.6);if(s%32===8)[0,7,12].forEach((x,i)=>osc('sine',N(ch[0]+24+x),t+i*b*2,3,d,{peak:.05,pan:(i-1)*.6}));if(s%64===60)riser(t-b*12,b*12,d,.08);}},
  garage:{bpm:88,rev:0.2,dly:.3,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[45,41,43,40][bar];if(s%16===0)supersaw(t,[root+12,root+15,root+19,root+22],b*16,pb,{v:.012,cut:900});if(s%8===0){kick(t,d,.55);duck(pb,t,.55);}if(s%16===8)clap(t,d,.35);if(s%4===2)hat(t,d,.35);if(s%16===0||s%16===10)sub808(t,root-24,b*5,pb,.35);const arp=[0,7,12,15,19,15,12,7];if(s%2===0)pluck(t,root+24+arp[(s/2)%8],b*2,d,.035,((s/2)%2?-.4:.4));}},
  shop:{bpm:98,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[60,65,57,67][bar],q=[[0,4,7,11],[0,4,7,9],[0,3,7,10],[0,4,7,10]][bar];t+=(s%2)?b*.14:0;if(s%16===0)supersaw(t,q.map(x=>root+x),b*16,pb,{v:.01,cut:2800});if(s%4===0){kick(t,d,.5);duck(pb,t,.55,.15);}if(s%8===4)clap(t,d,.45);if(s%4===2)hat(t,d,.4);if(s%16===14)hat(t,d,.3,true);if(s%4===2)sub808(t,root-24,b*1.2,pb,.28);if(s%16===14)sub808(t,root-17,b,pb,.22);const mel=[[12,-1,16,19,-1,24,-1,19,21,-1,19,16,-1,14,12,-1],[12,-1,16,19,-1,21,23,24,-1,23,21,19,-1,16,-1,-1]][Math.floor(s/64)%2];const m=mel[s%16];if(m>=0){osc('triangle',N(root+m),t,b*1.4,d,{a:.004,r:b*1.4,peak:.07});osc('sine',N(root+m+12),t,b*.6,d,{peak:.025});}if(s%2===0)pluck(t,root+12+q[(s/2)%4],b,d,.02,((s/2)%2?-.35:.35));if(s%32===31)osc('sine',N(root+31),t,b*2,d,{peak:.04,f2:N(root+36)});}},
+ arena:{bpm:104,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[57,53,55,52][bar],q=[[0,3,7,10],[0,4,7,11],[0,4,7,10],[0,3,7,10]][bar];if(s%16===0)supersaw(t,q.map(x=>root+x),b*16,pb,{v:.009,cut:1500,cut2:2600});if(s%4===0){kick(t,d,.42);duck(pb,t,.6,.18)}if(s%8===4)clap(t,d,.3);if(s%2===1)hat(t,d,.28);if(s%16===12)hat(t,d,.25,true);if(s%8===0)sub808(t,root-24,b*3,pb,.26);const ar=[0,7,12,19,24,19,12,7];if(s%2===0)pluck(t,root+12+ar[(s/2)%8],b*1.2,d,.022,((s/2)%2?-.3:.3));if(s%32===24)osc('sine',N(root+31),t,b*3,d,{peak:.035});}},
  sortie:{bpm:132,rev:0.1,dly:.15,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[40,40,43,38][bar];if(s%4===0){kick(t,d,1);duck(pb,t,.3);}if(s%8===4)clap(t,d,.8);hat(t,d,s%2?.55:.25);if(s%16===14)hat(t,d,.5,true);const bl=[0,0,12,0,0,10,0,7,0,0,12,0,15,0,12,10];const f=A.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(1800,t);f.frequency.exponentialRampToValueAtTime(220,t+b*.9);f.Q.value=6;f.connect(pb);osc('sawtooth',N(root-12+bl[s%16]),t,b*.9,f,{peak:.16});if(s%4===0)sub808(t,root-24,b*3,pb,.35);if(s%32===0)supersaw(t,[root+12,root+15,root+19],b*32,pb,{v:.012,cut:700,cut2:2400});const ld=[24,-1,22,24,-1,27,-1,26,24,-1,22,-1,19,-1,22,-1];if(Math.floor(s/64)%2===1&&ld[s%16]>=0)pluck(t,root+12+ld[s%16],b*2,d,.035,.2);if(s%64===48)riser(t,b*16,d,.12);}},
  boss:{bpm:146,rev:0.12,dly:.12,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[38,38,39,36][bar];if(s%4===0||s%16===10){kick(t,d,1.15);duck(pb,t,.25);}if(s%8===4)clap(t,d,1);hat(t,d,s%2?.6:.3);const bl=[0,0,12,0,1,0,13,0];const sh=sat(5);sh.connect(pb);const f=A.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(2400,t);f.frequency.exponentialRampToValueAtTime(300,t+b);f.Q.value=7;f.connect(sh);[-10,10].forEach(dt=>osc('sawtooth',N(root-12+bl[s%8]),t,b*.95,f,{peak:.09,detune:dt}));if(s%8===0)sub808(t,root-24,b*6,pb,.4);if(s%32===0)supersaw(t,[root+12,root+13,root+19],b*32,pb,{v:.013,cut:900,cut2:3000});if(s%16===8)osc('sawtooth',N(root+36),t,b*6,d,{f2:N(root+35),peak:.02,pan:.5});if(I){if(s%2===0)pluck(t,root+24+[0,3,7,8,12,8,7,3][(s/2)%8],b*1.8,d,.04,((s/2)%2?-.5:.5));if(s%16===0)supersaw(t,[root+24,root+27,root+31],b*16,d,{v:.01,cut:3500});}}},
  win:{bpm:96,rev:0.28,dly:.3,play(s,t,d,b,I,pb){if(s===0){impact(t,d,.7);[55,59,62,67].forEach((n,i)=>pluck(t+i*b,n+12,b*8,d,.05,(i-1.5)*.4));}if(s===8){supersaw(t,[55,59,62,67,71],b*24,pb,{v:.02,cut:1200,cut2:4000});osc('sine',N(31),t,b*24,pb,{peak:.45});shimmer(t,d,N(79),3,.1);}if(s>=40){const bar=Math.floor(s/16)%2,root=[43,48][bar];if(s%16===8)supersaw(t,[root+12,root+16,root+19],b*16,pb,{v:.01,cut:1200});if(s%16===8)sub808(t,root-12,b*8,pb,.25);if(s%4===0)pluck(t,root+24+[0,4,7,11][(s/4)%4],b*3,d,.025,.3);}}},
@@ -3872,6 +3949,236 @@ function leaveShop(){if(leaving)return;leaving=true;$('tchoice').innerHTML='';
   ()=>setTimeout(()=>fadeTo(()=>{leaving=false;closeShop()},'GARAGE'),900))}
 function closeShop(kind){stopShop3D();SND.bgm('garage');clearInterval(typing);typing=null;closeConfirm();$('shop').hidden=true;$('shop').classList.remove('walk','greet');view='overview';selSlot=null;renderGarage();garageGreet(typeof kind==='string'?kind:'shop')}
 $('mShop').onclick=()=>{openMenu(false);fadeTo(openShop,'SHOP')};$('sExit').onclick=leaveShop;
+
+/* ===== VERSUS：闘技場の受付（3D）と受付案内ロボ ベル（BELL-01）=====
+ ショップの SH3 と同じ作り。清潔で冷たいAIの施設（灰色の床・白い壁・シアンの光）。受付カウンターの奥にベル、右にホログラムの対戦カード。
+ 受付を開いている間だけ描画する。初回は入口から歩いて近づく（walk）。mood：normal／bow（お辞儀）／point（カードを指す）／sorry（うつむく） */
+const VS3=(()=>{
+ const r=WGL({antialias:false});r.setPixelRatio(1);$('vsGL').appendChild(r.domElement);
+ const sc=new THREE.Scene();sc.background=new THREE.Color(0x0a1013);sc.fog=new THREE.Fog(0x0a1013,15,36);
+ const cam=new THREE.PerspectiveCamera(34,2,.1,60);
+ sc.add(new THREE.AmbientLight(0x7d8c94,2.1));
+ const key=new THREE.DirectionalLight(0xe6f6ff,2.2);key.position.set(-3,9,7);sc.add(key);
+ const rim=new THREE.DirectionalLight(0x6fd3e0,1.1);rim.position.set(5,4,-6);sc.add(rim);
+ const glowL=new THREE.PointLight(0x6fd3e0,4,9);glowL.position.set(5,6,1.5);sc.add(glowL);
+ // 素材
+ const fl=tex(g=>{g.fillStyle='#394145';g.fillRect(0,0,16,16);g.fillStyle='#2b3236';g.fillRect(0,0,16,1);g.fillRect(0,0,1,16);g.fillStyle='#424b50';g.fillRect(3,5,4,1)});
+ fl.wrapS=fl.wrapT=THREE.RepeatWrapping;fl.repeat.set(14,9);
+ const wl=tex(g=>{g.fillStyle='#5c666b';g.fillRect(0,0,16,16);g.fillStyle='#454e53';g.fillRect(0,0,16,1);g.fillRect(0,0,1,16);g.fillRect(8,0,1,16);g.fillStyle='#6b767b';g.fillRect(2,3,4,1);g.fillRect(10,10,4,1)});
+ wl.wrapS=wl.wrapT=THREE.RepeatWrapping;wl.repeat.set(10,3);
+ const T={floor:psMat(0xffffff,{map:fl}),wall:psMat(0xffffff,{map:wl}),pillar:psMat(0x8b969b),dark:psMat(0x1b2226),steel:psMat(0x4e595e),
+  white:psMat(0xd6dee1),whiteL:psMat(0xeef3f4),grey:psMat(0x8f9ba0),joint:psMat(0x46525a),counter:psMat(0xffffff,{map:panel('#b9c3c7','#7c878c')}),
+  glowC:new THREE.MeshBasicMaterial({color:0x6fd3e0}),glowO:new THREE.MeshBasicMaterial({color:0xf0a040}),glowW:new THREE.MeshBasicMaterial({color:0xe6fbff}),
+  visor:new THREE.MeshBasicMaterial({color:0x06161a}),green:new THREE.MeshBasicMaterial({color:0x8cf06e})};
+ // 文字の入った板（運営の表示）：小さな canvas に描いて、ドットのまま拡大
+ function sign(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');draw(g,w,h);const t=new THREE.CanvasTexture(c);t.magFilter=t.minFilter=THREE.NearestFilter;t.colorSpace=THREE.SRGBColorSpace;return {c,g,t}}
+ const root=grp(sc);
+ // 床・壁・柱・天井の光
+ const floor=new THREE.Mesh(new THREE.PlaneGeometry(44,26,12,8),T.floor);floor.rotation.x=-Math.PI/2;root.add(floor);
+ box(root,44,13,.4,T.wall,0,6.5,-7);box(root,.4,13,26,T.wall,-11,6.5,0);
+ box(root,44,.1,.04,T.glowC,0,.12,-6.78);                                      // 壁の下のシアンの帯
+ for(let x=-9.6;x<=12;x+=5.4)box(root,.5,13,.5,T.pillar,x,6.5,-6.7);
+ for(let z=-5;z<=6;z+=3.6)box(root,24,.08,.24,T.glowW,0,10.4,z);                 // 天井の照明
+ [-2.6,8.4].forEach(x=>box(root,.1,.02,16,T.glowC,x,.012,1));                  // 床のライン
+ // 奥の壁：大型スクリーン（トーナメント表）
+ const scr=sign(128,72,(g,w,h)=>{g.fillStyle='#04121a';g.fillRect(0,0,w,h);g.strokeStyle='#6fd3e0';g.lineWidth=1;g.strokeRect(.5,.5,w-1,h-1);
+  g.fillStyle='#6fd3e0';g.font='bold 9px monospace';g.textAlign='center';g.fillText('C-CLASS TOURNAMENT',w/2,12);
+  g.strokeStyle='#2d6068';for(let i=0;i<8;i++){const y=20+i*6.2;g.beginPath();g.moveTo(8,y);g.lineTo(24,y);g.stroke()}
+  for(let i=0;i<4;i++){const y=20+i*12.4;g.beginPath();g.moveTo(24,y);g.lineTo(24,y+6.2);g.moveTo(24,y+3.1);g.lineTo(40,y+3.1);g.stroke()}
+  for(let i=0;i<2;i++){const y=23+i*24.8;g.beginPath();g.moveTo(40,y);g.lineTo(40,y+12.4);g.moveTo(40,y+6.2);g.lineTo(56,y+6.2);g.stroke()}
+  g.beginPath();g.moveTo(56,29);g.lineTo(56,54);g.moveTo(56,41.5);g.lineTo(70,41.5);g.stroke();
+  for(let i=0;i<8;i++){const y=20+i*6.2;g.beginPath();g.moveTo(w-8,y);g.lineTo(w-24,y);g.stroke()}
+  g.fillStyle='#f0a040';g.fillRect(8,49.6,10,3);                               // 第7区画の枠
+  g.fillStyle='#e6fbff';g.fillRect(68,38,10,7);g.fillStyle='#7f8c86';g.font='7px monospace';g.fillText('ARENA 07 / LIVE',w/2,h-4)});
+ const screen=new THREE.Mesh(new THREE.PlaneGeometry(6.4,3.6),new THREE.MeshBasicMaterial({map:scr.t}));screen.position.set(.4,6.2,-6.76);root.add(screen);
+ box(root,6.8,4,.14,T.dark,.4,6.2,-6.86);
+ // 観客席への通路（右奥）：明るい出入口と、奥にうっすら観客席の段
+ const gate=grp(root,-7.4,0,-6.8);box(gate,3.4,6.4,.3,new THREE.MeshBasicMaterial({color:0x9fd8e0}),0,3.2,-.05);
+ for(let i=0;i<5;i++)box(gate,3.2,.12,.1,T.steel,0,3.9+i*.52,.12);
+ box(gate,.4,7,.6,T.pillar,-1.9,3.5,.1);box(gate,.4,7,.6,T.pillar,1.9,3.5,.1);box(gate,4.2,.6,.6,T.pillar,0,7,.1);
+ const gsign=sign(64,16,(g,w,h)=>{g.fillStyle='#06161a';g.fillRect(0,0,w,h);g.fillStyle='#6fd3e0';g.font='bold 9px monospace';g.textAlign='center';g.fillText('STANDS  A-12',w/2,11)});
+ const gs=new THREE.Mesh(new THREE.PlaneGeometry(2.6,.65),new THREE.MeshBasicMaterial({map:gsign.t}));gs.position.set(0,7.55,.42);gate.add(gs);
+ // 闘技場の紋章（カウンターの上の壁）
+ const emb=grp(root,4.6,8.5,-6.7);emb.scale.setScalar(.8);cyl(emb,1.1,1.1,.08,T.dark,0,0,0,Math.PI/2,0,16);
+ for(let i=0;i<12;i++){const a=i/12*Math.PI*2;box(emb,.12,.32,.06,T.glowC,Math.sin(a)*.86,Math.cos(a)*.86,.08,0,0,-a)}
+ box(emb,.7,.1,.06,T.glowO,0,0,.08);
+ // 受付カウンター（ベルの前）
+ const ct=grp(root,4.2,0,1.7);
+ box(ct,7.2,2.5,1.1,T.counter,0,1.25,0);box(ct,7.6,.16,1.4,T.whiteL,0,2.58,0);
+ box(ct,7.4,.08,.04,T.glowC,0,2.48,.57);box(ct,7.2,.06,.04,T.glowC,0,.14,.56);
+ const rsign=sign(64,12,(g,w,h)=>{g.fillStyle='#0a0f11';g.fillRect(0,0,w,h);g.fillStyle='#6fd3e0';g.font='bold 9px monospace';g.textAlign='center';g.fillText('RECEPTION',w/2,9)});
+ const rs=new THREE.Mesh(new THREE.PlaneGeometry(2.6,.5),new THREE.MeshBasicMaterial({map:rsign.t}));rs.position.set(0,1.55,.57);ct.add(rs);
+ box(ct,.9,.08,.5,T.green,-2.8,2.68,.1);box(ct,.9,.08,.5,T.glowO,2.8,2.68,.1);   // 端末の発光
+ box(ct,.7,.5,.08,T.dark,-1.6,2.95,0,-.4,0,0);                                    // 卓上の端末
+ /* ===== ベル：白い受付案内ロボ。丸みのある頭と横長のバイザー、目は2つの光。下半身は台座（カウンターに隠れる） ===== */
+ const bell=grp(root,4.4,0,.15);bell.rotation.y=-.1;
+ const B={};
+ cyl(bell,.7,.9,2.2,T.grey,0,1.1,0,0,0,10);cyl(bell,.62,.7,.3,T.joint,0,2.35,0,0,0,10);
+ const torso=grp(bell,0,2.5,0);B.torso=torso;
+ box(torso,.8,.5,.6,T.joint,0,.25,0);
+ const chest=grp(torso,0,.5,0);
+ box(chest,1.3,1.05,.78,T.white,0,.52,0);box(chest,1.12,.24,.7,T.whiteL,0,1.1,0);
+ box(chest,.82,.36,.04,T.dark,0,.6,.4);box(chest,.6,.07,.03,T.glowC,0,.68,.43);box(chest,.38,.07,.03,T.glowO,-.11,.55,.43);
+ box(chest,.46,.12,.03,T.visor,0,.24,.4);const tagTex=sign(32,8,(g,w,h)=>{g.fillStyle='#06161a';g.fillRect(0,0,w,h);g.fillStyle='#6fd3e0';g.font='bold 7px monospace';g.textAlign='center';g.fillText('BELL-01',w/2,7)});
+ const tg=new THREE.Mesh(new THREE.PlaneGeometry(.44,.11),new THREE.MeshBasicMaterial({map:tagTex.t}));tg.position.set(0,.24,.42);chest.add(tg);
+ const neck=grp(chest,0,1.2,0);[0,1].forEach(i=>cyl(neck,.13,.15,.08,T.joint,0,.05+i*.1,0,0,0,8));
+ const head=grp(neck,0,.24,0);B.head=head;
+ box(head,.98,.7,.8,T.white,0,.36,0);box(head,.86,.16,.7,T.whiteL,0,.76,0);box(head,1.04,.48,.62,T.white,0,.36,0);
+ box(head,.82,.28,.06,T.visor,0,.38,.41);box(head,.86,.03,.05,T.glowC,0,.22,.42);
+ B.eyes=[-1,1].map(s=>box(head,.15,.11,.03,T.glowC,s*.18,.4,.45));
+ [-1,1].forEach(s=>{cyl(head,.16,.16,.1,T.grey,s*.55,.38,0,0,Math.PI/2,10);box(head,.04,.04,.04,T.glowC,s*.61,.38,0)});
+ box(head,.05,.42,.05,T.grey,.26,.98,-.05);const tip=box(head,.11,.11,.11,T.glowO,.26,1.22,-.05);B.tip=tip;
+ // 腕（肩→肘→手）。肩は丸い関節
+ B.arms=[-1,1].map(s=>{const sh=grp(chest,s*.78,.86,0);cyl(sh,.24,.24,.3,T.grey,0,0,0,0,Math.PI/2,10);
+  box(sh,.22,.72,.24,T.white,0,-.42,0);const el=grp(sh,0,-.82,0);cyl(el,.12,.12,.24,T.joint,0,0,0,0,Math.PI/2,8);
+  box(el,.21,.66,.23,T.whiteL,0,-.36,0);const hd=grp(el,0,-.74,0);box(hd,.22,.2,.14,T.joint,0,-.06,0);
+  [0,1,2].forEach(i=>box(hd,.05,.14,.05,T.grey,-.06+i*.06,-.2,.04));return {sh,el,hd,s}});
+ /* ===== ホログラムの対戦カード（ベルの右）：英字だけで描く。setHolo で書き換え ===== */
+ const hc=sign(96,52,()=>{});const holoM=new THREE.MeshBasicMaterial({map:hc.t,transparent:true,opacity:.85,depthWrite:false,side:THREE.DoubleSide});
+ const holo=new THREE.Mesh(new THREE.PlaneGeometry(3.1,1.68),holoM);holo.position.set(8.0,5.5,.9);holo.rotation.y=-.3;root.add(holo);
+ const beam=new THREE.Mesh(new THREE.CylinderGeometry(.02,.5,2.6,8,1,true),new THREE.MeshBasicMaterial({color:0x6fd3e0,transparent:true,opacity:.14,depthWrite:false}));beam.position.set(8.0,3.95,.9);root.add(beam);
+ cyl(root,.5,.56,.12,T.dark,8.0,2.7,.9,0,0,10);cyl(root,.36,.36,.03,T.glowC,8.0,2.77,.9,0,0,10);
+ box(root,.5,2.64,.5,T.steel,8.0,1.32,.9);
+ function setHolo(top,mid,bot,dim){const g=hc.g,w=96,h=52;g.clearRect(0,0,w,h);g.fillStyle='rgba(6,22,26,.75)';g.fillRect(0,0,w,h);
+  g.strokeStyle=dim?'#3c6a70':'#6fd3e0';g.lineWidth=1;g.strokeRect(.5,.5,w-1,h-1);g.textAlign='center';
+  g.fillStyle=dim?'#6a9298':'#6fd3e0';g.font='bold 8px monospace';g.fillText(top,w/2,11);
+  g.fillStyle='#e6fbff';g.font='bold 8px monospace';g.fillText('YOU',18,29);g.fillStyle='#f0a040';g.font='bold 10px monospace';g.fillText('VS',w/2,30);
+  g.fillStyle=dim?'#6a9298':'#e6fbff';g.font='bold 7px monospace';g.fillText(mid,w-22,29);
+  g.strokeStyle='#2d6068';g.beginPath();g.moveTo(6,37.5);g.lineTo(w-6,37.5);g.stroke();
+  g.fillStyle='#7f8c86';g.font='6px monospace';g.fillText(bot,w/2,47);hc.t.needsUpdate=true}
+ // 姿勢（毎フレーム）
+ let t3=0,on=false,last=0,mood='normal',moodT=0,talking=false;
+ const Lr=(a,b,k)=>a+(b-a)*k;
+ const pose={tX:0,tY:0,hX:0,hY:0,hZ:0,a:[{x:0,z:0,e:0},{x:0,z:0,e:0}]};
+ function animate(dt){
+  t3+=dt;moodT+=dt;const k=Math.min(1,dt*7);
+  let w={tX:0,tY:Math.sin(t3*.45)*.06,hX:0,hY:Math.sin(t3*.6)*.14,hZ:Math.sin(t3*.9)*.03,
+   a:[{x:-.15,z:-.12,e:-.55},{x:-.15,z:.12,e:-.55}]};                            // 普段：両手を体の前でそろえる
+  if(talking){w.hX=Math.sin(t3*9)*.04;w.hY+=Math.sin(t3*2.1)*.08;w.a[1]={x:-.5+Math.sin(t3*3.5)*.12,z:.25,e:-.9}}
+  if(mood==='bow'){const p=Math.min(1,moodT/.35)*Math.max(0,1-Math.max(0,moodT-1.3)/.5);w.tX=.42*p;w.hX=.25*p;w.a=[{x:-.1,z:-.1,e:-.8},{x:-.1,z:.1,e:-.8}]}
+  if(mood==='point')w.a[1]={x:-.35,z:1.25+Math.sin(t3*2)*.04,e:-.25},w.hY=.35,w.hZ=.05;
+  if(mood==='sorry'){w.hX=.38;w.tX=.16;w.a=[{x:-.35,z:-.05,e:-1.1},{x:-.35,z:.05,e:-1.1}]}
+  for(const key of ['tX','tY','hX','hY','hZ'])pose[key]=Lr(pose[key],w[key],k);
+  pose.a.forEach((a,i)=>{a.x=Lr(a.x,w.a[i].x,k);a.z=Lr(a.z,w.a[i].z,k);a.e=Lr(a.e,w.a[i].e,k)});
+  B.torso.rotation.set(pose.tX,pose.tY,0);B.head.rotation.set(pose.hX,pose.hY,pose.hZ);
+  B.arms.forEach((a,i)=>{a.sh.rotation.set(pose.a[i].x,0,pose.a[i].z);a.el.rotation.x=pose.a[i].e});
+  // 目：話している間は交互に明滅、うつむくと暗く
+  const blink=(Math.floor(t3*3.1)%17)===0;
+  B.eyes.forEach((e,i)=>{e.material=(talking&&Math.floor(t3*10+i)%2)||blink?T.glowW:T.glowC;e.scale.y=blink?.25:1});
+  B.tip.material=(Math.floor(t3*1.5)%2)?T.glowO:T.dark;
+  holoM.opacity=.78+Math.sin(t3*7)*.05+(Math.random()<.02?-.3:0);holo.position.y=5.5+Math.sin(t3*1.4)*.06;
+  glowL.intensity=3.6+Math.sin(t3*1.2)*.4}
+ let walk=null;const base={p:new THREE.Vector3(),l:new THREE.Vector3()};
+ function size(){const el=$('vsGL'),w=el.clientWidth||1,h=el.clientHeight||1;const rh=RES[res]?RES[res][1]*.8:h*Math.min(devicePixelRatio,2);
+  r.setSize(Math.round(rh*w/h),Math.round(rh),false);cam.aspect=w/h;
+  // ベルとホログラムが右寄りに入るように：横長ほど引いて、少し右を見る（左はキャラクターのイラストを重ねる場所）
+  const a=w/h;base.p.set(3.6,4.9,11+Math.max(0,1.9-a)*3.4);base.l.set(3.2+Math.min(a,2.4)*.2,4.15,0);cam.position.copy(base.p);cam.lookAt(base.l);cam.updateProjectionMatrix()}
+ // 初回：入口の遠くから、一歩ごとに小さく上下しながら受付へ近づく（ショップの初回と同じ）
+ function walkCam(dt){walk.t+=dt;const u=Math.min(1,walk.t/walk.d),e=1-Math.pow(1-u,2),kk=1-e;
+  cam.position.set(base.p.x-2.6*kk,base.p.y+Math.abs(Math.sin(u*Math.PI*9))*.24*(1-u*.7)-.25*kk,base.p.z+15*kk);
+  cam.lookAt(base.l.x-1.4*kk,base.l.y-.3*kk+Math.sin(u*Math.PI*9)*.04,base.l.z);
+  if(u>=1){cam.position.copy(base.p);cam.lookAt(base.l);const f=walk.cb;walk=null;f&&f()}}
+ function loop(){if(!on)return;const now=performance.now(),dt=Math.min((now-last)/1000,.05);last=now;animate(dt);if(walk)walkCam(dt);r.render(sc,cam);requestAnimationFrame(loop)}
+ addEventListener('resize',()=>{if(on)size()});
+ setHolo('ROUND 1','???','SCHEDULING',true);
+ return {start(){if(on)return;on=true;last=performance.now();size();requestAnimationFrame(()=>{size();loop()})},stop(){on=false;walk=null},
+  mood(m){mood=m||'normal';moodT=0},talk(v){talking=!!v},walk(d,cb){walk={t:0,d,cb}},holo:setHolo,get on(){return on}};
+})();
+
+/* ===== VERSUS：受付の会話と画面 =====
+ 会話の行は [話し手, 文, ベルの姿勢]。話し手：b＝ベル／n＝ノーナ（携帯端末）／VCH のキー（セレナなど：受付の絵を暗くしてイラストを左に重ねる）。
+ 文の中は <em>強調</em> と <strong>良い知らせ</strong>、<ruby> だけ。○○ は操縦者名 */
+const VSP={b:{nm:'BELL-01 ベル',c:'#c9d4d8',f:'#0a0c0b',v:'bell'},n:{nm:'N-07 ノーナ（端末）',c:'#6fd3e0',f:'#06161a',v:'nona'}};
+const VCH={serena:{nm:'セレナ・ヴァルデス',c:'#c8435c',f:'#fff',v:'youthF',img:'img/rivals/rival-david-serena.png'}};
+/* 場面に応じて一度だけ出る会話（VSS.seen に記録）。ok が真になった受付の訪問で、ベルの案内のあとに流れる。セリフは仮 */
+const VSEV=[
+ {id:'c-final-serena',ok:()=>vsCur()===2&&vsState(2)==='open',lines:[
+  ['serena','あら。あなたが噂の、第7区画の代表さん？'],
+  ['serena','異名の欄、空っぽなのね。……いいわ、<em>名無しさん</em>って呼んであげる。'],
+  ['serena','決勝の舞台は、わたしのためにあるの。観客にいい顔をしたいなら、せいぜい長く立っていてね。'],
+  ['b','……第3区画の代表、セレナ・ヴァルデス様です。決勝のお相手でいらっしゃいます。'],
+  ['n','挑発ですね。気にする必要はありません、○○。']]}];
+const VT={q:[],iv:null,done:null,ch:null,img:''};
+let vTab='card',vLeaving=false;
+function vtSay(lines,choices=null){VT.q=lines.slice();VT.ch=choices;vtNext()}
+function vtChar(k){const v=$('versus'),img=$('vsImg');
+ if(!k){v.classList.remove('chr');img.classList.remove('dim');return}
+ const c=VCH[k];if(VT.img!==c.img){VT.img=c.img;img.src=c.img;img.alt=c.nm}img.classList.remove('dim');v.classList.add('chr')}
+function vtNext(){const ch=$('vtChoice');ch.innerHTML='';clearInterval(VT.iv);VT.iv=null;
+ if(!VT.q.length){$('vtNext').hidden=true;VS3.talk(false);$('vState').textContent='待機中';vtChar(null);vtChoices();return}
+ const [sp,raw,mood]=VT.q.shift(),S=VSP[sp]||VCH[sp],txt=raw.replace(/○○/g,esc(PILOT||'操縦者'));
+ const box=$('vtbox');box.style.setProperty('--vc',S.c);box.style.setProperty('--vf',S.f);$('vtNm').textContent=S.nm;
+ if(VCH[sp])vtChar(sp);else $('vsImg').classList.add('dim');
+ if(mood)VS3.mood(mood);VS3.talk(sp==='b');$('vState').textContent=sp==='b'?'応答中':'待機中';
+ const parts=txt.split(/(<ruby[^>]*>.*?<\/ruby>|<\/?(?:em|strong)>)/).filter(Boolean),total=parts.reduce((a,p)=>a+(p.startsWith('<ruby')?1:p[0]==='<'?0:p.length),0);
+ const el=$('vtText');let n=0;$('vtNext').hidden=true;
+ const draw=k=>{let out='',left=k;for(const p of parts){if(p.startsWith('<ruby')){if(left>0)out+=p;left-=1;continue}if(p[0]==='<'){out+=p;continue}out+=p.slice(0,Math.max(0,left));left-=p.length}el.innerHTML=out};
+ VT.done=()=>{clearInterval(VT.iv);VT.iv=null;el.innerHTML=txt;VS3.talk(false);if(VT.q.length)$('vtNext').hidden=false;else vtNext()};
+ draw(0);VT.iv=setInterval(()=>{draw(++n);SND.blip(S.v,n);if(n>=total)VT.done()},TXT_SPD)}
+function vtChoices(){const ch=$('vtChoice');ch.innerHTML='';if(typeof VT.ch==='function'){const f=VT.ch;VT.ch=null;return f()}const list=VT.ch||vsMenu();VT.ch=null;
+ list.forEach(([lab,fn])=>{const b=document.createElement('button');b.textContent=lab;b.onclick=fn;ch.appendChild(b)})}
+$('vtText').onclick=()=>{if(VT.iv&&VT.done)VT.done();else if(VT.q.length)vtNext()};
+const vsMenu=()=>[['対戦カードを見る',()=>{setVTab('card');vtSay(vsStatus(true))}],['対戦表を見る',()=>{setVTab('table');vtSay([['b','対戦表です。勝ち進むと、次の試合が表に加わります。','point']])}],['ルールを聞く',vsRules],['ガレージへ戻る',leaveVersus]];
+// ベルの案内：いまの試合の状態（日程調整中なら「追って連絡」）
+function vsStatus(card){const i=vsCur();
+ if(i>=VSC.rounds.length)return [['b',VSC.name+'、<strong>優勝</strong>おめでとうございます、○○様。記録に残しました。','bow']];
+ const r=VSC.rounds[i],st=vsState(i);
+ if(st==='open')return [['b',r.ja+'のお相手が決まりました。'+r.opp.reg+'の代表、<em>'+r.opp.name+'</em>様です。','point'],['b','対戦カードをご確認のうえ、準備ができましたら<em>［試合へ］</em>をお選びください。']];
+ const L=i===0?[['b','1回戦の日程は、ただいま調整中です。','normal']]:[['b','前の試合の勝利を確認しました。次の'+r.ja+'の日程は、ただいま調整中です。','normal']];
+ L.push(['b','決まり次第、運営局から<em>メール</em>でご連絡いたします。もうしばらくお待ちください。','bow']);
+ if(!card)L.push(['n','……待つ間に、届いている依頼をこなしておきましょう、○○。']);return L}
+function vsEvents(){const L=[];VSEV.forEach(e=>{if(!VSS.seen[e.id]&&e.ok()){VSS.seen[e.id]=true;L.push(...e.lines)}});if(L.length)saveGame();return L}
+function vsRules(){vtSay([['b','試合は<em>1対1</em>です。相手の機体を大破させれば、勝利となります。'],
+ ['b','試合の前に、運営局が機体を整備いたします。試合での損傷は、ガレージには持ち帰りません。'],
+ ['b','敗れた場合も、すぐに再挑戦できます。賞金は、勝利したときだけお支払いします。'],
+ ['b','試合は1回戦・準決勝・決勝の3つ。勝ち進むと、次の試合が対戦表に加わります。','point']])}
+function setVTab(t){vTab=t;renderVs()}
+document.querySelectorAll('#vTabs [data-t]').forEach(b=>b.onclick=()=>setVTab(b.dataset.t));
+// 右の画面：対戦カード（いまの試合）／対戦表（1回戦と、勝ち進んだ試合だけ）
+const vsDay=m=>prDate(m&&typeof m.dy==='number'?m.dy:DAY);
+function renderVs(){$('vMoney').textContent=fmtCR(CREDIT);$('vTitle').textContent=VSC.name;$('vSub').textContent=vTab==='card'?'対戦カード':'対戦表';
+ document.querySelectorAll('#vTabs [data-t]').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===vTab));
+ const i=vsCur(),N=esc(PILOT||'操縦者'),R=VSC.rounds,shown=R.map((_,k)=>k).filter(vsShown);
+ const prog=`<div class="vprog">${shown.map(k=>{const st=vsState(k);return `<span class="${st==='won'?'ok':k===i?'on':''}">${R[k].ja}${st==='won'?' ✓':''}</span>`}).join('<i></i>')}</div>`;
+ let html='';
+ if(vTab==='card'){
+  if(i>=R.length){html=`<div class="vcard won"><div class="rd"><b>CHAMPION</b><small>${VSC.name} 優勝</small></div><div class="vsx"><div class="p"><small>第7区画</small><b>${N}</b><i>HX-07 VESTIGE</i></div><div class="x">★</div><div class="p"><small>${VSC.name}</small><b>優勝</b><i>WINNER</i></div></div></div>${prog}`;
+   VS3.holo('CHAMPION','C-CLASS','WINNER',false)}
+  else{const r=R[i],st=vsState(i),op=st==='open',m=MIS[r.mail];
+   html=`<div class="vcard ${op?'':'pend'}"><div class="rd"><b>${r.label}</b><small>${r.ja} ／ ${op?vsDay(m)+' ・ 14:00':'日程調整中'}</small></div>
+    <div class="vsx"><div class="p"><small>第7区画</small><b>${N}</b><i>HX-07 VESTIGE</i></div><div class="x">VS</div><div class="p${op?'':' q'}"><small>${op?r.opp.reg:'未定'}</small><b>${op?r.opp.name:'？？？'}</b><i>${op?r.opp.en:'---'}</i></div></div></div>
+    <div class="vrows"><div><span>会場</span><b>闘技場 中央アリーナ</b></div><div><span>賞金</span><b>${op?fmtCR(r.prize)+' CR':'---'}</b></div><div><span>相手の機体</span><b>${op?r.opp.mech:'---'}</b></div><div><span>機体の整備</span><b>試合前に運営局が整備</b></div></div>
+    <div class="vnote">${op?r.opp.note:'日程は調整中です。決まり次第、運営局からメールで対戦カードが届きます。'}</div>${prog}`;
+   VS3.holo(r.label,op?r.opp.en.split(' ')[0]:'???',op?vsDay(m).replace('P.R. ','').replace(' ／ ',' '):'SCHEDULING',!op)}}
+ else{
+  html=`<div class="vtb">${shown.map(k=>{const r=R[k],st=vsState(k);return `<div class="vtr${st==='pend'?' pend':''}"><span class="k">${r.label}<small>${r.ja}</small></span><span class="o">${st==='pend'?'日程調整中':r.opp.name}<small>${st==='pend'?'相手は未定':r.opp.reg+' ／ '+r.opp.pastor}</small></span><span class="s ${st==='won'?'ok':st==='open'?'on':''}">${st==='won'?'勝利':st==='open'?'対戦待ち':'調整中'}</span></div>`}).join('')}</div>
+   <div class="vnote">${i>=R.length?'すべての試合に勝利しました。':'勝ち進むと、次の試合が表に加わります。'}</div>`}
+ $('vBody').innerHTML=html;$('vBody').scrollTop=0;$('vGo').disabled=!(i<R.length&&vsState(i)==='open');requestAnimationFrame(()=>scrollHints($('vsR'),'#vBody'))}
+$('vGo').onclick=()=>{const i=vsCur();if(i>=VSC.rounds.length||vsState(i)!=='open')return;const r=VSC.rounds[i];
+ vtSay([['b',r.ja+'、'+r.opp.name+'様との試合ですね。','point'],['b','……申し訳ありません。試合の会場は、ただいま準備中です。（VERSUS の試合は、次の更新で実装します）','sorry']])};
+function openVersus(){openMenu(false);closeModal();mailClose();nbClose();$('versus').hidden=false;VS3.start();SND.bgm('arena');vTab='card';vLeaving=false;
+ VS3.mood('normal');vtChar(null);renderVs();
+ if(!VSS.reg)return firstVersus();
+ vtSay([['b',pick(['ようこそ、○○様。闘技場の受付です。','お待ちしておりました、○○様。','照会しました。第7区画、○○様ですね。']),'bow'],...vsStatus(false),...vsEvents()])}
+/* 初回：入口から歩いて受付へ近づく → ベルのあいさつ → ノーナ（携帯端末）との掛け合い → 登録 → いまの試合の案内 */
+function firstVersus(){const v=$('versus');v.classList.add('walk');$('vtChoice').innerHTML='';$('vtText').innerHTML='';
+ VS3.walk(4.2,()=>{v.classList.remove('walk');v.classList.add('greet');
+  vtSay([['b','ようこそ、闘技場へ。こちらは <em>'+VSC.name+'</em> の受付です。','bow'],
+   ['b','登録情報を照会します。……第7区画、○○様。運営局からのご招待を確認しました。'],
+   ['b','わたくしは受付案内ロボ、<em>BELL-01</em>。ベルとお呼びください。対戦カードの発表と、試合のご案内を担当しております。'],
+   ['n','はじめまして、ベルさん。HX-07 の制御AI、N-07 です。この端末からお話しします。<em>ノーナ</em>とお呼びください。'],
+   ['b','端末の制御AIの同伴を確認しました。規定上、問題ありません。'],
+   ['b','第7区画からの出場は、闘技場の記録上、<em>初めて</em>です。'],
+   ['b','異名の欄は、空欄のまま登録しております。異名は、観客がお付けするものですので。'],
+   ['n','……史上初、ですね。勝ち進むほど、ここで○○の名前が知られていくようです。'],
+   ['b','ご案内は以上です。登録を<strong>完了</strong>しました。','bow']],()=>{
+   VSS.reg=true;saveGame();v.classList.remove('greet');vtSay([...vsStatus(false),...vsEvents()])})})}
+function leaveVersus(){if(vLeaving)return;vLeaving=true;$('vtChoice').innerHTML='';
+ vtSay([[ 'b',pick(['ご来場ありがとうございました、○○様。','お気をつけて。次のご来場をお待ちしております。','またのお越しを。試合の知らせは、メールでお届けします。']),'bow']],
+  ()=>setTimeout(()=>fadeTo(closeVersus,'GARAGE'),800))}
+function closeVersus(){VS3.stop();SND.bgm('garage');clearInterval(VT.iv);VT.iv=null;VT.q=[];vtChar(null);$('versus').hidden=true;$('versus').classList.remove('walk','greet');vLeaving=false;
+ view='overview';selSlot=null;renderGarage();garageGreet('versus')}
+$('mVersus').onclick=()=>{if(tutBlock())return;if(!vsOk())return;openMenu(false);fadeTo(openVersus,'VERSUS')};$('vExit').onclick=leaveVersus;
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sconf').hidden)closeConfirm()});
 
 /* ===== 演習場：地面・建物・標的機 ===== */
@@ -4532,8 +4839,35 @@ const MLIST=[
   mailNona:'……件名に感嘆符が三つ付いています。ドールさん、嬉しそうですね。'},
  {id:'n-shop-c',ch:0,kind:'mail',notice:true,shop:'C',ready:false,title:'入荷のお知らせ',from:'部品倉庫 D-06',fromFull:'第7整備区画 部品倉庫（整備管理AI D-06）',reward:0,
   subj:'新しい兵装が入荷いたしました！！！',body:'○○様<br>新しい兵装が入荷いたしました！ 3つ目の型5点、<b>炸裂バズーカ・大型シールド・貫通砲・大出力ブースター・広域迎撃装置</b>でございます。<br>登録等級が上がりましたので、仕入れられる品も増えたのです。<br>ぜひ、ぜひお立ち寄りを！<br><span class="end">── D-06</span>',
-  mailNona:'……件名に、感嘆符が三つ。今回は兵装だけのようですね。'}];
+  mailNona:'……件名に、感嘆符が三つ。今回は兵装だけのようですね。'},
+ // VERSUS の対戦カード決定の知らせ（vs＝何試合目か。条件がそろった帰還で届く。届いた時点でその試合が開く）
+ {id:'v-c1',ch:0,kind:'mail',notice:true,vs:0,ready:false,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
+  subj:'対戦カード決定 ── 1回戦',body:'第7区画 代表 ○○ 殿<br>CLASS C 大会、<b>1回戦</b>の対戦カードが決まりました。<br>お相手：第4区画 代表 <b>オスカー・リンド</b><br>会場：闘技場 中央アリーナ<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
+  mailNona:'闘技場から、対戦カードの知らせです。……いよいよですね、○○。'},
+ {id:'v-c2',ch:0,kind:'mail',notice:true,vs:1,ready:false,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
+  subj:'対戦カード決定 ── 準決勝',body:'第7区画 代表 ○○ 殿<br>CLASS C 大会、<b>準決勝</b>の対戦カードが決まりました。<br>お相手：第6区画 代表 <b>ザラ・クーン</b><br>会場：闘技場 中央アリーナ<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
+  mailNona:'準決勝の知らせです。……ここまで来ましたね、○○。'},
+ {id:'v-c3',ch:0,kind:'mail',notice:true,vs:2,ready:false,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
+  subj:'対戦カード決定 ── 決勝',body:'第7区画 代表 ○○ 殿<br>CLASS C 大会、<b>決勝</b>の対戦カードが決まりました。<br>お相手：第3区画 代表 <b>セレナ・ヴァルデス</b><br>会場：闘技場 中央アリーナ<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
+  mailNona:'決勝の相手は、セレナ・ヴァルデス。闘技場の花形、だそうです。'}];
 const MDEF=Object.fromEntries(MLIST.map(d=>[d.id,d]));
+/* ===== VERSUS（闘技場のクラス別トーナメント）=====
+ 1章に3試合（1回戦 → 準決勝 → 決勝）。各試合は「前の試合に勝つ」＋「need の依頼をクリア」で条件がそろい、
+ 次の帰還で運営局から対戦カードのメール（mail）が届く。メールが届いた時点でその試合が開く（受付の［試合へ］が押せる）。
+ 対戦表は、1回戦だけを出し、勝つたびに次の試合の枠を出す（条件がそろうまでは「日程調整中」で相手を伏せる）。
+ need の依頼（3-1〜3-3）は CH3 のミッションを作るときに MLIST へ足す。opp の名前・紹介は仮（決勝のセレナ以外） */
+const VSC={cls:'C',ch:3,name:'CLASS C 大会',rounds:[
+ {label:'ROUND 1',ja:'1回戦',need:'3-1',mail:'v-c1',prize:15000,opp:{name:'オスカー・リンド',en:'OSCAR LIND',reg:'第4区画',pastor:'NOAH',mech:'BULWARK 02 系の重装機',note:'盾と厚い装甲で粘る、守りの戦い方をする。'}},
+ {label:'SEMIFINAL',ja:'準決勝',need:'3-2',mail:'v-c2',prize:20000,opp:{name:'ザラ・クーン',en:'ZARA KUHN',reg:'第6区画',pastor:'NIMROD',mech:'VANGUARD 03 系の高機動機',note:'急加速と跳躍で、一気に間合いを詰めてくる。'}},
+ {label:'FINAL',ja:'決勝',need:'3-3',mail:'v-c3',prize:30000,opp:{name:'セレナ・ヴァルデス',en:'SERENA VALDES',reg:'第3区画',pastor:'DAVID',mech:'ルージュ・ファンファーレ（GLADIATOR 04）',note:'異名「緋色の喝采」。ブレードの突進と両肩のミサイルで、魅せて押し切る。'}}]};
+const vsOk=()=>TUT==='done'&&CLASSES.indexOf(CLS)>=CLASSES.indexOf(VSC.cls);   // ★2-S をクリアして CLASS C になると受付が開く
+// 試合の状態：won（勝利）／open（カードが届いた）／pend（日程調整中）。表に出すのは 1回戦と、前の試合に勝った試合だけ
+const vsState=i=>VSS.win[i]?'won':(MIS[VSC.rounds[i].mail]&&MIS[VSC.rounds[i].mail].got)?'open':'pend';
+const vsShown=i=>i===0||VSS.win[i-1];
+const vsCur=()=>{const i=VSS.win.findIndex(w=>!w);return i<0?VSC.rounds.length:i};   // いま進めている試合（すべて勝てば 3）
+// 対戦カードのメール：条件（前の試合に勝利＋need の依頼をクリア）がそろった試合の分を届ける
+function vsNotice(){const out=[];if(!vsOk())return out;let t=Date.now();
+ VSC.rounds.forEach((r,i)=>{if(MIS[r.mail]||!vsShown(i))return;if(r.need&&!(MIS[r.need]&&MIS[r.need].clear))return;MIS[r.mail]={got:true,read:false,clear:false,n:0,t:t++};out.push(MDEF[r.mail])});return out}
 const FIELD_BG={canyon:0x2a2622,relay:0x22262a,border:0x2e2a22,city:0x26241f,road:0x2b2721,ruins:0x2a2e2a,factory:0x23261f};
 const nameIn=s=>s.replace(/○○/g,esc(PILOT||'操縦者'));
 
@@ -4788,15 +5122,16 @@ function shopNotice(){const ci=CLASSES.indexOf(CLS),out=[];let t=Date.now();if(T
 
  MLIST.filter(d=>d.shop&&!MIS[d.id]&&CLASSES.indexOf(d.shop)<=ci).forEach(d=>{MIS[d.id]={got:true,read:false,clear:false,n:0,t:t++};out.push(d)});return out}
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
- if(['train','continue','mission','shop','ttdone'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;
+ if(['train','continue','mission','shop','ttdone','versus'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;
   MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)});
- out.push(...shopNotice());
+ out.push(...shopNotice(),...vsNotice());
  if(out.length){saveGame();misHeader();if(out.some(d=>d.kind==='mail')){$('mailBtn').classList.add('new');SND.play('mail')}}return out}
 function misHeader(){const u=unreadMail().length,got=anyGot();
  $('hCls').textContent='CLASS '+CLS;$('hCh').textContent='CH.'+CH;fixDays();$('hDt').textContent=prDate(DAY);
  $('keyBtn').hidden=TUT!=='done'||KEYHOLD||!ownKeys().length;
  const mb=$('mailBtn');mb.hidden=TUT!=='done'||!gotMails().length;$('mailN').textContent=u;$('mailN').hidden=!u;if(!u)mb.classList.remove('new');
- $('mMission').disabled=!got;$('mMisSub').textContent=got?'依頼を受けて戦う':'依頼が届くと選べます'}
+ $('mMission').disabled=!got;$('mMisSub').textContent=got?'依頼を受けて戦う':'依頼が届くと選べます';
+ $('mVersus').disabled=!vsOk();$('mVsSub').textContent=vsOk()?'闘技場の受付へ':'招待が届くと選べます'}
 
 /* ----- メール（機体エリアに重ねる。下にノーナの補足）----- */
 const gotMails=()=>(fixDays(),MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got).sort((a,b)=>(MIS[b.id].dy-MIS[a.id].dy)||((MIS[b.id].t||0)-(MIS[a.id].t||0))));
@@ -4809,7 +5144,7 @@ function mailList(){const box=$('mailBox'),L=gotMails(),u=unreadMail().length;
   <div class="acts"><button class="btn-sub" id="mailX" style="margin-left:auto;width:90px">閉じる</button></div>`,'sr');
  nbClose();box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>mailOpen(b.dataset.m));$('mailX').onclick=mailClose;requestAnimationFrame(()=>scrollHints(box,SX_SEL))}
 function mailOpen(id){const d=MDEF[id];if(!d)return;
- const box=$('mailBox');mailShow(box,`<div class="mh"><span>MAIL</span><span>${d.shop?'SHOP':d.notice?'NOTICE':'CH.'+d.ch+' MISSION'}${MIS[d.id].clear?' ／ CLEARED':''}</span></div>
+ const box=$('mailBox');mailShow(box,`<div class="mh"><span>MAIL</span><span>${d.shop?'SHOP':d.vs!=null?'VERSUS':d.notice?'NOTICE':'CH.'+d.ch+' MISSION'}${MIS[d.id].clear?' ／ CLEARED':''}</span></div>
   <div class="mk"><span>DATE</span><span class="dtl">${prDate(MIS[d.id].dy)}　${prTime(d.id)}</span><span>FROM</span><span>${d.fromFull||d.from}</span><span>SUBJ</span><span class="sj">${d.subj}</span></div>
   <div class="mb">${nameIn(d.body)}</div><div class="acts"><button class="btn-sub" id="mailBk" style="width:84px">◀ 一覧</button>${d.notice?'':'<button class="go" id="mailGo">MISSION を開く</button>'}<button class="btn-sub" id="mailX" style="width:80px">閉じる</button></div>`,'sl');
  MIS[d.id].read=true;saveGame();misHeader();$('mailBtn').classList.remove('new');requestAnimationFrame(()=>scrollHints(box,SX_SEL));
@@ -5522,12 +5857,13 @@ function dbgSet(id,v){if(id==='tut'){DW.tut=v;if(!v)dependents('tut').forEach(d=
  const d=MDEF[id];if(!d.ready)v=0;DW.m[id]=v;
  if(v>=1)misDeps(d).forEach(k=>{if(k==='tut')DW.tut=true;else if(DW.m[k]!==2)dbgSet(k,2)});
  if(v<2)dependents(id).forEach(x=>{if(DW.m[x.id])dbgSet(x.id,0)})}
-function dbgOpen(){mailClose();nbClose();DW={tut:tutOk(),inv:DBG.inv,m:{},own:new Set(OWN)};MLIST.filter(isMis).forEach(d=>{const m=MIS[d.id];DW.m[d.id]=!m||!m.got?0:m.clear?2:1});dbgRender()}
+function dbgOpen(){mailClose();nbClose();DW={tut:tutOk(),inv:DBG.inv,m:{},own:new Set(OWN),vs:{reg:VSS.reg,st:VSC.rounds.map((r,i)=>VSS.win[i]?2:(MIS[r.mail]&&MIS[r.mail].got)?1:0)}};MLIST.filter(isMis).forEach(d=>{const m=MIS[d.id];DW.m[d.id]=!m||!m.got?0:m.clear?2:1});dbgRender()}
 function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).map(d=>d.ch))].sort((a,b)=>a-b);
  const seg=(id,v,dis)=>`<span class="sg">${['未着','届いた','クリア'].map((l,i)=>`<button data-id="${id}" data-v="${i}" class="${v===i?'on':''}" ${dis?'disabled':''}>${l}</button>`).join('')}</span>`;
  box.innerHTML=`<div class="dh"><span>DEBUG ／ 進行状況</span><small>選ぶと、矛盾しないように関係する依頼も自動でそろいます</small></div>
   <div class="dl"><div class="dt"><span>チュートリアル完了（ガレージ案内・初回 TRAINING）</span><span class="sg"><button data-t="0" class="${DW.tut?'':'on'}">未完了</button><button data-t="1" class="${DW.tut?'on':''}">完了</button></span></div>
   ${chs.map(c=>`<div class="dc">CHAPTER ${c}${CHAPTERS[c]?'　'+CHAPTERS[c]:''}</div>`+MLIST.filter(d=>d.ch===c).map(d=>`<div class="dr${d.story?' st':''}${d.ready?'':' na'}"><span><b>${d.id}</b>${d.title}${d.ready?'':'（準備中）'}</span>${seg(d.id,DW.m[d.id],!d.ready)}</div>`).join('')).join('')}
+  ${dbgVs()}
   ${dbgParts()}
   ${dbgChars()}
   <div class="dc">PLAY</div><div class="dt"><span>無敵モード（自機・護衛対象がダメージを受けない）</span><span class="sg"><button data-i="0" class="${DW.inv?'':'on'}">OFF</button><button data-i="1" class="${DW.inv?'on':''}">ON</button></span></div></div>
@@ -5539,6 +5875,8 @@ function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).m
  box.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{DW.inv=b.dataset.i==='1';dbgRender()});
  box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const ids=b.dataset.p.split(','),on=!ids.every(i=>DW.own.has(i));ids.forEach(i=>on?DW.own.add(i):DW.own.delete(i));const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
  box.querySelectorAll('[data-pall]').forEach(b=>b.onclick=()=>{if(b.dataset.pall==='1')dbgAllParts().forEach(i=>DW.own.add(i));else{DW.own=new Set(START_OWN)}const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
+ box.querySelectorAll('[data-vs]').forEach(b=>b.onclick=()=>{dbgVsSet(+b.dataset.vs,+b.dataset.v);const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
+ box.querySelectorAll('[data-vr]').forEach(b=>b.onclick=()=>{DW.vs.reg=b.dataset.vr==='1';const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
  box.querySelectorAll('[data-cv]').forEach(b=>b.onclick=()=>{dbgClose();charView(+b.dataset.cv)});
  $('dbgX').onclick=dbgClose;$('dbgGo').onclick=dbgApply;
  $('dbgOff').onclick=()=>{DBG.on=false;DBG.inv=false;dbgSave();dbgMenu();dbgClose();nonaSay([['デバッグモードを終了しました。']])}}
@@ -5566,6 +5904,11 @@ function dbgParts(){const all=dbgAllParts(),st=new Set(START_OWN),btn=(ids,lab)=
   <div class="dt"><span>まとめて</span><span class="sg"><button data-pall="1">すべて入手</button><button data-pall="0">初期の所持品に戻す</button></span></div>
   ${ser.map(n=>{const ids=fr.filter(i=>PN[i][0]===n);return `<div class="pr"><span>${n}</span><span class="sg">${ids.some(is00)?btn(C00,'4部位セット（TUNE 全 MAX）'):ids.map(i=>btn([i],FRAME_CAT[slotOfItem(i)]+' '+PN[i][3])).join('')}</span></div>`}).join('')}
   ${cats.map(n=>`<div class="pr"><span>${n}</span><span class="sg">${wp.filter(i=>PN[i][0]===n).map(i=>btn([i],PN[i][3])).join('')}</span></div>`).join('')}`}
+// VERSUS：試合を「開放」「勝利」にすると前の試合は勝利に、「勝利」から外すと後の試合は未開放にそろえる（依頼の条件は見ない）
+function dbgVsSet(i,v){const st=DW.vs.st;st[i]=v;if(v>=1)for(let j=0;j<i;j++)st[j]=2;if(v<2)for(let j=i+1;j<st.length;j++)st[j]=0}
+function dbgVs(){const v=DW.vs;return `<div class="dc">VERSUS（${VSC.name}）　受付は CLASS C（★2-S クリア）で開く</div>
+  <div class="dt"><span>受付の初回（歩いて近づく演出）。「未」にすると一度だけの場面も見直せる</span><span class="sg"><button data-vr="0" class="${v.reg?'':'on'}">未</button><button data-vr="1" class="${v.reg?'on':''}">済</button></span></div>
+  ${VSC.rounds.map((r,i)=>`<div class="dr"><span><b>${r.label}</b>${r.ja}（${r.opp.name}）</span><span class="sg">${['未開放','開放（メール）','勝利'].map((l,k)=>`<button data-vs="${i}" data-v="${k}" class="${v.st[i]===k?'on':''}">${l}</button>`).join('')}</span></div>`).join('')}`}
 function dbgDerive(){let ci=0,ch=1;MLIST.forEach(d=>{if(d.story&&DW.m[d.id]===2){if(d.cls)ci=Math.max(ci,CLASSES.indexOf(d.cls));ch=Math.max(ch,d.ch+1)}});
  const maxCh=Math.max(...Object.keys(CHAPTERS).map(Number));return {cls:CLASSES[ci],ch:Math.min(ch,maxCh)}}
 function dbgClose(){$('dbgBox').hidden=true;DW=null}
@@ -5577,6 +5920,8 @@ function dbgApply(){const now=Date.now();
  const dv=dbgDerive();CLS=dv.cls;CH=dv.ch;
  // 等級の通知メール：クリア済みの★の分だけ届いている状態にそろえる
  MLIST.filter(d=>d.story&&d.cls).forEach(d=>{const nid='n-cls-'+d.cls.toLowerCase();if(!MDEF[nid])return;if(DW.m[d.id]===2){if(!MIS[nid])MIS[nid]={got:true,read:true,clear:false,n:0,t:now}}else delete MIS[nid]});
+ // VERSUS：受付の初回・各試合の勝利と対戦カードのメール
+ if(!DW.vs.reg&&VSS.reg)VSS.seen={};VSS.reg=DW.vs.reg;VSC.rounds.forEach((r,i)=>{const v=DW.vs.st[i];VSS.win[i]=v===2;if(v>=1){if(!MIS[r.mail])MIS[r.mail]={got:true,read:true,clear:false,n:0,t:now}}else delete MIS[r.mail]});
  // パーツ：所持品を入れ替え。00 は TUNE を全 MAX に。持っていない品を装備していたら、その部位を初期装備に戻す
  const nOwn=DW.own.size;OWN.clear();START_OWN.forEach(i=>OWN.add(i));DW.own.forEach(i=>OWN.add(i));
  C00.forEach(i=>{if(OWN.has(i))TUNE[i]=[5,5]});
@@ -5595,6 +5940,7 @@ function garageGreet(kind,info={}){
  const N=esc(PILOT||'操縦者');let L;
  if(TUT!=='done'){nonaSay([['ここがハンガー07、'+N+'の拠点です。'],['申し上げにくいのですが、本機の装備は最低限です。まずは <em>SHOP</em> へ参りましょう。部品倉庫を管理しているAIがいると、記録にあります。'],['右上の <em>MENU</em> から SHOP をお選びください。わたくしも、この端末から同行いたします。']],{hold:true});return}
  if(kind==='firstshop')L=[['ドールさんは、良い方ですね。'],['依頼が届くまで、演習場で操作に慣れておきましょう、'+N+'。MENU の <em>TRAINING</em> で、敵の攻撃のあり・なしを選べます。']];
+ else if(kind==='versus')L=[[pick(['おかえりなさい、'+N+'。闘技場の空気は……少し、張り詰めていましたね。','おかえりなさい、'+N+'。対戦カードは、MENU の VERSUS からいつでも確かめられます。'])]];
  else if(kind==='shop')L=[[pick(['おかえりなさい、'+N+'。新しい装備は、ここで付け替えられます。','おかえりなさい、'+N+'。ドールさんは、今日もお元気そうでしたね。'])]];
  else if(kind==='train'){
   if(partNow('core')<=0)L=[['……申し訳ありません、機体を守りきれませんでした。'],['修理が終わるまで、攻撃ありの演習は控えましょう。']];
@@ -5614,7 +5960,7 @@ function garageGreet(kind,info={}){
  if(SS.over)L.push(['積載が上限を超えています。このままでは出撃できません。']);
  const nm=misDeliver(kind),nmail=nm.filter(d=>d.kind==='mail'),nvis=nm.find(d=>d.kind==='visit');
  if(nmail.length===1)L.push(['……通信です。'+nmail[0].from+'から、メールが届いています。ヘッダーの <em>MAIL</em> からお読みください。']);
- else if(nmail.length>1){const kd=d=>d.notice?'入荷のお知らせのようです。':'依頼のメールです。',sh=nmail.slice(0,3);  // 2通以上：1通ずつ別の文で伝える
+ else if(nmail.length>1){const kd=d=>d.vs!=null?'対戦カードの知らせです。':d.notice?'入荷のお知らせのようです。':'依頼のメールです。',sh=nmail.slice(0,3);  // 2通以上：1通ずつ別の文で伝える
   sh.forEach((d,i)=>L.push([i===0?'……通信です。<em>メールが'+nmail.length+'通</em>届いています。まず、'+d.from+'から。'+kd(d):(i===sh.length-1&&nmail.length===sh.length?'それと、':'つづけて、')+d.from+'からも。'+kd(d)]));
   if(nmail.length>sh.length)L.push(['ほかにも'+(nmail.length-sh.length)+'通届いています。']);
   L.push(['ヘッダーの <em>MAIL</em> からお読みください。'])}
@@ -5991,7 +6337,7 @@ const hasSave=()=>{try{return !!localStorage.getItem(SAVE_KEY)}catch(e){return f
 function showTitle(){const t=$('title');view='overview';selSlot=null;wcat=null;hlOff=false;highlight(null);setPreview(null);if(mech&&builtKey!==JSON.stringify(cfg))buildMech(cfg);closeModal();t.hidden=false;SND.bgm('title');TT.on=true;titleSize();titleLoop();
  const sv=hasSave();$('tCon').disabled=!sv;$('tConSub').textContent=sv?fmtCR(CREDIT)+' CR':'NO DATA';$('tNew').focus()}
 function resetGame(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}
- OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();TTUT=0;CLS='E';CH=1;SHOPCLS=0;DAY=0;DAY_SAVED=true;Object.keys(MIS_X).forEach(k=>delete MIS_X[k]);Object.assign(COL,PRESETS['STANDARD']);applyColors();Object.keys(MIS).forEach(k=>delete MIS[k]);mailClose();
+ OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();TTUT=0;CLS='E';CH=1;SHOPCLS=0;vsReset();DAY=0;DAY_SAVED=true;Object.keys(MIS_X).forEach(k=>delete MIS_X[k]);Object.assign(COL,PRESETS['STANDARD']);applyColors();Object.keys(MIS).forEach(k=>delete MIS[k]);mailClose();
  Object.keys(DMG).forEach(k=>delete DMG[k]);Object.keys(TUNE).forEach(k=>delete TUNE[k]);Object.assign(cfg,DEFAULT_CFG);assemble();crSync()}
 function hideTitle(){TT.on=false;SND.bgm('garage');$('title').hidden=true;$('title').querySelectorAll('.tmodal').forEach(m=>m.remove());view='overview';selSlot=null;renderGarage();resize()}
 addEventListener('resize',()=>{if(TT.on)titleSize()});
