@@ -1144,9 +1144,10 @@ const WX={ // v116：暗すぎたため全体を底上げ（一番暗い夜を�
  dust:{bg:0x52422e,top:0x32281e,fog:[22,88],amb:[0x8e7e64,2.4],key:[0xffd8a0,2.3],rim:[0x8a7a6a,.7],fx:'dust'},
  evening:{bg:0x50402f,top:0x2a2634,fog:[38,118],amb:[0x8e7e70,2.4],key:[0xffc890,2.6],rim:[0x7a80b0,.9],fx:null},
  nightfog:{bg:0x343a44,top:0x161a22,fog:[22,85],amb:[0x8090a2,2.6],key:[0xb0c4d8,2.0],rim:[0x7a8aa8,.9],fx:null},
+ indoor:{bg:0x1a1f22,top:0x0c0f12,fog:[26,80],amb:[0x8696a4,2.3],key:[0xc8dcec,1.7],rim:[0x6fd3e0,.8],fx:null},
  arena:{bg:0x46525c,top:0x24303a,fog:[70,170],amb:[0x9aa6ae,3.0],key:[0xfff8f0,3.3],rim:[0xc4dcff,1.4],fx:null},
  dawn:{bg:0x323a46,top:0x182030,fog:[32,108],amb:[0x707a90,2.5],key:[0xe0c8d0,2.3],rim:[0x7a8ab8,.9],fx:'dust'}};
-const WXJA={dusk:'夕暮れ',overcast:'曇り',drizzle:'小雨',night:'夜',dust:'砂ぼこり',evening:'夕方',nightfog:'夜霧',dawn:'明け方'};
+const WXJA={indoor:'屋内（薄暗い）',dusk:'夕暮れ',overcast:'曇り',drizzle:'小雨',night:'夜',dust:'砂ぼこり',evening:'夕方',nightfog:'夜霧',dawn:'明け方'};
 const WX0={amb:[0x707a80,2.2],key:[0xfff0d8,2.8],rim:[0x9fb8ff,1.0]};
 // 空：カメラについていく半球（上の色→地平線の色）。霧と同じ色で地平線が溶ける
 const SKY=new THREE.Mesh(new THREE.SphereGeometry(70,16,10),new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.BackSide,fog:false,depthWrite:false,depthTest:false}));
@@ -4138,9 +4139,17 @@ const VS3=(()=>{
  会話の行は [話し手, 文, ベルの姿勢]。話し手：b＝ベル／n＝ノーナ（携帯端末）／VCH のキー（セレナなど：受付の絵を暗くしてイラストを左に重ねる）。
  文の中は <em>強調</em> と <strong>良い知らせ</strong>、<ruby> だけ。○○ は操縦者名 */
 const VSP={b:{nm:'BELL-01 ベル',c:'#c9d4d8',f:'#0a0c0b',v:'bell'},n:{nm:'N-07 ノーナ（端末）',c:'#6fd3e0',f:'#06161a',v:'nona'}};
-const VCH={serena:{nm:'セレナ・ヴァルデス',c:'#c8435c',f:'#fff',v:'youthF',img:'img/rivals/rival-david-serena.png'}};
+const VCH={serena:{nm:'セレナ・ヴァルデス',c:'#c8435c',f:'#fff',v:'youthF',img:'img/rivals/rival-david-serena.png'},erich:{nm:'エーリヒ・ブラント',c:'#8a5a34',f:'#fff',v:'adultM',img:'img/rivals/rival-deborah-erich.png'}};
 /* 場面に応じて一度だけ出る会話（VSS.seen に記録）。ok が真になった受付の訪問で、ベルの案内のあとに流れる。セリフは仮 */
 const VSEV=[
+ {id:'c-semi-erich',ok:()=>!!VSS.win[0],lines:[   // 1回戦に勝った直後の受付：エーリヒ（現在の審判官のトップ）の初登場。このあと 3-2 のメールが届く
+  ['erich','第7区画の代表、○○殿ですね。'],
+  ['erich','大会の審判を統べております、エーリヒ・ブラントです。規定に従い、公正に判定いたします。'],
+  ['erich','……それだけです。以後、運営局を通じて、必要な確認をお送りすることがあります。'],
+  ['b','……エーリヒ・ブラント様。<em>現在の審判官のトップ</em>でいらっしゃいます。大会の審判すべてを統べるお立場です。'],
+  ['b','第5区画を治める統治AIは、<ruby class="mc">DEBORAH<rt>デボラ</rt></ruby>。この闘技場の審判部は、<ruby class="mc">DEBORAH<rt>デボラ</rt></ruby>の管轄です。'],
+  ['n','……審判の長が、C 大会の1回戦に、わざわざ。'],
+  ['n','どこか、見られている気がします。○○、気をつけましょう。']]},
  {id:'c-final-serena',ok:()=>vsCur()===2&&vsState(2)==='open',lines:[
   ['serena','あら。あなたが噂の、第7区画の代表さん？'],
   ['serena','聞いたことのない名前ね。……<em>名無しさん</em>でいいかしら。'],
@@ -4222,7 +4231,7 @@ $('vGo').onclick=()=>{const i=vsCur();if(vLeaving||i>=VSC.rounds.length||vsState
  vtSay([['b',r.ja+'、'+r.opp.name+'様との試合ですね。機体の整備は完了しています。','point'],['b','会場へご案内します。ご武運を、○○様。','bow']],()=>{setTimeout(()=>fadeTo(()=>{closeVersus(true);setMode('play',false,{def:vsDef(i)})},'VERSUS'),600)})};
 function openVersus(res=null){openMenu(false);closeModal();mailClose();nbClose();$('versus').hidden=false;VS3.start();SND.bgm('arena');vTab='card';vLeaving=false;
  VS3.mood('normal');vtChar(null);renderVs();
- if(res){if(!res.length)$('vtText').innerHTML='';return vtSay(res)}
+ if(res){if(!res.length)$('vtText').innerHTML='';return vtSay(res.length?[...res,...vsEvents()]:res)}
  if(!VSS.reg)return firstVersus();
  vtSay([['b',pick(['ようこそ、○○様。闘技場の受付です。','お待ちしておりました、○○様。','照会しました。第7区画、○○様ですね。']),'bow'],...vsStatus(false),...vsEvents()])}
 /* 初回：入口から歩いて受付へ近づく → ベルのあいさつ → ノーナ（携帯端末）との掛け合い → 登録 → いまの試合の案内 */
@@ -4972,7 +4981,16 @@ const MLIST=[
    ['c','あそこが落ちると、大会の機材が入らなくなる。運営局の AI は「予定どおり」しか言わなくてね。……お願い、守って。'],
    ['d','ペ、ペトラ様！ 先日の部品の件、まだ代金が……！'],['c','あら、ドールじゃない。後で払うって！'],
    ['n','N-07、ノーナです。……機体の話をすると止まらない方、のようですね。お受けしましょう、○○。']]},
- {id:'3-2',wx:'indoor',ch:3,kind:'mail',ready:false,need:['vs0'],title:'地下格納庫の無人ギア',from:'エーリヒ・ブラント',reward:15000,field:'factory',fieldJa:'闘技場の地下格納庫',obj:'無人ギア3機の撃破',fail:'CORE 大破',enemyJa:'無人ギア（盾持ち・高機動・射撃型）'},
+ {id:'3-2',wx:'indoor',ch:3,kind:'mail',ready:true,need:['vs0'],afterSeen:'c-semi-erich',title:'地下格納庫の無人ギア',from:'大会審判部 エーリヒ',fromFull:'大会審判部 審判官長 エーリヒ・ブラント（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-05</span> <ruby class="mc">DEBORAH<rt>デボラ</rt></ruby> 管轄）',reward:15000,field:'hangar',fieldJa:'闘技場の地下格納庫',
+  subj:'地下格納庫における無人ギアの確認について（依頼）',body:'第7区画 代表 ○○ 殿<br>大会審判部を預かる、エーリヒ・ブラントです。先ほどは、ご挨拶のみで失礼いたしました。<br>闘技場の地下第2格納庫にて、登録のない無人ギアが3機、起動していることが確認されました。起動時の信号は、第6区画の周波数と一致しております。<br>大会の機材に関わる事案は、規定上、審判部が確認いたします。ただし本件は、規定に定めのない事案であり、審判部は試合の外では動けません。<br>貴殿の機体は、整備記録に不審のないことを確認しております。<b>確認のみ</b>、お願いできないでしょうか。<br>報酬は 15,000 CR。審判部の予備費より、お支払いいたします。受諾は任意です。<br><span class="end">── 大会審判部 エーリヒ・ブラント</span>',
+  mailNona:'審判部の長から、直々の依頼です。……とても丁寧な文面ですが、「規定に定めのない事案」という言い方が、気になります。',
+  obj:'無人ギア3機の撃破',fail:'CORE 大破',enemyJa:'無人ギア（盾持ち・高機動・射撃型）',
+  desc:'闘技場の地下格納庫で、登録のない無人ギアが3機起動している。信号は第6区画の周波数。依頼人は、大会の審判官のトップ。「確認のみ」とのこと。',
+  brief:['目標は、地下格納庫の無人ギア3機の撃破です。屋内で、足元の視界が悪く、遮蔽物が多い場所です。','盾を構えた重装機、動きの速い機体、離れて撃ってくる機体が1機ずつ。同時に相手にせず、棚と柱を使って、1機ずつ引き離してください。','……起動信号が、第6区画の周波数と一致しています。第6区画を治める統治AIは、NIMROD。確認のみ、で済めばよいのですが。'],
+  comm:{start:'地下格納庫に入りました。無人ギア3機を確認。',last:'残り1機です。',clear:'3機とも沈黙しました。……機体の識別票は、すべて削り取られています。'},
+  res:{ok:'エーリヒ様から、短い返信です。「確認、感謝いたします。報酬は規定どおりに」と。……それだけ、でした。',ng:'撤退します。……格納庫は、無人ギアごと封鎖されたそうです。'},
+  start:{x:0,z:-36},
+  enemies:[{type:'gear',gear:'bulwark',x:-14,z:20},{type:'gear',gear:'vanguard',x:16,z:28},{type:'gear',gear:'militia',x:0,z:38}]},
  {id:'3-3',wx:'storm',ch:3,kind:'mail',ready:false,need:['vs1'],title:'決勝前夜の停電',from:'闘技場運営局 DAVID',reward:16000,field:'factory',fieldJa:'闘技場の電源棟',obj:'120秒以内に電源を回復',fail:'時間切れ ／ CORE 大破',enemyJa:'放電ドローン ＋ 多脚砲台 ＋ 自走地雷'},
  {id:'3-S',wx:'emergency',ch:3,kind:'visit',story:true,ready:false,need:['vs2'],cls:'B',title:'地下の目覚め',from:'整備主任 ペトラ',client:'ペトラ',voice:'adultF',img:'img/clients/client-mechanic-petra.png',imgF:'',reward:28000,field:'factory',fieldJa:'闘技場の地下',obj:'大型多脚要塞の撃破（避難の時間稼ぎ）',fail:'要塞の出口到達 ／ CORE 大破',enemyJa:'大型多脚要塞 SIEGE WALKER'},
 
@@ -5020,7 +5038,7 @@ const vsCur=()=>{const i=VSS.win.findIndex(w=>!w);return i<0?VSC.rounds.length:i
 // 対戦カードのメール：条件（前の試合に勝利＋need の依頼をクリア）がそろった試合の分を届ける
 function vsNotice(){const out=[];if(!vsOk())return out;let t=Date.now();
  VSC.rounds.forEach((r,i)=>{if(MIS[r.mail]||!vsShown(i))return;if(r.need&&!(MIS[r.need]&&MIS[r.need].clear))return;MIS[r.mail]={got:true,read:false,clear:false,n:0,t:t++};out.push(MDEF[r.mail])});return out}
-const FIELD_BG={viaduct:0x363a3e,colo:0x0e1619,canyon:0x2a2622,relay:0x22262a,border:0x2e2a22,city:0x26241f,road:0x2b2721,ruins:0x2a2e2a,factory:0x23261f};
+const FIELD_BG={hangar:0x1a1f22,viaduct:0x363a3e,colo:0x0e1619,canyon:0x2a2622,relay:0x22262a,border:0x2e2a22,city:0x26241f,road:0x2b2721,ruins:0x2a2e2a,factory:0x23261f};
 const nameIn=s=>s.replace(/○○/g,esc(PILOT||'操縦者'));
 
 /* ----- 地形：配給都市の外れ（乱数はシード固定。配置は毎回同じ）-----
@@ -5179,6 +5197,27 @@ const BORDER_R=55,BORDER=grp(S);BORDER.visible=false;const BORDER_MAP=[];
  // 外周：遠くの丘
  for(let i=0;i<26;i++){const a=i/26*Math.PI*2,r=rnd(62,72),h=rnd(4,10);box(BORDER,rnd(10,18),h,rnd(6,10),rock,Math.sin(a)*r,h/2-1,Math.cos(a)*r,0,a,0)}
  var POST=POSTG}
+/* ----- 地形：闘技場の地下格納庫（3-2）。屋内の薄暗い広間。外周は高い壁、天井には灯りの板だけ（天井の面は張らない）。
+ 中は整備用の棚・柱・コンテナが遮蔽物。奥に休眠中の機体が並ぶ ----- */
+const HANG_R=50,HANG=grp(S);HANG.visible=false;const HANG_MAP=[];
+{let sd=0x0302;const rnd=(a=0,b=1)=>{sd=(sd*1664525+1013904223)>>>0;return a+sd/4294967296*(b-a)};
+ const T=(c,l)=>psMat(0xffffff,{map:panel(c,l)}),fl=psMat(0x2a2e30),fl2=psMat(0x34393b),wall=T('#4a5256','#262c30'),wall2=T('#3c4448','#1e2428'),dk=psMat(0x181b1d),
+  hz=psMat(0xffffff,{map:stripes('#d8b020','#1a1a14')}),rack=T('#5a6a72','#2c363c'),crate=T('#6a5a40','#34281a'),orng=psMat(0xffffff,{map:panel('#c86a2a','#6a3414')}),lamp=new THREE.MeshBasicMaterial({color:0xcfe8f0}),cy=new THREE.MeshBasicMaterial({color:0x6fd3e0});
+ const gp=new THREE.Mesh(new THREE.CircleGeometry(80,28),fl);gp.rotation.x=-Math.PI/2;gp.position.y=.01;HANG.add(gp);
+ const lane=new THREE.Mesh(new THREE.PlaneGeometry(14,100),fl2);lane.rotation.x=-Math.PI/2;lane.position.set(0,.02,0);HANG.add(lane);
+ for(let z=-46;z<=46;z+=6){box(HANG,.4,.02,2.6,hz,-7,.04,z);box(HANG,.4,.02,2.6,hz,7,.04,z)}
+ for(let i=0;i<30;i++){const a=i/30*Math.PI*2,r=HANG_R+3,h=rnd(15,20);box(HANG,2*Math.PI*r/30+.6,h,3,i%2?wall:wall2,Math.sin(a)*r,h/2,Math.cos(a)*r,0,a,0);if(i%3===0)box(HANG,.5,5,.2,cy,Math.sin(a)*(r-1.7),6,Math.cos(a)*(r-1.7),0,a,0)}
+ // 天井の灯り（板だけ）
+ for(let i=0;i<14;i++){const a=i/14*Math.PI*2,r=i%2?18:34;box(HANG,5,.3,1.4,lamp,Math.sin(a)*r,19,Math.cos(a)*r,0,a,0)}
+ // 太い柱（遮蔽）
+ [[-20,-14],[20,-14],[-24,8],[24,8],[-10,30],[10,30]].forEach(([x,z])=>{box(HANG,2.4,16,2.4,wall,x,8,z);box(HANG,2.6,.8,2.6,hz,x,.4,z);HANG_MAP.push({x,z,w:2.4,d:2.4,ry:0,k:'b'})});
+ // 整備棚（横長。遮蔽）とコンテナ
+ [[-14,-2,0],[14,-2,0],[-30,22,1.57],[30,22,1.57],[0,14,0],[-20,40,.3],[20,40,-.3]].forEach(([x,z,ry])=>{box(HANG,9,5.4,2,rack,x,2.7,z,0,ry,0);box(HANG,9.1,.25,2.1,hz,x,5.5,z,0,ry,0);HANG_MAP.push({x,z,w:9,d:2,ry,k:'b'})});
+ [[-36,-24,.2],[36,-26,-.2],[-6,-30,0],[6,-30,0],[-34,4,0],[34,6,0],[0,44,0]].forEach(([x,z,ry],i)=>{box(HANG,4,2.6,3,i%2?crate:orng,x,1.3,z,0,ry,0);HANG_MAP.push({x,z,w:4,d:3,ry,k:'b'})});
+ // 奥の休眠機体（ただの飾り。暗い塊）
+ [[-12,46],[0,47],[12,46]].forEach(([x,z])=>{box(HANG,3,5,2.4,dk,x,2.5,z);box(HANG,1.4,1.2,1.4,dk,x,5.8,z);box(HANG,.5,.2,.1,cy,x,5.8,z-.75)});
+ // 入口の大扉（南）
+ box(HANG,16,12,.8,wall2,0,6,-HANG_R-1);box(HANG,16.2,.5,.9,hz,0,12.2,-HANG_R-1)}
 /* ----- 地形：闘技場の搬入路（3-1）。薄曇りの昼。中央を南北に搬入路が通り、東西に長い搬入高架（橋）が路をまたぐ。
  両側にコンテナの山とジャージーバリア、奥にクレーン。高架（VIAD）は守る対象：壊れると右半分が落ちる ----- */
 const VIAD_R=55,VIAD=grp(S);VIAD.visible=false;const VIAD_MAP=[];
@@ -5300,8 +5339,8 @@ function buildColo(g,R){
  return g}
 const COLO_R=45,COLO=grp(S);COLO.visible=false;buildColo(COLO,COLO_R);
 const isRoad=()=>RUN&&RUN.def.field==='road',isCanyon=()=>RUN&&RUN.def.field==='canyon';
-const fieldR=()=>RUN&&RUN.def.field==='viaduct'?VIAD_R:RUN&&RUN.def.field==='colo'?COLO_R:RUN&&RUN.def.field==='relay'?RELAY_R:RUN&&RUN.def.field==='border'?BORDER_R:RUN&&RUN.def.field==='city'?CITY_R:RUN&&RUN.def.field==='ruins'?RUINS_R:RUN&&RUN.def.field==='factory'?FAC_R:ARENA;
-const fieldG=()=>isCanyon()?CANYON:RUN&&RUN.def.field==='viaduct'?VIAD:RUN&&RUN.def.field==='colo'?COLO:RUN&&RUN.def.field==='relay'?RELAY:RUN&&RUN.def.field==='border'?BORDER:RUN&&RUN.def.field==='city'?CITY:isRoad()?ROAD:RUN&&RUN.def.field==='ruins'?RUINS:RUN&&RUN.def.field==='factory'?FAC:world;
+const fieldR=()=>RUN&&RUN.def.field==='hangar'?HANG_R:RUN&&RUN.def.field==='viaduct'?VIAD_R:RUN&&RUN.def.field==='colo'?COLO_R:RUN&&RUN.def.field==='relay'?RELAY_R:RUN&&RUN.def.field==='border'?BORDER_R:RUN&&RUN.def.field==='city'?CITY_R:RUN&&RUN.def.field==='ruins'?RUINS_R:RUN&&RUN.def.field==='factory'?FAC_R:ARENA;
+const fieldG=()=>isCanyon()?CANYON:RUN&&RUN.def.field==='hangar'?HANG:RUN&&RUN.def.field==='viaduct'?VIAD:RUN&&RUN.def.field==='colo'?COLO:RUN&&RUN.def.field==='relay'?RELAY:RUN&&RUN.def.field==='border'?BORDER:RUN&&RUN.def.field==='city'?CITY:isRoad()?ROAD:RUN&&RUN.def.field==='ruins'?RUINS:RUN&&RUN.def.field==='factory'?FAC:world;
 /* ===== 障害物の当たり判定 =====
  各ステージのグループ（演習場 world／CITY／ROAD／RUINS）から、地面に立っている箱（高さ1.5m以上・ほぼ水平）を
  向きつきの箱 {x,z,c,s,hw,hd,top} として自動で集める（最初に使うときに1回）。新しいステージも同じ作り方なら自動で入る */
@@ -5351,7 +5390,7 @@ function shopNotice(){const ci=CLASSES.indexOf(CLS),out=[];let t=Date.now();if(T
 
  MLIST.filter(d=>d.shop&&!MIS[d.id]&&CLASSES.indexOf(d.shop)<=ci).forEach(d=>{MIS[d.id]={got:true,read:false,clear:false,n:0,t:t++};out.push(d)});return out}
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
- if(['train','continue','mission','shop','ttdone','versus'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(d.afterReg&&!VSS.reg)return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;
+ if(['train','continue','mission','shop','ttdone','versus'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(d.afterReg&&!VSS.reg)return;if(d.afterSeen&&!VSS.seen[d.afterSeen])return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;
   MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)});
  out.push(...shopNotice(),...vsNotice());
  if(out.length){saveGame();misHeader();if(out.some(d=>d.kind==='mail')){$('mailBtn').classList.add('new');SND.play('mail')}}return out}
@@ -5490,6 +5529,13 @@ const b=d.enemies.find(e=>e.type==='boss');if(b)s.push(`<circle cx="${b.x}" cy="
  if(d.reach){const g=d.reach;s.push(`<circle cx="${g.x}" cy="${-g.z}" r="${g.r}" fill="rgba(111,211,224,.15)" stroke="#6fd3e0" stroke-width=".7"/><path d="M${g.x} ${-g.z-3}v6M${g.x-3} ${-g.z}h6" stroke="#6fd3e0" stroke-width=".6"/><text x="${g.x}" y="${-g.z-g.r-2}" fill="#6fd3e0" font-size="4.4" text-anchor="middle" font-family="DotGothic16,monospace">中継アンテナ</text>`)}
  const st=d.start;s.push(`<path d="M${st.x} ${-st.z-4}l3 6h-6z" fill="#8cf06e"/><text x="${st.x}" y="${-st.z+8}" fill="#8cf06e" font-size="3.6" text-anchor="middle" font-family="Chakra Petch,monospace">START</text>`);
  return `<svg viewBox="-64 -64 128 128" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
+function briefMapHangar(d){const s=[];
+ for(let i=-60;i<=60;i+=20)s.push(`<path d="M-62 ${i}H62M${i} -62V62" stroke="#173236" stroke-width=".4"/>`);
+ s.push(`<circle r="${HANG_R}" fill="none" stroke="#2f7e86" stroke-width=".6" stroke-dasharray="3 2"/><rect x="-7" y="-50" width="14" height="100" fill="none" stroke="#24585e" stroke-width=".4" stroke-dasharray="1.5 1.5"/>`);
+ HANG_MAP.forEach(o=>s.push(`<rect x="${-o.w/2}" y="${-o.d/2}" width="${o.w}" height="${o.d}" transform="translate(${o.x.toFixed(1)} ${(-o.z).toFixed(1)}) rotate(${(o.ry*180/Math.PI).toFixed(1)})" fill="none" stroke="#2f7e86" stroke-width=".5"/>`));
+ (d.enemies||[]).forEach(e=>s.push(`<circle cx="${e.x}" cy="${-e.z}" r="9" fill="none" stroke="rgba(255,106,76,.35)" stroke-width=".4" stroke-dasharray="1.5 1.5"/><rect x="${e.x-2.6}" y="${-e.z-2.6}" width="5.2" height="5.2" fill="#ff6a4c"/>`));
+ const st=d.start;s.push(`<path d="M${st.x} ${-st.z-4}l3 6h-6z" fill="#8cf06e"/><text x="${st.x}" y="${-st.z+8}" fill="#8cf06e" font-size="3.6" text-anchor="middle" font-family="Chakra Petch,monospace">START</text>`);
+ return `<svg viewBox="-64 -64 128 128" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
 function briefMapViaduct(d){const s=[];
  for(let i=-60;i<=60;i+=20)s.push(`<path d="M-62 ${i}H62M${i} -62V62" stroke="#173236" stroke-width=".4"/>`);
  s.push(`<circle r="${VIAD_R}" fill="none" stroke="#2f7e86" stroke-width=".6" stroke-dasharray="3 2"/><rect x="-7.5" y="-60" width="15" height="120" fill="none" stroke="#24585e" stroke-width=".4" stroke-dasharray="1.5 1.5"/>`);
@@ -5525,7 +5571,7 @@ function briefMapCanyon(d){const s=[],P2=(x,z)=>`${z.toFixed(1)} ${x.toFixed(1)}
  if(d.reach){const g=d.reach;s.push(`<circle cx="${g.z}" cy="${g.x}" r="${g.r}" fill="rgba(111,211,224,.15)" stroke="#6fd3e0" stroke-width=".7"/><text x="${g.z}" y="${g.x+g.r+6}" fill="#6fd3e0" font-size="5" text-anchor="middle" font-family="DotGothic16,monospace">中継アンテナ</text>`)}
  const st=d.start;s.push(`<path d="M${st.z-4} ${st.x}l6 3v-6z" fill="#8cf06e"/><text x="${st.z}" y="${st.x+8}" fill="#8cf06e" font-size="4" text-anchor="middle" font-family="Chakra Petch,monospace">START</text>`);
  return `<svg viewBox="${CAN_Z0-4} -36 ${CAN_Z1-CAN_Z0+8} 72" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
-function briefMap(d){if(d.field==='viaduct')return briefMapViaduct(d);if(d.field==='canyon')return briefMapCanyon(d);if(d.field==='relay')return briefMapRelay(d);if(d.field==='border')return briefMapBorder(d);if(d.field==='road')return briefMapRoad(d);if(d.field==='ruins')return briefMapRuins(d);const s=[],FAC1=d.field==='factory',MAP=FAC1?FAC_MAP:CITY_MAP;
+function briefMap(d){if(d.field==='hangar')return briefMapHangar(d);if(d.field==='viaduct')return briefMapViaduct(d);if(d.field==='canyon')return briefMapCanyon(d);if(d.field==='relay')return briefMapRelay(d);if(d.field==='border')return briefMapBorder(d);if(d.field==='road')return briefMapRoad(d);if(d.field==='ruins')return briefMapRuins(d);const s=[],FAC1=d.field==='factory',MAP=FAC1?FAC_MAP:CITY_MAP;
  for(let i=-60;i<=60;i+=20)s.push(`<path d="M-62 ${i}H62M${i} -62V62" stroke="#173236" stroke-width=".4"/>`);
  s.push(`<circle r="${FAC1?FAC_R:CITY_R}" fill="none" stroke="#2f7e86" stroke-width=".6" stroke-dasharray="3 2"/>`);
  MAP.forEach(o=>s.push(`<rect x="${-o.w/2}" y="${-o.d/2}" width="${o.w}" height="${o.d}" transform="translate(${o.x.toFixed(1)} ${(-o.z).toFixed(1)}) rotate(${(o.ry*180/Math.PI).toFixed(1)})" fill="${o.k==='w'?'rgba(111,211,224,.18)':'none'}" stroke="${o.k==='f'?'#24585e':'#2f7e86'}" stroke-width="${o.k==='w'?.8:.5}"/>`));
@@ -5915,7 +5961,7 @@ function setMode(m,training=false,mis=null,tt=false){introClear();goWaitClear();
  if(p){selSlot=null;view='overview';highlight(null)}
  if(p&&builtKey!==JSON.stringify(cfg))buildMech(cfg);
  if(p)SND.bgm(RUN&&RUN.def.bgm||(RUN&&RUN.def.boss?'boss':'sortie'));else if(!wasMis)SND.bgm('garage');
- $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';FAC.visible=p&&!!RUN&&RUN.def.field==='factory';BORDER.visible=p&&!!RUN&&RUN.def.field==='border';VIAD.visible=p&&!!RUN&&RUN.def.field==='viaduct';RELAY.visible=p&&!!RUN&&RUN.def.field==='relay';CANYON.visible=p&&!!RUN&&RUN.def.field==='canyon';COLO.visible=p&&!!RUN&&RUN.def.field==='colo';gnd.visible=!COLO.visible&&!CANYON.visible&&!ROAD.visible&&!RUINS.visible&&!FAC.visible&&!BORDER.visible&&!VIAD.visible&&!RELAY.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}GOALM.visible=p&&!!RUN&&!!RUN.def.reach;{const cl=p&&!!RUN&&!!RUN.def.collect;DROPM.visible=WRECKG.visible=cl;CRATES.forEach(c=>c.visible=cl)}if(GOALM.visible)GOALM.position.set(RUN.def.reach.x,0,RUN.def.reach.z);dock.visible=!p;
+ $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';FAC.visible=p&&!!RUN&&RUN.def.field==='factory';BORDER.visible=p&&!!RUN&&RUN.def.field==='border';VIAD.visible=p&&!!RUN&&RUN.def.field==='viaduct';HANG.visible=p&&!!RUN&&RUN.def.field==='hangar';RELAY.visible=p&&!!RUN&&RUN.def.field==='relay';CANYON.visible=p&&!!RUN&&RUN.def.field==='canyon';COLO.visible=p&&!!RUN&&RUN.def.field==='colo';gnd.visible=!COLO.visible&&!CANYON.visible&&!ROAD.visible&&!RUINS.visible&&!FAC.visible&&!BORDER.visible&&!VIAD.visible&&!HANG.visible&&!RELAY.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}GOALM.visible=p&&!!RUN&&!!RUN.def.reach;{const cl=p&&!!RUN&&!!RUN.def.collect;DROPM.visible=WRECKG.visible=cl;CRATES.forEach(c=>c.visible=cl)}if(GOALM.visible)GOALM.position.set(RUN.def.reach.x,0,RUN.def.reach.z);dock.visible=!p;
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
  S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}wxApply(p&&RUN?RUN.def.wx:null);C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
@@ -6281,7 +6327,7 @@ const CHARS=[
  {g:'ライバル',name:'レナード・クロウ',sub:'02 SOLOMON ／ 黒金の商人（2-2 の依頼人）',img:'img/rivals/rival-solomon-leonard.png',voice:'adultM'},
  {g:'ライバル',name:'セレナ・ヴァルデス',sub:'03 DAVID ／ 緋色の喝采',img:'img/rivals/rival-david-serena.png',voice:'youthF'},
  {g:'ライバル',name:'ティモ・アルケン',sub:'04 NOAH ／ 砂原の使者',img:'img/rivals/rival-noah-timo.png',voice:'youthM'},
- {g:'ライバル',name:'エーリヒ・ブラント',sub:'05 DEBORAH ／ 鉄血の天秤（63歳・丁寧な口調。3-2 の依頼人）',img:'img/rivals/rival-deborah-erich.png',voice:'adultM'},
+ {g:'ライバル',name:'エーリヒ・ブラント',sub:'05 DEBORAH ／ 鉄血の天秤（63歳・現在の審判官のトップ・丁寧な口調。3-2 の依頼人）',img:'img/rivals/rival-deborah-erich.png',voice:'adultM'},
  {g:'ライバル',name:'ヴィクトル・ザイン',sub:'06 NIMROD ／ 尖塔の狂犬',img:'img/rivals/rival-nimrod-viktor.png',voice:'youthM'}];
 function dbgChars(){return `<div class="dc">CHARACTERS（イラストの確認）</div>`+[...new Set(CHARS.map(c=>c.g))].map(g=>`<div class="pr"><span>${g}</span><span class="sg">${CHARS.map((c,i)=>c.g===g?`<button data-cv="${i}">${c.name}</button>`:'').join('')}</span></div>`).join('')}
 function charView(i){const n=CHARS.length;i=(i+n)%n;const c=CHARS[i];
