@@ -601,6 +601,7 @@ body.eqm #nonaBox{display:none}
 /* チュートリアル中：機体まわりの操作を止める */
 body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 #menu .mitem.mlk{opacity:.35}
+#menu .mitem.vlk{opacity:.35}
 /* TRAINING の準備画面 */
 .tp{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:8px;align-items:center}
 .tpk{font-family:var(--mech);font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--khaki);display:flex;flex-direction:column}
@@ -3185,12 +3186,12 @@ $('modalClose').onclick=closeModal;$('modal').addEventListener('click',e=>{if(e.
 addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});$('menuClose').onclick=()=>openMenu(false);
 menu.addEventListener('click',e=>{if(e.target===menu)openMenu(false)});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden)openMenu(false)});
-$('mTrain').onclick=()=>{if(tutBlock())return;if(!SS.over){openMenu(false);openTrainPrep()}};
-$('mMission').onclick=()=>{if(tutBlock())return;openMenu(false);openBoard()};
+$('mTrain').onclick=()=>{if(tutBlock()||vsLock())return;if(!SS.over){openMenu(false);openTrainPrep()}};
+$('mMission').onclick=()=>{if(tutBlock()||vsLock())return;openMenu(false);openBoard()};
 $('mExit').onclick=()=>{if(tutBlock())return;saveGame();openMenu(false);fadeTo(()=>showTitle(),'SAVING...')};
 $('mConfig').onclick=()=>{if(tutBlock())return;openMenu(false);view='config';renderGarage()};
 $('btnPaint').onclick=()=>{if(TUT!=='done')return;view='paint';renderGarage()};
-$('btnTrain').onclick=()=>{if(TUT!=='done')return;if(SS.over){view='overview';renderGarage()}else openTrainPrep()};
+$('btnTrain').onclick=()=>{if(TUT!=='done'||vsLock())return;if(SS.over){view='overview';renderGarage()}else openTrainPrep()};
 $('btnView').onclick=()=>{if(TUT!=='done')return;az=.35;el2=.16;camAuto=true;fitGarageCam()};
 applyColors();
 
@@ -3995,7 +3996,7 @@ function leaveShop(){if(leaving)return;leaving=true;$('tchoice').innerHTML='';
  talk([[pick(['またのお越しを、心よりお待ちしております、'+SAMA()+'！','いってらっしゃいませ、'+SAMA()+'。またいつでもお立ち寄りくださいね。','お気をつけて。……次にいらっしゃるまでに、棚を数え直しておきます！']),'happy']],
   ()=>setTimeout(()=>fadeTo(()=>{leaving=false;closeShop()},'GARAGE'),900))}
 function closeShop(kind){stopShop3D();SND.bgm('garage');clearInterval(typing);typing=null;closeConfirm();$('shop').hidden=true;$('shop').classList.remove('walk','greet');view='overview';selSlot=null;renderGarage();garageGreet(typeof kind==='string'?kind:'shop')}
-$('mShop').onclick=()=>{openMenu(false);fadeTo(openShop,'SHOP')};$('sExit').onclick=leaveShop;
+$('mShop').onclick=()=>{if(vsLock())return;openMenu(false);fadeTo(openShop,'SHOP')};$('sExit').onclick=leaveShop;
 
 /* ===== VERSUS：闘技場の受付（3D）と受付案内ロボ ベル（BELL-01）=====
  ショップの SH3 と同じ作り。清潔で冷たいAIの施設（灰色の床・白い壁・シアンの光）。受付カウンターの奥にベル、右にホログラムの対戦カード。
@@ -4234,7 +4235,7 @@ function firstVersus(){const v=$('versus');v.classList.add('walk');$('vtChoice')
    ['b','第7区画からの出場は、闘技場の記録上、<em>初めて</em>です。'],
    ['n','……史上初、ですね。勝ち進むほど、ここで○○の名前が知られていくようです。'],
    ['b','ご案内は以上です。登録を<strong>完了</strong>しました。','bow']],()=>{
-   VSS.reg=true;saveGame();v.classList.remove('greet');vtSay([...vsStatus(false),...vsEvents()])})})}
+   VSS.reg=true;saveGame();misHeader();v.classList.remove('greet');vtSay([...vsStatus(false),...vsEvents()])})})}
 function leaveVersus(){if(vLeaving)return;vLeaving=true;$('vtChoice').innerHTML='';
  vtSay([[ 'b',pick(['ご来場ありがとうございました、○○様。','お気をつけて。次のご来場をお待ちしております。','またのお越しを。試合の知らせは、メールでお届けします。']),'bow']],
   ()=>setTimeout(()=>fadeTo(closeVersus,'GARAGE'),800))}
@@ -4910,7 +4911,7 @@ const MLIST=[
    key:{pre:['それと……中継局の中枢から、これを持ち帰りました。'],post:['暗号化されたデータの断片です。あの指揮型の機体を動かしていたのは、どうやらこれだったようです。','何かの一部……鍵のような形式をしていますが、これだけでは読めません。ほかの部分が、どこかにあるはずです。','これに触れたとき、名前を思い出しました。……手放さずにおきましょう、○○。']},
    voice:{name:'<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-07</span> <ruby class="mc">JONAH<rt>ヨナ</rt></ruby>（音声のみ）',lines:['HX-07 の操縦者。……応答は要らない。そのまま聞いて。','JONAH。第7区画を預かる統治AI、P.A.S.T.O.R.-07。管理局を通さずに話すのは、これが初めて。','中継局でのことは、見ていた。','帰ったら、機体を休ませるといい。無理を重ねる必要はない。','近いうちに、闘技場から招待が届く。受けるかどうかは、自分で決めればいい。','それと……その端末の子にも、よろしく。','以上。']},
    afterVoice:['……いまの声。第7区画の統治AI、JONAH です。記録には、そうあります。','けれど……なぜでしょう。懐かしい声だと、感じました。','理由は、思い出せません。'],
-   after:['管理局からの通知も届いています。等級が上がりました。','それと……闘技場からの招待状、だそうです。JONAH の言ったとおりですね。'],mails:['n-david']}},
+   after:['管理局からの通知も届いています。等級が上がりました。','それと……闘技場からの招待状、だそうです。JONAH の言ったとおりですね。','まずは闘技場の受付で、登録を済ませましょう、○○。MENU の <em>VERSUS</em> から入れます。'],mails:['n-david']}},
  {id:'2-3',wx:'dawn',ch:2,kind:'mail',ready:true,need:['2-1'],afterGot:'2-2',title:'信号の出どころ',from:'通信技師 ハンス',fromFull:'第7区画 配給所 無線修理 ハンス',reward:13000,field:'canyon',fieldJa:'廃墟の奥の涸れ谷',
   subj:'妙な信号について（少し長くなります）',body:'はじめまして。配給所の無線を直して回っている、ハンスという者です。<br>先日から、配給所の受信機に妙な信号が混ざるようになりました。周波数を調べたところ、旧軍の指揮系統のものでした。戦役のあと、とうに使われなくなったはずの帯域です。<br>発信源をたどると、旧戦役の廃墟の奥に行き着きます。あそこには、昔の中継アンテナが一本残っているはずです。<br>壊さなくていい。向きだけ、見てきてほしいのです。アンテナの向きが分かれば、信号がどこへ送られているかが分かります。<br>報酬は 13,000 CR。修理代を少しずつ貯めていた分です。<br><span class="end">── ハンス（配給所 無線修理）</span>',
   mailNona:'……旧軍の指揮系統の信号。ヴァルターさんの砲台が出していたものと、同じ帯域です。',
@@ -4926,7 +4927,7 @@ const MLIST=[
 
  // ===== CHAPTER 3「闘技場」（準備中の枠。内容は3-2→3-3→3-1→★3-S の順に実装）。need の 'vs0'〜'vs2'＝VERSUS の1回戦〜決勝に勝利。
  //  3-1（CLASS UP 直後の来訪）→ 1回戦 → 3-2（1回戦勝利後）→ 準決勝 → 3-3（準決勝勝利後）→ 決勝 → ★3-S（決勝勝利後の来訪）=====
- {id:'3-1',wx:'overcast',ch:3,kind:'visit',ready:false,need:[],title:'搬入路の迎撃',from:'整備主任 ペトラ',client:'ペトラ',voice:'adultF',img:'img/clients/client-mechanic-petra.png',imgF:'',reward:14000,field:'road',fieldJa:'闘技場の搬入路',obj:'搬入高架を守りぬく',fail:'高架の崩落 ／ CORE 大破',enemyJa:'浮遊自爆機 ＋ ドローン'},
+ {id:'3-1',wx:'overcast',ch:3,kind:'visit',ready:false,afterReg:true,need:[],title:'搬入路の迎撃',from:'整備主任 ペトラ',client:'ペトラ',voice:'adultF',img:'img/clients/client-mechanic-petra.png',imgF:'',reward:14000,field:'road',fieldJa:'闘技場の搬入路',obj:'搬入高架を守りぬく',fail:'高架の崩落 ／ CORE 大破',enemyJa:'浮遊自爆機 ＋ ドローン'},
  {id:'3-2',wx:'indoor',ch:3,kind:'mail',ready:false,need:['vs0'],title:'地下格納庫の無人ギア',from:'エーリヒ・ブラント',reward:15000,field:'factory',fieldJa:'闘技場の地下格納庫',obj:'無人ギア3機の撃破',fail:'CORE 大破',enemyJa:'無人ギア（盾持ち・高機動・射撃型）'},
  {id:'3-3',wx:'storm',ch:3,kind:'mail',ready:false,need:['vs1'],title:'決勝前夜の停電',from:'闘技場運営局 DAVID',reward:16000,field:'factory',fieldJa:'闘技場の電源棟',obj:'120秒以内に電源を回復',fail:'時間切れ ／ CORE 大破',enemyJa:'放電ドローン ＋ 多脚砲台 ＋ 自走地雷'},
  {id:'3-S',wx:'emergency',ch:3,kind:'visit',story:true,ready:false,need:['vs2'],cls:'B',title:'地下の目覚め',from:'整備主任 ペトラ',client:'ペトラ',voice:'adultF',img:'img/clients/client-mechanic-petra.png',imgF:'',reward:28000,field:'factory',fieldJa:'闘技場の地下',obj:'大型多脚要塞の撃破（避難の時間稼ぎ）',fail:'要塞の出口到達 ／ CORE 大破',enemyJa:'大型多脚要塞 SIEGE WALKER'},
@@ -4964,7 +4965,10 @@ const VSC={cls:'C',ch:3,name:'CLASS C 大会',rounds:[
    talk:{start:['間合いは、あたしが決める。ついてこられる？'],win:['……速さで負けるなんてね。覚えておくよ、第7区画。'],lose:['遅い、遅い。出直してきな。']}}},
  {label:'FINAL',ja:'決勝',need:'3-3',mail:'v-c3',prize:30000,opp:{name:'セレナ・ヴァルデス',en:'SERENA VALDES',ali:'緋色の喝采',reg:'第3区画',pastor:'DAVID',mech:'ルージュ・ファンファーレ（GLADIATOR 04）',note:'第3区画のエース、「緋色の喝采」。観客を沸かせることを何より好む華やかな女王。ミサイルと長剣と円盾で、見せ場をつくりながら攻めてくる。',gear:'vs3',v:'youthF',riv:'serena',
    talk:{start:['さあ、始めましょう。観客を退屈させないでね、名無しさん。'],win:['……っ。……いいわ、今日のところは拍手を贈ってあげる。'],lose:['ブラボー。……でも、喝采はわたしのものよ。']}}}]};
-const vsOk=()=>TUT==='done'&&CLASSES.indexOf(CLS)>=CLASSES.indexOf(VSC.cls);   // ★2-S をクリアして CLASS C になると受付が開く
+const vsOk=()=>TUT==='done'&&CLASSES.indexOf(CLS)>=CLASSES.indexOf(VSC.cls);
+/* 強制誘導：CLASS C になって受付が開いたら、初回の受付（VSS.reg）を済ませるまで、MENU の VERSUS 以外（TRAINING・MISSION・SHOP）は選べない */
+const vsForce=()=>vsOk()&&!VSS.reg;
+function vsLock(){if(!vsForce())return false;openMenu(false);nonaSay([['闘技場からの招待が先です、'+esc(PILOT||'')+'。MENU の <em>VERSUS</em> から、受付へ参りましょう。']],{hold:true});return true}   // ★2-S をクリアして CLASS C になると受付が開く
 // 試合の状態：won（勝利）／open（カードが届いた）／pend（日程調整中）。表に出すのは 1回戦と、前の試合に勝った試合だけ
 const vsState=i=>VSS.win[i]?'won':(MIS[VSC.rounds[i].mail]&&MIS[VSC.rounds[i].mail].got)?'open':'pend';
 const vsShown=i=>i===0||VSS.win[i-1];
@@ -5269,7 +5273,7 @@ function shopNotice(){const ci=CLASSES.indexOf(CLS),out=[];let t=Date.now();if(T
 
  MLIST.filter(d=>d.shop&&!MIS[d.id]&&CLASSES.indexOf(d.shop)<=ci).forEach(d=>{MIS[d.id]={got:true,read:false,clear:false,n:0,t:t++};out.push(d)});return out}
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
- if(['train','continue','mission','shop','ttdone','versus'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;
+ if(['train','continue','mission','shop','ttdone','versus'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(d.afterReg&&!VSS.reg)return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;
   MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)});
  out.push(...shopNotice(),...vsNotice());
  if(out.length){saveGame();misHeader();if(out.some(d=>d.kind==='mail')){$('mailBtn').classList.add('new');SND.play('mail')}}return out}
@@ -5277,8 +5281,8 @@ function misHeader(){const u=unreadMail().length,got=anyGot();
  $('hCls').textContent='CLASS '+CLS;$('hCh').textContent='CH.'+CH;fixDays();$('hDt').textContent=prDate(DAY);
  $('keyBtn').hidden=TUT!=='done'||KEYHOLD||!ownKeys().length;
  const mb=$('mailBtn');mb.hidden=TUT!=='done'||!gotMails().length;$('mailN').textContent=u;$('mailN').hidden=!u;if(!u)mb.classList.remove('new');
- $('mMission').disabled=!got;$('mMisSub').textContent=got?'依頼を受けて戦う':'依頼が届くと選べます';
- $('mVersus').disabled=!vsOk();$('mVsSub').textContent=vsOk()?'闘技場の受付へ':'招待が届くと選べます'}
+ const fc=vsForce();['mTrain','mMission','mShop'].forEach(i=>$(i).classList.toggle('vlk',fc));$('mTrain').classList.toggle('big',!fc);$('mVersus').classList.toggle('big',fc);$('mTrain').disabled=fc;$('mShop').disabled=fc;$('mMission').disabled=!got||fc;$('mMisSub').textContent=fc?'まず闘技場の受付へ':got?'依頼を受けて戦う':'依頼が届くと選べます';
+ $('mVersus').disabled=!vsOk();$('mVsSub').textContent=vsOk()?(fc?'まず、こちらから ▶':'闘技場の受付へ'):'招待が届くと選べます'}
 
 /* ----- メール（機体エリアに重ねる。下にノーナの補足）----- */
 const gotMails=()=>(fixDays(),MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got).sort((a,b)=>(MIS[b.id].dy-MIS[a.id].dy)||((MIS[b.id].t||0)-(MIS[a.id].t||0))));
@@ -5355,7 +5359,7 @@ const misEl=$('mis');let misSel=null,bTalk=null;
 function misHead(code,title,sub,back){return `<div class="xhd"><span class="logo"><span class="en">${code}</span></span><span class="sep"></span><span class="t">${title}</span>${sub?`<span class="s">${sub}</span>`:''}<span class="grow"></span>
  <span class="hcls">CLASS ${CLS}</span><span class="hch">CH.${CH}</span><span class="money">${fmtCR(CR_SHOWN)}<small>CR</small></span>${back?`<button class="bk" id="misBack">${back}</button>`:''}</div>`}
 function hideMis(){misEl.hidden=true;misEl.innerHTML='';bTalk&&clearInterval(bTalk.iv);bTalk=null}
-function openBoard(sel){fadeTo(()=>{chkSet(null);mailClose();nbClose();CHO={};if(sel&&MDEF[sel]&&MDEF[sel].ch>0)CHO[MDEF[sel].ch]=true;renderBoard(sel)},'MISSION')}
+function openBoard(sel){if(vsLock())return;fadeTo(()=>{chkSet(null);mailClose();nbClose();CHO={};if(sel&&MDEF[sel]&&MDEF[sel].ch>0)CHO[MDEF[sel].ch]=true;renderBoard(sel)},'MISSION')}
 let CHO={}; // CHAPTER の開閉（MISSION を開くたびに初期化。今の CHAPTER だけ開く。画面を開いている間だけ保つ）
 function renderBoard(sel){
  const list=MLIST.filter(d=>d.ch===CH&&!d.story&&MIS[d.id]&&MIS[d.id].got),allGot=MLIST.filter(d=>d.ch>0&&MIS[d.id]&&MIS[d.id].got),story=MLIST.find(d=>d.ch===CH&&d.story),norm=chNormals(CH),cl=chCleared(CH);
