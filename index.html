@@ -4343,11 +4343,11 @@ const GEAR_MOB={
    box(t,1.1,1.1,1.4,gr,1.5,1.85,-.1,0,0,-.25);box(t,1.12,.12,1.42,wh,1.5,2.35,-.1,0,0,-.25);box(t,.5,.32,.04,wh,1.62,1.75,.62,0,0,-.25);box(t,.3,.32,.05,wh,0,1.2,.7)}},
  /* VERSUS の相手（2-c）。tx＝段階（GEAR_TIER）の値の上書き、guard＝盾の使い方（p：構える頻度／near：これより近いと構えにくい／t：構える秒数／cd：次まで）、
   rush＝近接で踏み込む距離、msMax＝1斉射のミサイル数、rage＝耐久が半分を切ると攻撃の間が短くなる、model＝ライバル機の本物のモデル（GEARS の名前） */
- vs1:{name:'オスカー機',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'BZ',lHand:'SH3',rShoulder:'MS',lShoulder:'MS'},tint:{main:0x5a6a78,sub:0xc8ccc8,warn:0x2a4a8a,joint:0x23262a,eye:0x6fd3ff},
+ vs1:{name:'オスカー機',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'BZ',lHand:'SH3',rShoulder:'MS',lShoulder:'MS'},tint:{main:0x1f8a5a,sub:0xc8d0cc,warn:0xe8c040,joint:0x1c1e22,eye:0xb0ff80},
   hp:10000,dmg:0,rate:2.6,rng:70,spd:5,keep:30,bs:22,rw:0,tier:'mid',msK:2,tx:{dk:.33,spread:2.2,cdK:1.6,gap:1},guard:{p:4,near:14,t:[1.2,1.8],cd:[1.8,2.8]},msMax:3},
- vs2:{name:'ザラ機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'MG',rShoulder:'none',lShoulder:'none'},tint:{main:0x26282b,sub:0x3a3c40,warn:0xe0b020,joint:0x161718,eye:0xffd040},
+ vs2:{name:'ザラ機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'MG',rShoulder:'none',lShoulder:'none'},tint:{main:0x40c8f0,sub:0xf0f4f8,warn:0x2050d0,joint:0x1c1e22,eye:0xffffff},
   hp:10000,dmg:0,rate:2.2,rng:60,spd:10,keep:24,bs:32,rw:0,tier:'boss',tx:{dk:.24,spread:1.8,cdK:1.5,gap:.8}},
- vs3:{name:'ルージュ・ファンファーレ',model:'serena',vpose:'serena',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'BL3',lHand:'SH',rShoulder:'MS',lShoulder:'MS'},
+ vs3:{name:'ルージュ・ファンファーレ',model:'serena',vpose:'serena',bladeFx:1,cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'BL3',lHand:'SH',rShoulder:'MS',lShoulder:'MS'},
   hp:20000,dmg:0,rate:1.5,rng:70,spd:10,keep:14,bs:32,rw:0,tier:'boss',msK:2,tx:{dk:.24,mk:.273,spread:1.6,cdK:1.3,gap:.6},guard:{p:6,near:0,t:[.8,1.2],cd:[1.5,2.5]},rush:26,msMax:3,rage:1},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
 };
@@ -4394,6 +4394,13 @@ function gearMelee(e,A){const S0=A.def.st,ry=e.g.rotation.y,fx=Math.sin(ry),fz=M
 // 敵の爆発弾（バズーカ・グレネード・ミサイル）：着弾点の近くにいれば半分のダメージ
 function eSplash(pos,f){explode(pos,Math.min(.8,f.splash/5));const by=mech.bot.position.y;if(P.down<=0&&Math.hypot(pos.x-P.pos.x,pos.z-P.pos.z)<f.splash+1.5&&Math.abs(pos.y-(by+3))<f.splash+3)hitPlayer(Math.round(f.dmg*.5),f.imp,playerCenter(new THREE.Vector3()))}
 const pAttacking=()=>Object.values(active).some(a=>a.def.st&&/射撃|近接/.test(a.def.st.kind));
+/* ブレードの粒子（赤と金）：刀身の根元〜先端のあいだから出る。振ったあとに粒子が残り、軌跡が描かれる */
+const _bt0=new THREE.Vector3(),_bt1=new THREE.Vector3();
+function bladeEnds(w){w.muzzle.parent.getWorldPosition(_bt0);w.muzzle.getWorldPosition(_bt1);_bt1.sub(_bt0).multiplyScalar(1.5).add(_bt0)}
+function bladeTrail(w,dt){bladeEnds(w);const n=Math.min(4,Math.max(1,Math.round(dt*240)));
+ for(let i=0;i<n;i++){const u=Math.random(),p=_bt0.clone().lerp(_bt1,u);
+  spawn(Math.random()<.45?0xffd060:0xff4a30,.16+Math.random()*.16,p,{vel:new THREE.Vector3((Math.random()-.5)*6,1+Math.random()*4,(Math.random()-.5)*6),grav:14,life:.3+Math.random()*.25,grow:-.4})}}
+function bladeBurst(w){bladeEnds(w);for(let i=0;i<24;i++)spawn(i%2?0xffd060:0xff4a30,.12+Math.random()*.14,_bt1,{vel:new THREE.Vector3((Math.random()-.5)*16,2+Math.random()*9,(Math.random()-.5)*16),grav:18,life:.35+Math.random()*.3,grow:-.3});spawn(0xffffff,1.1,_bt1,{life:.1})}
 function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e.tier),keep=sp.keep||22,base=sp.spd||6;
  const A=e.act,root=!!(A&&A.def.act.root),free=e.stun<=0&&!root,ground=e.y<=0,armed=!TRAIN&&(e.atT||P.hp.core>0);
  e.dashT-=dt;e.dashCd-=dt;e.qbCd-=dt;e.jCd-=dt;e.guardT-=dt;e.gCd-=dt;e.rushT-=dt;e.ws.forEach(w=>w.cd-=dt*(e.stun>0?0:1));
@@ -4419,8 +4426,9 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
  const shk=shake;let o=null,scroll=0;
  if(A){const c={u:(t-A.t0)/A.def.act.dur,sus:(()=>{const q=A.def.act.sus,u=(t-A.t0)/A.def.act.dur;return !!q&&u>=q[0]&&u<q[1]})(),dt,s:A.s,w:A.w,st:A.st,S:A.def.st,tgt:null,use:()=>true,
    once:(id,u0)=>c.u>=u0&&!A.fired.has(id)&&(A.fired.add(id),true),
-   shot:(obj,vis)=>{A.st.ns=(A.st.ns||0)+1;if(T.rf&&/^RF/.test(A.id)&&A.st.ns>T.rf)return false;gearShot(e,A,obj,vis);return true},missile:(obj,i)=>{A.st.nm=(A.st.nm||0)+1;if(A.st.nm>(sp.msMax||GEAR_MS_MAX))return false;gearMissile(e,A,obj,i);return true},melee:()=>gearMelee(e,A)};
+   shot:(obj,vis)=>{A.st.ns=(A.st.ns||0)+1;if(T.rf&&/^RF/.test(A.id)&&A.st.ns>T.rf)return false;gearShot(e,A,obj,vis);return true},missile:(obj,i)=>{A.st.nm=(A.st.nm||0)+1;if(A.st.nm>(sp.msMax||GEAR_MS_MAX))return false;gearMissile(e,A,obj,i);return true},melee:()=>{gearMelee(e,A);if(sp.bladeFx)bladeBurst(A.w)}};
   if(c.u>=1||e.stun>.3){endOf(A.def)?.(A.w);e.act=null;e.gapT=T.gap||0}else{o=A.def.act.run(c);if(o&&o.scroll)scroll=o.scroll}}
+ if(A&&sp.bladeFx&&A.w&&A.w.muzzle&&A.def.st&&A.def.st.kind==='近接'){const u=(t-A.t0)/A.def.act.dur;if(u>.15&&u<.85)bladeTrail(A.w,dt)}   // ブレードの軌道に粒子（セレナ。GEAR_MOB の bladeFx）
  shake=shk+Math.max(0,shake-shk)*(Math.hypot(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z)<16?.3:0);
  if(scroll){const ry=e.g.rotation.y;e.home.x+=Math.sin(ry)*scroll*dt;e.home.z+=Math.cos(ry)*scroll*dt}
  pushOut(e.home,1.8,e.y);clampField(e.home);e.g.position.set(e.home.x,e.y,e.home.z);
