@@ -5599,7 +5599,7 @@ function finEval(F,t){if(F.k==='collapse')return finCollapse(F,t);const [A,B,C]=
 const FIN_T=1.65;
 function finFx(p){spawn(0xffffff,1.4,p,{life:.18,grow:1.6});spawn(0xfff0b0,2.4,p,{life:.3,grow:1.2});shake=Math.max(shake,.3);SND.play('unlock',{g:.35})}
 // 撃破：その場で連続爆発（小6回→大1回）し、黒い煙を上げながらうなだれる
-function finDown(e){e.fin={k:'down',t:0,n:0,big:false,sm:0,from:finStart(e.model)};e.hpBar.visible=false;e.mat.emissive.setRGB(0,0,0);e.guardT=0}
+function finDown(e){e.fin={k:'down',t:0,n:0,big:false,sm:0,from:finStart(e.model),dg:e.model.legs.some(l=>l.dg)};e.hpBar.visible=false;e.mat.emissive.setRGB(0,0,0);e.guardT=0}
 // 相手の勝ちポーズ（自機が負けたとき）。以後ギアの思考・移動・攻撃は一切動かさない
 function finWin(e){const m=e.model;e.fin={k:'win',t:0,fx:0,from:finStart(m),keys:FPOSE[e.spec.vpose]||FPOSE.common};e.hpBar.visible=false;e.guardT=0}
 function finTick(e,dt){const F=e.fin,m=e.model,sc=e.spec.scale||1,gp=e.g.position;F.t+=dt;if(F.k==='hold')return;
@@ -5609,7 +5609,8 @@ function finTick(e,dt){const F=e.fin,m=e.model,sc=e.spec.scale||1,gp=e.g.positio
   while(F.n<6&&F.t>=F.n*.46){F.n++;explode(new THREE.Vector3(gp.x+(Math.random()-.5)*3*sc,gp.y+(1.5+Math.random()*5.5)*sc,gp.z+(Math.random()-.5)*3*sc),.9+Math.random()*.5)}
   if(!F.big&&F.t>=2.65){F.big=true;e.finDone=true;explode(e.center(new THREE.Vector3()),2.6);shake=Math.max(shake,.9)}
   F.sm-=dt;if(F.sm<=0){F.sm=.09;spawn(0x2a2a28,.65*sc,new THREE.Vector3(gp.x+(Math.random()-.5)*2*sc,gp.y+(2+Math.random()*3)*sc,gp.z+(Math.random()-.5)*2*sc),{vel:new THREE.Vector3((Math.random()-.5)*.8,2.4+Math.random(),(Math.random()-.5)*.8),life:1.7,grow:1.6,spin:true})}
-  v=finLerp(F.from,FPOSE.down,finEase(Math.min(1,F.t/1)));
+  // 片膝をつく崩れ方（自機と同じ）。逆関節の脚の機体は、片膝が作れないので両膝のうなだれのまま
+  v=F.dg?finLerp(F.from,FPOSE.down,finEase(Math.min(1,F.t/1))):finCollapse({from:F.from,keys:[FPOSE.kneel]},Math.max(0,F.t-.3));
  }else{
   const to=Math.atan2(P.pos.x-gp.x,P.pos.z-gp.z);e.g.rotation.y+=Math.atan2(Math.sin(to-e.g.rotation.y),Math.cos(to-e.g.rotation.y))*Math.min(1,dt*6);
   v=finEval(F,F.t);if(!F.fx&&F.t>=FIN_T){F.fx=1;finFx(e.center(new THREE.Vector3()))}}
@@ -5877,7 +5878,7 @@ function drawLocks(){let n=0;
   let el=LKP[n];if(!el){el=document.createElement('div');el.className='lk';el.innerHTML='<span class="d"></span>'+LK_RING;LKC.appendChild(el);LKP.push(el)}n++;
   el.hidden=false;if(el.dataset.c!==cls){el.className='lk '+cls;el.dataset.c=cls}el.style.left=((_q.x+1)/2*100)+'%';el.style.top=((1-_q.y)/2*100)+'%';
   if(cls!=='can')el.firstChild.textContent=(cls==='atk'?'':'LOCK ')+Math.round(e.center(_v).distanceTo(P.pos))+'m'};
- if(mode==='play'){LOCKS.forEach(e=>put(e,e.atkT&&t-e.atkT<.5?'atk':'on'));lockCands.forEach(e=>{if(!LOCKS.includes(e))put(e,'can')})}
+ if(mode==='play'&&!(RUN&&RUN.vs&&(RUN.ok||RUN.lost))){LOCKS.forEach(e=>put(e,e.atkT&&t-e.atkT<.5?'atk':'on'));lockCands.forEach(e=>{if(!LOCKS.includes(e))put(e,'can')})}
  for(let i=n;i<LKP.length;i++)LKP[i].hidden=true}
 R.setAnimationLoop(()=>{
  if(PAUSED){lastT=performance.now();return}
@@ -5916,7 +5917,7 @@ R.setAnimationLoop(()=>{
   {const hs=ENEMIES.filter(e=>e.alive&&!e.off&&e.type==='drone').map(e=>sPan(e.g.position.x,e.g.position.z)).sort((a,b)=>a[0]-b[0]).slice(0,3).map(([dist,pan])=>({dist,pan}));SND.hum(hs)}
   if(TRT)ttMove(dt,dashing,!dashing&&!P.qb&&!air&&P.vel.length()>1.5);
   // ロックオン（照準の中心付近の敵を自動で捕捉し、視点をゆっくり向ける）
-  updateLock();
+  if(RUN&&RUN.vs&&(RUN.ok||RUN.lost)){lockT=lockT2=lockT3=null;LOCKS=[]}else updateLock();   // 決着中はロックカーソルを出さない
   if(lockT&&!top&&!inLock()){lockT.center(_q).sub(P.pos);const ty=Math.atan2(_q.x,_q.z);camYaw+=Math.atan2(Math.sin(ty-camYaw),Math.cos(ty-camYaw))*Math.min(1,dt*(SS.quick?(attacking?14:6):(attacking?9:2.5)))}
   vibPre();updateEnemies(dt);vibPost(dt);tickHold();
  }else if(auto&&!reduce)az+=dt*.25;
