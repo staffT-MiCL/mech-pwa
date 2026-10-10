@@ -4924,6 +4924,13 @@ const MLIST=[
    {type:'gear',gear:'militia',x:canX(132),z:132},{type:'crawler',x:canX(150),z:150},{type:'walker',x:canX(172)+7,z:172,rng:60},{type:'gear',gear:'bulwark',x:canX(182)-4,z:182},{type:'drone',x:canX(205),z:205},{type:'drone',x:canX(212)+3,z:212},
    {type:'crawler',x:canX(228),z:228},{type:'gear',gear:'militia',x:canX(246)+6,z:246}]},
 
+ // ===== CHAPTER 3「闘技場」（準備中の枠。内容は3-2→3-3→3-1→★3-S の順に実装）。need の 'vs0'〜'vs2'＝VERSUS の1回戦〜決勝に勝利。
+ //  3-1（CLASS UP 直後の来訪）→ 1回戦 → 3-2（1回戦勝利後）→ 準決勝 → 3-3（準決勝勝利後）→ 決勝 → ★3-S（決勝勝利後の来訪）=====
+ {id:'3-1',wx:'overcast',ch:3,kind:'visit',ready:false,need:[],title:'搬入路の迎撃',from:'整備主任 ペトラ',client:'ペトラ',voice:'adultF',img:'img/clients/client-mechanic-petra.png',imgF:'',reward:14000,field:'road',fieldJa:'闘技場の搬入路',obj:'搬入高架を守りぬく',fail:'高架の崩落 ／ CORE 大破',enemyJa:'浮遊自爆機 ＋ ドローン'},
+ {id:'3-2',wx:'indoor',ch:3,kind:'mail',ready:false,need:['vs0'],title:'地下格納庫の無人ギア',from:'エーリヒ・ブラント',reward:15000,field:'factory',fieldJa:'闘技場の地下格納庫',obj:'無人ギア3機の撃破',fail:'CORE 大破',enemyJa:'無人ギア（盾持ち・高機動・射撃型）'},
+ {id:'3-3',wx:'storm',ch:3,kind:'mail',ready:false,need:['vs1'],title:'決勝前夜の停電',from:'闘技場運営局 DAVID',reward:16000,field:'factory',fieldJa:'闘技場の電源棟',obj:'120秒以内に電源を回復',fail:'時間切れ ／ CORE 大破',enemyJa:'放電ドローン ＋ 多脚砲台 ＋ 自走地雷'},
+ {id:'3-S',wx:'emergency',ch:3,kind:'visit',story:true,ready:false,need:['vs2'],cls:'B',title:'地下の目覚め',from:'整備主任 ペトラ',client:'ペトラ',voice:'adultF',img:'img/clients/client-mechanic-petra.png',imgF:'',reward:28000,field:'factory',fieldJa:'闘技場の地下',obj:'大型多脚要塞の撃破（避難の時間稼ぎ）',fail:'要塞の出口到達 ／ CORE 大破',enemyJa:'大型多脚要塞 SIEGE WALKER'},
+
  // SHOP の入荷のお知らせ（ドールから。shop＝届く等級。既存のセーブにも1回ずつ届く）
  {id:'n-shop-e',ch:0,kind:'mail',notice:true,shop:'E',ready:false,title:'入荷のお知らせ',from:'部品倉庫 D-06',fromFull:'第7整備区画 部品倉庫（整備管理AI D-06）',reward:0,
   subj:'入荷のお知らせ',body:'○○様<br>部品倉庫より、品ぞろえのご案内でございます。<br>拠点防衛用の重装フレーム <b>BULWARK 02</b> の4部位と、兵装の2つ目の型（ライフル・マシンガン・バズーカ・ブレード・シールド・ミサイル・グレネード砲・レーダー・追加ブースター・迎撃装置）を棚に並べております。<br>ぜひお立ち寄りくださいませ。<br><span class="end">── D-06</span>',
@@ -5256,7 +5263,7 @@ function misDeps(d){const r=new Set((d.need||[]));
  else if(d.ch>1){const ps=MLIST.find(x=>x.ch===d.ch-1&&x.story);if(ps)r.add(ps.id)}
  if(!r.size)r.add('tut');return [...r]}
 const tutOk=()=>TUT==='done'&&TTUT>=TT_N;
-const depOk=(k,st)=>k==='tut'?(st?st.tut:tutOk()):(st?st.m[k]===2:!!(MIS[k]&&MIS[k].clear));
+const depOk=(k,st)=>k==='tut'?(st?st.tut:tutOk()):/^vs\d$/.test(k)?(st?st.vs.st[+k[2]]===2:!!VSS.win[+k[2]]):(st?st.m[k]===2:!!(MIS[k]&&MIS[k].clear));
 // 入荷のお知らせ：いまの等級までの分で、まだ届いていないものを届ける（古い等級から順に、時刻を1ずつずらす）
 function shopNotice(){const ci=CLASSES.indexOf(CLS),out=[];let t=Date.now();if(TTUT<TT_N)return out;  // 最初のトレーニングが済むまで入荷のお知らせは届かない
 
@@ -6136,9 +6143,10 @@ function dbgTitleBox(){let w=$('dbgT');if(!w){w=document.createElement('div');w.
  w.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{DBG.on=b.dataset.v==='1';if(!DBG.on)DBG.inv=false;dbgSave();dbgMenu();w.hidden=true})}
 let DW=null;
 const dependents=id=>MLIST.filter(d=>isMis(d)&&misDeps(d).includes(id));
+const vsKey=i=>'vs'+i;
 function dbgSet(id,v){if(id==='tut'){DW.tut=v;if(!v)dependents('tut').forEach(d=>dbgSet(d.id,0));return}
  const d=MDEF[id];if(!d.ready)v=0;DW.m[id]=v;
- if(v>=1)misDeps(d).forEach(k=>{if(k==='tut')DW.tut=true;else if(DW.m[k]!==2)dbgSet(k,2)});
+ if(v>=1)misDeps(d).forEach(k=>{if(k==='tut')DW.tut=true;else if(/^vs\d$/.test(k)){if(DW.vs.st[+k[2]]!==2)dbgVsSet(+k[2],2)}else if(DW.m[k]!==2)dbgSet(k,2)});
  if(v<2)dependents(id).forEach(x=>{if(DW.m[x.id])dbgSet(x.id,0)})}
 function dbgOpen(){mailClose();nbClose();DW={tut:tutOk(),inv:DBG.inv,m:{},own:new Set(OWN),vs:{reg:VSS.reg,st:VSC.rounds.map((r,i)=>VSS.win[i]?2:(MIS[r.mail]&&MIS[r.mail].got)?1:0)}};MLIST.filter(isMis).forEach(d=>{const m=MIS[d.id];DW.m[d.id]=!m||!m.got?0:m.clear?2:1});dbgRender()}
 function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).map(d=>d.ch))].sort((a,b)=>a-b);
@@ -6170,12 +6178,13 @@ function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).m
 const CHARS=[
  {g:'依頼人',name:'オットー',sub:'行商人 ／ 1-2 の依頼人',img:'img/clients/client-merchant-otto.png',voice:'youthM'},
  {g:'依頼人',name:'ヴァルター',sub:'元整備兵 ／ ★1-S・★2-S の依頼人',img:'img/clients/client-veteran-walter.png',voice:'adultM'},
+ {g:'依頼人',name:'ペトラ・ホルン',sub:'闘技場の整備主任 ／ 3-1・★3-S の依頼人',img:'img/clients/client-mechanic-petra.png',voice:'adultF'},
  {g:'依頼人',name:'ミラ',sub:'境界監視員 ／ 2-1 の依頼人',img:'img/clients/client-border-mira.png',voice:'youthF'},
  {g:'ライバル',name:'ガイウス・ハーラン',sub:'01 JOSHUA ／ 無敗の皇帝',img:'img/rivals/rival-joshua-gaius.png',voice:'adultM'},
  {g:'ライバル',name:'レナード・クロウ',sub:'02 SOLOMON ／ 黒金の商人（2-2 の依頼人）',img:'img/rivals/rival-solomon-leonard.png',voice:'adultM'},
  {g:'ライバル',name:'セレナ・ヴァルデス',sub:'03 DAVID ／ 緋色の喝采',img:'img/rivals/rival-david-serena.png',voice:'youthF'},
  {g:'ライバル',name:'ティモ・アルケン',sub:'04 NOAH ／ 砂原の使者',img:'img/rivals/rival-noah-timo.png',voice:'youthM'},
- {g:'ライバル',name:'エーリヒ・ブラント',sub:'05 DEBORAH ／ 鉄血の天秤',img:'img/rivals/rival-deborah-erich.png',voice:'adultM'},
+ {g:'ライバル',name:'エーリヒ・ブラント',sub:'05 DEBORAH ／ 鉄血の天秤（63歳・丁寧な口調。3-2 の依頼人）',img:'img/rivals/rival-deborah-erich.png',voice:'adultM'},
  {g:'ライバル',name:'ヴィクトル・ザイン',sub:'06 NIMROD ／ 尖塔の狂犬',img:'img/rivals/rival-nimrod-viktor.png',voice:'youthM'}];
 function dbgChars(){return `<div class="dc">CHARACTERS（イラストの確認）</div>`+[...new Set(CHARS.map(c=>c.g))].map(g=>`<div class="pr"><span>${g}</span><span class="sg">${CHARS.map((c,i)=>c.g===g?`<button data-cv="${i}">${c.name}</button>`:'').join('')}</span></div>`).join('')}
 function charView(i){const n=CHARS.length;i=(i+n)%n;const c=CHARS[i];
@@ -6189,7 +6198,10 @@ function dbgParts(){const all=dbgAllParts(),st=new Set(START_OWN),btn=(ids,lab)=
   ${ser.map(n=>{const ids=fr.filter(i=>PN[i][0]===n);return `<div class="pr"><span>${n}</span><span class="sg">${ids.some(is00)?btn(C00,'4部位セット（TUNE 全 MAX）'):ids.map(i=>btn([i],FRAME_CAT[slotOfItem(i)]+' '+PN[i][3])).join('')}</span></div>`}).join('')}
   ${cats.map(n=>`<div class="pr"><span>${n}</span><span class="sg">${wp.filter(i=>PN[i][0]===n).map(i=>btn([i],PN[i][3])).join('')}</span></div>`).join('')}`}
 // VERSUS：試合を「開放」「勝利」にすると前の試合は勝利に、「勝利」から外すと後の試合は未開放にそろえる（依頼の条件は見ない）
-function dbgVsSet(i,v){const st=DW.vs.st;st[i]=v;if(v>=1)for(let j=0;j<i;j++)st[j]=2;if(v<2)for(let j=i+1;j<st.length;j++)st[j]=0}
+function dbgVsSet(i,v){const st=DW.vs.st;st[i]=v;if(v>=1)for(let j=0;j<i;j++)st[j]=2;if(v<2)for(let j=i+1;j<st.length;j++)st[j]=0;
+ // 試合の条件の依頼（1回戦＝3-1 …）のクリアと、勝利に頼る依頼（3-2 など）の未着をそろえる
+ if(v>=1)for(let j=0;j<=i;j++){const n=VSC.rounds[j].need;if(n&&MDEF[n]&&MDEF[n].ready&&DW.m[n]!==2)dbgSet(n,2)}
+ for(let j=0;j<st.length;j++)if(st[j]!==2)dependents(vsKey(j)).forEach(x=>{if(DW.m[x.id])dbgSet(x.id,0)})}
 function dbgVs(){const v=DW.vs;return `<div class="dc">VERSUS（${VSC.name}）　受付は CLASS C（★2-S クリア）で開く</div>
   <div class="dt"><span>受付の初回（歩いて近づく演出）。「未」にすると一度だけの場面も見直せる</span><span class="sg"><button data-vr="0" class="${v.reg?'':'on'}">未</button><button data-vr="1" class="${v.reg?'on':''}">済</button></span></div>
   ${VSC.rounds.map((r,i)=>`<div class="dr"><span><b>${r.label}</b>${r.ja}（${r.opp.name}）</span><span class="sg">${['未開放','開放（メール）','勝利'].map((l,k)=>`<button data-vs="${i}" data-v="${k}" class="${v.st[i]===k?'on':''}">${l}</button>`).join('')}<button data-vgo="${i}">試合</button></span></div>`).join('')}`}
