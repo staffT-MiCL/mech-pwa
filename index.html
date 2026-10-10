@@ -3330,6 +3330,8 @@ const SND=(()=>{
   decide(d,t){osc('sine',1046,t,.12,d,{peak:.5});osc('sine',1568,t+.06,.25,d,{peak:.5});osc('triangle',3136,t+.06,.2,d,{peak:.12});snap(t,d,{peak:.2})},
   cancel(d,t){osc('sine',1174,t,.07,d,{peak:.45});osc('sine',784,t+.05,.16,d,{f2:700,peak:.45})},
   deny(d,t){[0,.09].forEach(o=>{osc('sine',180,t+o,.08,d,{peak:.6});osc('square',90,t+o,.08,d,{peak:.08})})},
+  cheer(d,t,k=1){const L=1.4+k*.6;noise(t,L,d,{f:700,f2:1100,q:.9,a:.35,h:L*.3,r:L*.7,peak:.42*k});noise(t+.08,L,d,{f:1900,f2:2600,q:1.4,a:.3,h:L*.25,r:L*.75,peak:.2*k});noise(t,L*.8,d,{type:'lowpass',f:320,a:.4,r:L*.6,peak:.18*k})},
+  groan(d,t){noise(t,1.8,d,{f:420,f2:260,q:1.1,a:.3,h:.4,r:1.4,peak:.4});noise(t,1.6,d,{type:'lowpass',f:200,a:.4,r:1.2,peak:.2})},
   wipe(d,t){noise(t,.45,d,{type:'bandpass',f:300,f2:9000,q:1.2,a:.3,r:.15,peak:.5});sub(t+.4,90,35,.5,d,.6);snap(t+.42,d,{peak:.35})},
   mail(d,t){[1318,1760,2637].forEach((f,i)=>{osc('sine',f,t+i*.08,.35,d,{peak:.5});osc('triangle',f*2,t+i*.08,.08,d,{peak:.08})})},
   visit(d,t){[[880,0],[659,.38]].forEach(([f,o])=>{osc('sine',f,t+o,1.4,d,{peak:.55});osc('sine',f*2.01,t+o,.8,d,{peak:.12});osc('sine',f*3.98,t+o,.3,d,{peak:.05})})},
@@ -4177,7 +4179,7 @@ function renderVs(){$('vMoney').textContent=fmtCR(CREDIT);$('vTitle').textConten
    <div class="vnote">${i>=R.length?'すべての試合に勝利しました。':'勝ち進むと、次の試合が表に加わります。'}</div>`}
  $('vBody').innerHTML=html;$('vBody').scrollTop=0;$('vGo').disabled=!(i<R.length&&vsState(i)==='open');requestAnimationFrame(()=>scrollHints($('vsR'),'#vBody'))}
 $('vGo').onclick=()=>{const i=vsCur();if(vLeaving||i>=VSC.rounds.length||vsState(i)!=='open')return;const r=VSC.rounds[i];vLeaving=true;$('vtChoice').innerHTML='';
- vtSay([['b',r.ja+'、'+r.opp.name+'様との試合ですね。機体の整備は完了しています。','point'],['b','会場へご案内します。ご武運を、○○様。','bow']],()=>{setTimeout(()=>fadeTo(()=>{closeVersus();setMode('play',false,{def:vsDef(i)})},'VERSUS'),600)})};
+ vtSay([['b',r.ja+'、'+r.opp.name+'様との試合ですね。機体の整備は完了しています。','point'],['b','会場へご案内します。ご武運を、○○様。','bow']],()=>{setTimeout(()=>fadeTo(()=>{closeVersus(true);setMode('play',false,{def:vsDef(i)})},'VERSUS'),600)})};
 function openVersus(res=null){openMenu(false);closeModal();mailClose();nbClose();$('versus').hidden=false;VS3.start();SND.bgm('arena');vTab='card';vLeaving=false;
  VS3.mood('normal');vtChar(null);renderVs();
  if(res)return vtSay(res);
@@ -4198,8 +4200,8 @@ function firstVersus(){const v=$('versus');v.classList.add('walk');$('vtChoice')
 function leaveVersus(){if(vLeaving)return;vLeaving=true;$('vtChoice').innerHTML='';
  vtSay([[ 'b',pick(['ご来場ありがとうございました、○○様。','お気をつけて。次のご来場をお待ちしております。','またのお越しを。試合の知らせは、メールでお届けします。']),'bow']],
   ()=>setTimeout(()=>fadeTo(closeVersus,'GARAGE'),800))}
-function closeVersus(){VS3.stop();SND.bgm('garage');clearInterval(VT.iv);VT.iv=null;VT.q=[];vtChar(null);$('versus').hidden=true;$('versus').classList.remove('walk','greet');vLeaving=false;
- view='overview';selSlot=null;renderGarage();garageGreet('versus')}
+function closeVersus(toMatch=false){VS3.stop();if(!toMatch)SND.bgm('garage');clearInterval(VT.iv);VT.iv=null;VT.q=[];vtChar(null);$('versus').hidden=true;$('versus').classList.remove('walk','greet');vLeaving=false;
+ view='overview';selSlot=null;renderGarage();if(!toMatch)garageGreet('versus')}   // 試合へ向かうときはガレージのあいさつを出さない（暗転中に文字の音が鳴るため）
 $('vEq').onclick=vsEquip;
 $('mVersus').onclick=()=>{if(tutBlock())return;if(!vsOk())return;openMenu(false);fadeTo(openVersus,'VERSUS')};$('vExit').onclick=leaveVersus;
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sconf').hidden)closeConfirm()});
@@ -5526,7 +5528,7 @@ function misAbort(){if(!RUN||RUN.leaving)return;misFinish(false,'撤退')}
 const VSCAM={on:false,t:0};
 const COLO_PP=COLO_PIL.map(([d,k])=>{const a=d*Math.PI/180;return [Math.sin(a)*COLO_R*k,Math.cos(a)*COLO_R*k]});
 // ノーナの通信（すべての試合で共通）
-const VSN={start:['相手機、正面に確認。……○○、いつも通りにいきましょう。'],win:['勝利です、○○。……お疲れさまでした。受付へ戻りましょう。'],lose:['……機体の回収を確認しました。次は勝ちましょう、○○。'],
+const VSN={start:[['盾持ちの重装機です。正面は固い。側面に回り込みましょう、○○。'],['高機動機です。間合いを詰められる前に、削りましょう。'],['……王座戦の経験者です。○○、集中していきましょう。']],win:['勝利です、○○。……お疲れさまでした。受付へ戻りましょう。'],lose:['……機体の回収を確認しました。次は勝ちましょう、○○。'],
  eHalf:'相手の装甲、半分を切りました。',pHalf:'CORE、50% を切りました。無理はしないでください。',eLow:'相手の装甲、限界が近いです。押し切りましょう。',pLow:'CORE、残りわずかです。……距離を取ってください。',
  arms:'腕部、損傷限界。手持ちの兵装が使えません。',legs:'脚部、損傷限界。機動が落ちます。'};
 /* ライバルの試合中の通信。once＝1試合に1回／rep＝何度でも（30秒以上あけ、順に使う）。pri が大きいほど優先 */
@@ -5542,7 +5544,9 @@ function vsInit(){const i=RUN.def.vs,r=VSC.rounds[i],e=ENEMIES.find(x=>x.type===
 function vsGo(){if(!RUN||!RUN.vs)return;const V=RUN.vs,o=V.r.opp;goWaitClear();GOW=true;VSCAM.on=true;VSCAM.t=0;commClear();
  // まず機体だけを見せ、1.8秒後に名前の帯
  GOWT.push(setTimeout(()=>{banner(o.en,(o.ali?'「'+o.ali+'」 ／ ':'')+o.reg+'代表 ／ '+o.mech,false,2.4);SND.play('start',{g:.35})},1800));
- GOWT.push(setTimeout(()=>{VSCAM.on=false;goSeq('MATCH START',V.r.ja,[...o.talk.start.map(x=>['o',x]),...VSN.start.map(x=>['n',x])],()=>{if(RUN&&RUN.vs){V.go=true;V.last=RUN.time||0}})},5400))}
+ GOWT.push(setTimeout(()=>{VSCAM.on=false;goSeq('MATCH START',V.r.ja,[...o.talk.start.map(x=>['o',x]),...VSN.start[V.i].map(x=>['n',x])],()=>{if(RUN&&RUN.vs){V.go=true;V.last=RUN.time||0}})},5400));
+ // MATCH START の帯に合わせて歓声（goSeq の帯は、最後の文字が出きってから2秒後）
+ const ck=setInterval(()=>{if(!RUN||!RUN.vs){clearInterval(ck);return}if(bnBusy&&$('banner').querySelector('small').textContent===V.r.ja){clearInterval(ck);SND.play('cheer',{g:.45,size:1.2})}},100);setTimeout(()=>clearInterval(ck),30000)}
 // 試合中の出来事を通信の候補に積む（ライバルの通信と、ノーナの短い返し）
 function vsEv(k){const V=RUN.vs,K=VSEV_K[k];if(!K.rep){if(V.done[k])return;V.done[k]=1}
  const o=V.riv&&V.riv[k]?V.riv[k]:null,n=VSN[k]&&typeof VSN[k]==='string'?VSN[k]:null;if(!o&&!n)return;
@@ -5572,7 +5576,7 @@ function vsTick(dt){const V=RUN.vs,e=V.e,tm=RUN.time||0;
  vsSayNext()}
 // 決着：WIN／LOSE の帯 → 相手とノーナの通信 → （finishWait）→ 受付へ
 function vsEnd(ok){const V=RUN.vs,o=V.r.opp;if(ok)RUN.ok=true;else RUN.lost=true;V.pend=[];COMM.q=[];
- banner(ok?'WIN':'LOSE',V.r.ja+(ok?' 勝利':' 敗北'),!ok,2.6);if(ok)SND.play('complete',{g:.55});
+ banner(ok?'WIN':'LOSE',V.r.ja+(ok?' 勝利':' 敗北'),!ok,2.6);if(ok){SND.play('complete',{g:.55});SND.play('cheer',{g:.6,size:1.6})}else SND.play('groan',{g:.5});
  if(ok)ENEMIES.forEach(x=>{if(x!==V.e&&!x.off&&x.alive){x.alive=false;x.g.visible=false}});
  RUN.hold=performance.now()+3800;
  setTimeout(()=>{if(!RUN||!RUN.vs||RUN.leaving)return;(ok?o.talk.win:o.talk.lose).forEach(x=>comm(['o',x],2));(ok?VSN.win:VSN.lose).forEach(x=>comm(['n',x],2))},3600)}
@@ -5656,7 +5660,8 @@ function introTick(dt){const I=INTRO,T=INTRO_T,el=$('intro');I.t+=dt;
  at('h1',()=>{play.classList.remove('ih1');SND.play('hudon',{g:.4})});
  at('h2',()=>play.classList.remove('ih2'));
  at('h3',()=>play.classList.remove('ih3'));
- at('say',()=>commShow((PILOT||'HX-07')+(RUN&&RUN.def.vs!=null?'、システム、オールグリーン。……会場に入ります。':'、システム、オールグリーン。……ミッション開始。'),0));
+ at('say',()=>{if(RUN&&RUN.def.vs!=null)return;commShow((PILOT||'HX-07')+'、システム、オールグリーン。……ミッション開始。',0)});
+ if(RUN&&RUN.def.vs!=null&&!I.f.ch&&I.t>=T.open){I.f.ch=1;SND.play('cheer',{g:.5})}   // VERSUS：視界が開くとき歓声
  if(I.t>=T.go){const f=I.go;introClear();if(f)f()}}
 function pauseSet(on){if(mode!=='play'||(RUN&&RUN.leaving)||fading){on=false}
  PAUSED=on;$('pause').hidden=!on;if(on)SND.stopLoops();SND.bgmPause(on);if(on){HOLD.rHand=HOLD.lHand=HOLD.sh=false;GUARD[-1]=GUARD[1]=false;keys.clear();IN.x=IN.y=0;
