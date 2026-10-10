@@ -658,6 +658,7 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 .vtr .o{font-family:var(--disp);font-size:12px;white-space:nowrap;overflow:hidden}.vtr .o small{display:block;font-size:9px;color:var(--dim)}
 .vtr .s{font-size:10px;font-weight:700;letter-spacing:.1em;white-space:nowrap;color:var(--dim)}.vtr .s.ok{color:var(--accent)}.vtr .s.on{color:var(--cyan)}
 .vtr.pend .k,.vtr.pend .o{color:var(--faint)}
+.vtr .vrm{margin-left:8px;font-size:10px;padding:2px 8px;background:transparent;color:var(--cyan);border:1px solid var(--cyan);cursor:pointer;font-family:inherit;letter-spacing:.1em}
 .vacts{display:flex;gap:8px;flex:0 0 auto}.vacts .btn-main{flex:1;height:36px;background:var(--cyan);color:#06161a}
 .vacts .btn-sub{height:36px;padding:0 12px;white-space:nowrap;flex:0 0 auto}
 .vacts .btn-main:disabled{background:#1a2427;color:#4f6266;opacity:1}
@@ -4201,14 +4202,15 @@ function renderVs(){$('vMoney').textContent=fmtCR(CREDIT);$('vTitle').textConten
     <div class="vnote">${op?r.opp.note:'日程は調整中です。決まり次第、運営局からメールで対戦カードが届きます。'}</div>${prog}`;
    VS3.holo(r.label,op?r.opp.en.split(' ')[0]:'???',op?vsDay(m).replace('P.R. ','').replace(' ／ ',' '):'SCHEDULING',!op)}}
  else{
-  html=`<div class="vtb">${shown.map(k=>{const r=R[k],st=vsState(k);return `<div class="vtr${st==='pend'?' pend':''}"><span class="k">${r.label}<small>${r.ja}</small></span><span class="o">${st==='pend'?'日程調整中':r.opp.name}<small>${st==='pend'?'相手は未定':r.opp.reg+' ／ '+r.opp.pastor}</small></span><span class="s ${st==='won'?'ok':st==='open'?'on':''}">${st==='won'?'勝利':st==='open'?'対戦待ち':'調整中'}</span></div>`}).join('')}</div>
-   <div class="vnote">${i>=R.length?'すべての試合に勝利しました。':'勝ち進むと、次の試合が表に加わります。'}</div>`}
- $('vBody').innerHTML=html;$('vBody').scrollTop=0;$('vGo').disabled=!(i<R.length&&vsState(i)==='open');requestAnimationFrame(()=>scrollHints($('vsR'),'#vBody'))}
+  html=`<div class="vtb">${shown.map(k=>{const r=R[k],st=vsState(k);return `<div class="vtr${st==='pend'?' pend':''}"><span class="k">${r.label}<small>${r.ja}</small></span><span class="o">${st==='pend'?'日程調整中':r.opp.name}<small>${st==='pend'?'相手は未定':r.opp.reg+' ／ '+r.opp.pastor}</small></span><span class="s ${st==='won'?'ok':st==='open'?'on':''}">${st==='won'?'勝利 ✓':st==='open'?'対戦待ち':'調整中'}${st==='won'?`<button class="vrm" data-rm="${k}">再戦</button>`:''}</span></div>`}).join('')}</div>
+   <div class="vnote">${i>=R.length?'すべての試合に勝利しました。':'勝ち進むと、次の試合が表に加わります。勝った試合は［再戦］できます（賞金は初回のみ）。'}</div>`}
+ $('vBody').innerHTML=html;$('vBody').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>vsRematch(+b.dataset.rm));$('vBody').scrollTop=0;$('vGo').disabled=!(i<R.length&&vsState(i)==='open');requestAnimationFrame(()=>scrollHints($('vsR'),'#vBody'))}
+function vsRematch(k){if(vLeaving||!VSS.win[k])return;vLeaving=true;$('vtChoice').innerHTML='';fadeTo(()=>{closeVersus(true);setMode('play',false,{def:vsDef(k,true)})},'VERSUS')}   // 勝った試合の再戦：セリフなし・記録と賞金は変えない
 $('vGo').onclick=()=>{const i=vsCur();if(vLeaving||i>=VSC.rounds.length||vsState(i)!=='open')return;const r=VSC.rounds[i];vLeaving=true;$('vtChoice').innerHTML='';
  vtSay([['b',r.ja+'、'+r.opp.name+'様との試合ですね。機体の整備は完了しています。','point'],['b','会場へご案内します。ご武運を、○○様。','bow']],()=>{setTimeout(()=>fadeTo(()=>{closeVersus(true);setMode('play',false,{def:vsDef(i)})},'VERSUS'),600)})};
 function openVersus(res=null){openMenu(false);closeModal();mailClose();nbClose();$('versus').hidden=false;VS3.start();SND.bgm('arena');vTab='card';vLeaving=false;
  VS3.mood('normal');vtChar(null);renderVs();
- if(res)return vtSay(res);
+ if(res){if(!res.length)$('vtText').innerHTML='';return vtSay(res)}
  if(!VSS.reg)return firstVersus();
  vtSay([['b',pick(['ようこそ、○○様。闘技場の受付です。','お待ちしておりました、○○様。','照会しました。第7区画、○○様ですね。']),'bow'],...vsStatus(false),...vsEvents()])}
 /* 初回：入口から歩いて受付へ近づく → ベルのあいさつ → ノーナ（携帯端末）との掛け合い → 登録 → いまの試合の案内 */
@@ -5634,20 +5636,20 @@ const VSEV_K={stand:{pri:1},firstE:{pri:1},firstP:{pri:1},cover:{pri:1,rep:1},me
 const VRIV={serena:{stand:['様子見？　退屈させないで。'],firstE:['まずは一つ。'],firstP:['へえ……当ててくるのね。'],cover:['隠れても無駄よ。','柱の陰が好きなのね。','観客が退屈しているわ。出てきなさい。'],
  melee:['その距離で来る？　いいわ。'],eHalf:['……やるじゃない。'],pHalf:['まだ立っていられる？'],eLow:['ここからが本番よ。'],pLow:['終わりにしましょう。'],idle:['どうしたの、手が止まってる。','撃たないの？　つまらないわ。','見とれている場合じゃないわよ。'],
  arms:['腕はもう使えないわね。'],legs:['脚が止まったわ。どう逃げるの？']}};
-function vsDef(i){const r=VSC.rounds[i];return {id:'VS'+(i+1),vs:i,vsJa:r.ja,title:VSC.name+' '+r.ja,ch:VSC.ch,field:'colo',fieldJa:'闘技場',ready:true,bgm:i===2?'avsf':'avs',
+function vsDef(i,rem=false){const r=VSC.rounds[i];return {id:'VS'+(i+1),vs:i,rem,vsJa:r.ja,title:VSC.name+' '+r.ja,ch:VSC.ch,field:'colo',fieldJa:'闘技場',ready:true,bgm:i===2?'avsf':'avs',
  start:{x:0,z:-COLO_R*.76},enemies:[{type:'gear',gear:r.opp.gear,x:0,z:COLO_R*.76}],comm:{},reward:0,wx:'arena'}}
 function vsInit(){const i=RUN.def.vs,r=VSC.rounds[i],e=ENEMIES.find(x=>x.type==='gear'&&!x.off&&x.gk===r.opp.gear);
  e.g.rotation.y=Math.atan2(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z);
  $('esc').hidden=false;$('escL').textContent='TARGET';$('escS').textContent=r.opp.en;   // 機体名まで入れると 844px で CORE の欄に重なるため名前だけ$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo');
- RUN.vs={i,r,e,riv:r.opp.riv?VRIV[r.opp.riv]:null,go:false,first:null,atk:0,last:-99,cov:0,covT:-99,idleT:-99,done:{},pend:[],rep:{}};VSCAM.on=false;VSEND.k=null;FIN.me=null;mech.bot.visible=true}
+ RUN.vs={rem:!!RUN.def.rem,i,r,e,riv:r.opp.riv?VRIV[r.opp.riv]:null,go:false,first:null,atk:0,last:-99,cov:0,covT:-99,idleT:-99,done:{},pend:[],rep:{}};VSCAM.on=false;VSEND.k=null;FIN.me=null;mech.bot.visible=true}
 function vsGo(){if(!RUN||!RUN.vs)return;const V=RUN.vs,o=V.r.opp;goWaitClear();GOW=true;VSCAM.on=true;VSCAM.t=0;commClear();
  // まず機体だけを見せ、1.8秒後に名前の帯
  GOWT.push(setTimeout(()=>{banner(o.en,(o.ali?'「'+o.ali+'」 ／ ':'')+o.reg+'代表 ／ '+o.mech,false,2.4);SND.play('start',{g:.35})},1800));
- GOWT.push(setTimeout(()=>{VSCAM.on=false;goSeq('MATCH START',V.r.ja,[...o.talk.start.map(x=>['o',x]),...VSN.start[V.i].map(x=>['n',x])],()=>{if(RUN&&RUN.vs){V.go=true;V.last=RUN.time||0}})},5400));
+ GOWT.push(setTimeout(()=>{VSCAM.on=false;goSeq('MATCH START',V.r.ja,V.rem?[]:[...o.talk.start.map(x=>['o',x]),...VSN.start[V.i].map(x=>['n',x])],()=>{if(RUN&&RUN.vs){V.go=true;V.last=RUN.time||0}})},5400));
  // MATCH START の帯に合わせて歓声（goSeq の帯は、最後の文字が出きってから2秒後）
  const ck=setInterval(()=>{if(!RUN||!RUN.vs){clearInterval(ck);return}if(bnBusy&&$('banner').querySelector('small').textContent===V.r.ja){clearInterval(ck);SND.play('cheer',{g:.45,size:1.2})}},100);setTimeout(()=>clearInterval(ck),30000)}
 // 試合中の出来事を通信の候補に積む（ライバルの通信と、ノーナの短い返し）
-function vsEv(k){const V=RUN.vs,K=VSEV_K[k];if(!K.rep){if(V.done[k])return;V.done[k]=1}
+function vsEv(k){const V=RUN.vs,K=VSEV_K[k];if(V.rem)return;if(!K.rep){if(V.done[k])return;V.done[k]=1}
  const o=V.riv&&V.riv[k]?V.riv[k]:null,n=VSN[k]&&typeof VSN[k]==='string'?VSN[k]:null;if(!o&&!n)return;
  V.pend.push({k,pri:K.pri,t:RUN.time||0})}
 function vsSayNext(){const V=RUN.vs,tm=RUN.time||0;V.pend=V.pend.filter(p=>tm-p.t<(p.pri>1?15:6));   // CORE の残りに関わるものは長めに待つ
@@ -5658,7 +5660,7 @@ function vsSayNext(){const V=RUN.vs,tm=RUN.time||0;V.pend=V.pend.filter(p=>tm-p.
 function vsHitE(){const V=RUN.vs;if(!V.go)return;if(!V.first){V.first='p';vsEv('firstP')}const st=HITSRC&&stOf(HITSRC);if(st&&st.kind==='近接')vsEv('melee')}
 function vsHitP(){const V=RUN.vs;if(!V.go)return;if(!V.first){V.first='e';vsEv('firstE')}}
 // 自機の部位破壊：待たずに入る（相手→ノーナ）
-function vsBreak(z){const V=RUN.vs;if(!V||RUN.ok||RUN.lost)return;COMM.q=[];if(V.riv&&V.riv[z])comm(['o',V.riv[z][0]],2);comm(['n',VSN[z]],2);V.last=RUN.time||0}
+function vsBreak(z){const V=RUN.vs;if(!V||V.rem||RUN.ok||RUN.lost)return;COMM.q=[];if(V.riv&&V.riv[z])comm(['o',V.riv[z][0]],2);comm(['n',VSN[z]],2);V.last=RUN.time||0}
 // 柱の陰：自機と相手を結ぶ線が柱（半径 2.2m）をさえぎる
 function vsCovered(){const a=P.pos,b=RUN.vs.e.g.position,dx=b.x-a.x,dz=b.z-a.z,L2=dx*dx+dz*dz||1;
  return COLO_PP.some(([x,z])=>{const u=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/L2));return Math.hypot(a.x+dx*u-x,a.z+dz*u-z)<2.2})}
@@ -5688,12 +5690,17 @@ function vsEndTick(dt){const V=RUN.vs,e=V.e,o=V.r.opp,ok=RUN.ok;V.pt+=dt;
  else if(V.ph==='pose'&&V.pt>=FIN_T+.05){V.ph='done';
   banner(ok?'WIN':'LOSE',V.r.ja+(ok?' 勝利':' 敗北'),!ok,2.6);if(ok){SND.play('complete',{g:.55});SND.play('cheer',{g:.6,size:1.6})}else SND.play('groan',{g:.5});
   RUN.hold=performance.now()+3800;
-  setTimeout(()=>{if(!RUN||!RUN.vs||RUN.leaving)return;(ok?o.talk.win:o.talk.lose).forEach(x=>comm(['o',x],2));(ok?VSN.win:VSN.lose).forEach(x=>comm(['n',x],2))},3600)}}
+  setTimeout(()=>{if(!RUN||!RUN.vs||RUN.vs.rem||RUN.leaving)return;(ok?o.talk.win:o.talk.lose).forEach(x=>comm(['o',x],2));(ok?VSN.win:VSN.lose).forEach(x=>comm(['n',x],2))},3600)}}
 // 受付へ戻る（すぐ）。ベルが結果を伝える。勝敗の記録・賞金は 2-d で行う
-function vsFinish(ok,abort=false){if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;const r=RUN.vs.r;commClear();VSCAM.on=false;VSEND.k=null;FIN.me=null;
- fadeTo(()=>{mech.bot.visible=true;setMode('garage');openVersus(ok?[['b',r.ja+'、<strong>勝利</strong>を確認しました。おめでとうございます、○○様。','bow'],['b','……勝ち上がりと賞金の記録は、ただいま準備中です。（次の更新で実装します）','sorry']]
-  :abort?[['b',r.ja+'の棄権を受け付けました。機体の整備は済んでいます。','normal'],['b','準備ができましたら、いつでも再挑戦いただけます。','bow']]
-  :[['b',r.ja+'の試合結果を確認しました。……機体の整備は済んでいます。','normal'],['b','準備ができましたら、いつでも再挑戦いただけます。','bow']])},'VERSUS')}
+function vsFinish(ok,abort=false){if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;const r=RUN.vs.r,i=RUN.vs.i,rem=RUN.vs.rem;commClear();VSCAM.on=false;VSEND.k=null;FIN.me=null;
+ fadeTo(()=>{mech.bot.visible=true;setMode('garage');let res;
+  if(rem)res=[];   // 再戦：記録も賞金も変えず、セリフもすべて省く
+  else if(ok){VSS.win[i]=true;CREDIT+=r.prize;saveGame();const nx=VSC.rounds[i+1];
+   res=[['b',r.ja+'、<strong>勝利</strong>を確認しました。おめでとうございます、○○様。','bow'],['b','賞金 <em>'+fmtCR(r.prize)+' CR</em> をお支払いしました。所持金は <strong>'+fmtCR(CREDIT)+' CR</strong> です。','point'],
+    nx?['b','次の'+nx.ja+'の日程は、ただいま調整中です。決まり次第、運営局から<em>メール</em>でご連絡いたします。','normal']:['b',VSC.name+'の全試合が終了しました。優勝、おめでとうございます。','bow']]}
+  else res=abort?[['b',r.ja+'の棄権を受け付けました。機体の整備は済んでいます。','normal'],['b','準備ができましたら、いつでも再挑戦いただけます。','bow']]
+   :[['b',r.ja+'の試合結果を確認しました。……機体の整備は済んでいます。','normal'],['b','準備ができましたら、いつでも再挑戦いただけます。','bow']];
+  openVersus(res)},'VERSUS')}
 function misFinish(ok,reason=''){if(RUN&&RUN.vs)return vsFinish(ok,reason==='撤退');if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;
  const def=RUN.def,tm=RUN.time||0,r={def,ok,reason,earned:P.earned||0,reward:ok?def.reward:0,time:tm,kills:{...(RUN.kills||{})},best:(MIS[def.id]&&MIS[def.id].best)||0,rec:false};commClear();
  fadeTo(()=>{DAY++;if(ok){CREDIT+=def.reward;const m=MIS[def.id]||(MIS[def.id]={got:true,read:true,clear:false,n:0});m.clear=true;m.cdy=DAY;m.n++;if(!m.best||tm<m.best){r.rec=!!m.best;if(!m.best)r.first=true;m.best=tm}}
