@@ -5595,7 +5595,7 @@ function finFx(p){spawn(0xffffff,1.4,p,{life:.18,grow:1.6});spawn(0xfff0b0,2.4,p
 function finDown(e){e.fin={k:'down',t:0,n:0,big:false,sm:0,from:finStart(e.model)};e.hpBar.visible=false;e.mat.emissive.setRGB(0,0,0);e.guardT=0}
 // 相手の勝ちポーズ（自機が負けたとき）。以後ギアの思考・移動・攻撃は一切動かさない
 function finWin(e){const m=e.model;e.fin={k:'win',t:0,fx:0,from:finStart(m),keys:FPOSE[e.spec.vpose]||FPOSE.common};e.hpBar.visible=false;e.guardT=0}
-function finTick(e,dt){const F=e.fin,m=e.model,sc=e.spec.scale||1,gp=e.g.position;F.t+=dt;
+function finTick(e,dt){const F=e.fin,m=e.model,sc=e.spec.scale||1,gp=e.g.position;F.t+=dt;if(F.k==='hold')return;
  if(e.y>0){e.vy-=26*dt;e.y=Math.max(0,e.y+e.vy*dt);gp.y=e.y}
  let v;
  if(F.k==='down'){
@@ -5623,7 +5623,7 @@ function vsDef(i){const r=VSC.rounds[i];return {id:'VS'+(i+1),vs:i,vsJa:r.ja,tit
 function vsInit(){const i=RUN.def.vs,r=VSC.rounds[i],e=ENEMIES.find(x=>x.type==='gear'&&!x.off&&x.gk===r.opp.gear);
  e.g.rotation.y=Math.atan2(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z);
  $('esc').hidden=false;$('escL').textContent='TARGET';$('escS').textContent=r.opp.en;   // 機体名まで入れると 844px で CORE の欄に重なるため名前だけ$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo');
- RUN.vs={i,r,e,riv:r.opp.riv?VRIV[r.opp.riv]:null,go:false,first:null,atk:0,last:-99,cov:0,covT:-99,idleT:-99,done:{},pend:[],rep:{}};VSCAM.on=false;VSEND.k=null;FIN.me=null}
+ RUN.vs={i,r,e,riv:r.opp.riv?VRIV[r.opp.riv]:null,go:false,first:null,atk:0,last:-99,cov:0,covT:-99,idleT:-99,done:{},pend:[],rep:{}};VSCAM.on=false;VSEND.k=null;FIN.me=null;mech.bot.visible=true}
 function vsGo(){if(!RUN||!RUN.vs)return;const V=RUN.vs,o=V.r.opp;goWaitClear();GOW=true;VSCAM.on=true;VSCAM.t=0;commClear();
  // まず機体だけを見せ、1.8秒後に名前の帯
  GOWT.push(setTimeout(()=>{banner(o.en,(o.ali?'「'+o.ali+'」 ／ ':'')+o.reg+'代表 ／ '+o.mech,false,2.4);SND.play('start',{g:.35})},1800));
@@ -5660,13 +5660,14 @@ function vsTick(dt){const V=RUN.vs,e=V.e,tm=RUN.time||0;
  vsSayNext()}
 // 決着。勝ち：相手が連続爆発してうなだれる（寄りのカメラ）→ 大爆発のあと自機の勝ちポーズ（正面）→ WIN の帯と歓声
 //        負け：相手が動きを止めて勝ちポーズ → LOSE の帯とうめき声。そのあと相手とノーナの通信 → （finishWait）→ 受付へ
-function vsEnd(ok){const V=RUN.vs,e=V.e;if(ok)RUN.ok=true;else RUN.lost=true;V.pend=[];COMM.q=[];commClear();lockT=lockT2=lockT3=null;LOCKS=[];V.ph=ok?'slump':'pose';V.pt=0;
+function vsEnd(ok){const V=RUN.vs,e=V.e;if(ok)RUN.ok=true;else RUN.lost=true;V.pend=[];COMM.q=[];commClear();lockT=lockT2=lockT3=null;LOCKS=[];V.ph=ok?'slump':'collapse';V.pt=0;
  for(let i=FX.length-1;i>=0;i--){const f=FX[i];if(f.team==='e'){S.remove(f.m);FX.splice(i,1)}}   // 飛んでいる相手の弾・ミサイルを消す
  ENEMIES.forEach(x=>{if(x!==e&&!x.off&&x.alive){x.alive=false;x.g.visible=false}});
- if(ok){VSEND.k='slump'}else{finWin(e);VSEND.k='opp'}
+ if(ok){VSEND.k='slump'}else{e.fin={k:'hold',t:0};e.hpBar.visible=false;e.guardT=0}   // 負け：自機が崩れきるまで相手はその場で静止
  RUN.hold=performance.now()+60000}
 function vsEndTick(dt){const V=RUN.vs,e=V.e,o=V.r.opp,ok=RUN.ok;V.pt+=dt;
  if(V.ph==='slump'&&e.finDone){V.ph='wait';V.pt=0}
+ else if(V.ph==='collapse'&&V.pt>=1){V.ph='pose';V.pt=0;finWin(e);VSEND.k='opp';mech.bot.visible=false}   // 崩れきったら相手へカット（自機は非表示）
  else if(V.ph==='wait'&&V.pt>=.35){V.ph='pose';V.pt=0;VSEND.k='me';e.g.visible=false;if(e.shadow)e.shadow.visible=false;FIN.me={t:0,from:finStart(mech),keys:FPOSE.me,fx:0}}
  else if(V.ph==='pose'&&V.pt>=FIN_T+.05){V.ph='done';
   banner(ok?'WIN':'LOSE',V.r.ja+(ok?' 勝利':' 敗北'),!ok,2.6);if(ok){SND.play('complete',{g:.55});SND.play('cheer',{g:.6,size:1.6})}else SND.play('groan',{g:.5});
@@ -5674,7 +5675,7 @@ function vsEndTick(dt){const V=RUN.vs,e=V.e,o=V.r.opp,ok=RUN.ok;V.pt+=dt;
   setTimeout(()=>{if(!RUN||!RUN.vs||RUN.leaving)return;(ok?o.talk.win:o.talk.lose).forEach(x=>comm(['o',x],2));(ok?VSN.win:VSN.lose).forEach(x=>comm(['n',x],2))},3600)}}
 // 受付へ戻る（すぐ）。ベルが結果を伝える。勝敗の記録・賞金は 2-d で行う
 function vsFinish(ok,abort=false){if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;const r=RUN.vs.r;commClear();VSCAM.on=false;VSEND.k=null;FIN.me=null;
- fadeTo(()=>{setMode('garage');openVersus(ok?[['b',r.ja+'、<strong>勝利</strong>を確認しました。おめでとうございます、○○様。','bow'],['b','……勝ち上がりと賞金の記録は、ただいま準備中です。（次の更新で実装します）','sorry']]
+ fadeTo(()=>{mech.bot.visible=true;setMode('garage');openVersus(ok?[['b',r.ja+'、<strong>勝利</strong>を確認しました。おめでとうございます、○○様。','bow'],['b','……勝ち上がりと賞金の記録は、ただいま準備中です。（次の更新で実装します）','sorry']]
   :abort?[['b',r.ja+'の棄権を受け付けました。機体の整備は済んでいます。','normal'],['b','準備ができましたら、いつでも再挑戦いただけます。','bow']]
   :[['b',r.ja+'の試合結果を確認しました。……機体の整備は済んでいます。','normal'],['b','準備ができましたら、いつでも再挑戦いただけます。','bow']])},'VERSUS')}
 function misFinish(ok,reason=''){if(RUN&&RUN.vs)return vsFinish(ok,reason==='撤退');if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;
