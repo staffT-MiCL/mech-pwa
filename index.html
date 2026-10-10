@@ -619,8 +619,8 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 #vsScene .opcard .r{color:var(--cyan)}
 /* 場面に応じたキャラクター：受付の絵を暗くして、左寄りにイラストを重ねる */
 #vsDim{position:absolute;inset:0;z-index:1;background:rgba(5,8,9,.74);opacity:0;transition:opacity .3s;pointer-events:none}
-#vsImg{position:absolute;left:4%;bottom:0;height:96%;width:auto;max-width:60%;object-fit:contain;object-position:bottom left;z-index:2;opacity:0;transform:translateY(14px);transition:opacity .35s ease,transform .35s ease-out,filter .2s;pointer-events:none}
-#versus.chr #vsDim{opacity:1}#versus.chr #vsImg{opacity:1;transform:none}#versus.chr .opcard{opacity:0}
+#vsImg{position:absolute;left:50%;bottom:0;height:96%;width:auto;max-width:60%;object-fit:contain;object-position:bottom center;z-index:2;opacity:0;transform:translate(-50%,14px);transition:opacity .35s ease,transform .35s ease-out,filter .2s;pointer-events:none}
+#versus.chr #vsDim{opacity:1}#versus.chr #vsImg{opacity:1;transform:translate(-50%,0)}#versus.chr .opcard{opacity:0}
 #vsImg.dim{filter:brightness(.42) saturate(.7)}
 #vtbox{position:relative;overflow:visible;margin:8px 10px 10px;min-height:0;padding:14px 14px 10px;background:rgba(12,16,15,.95);border:1px solid var(--line);display:flex;gap:12px}
 #vtbox .nm{position:absolute;left:12px;top:-1px;height:16px;padding:0 8px;background:var(--vc,#c9d4d8);color:var(--vf,#0a0c0b);font-size:10px;font-weight:700;letter-spacing:2px;display:flex;align-items:center;white-space:nowrap}
@@ -5921,7 +5921,7 @@ function dbgApply(){const now=Date.now();
  // 等級の通知メール：クリア済みの★の分だけ届いている状態にそろえる
  MLIST.filter(d=>d.story&&d.cls).forEach(d=>{const nid='n-cls-'+d.cls.toLowerCase();if(!MDEF[nid])return;if(DW.m[d.id]===2){if(!MIS[nid])MIS[nid]={got:true,read:true,clear:false,n:0,t:now}}else delete MIS[nid]});
  // VERSUS：受付の初回・各試合の勝利と対戦カードのメール
- if(!DW.vs.reg&&VSS.reg)VSS.seen={};VSS.reg=DW.vs.reg;VSC.rounds.forEach((r,i)=>{const v=DW.vs.st[i];VSS.win[i]=v===2;if(v>=1){if(!MIS[r.mail])MIS[r.mail]={got:true,read:true,clear:false,n:0,t:now}}else delete MIS[r.mail]});
+ if(!DW.vs.reg&&VSS.reg)VSS.seen={};VSS.reg=DW.vs.reg;const vsNew=[];VSC.rounds.forEach((r,i)=>{const v=DW.vs.st[i];VSS.win[i]=v===2;if(v>=1){if(!MIS[r.mail]){MIS[r.mail]={got:true,read:v===2,clear:false,n:0,t:now+i};if(v===1)vsNew.push(r)}}else delete MIS[r.mail]});
  // パーツ：所持品を入れ替え。00 は TUNE を全 MAX に。持っていない品を装備していたら、その部位を初期装備に戻す
  const nOwn=DW.own.size;OWN.clear();START_OWN.forEach(i=>OWN.add(i));DW.own.forEach(i=>OWN.add(i));
  C00.forEach(i=>{if(OWN.has(i))TUNE[i]=[5,5]});
@@ -5929,7 +5929,9 @@ function dbgApply(){const now=Date.now();
  if(['head','core','arms','legs'].some(k=>is00(cfg[k]))&&!is00Set(cfg))['head','core','arms','legs'].forEach(k=>{if(is00(cfg[k]))cfg[k]=DEFAULT_CFG[k]});
  assemble();
  DBG.inv=DW.inv;dbgSave();saveGame();crSync();misHeader();renderGarage();dbgClose();
- nonaSay([['（DEBUG）進行状況を変更しました。CLASS '+CLS+' ／ CH.'+CH+(DBG.inv?' ／ 無敵 ON':'')+'。']])}
+ const dl=[['（DEBUG）進行状況を変更しました。CLASS '+CLS+' ／ CH.'+CH+(DBG.inv?' ／ 無敵 ON':'')+'。']];
+ if(vsNew.length){$('mailBtn').classList.add('new');SND.play('mail');dl.push(['……通信です。闘技場運営局から、メールが届いています。'+vsNew.map(r=>r.ja).join('・')+'の対戦カードの知らせです。ヘッダーの <em>MAIL</em> からお読みください。'])}
+ nonaSay(dl)}
 $('mDebug').onclick=()=>{openMenu(false);dbgOpen()};
 dbgMenu();
 // ガレージに入ったときのひとこと（kind：intro／continue／shop／firstshop／train）
