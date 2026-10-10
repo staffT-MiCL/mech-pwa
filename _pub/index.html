@@ -6,9 +6,9 @@
 <title>重装操機</title>
 <meta name="theme-color" content="#0a0c0b">
 <meta name="description" content="PS初期風の3Dロボアクション。パーツを組み替えて演習場で戦う">
-<link rel="manifest" href="manifest.webmanifest">
+
 <link rel="icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/icon-180.png">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1120,9 +1120,9 @@ body.eqm #visit{display:none}
  <button id="opSkip" type="button"><i></i><span>HOLD TO SKIP</span></button>
 </div>
 <div id="fade" aria-hidden="true"><span id="fadeTxt"></span></div>
-<script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+
 <script type="module">
-import * as THREE from 'three';
+import * as THREE from './vendor/three.module.js';
 
 const W=document.getElementById('wrap');
 // どの描画でも、描く直前にシールドの向きを合わせる（shieldSync は下の兵装の定義にある）
