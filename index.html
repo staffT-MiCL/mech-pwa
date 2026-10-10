@@ -4890,7 +4890,7 @@ const vsCur=()=>{const i=VSS.win.findIndex(w=>!w);return i<0?VSC.rounds.length:i
 // 対戦カードのメール：条件（前の試合に勝利＋need の依頼をクリア）がそろった試合の分を届ける
 function vsNotice(){const out=[];if(!vsOk())return out;let t=Date.now();
  VSC.rounds.forEach((r,i)=>{if(MIS[r.mail]||!vsShown(i))return;if(r.need&&!(MIS[r.need]&&MIS[r.need].clear))return;MIS[r.mail]={got:true,read:false,clear:false,n:0,t:t++};out.push(MDEF[r.mail])});return out}
-const FIELD_BG={canyon:0x2a2622,relay:0x22262a,border:0x2e2a22,city:0x26241f,road:0x2b2721,ruins:0x2a2e2a,factory:0x23261f};
+const FIELD_BG={colo:0x0e1619,canyon:0x2a2622,relay:0x22262a,border:0x2e2a22,city:0x26241f,road:0x2b2721,ruins:0x2a2e2a,factory:0x23261f};
 const nameIn=s=>s.replace(/○○/g,esc(PILOT||'操縦者'));
 
 /* ----- 地形：配給都市の外れ（乱数はシード固定。配置は毎回同じ）-----
@@ -5092,9 +5092,52 @@ const CANYON=grp(S);CANYON.visible=false;const CAN_MAP=[];
  for(let i=0;i<40;i++){const z=CAN_Z0+rnd()*(CAN_Z1-CAN_Z0),x=canX(z)+(rnd()-.5)*canW(z)*1.8;box(CANYON,.4+rnd()*.7,.15+rnd()*.25,.4+rnd()*.7,rock2,x,.1,z,rnd()*.4,rnd()*3,0)}
  // 崖に沿った古い電線（谷の入口から奥へ）
  for(let z=0;z<CAN_Z1-10;z+=24){const x=canX(z)-canW(z)-.6;cyl(CANYON,.14,.16,7,psMat(0x3a342c),x,3.4,z,(rnd()-.5)*.25,0,6)}}
+/* ===== 闘技場（オープニングの第3場面と VERSUS の試合で共用）=====
+ 白い円形の床（半径 R）に凝った床の模様、外側に場外への境界の壁・4段の満員の観客席・照明塔。
+ 遮蔽物は高い八角柱だけ（高さ8m、点対称、開始位置の南北の軸の±35°には置かない）。
+ 開始位置：自分＝南（0,-R*.76）・相手＝北（0,+R*.76）。柱の当たり判定は、中に見えない箱を入れて colsOf に拾わせる */
+const COLO_PIL=[[90,.40],[270,.40],[55,.66],[125,.66],[235,.66],[305,.66]];   // [角度（北＝0°、時計回り）, 中心からの距離（R に対する割合）]
+function buildColo(g,R){
+ const cy=new THREE.MeshBasicMaterial({color:0x6fd3e0}),cyD=new THREE.MeshBasicMaterial({color:0x2d6068}),orM=new THREE.MeshBasicMaterial({color:0xf0a040}),rdM=new THREE.MeshBasicMaterial({color:0xc8435c});
+ const flat=(geo,m,y)=>{const o=new THREE.Mesh(geo,m);o.rotation.x=-Math.PI/2;o.position.y=y;g.add(o);return o};
+ const ring=(a,b,m,y,seg=64,t0=0,tl=Math.PI*2)=>flat(new THREE.RingGeometry(a,b,seg,1,t0,tl),m,y);
+ {const gg=new THREE.Mesh(new THREE.PlaneGeometry(260,260),psMat(0x101a1d));gg.rotation.x=-Math.PI/2;gg.position.y=-.4;g.add(gg)}
+ // 床：扇形のパネル（明暗の交互16枚）、外周の帯（暗い色に橙の印）、放射状のシアンの線、中間の同心円、中央の輪と八角形の紋章
+ const FL=[psMat(0xd4dcde),psMat(0xc0cacd)];
+ flat(new THREE.CircleGeometry(R,64),FL[0],.01);
+ for(let i=0;i<16;i++)ring(15.2,R-3.4,FL[i%2],.02,4,i/16*Math.PI*2,Math.PI/8);
+ ring(R-3.4,R-.6,psMat(0x34444c),.03,96);
+ for(let i=0;i<48;i++){const a=i/48*Math.PI*2,rr=R-2;box(g,1.6,.04,.5,orM,Math.sin(a)*rr,.05,Math.cos(a)*rr,0,a,0)}
+ ring(R-3.6,R-3.3,cy,.05,96);ring(R-.7,R-.4,cy,.05,96);
+ {const l=R-3.4-15.2;for(let i=0;i<8;i++){const a=i/8*Math.PI*2;box(g,.22,.03,l,cy,Math.sin(a)*(15.2+l/2),.04,Math.cos(a)*(15.2+l/2),0,a,0)}}
+ {const l=R-3.4-24;for(let i=0;i<8;i++){const a=(i+.5)/8*Math.PI*2;box(g,.12,.03,l,cyD,Math.sin(a)*(24+l/2),.04,Math.cos(a)*(24+l/2),0,a,0)}}
+ ring(24,24.25,cyD,.04,96);ring(32,32.25,cyD,.04,96);
+ ring(14,15.2,psMat(0x2a3a40),.03,64);ring(14.2,14.5,cy,.05,64);
+ flat(new THREE.CircleGeometry(14,8),psMat(0xe2e9ea),.02);ring(9.6,10,cy,.05,8);ring(5.6,5.9,cyD,.05,8,Math.PI/8);
+ for(let i=0;i<8;i++){const a=i/8*Math.PI*2+Math.PI/8;box(g,.5,.04,3.4,cy,Math.sin(a)*12,.05,Math.cos(a)*12,0,a,0)}
+ flat(new THREE.CircleGeometry(2.2,8),cy,.05);flat(new THREE.CircleGeometry(1.5,8),psMat(0x2a3a40),.06);
+ // 開始位置の印（南＝自分は橙、北＝相手は赤）：四角い枠と、中央を向いた三角
+ const start=(z,m)=>{const sg=Math.sign(z);[[0,3.4,6,.3],[0,-3.4,6,.3],[3,0,.3,7],[-3,0,.3,7]].forEach(([x,dz,w,d])=>box(g,w,.04,d,m,x,.06,z+dz));
+  const tri=new THREE.Mesh(new THREE.CircleGeometry(1.4,3),m);tri.rotation.x=-Math.PI/2;tri.rotation.z=sg>0?Math.PI/2:-Math.PI/2;tri.position.set(0,.06,z-sg*5.6);g.add(tri)};
+ start(-R*.76,orM);start(R*.76,rdM);
+ // 場外への境界の壁・観客席（4段・満員）・照明塔
+ const sm=psMat(0xffffff,{map:panel('#2a3a40','#16242a')}),bw=psMat(0x3a4a52),N=48;
+ const crowd=new THREE.InstancedMesh(new THREE.BoxGeometry(.8,1.1,.8),new THREE.MeshLambertMaterial({color:0xffffff}),N*4*8);let ci=0;const mx=new THREE.Matrix4(),col=new THREE.Color();
+ for(let i=0;i<N;i++){const a=i/N*Math.PI*2;box(g,2*Math.PI*(R+1)/N+.2,3.2,1.2,bw,Math.sin(a)*(R+1),1.6,Math.cos(a)*(R+1),0,a,0);
+  for(let t=0;t<4;t++){const rr=R+3+t*3.4,y=2+t*2.4;box(g,2*Math.PI*rr/N+.2,y*2,3.2,sm,Math.sin(a)*rr,y,Math.cos(a)*rr,0,a,0);
+   for(let k=0;k<8;k++){const aa=a+(k-3.5)/8*(2*Math.PI/N);mx.makeTranslation(Math.sin(aa)*rr,y*2+.55,Math.cos(aa)*rr);crowd.setMatrixAt(ci,mx);crowd.setColorAt(ci,col.setHSL(Math.random(),.25,.25+Math.random()*.35));ci++}}}
+ g.add(crowd);
+ for(let i=0;i<8;i++){const a=i/8*Math.PI*2+Math.PI/8,rr=R+18;box(g,1.2,30,1.2,psMat(0x22343a),Math.sin(a)*rr,15,Math.cos(a)*rr);box(g,3.4,.7,3.4,cy,Math.sin(a)*(rr-1),30,Math.cos(a)*(rr-1))}
+ // 高い八角柱 ×6（白にシアンの帯2本、足もとに台座）。当たり判定用の見えない箱を中に入れる
+ const pm=psMat(0xe6eef0),pe=psMat(0x8d999e),hid=psMat(0x000000),PS=3.8,PH=8;
+ COLO_PIL.forEach(([d,k])=>{const a=d*Math.PI/180,x=Math.sin(a)*R*k,z=Math.cos(a)*R*k;
+  cyl(g,PS*.62,PS*.66,PH,pm,x,PH/2,z,0,0,8);cyl(g,PS*.64,PS*.64,.22,cy,x,PH-.12,z,0,0,8);cyl(g,PS*.64,PS*.64,.22,cy,x,PH*.45,z,0,0,8);cyl(g,PS*.8,PS*.82,.5,pe,x,.25,z,0,0,8);
+  const hb=box(g,PS*.9,PH,PS*.9,hid,x,PH/2,z);hb.visible=false});
+ return g}
+const COLO_R=45,COLO=grp(S);COLO.visible=false;buildColo(COLO,COLO_R);
 const isRoad=()=>RUN&&RUN.def.field==='road',isCanyon=()=>RUN&&RUN.def.field==='canyon';
-const fieldR=()=>RUN&&RUN.def.field==='relay'?RELAY_R:RUN&&RUN.def.field==='border'?BORDER_R:RUN&&RUN.def.field==='city'?CITY_R:RUN&&RUN.def.field==='ruins'?RUINS_R:RUN&&RUN.def.field==='factory'?FAC_R:ARENA;
-const fieldG=()=>isCanyon()?CANYON:RUN&&RUN.def.field==='relay'?RELAY:RUN&&RUN.def.field==='border'?BORDER:RUN&&RUN.def.field==='city'?CITY:isRoad()?ROAD:RUN&&RUN.def.field==='ruins'?RUINS:RUN&&RUN.def.field==='factory'?FAC:world;
+const fieldR=()=>RUN&&RUN.def.field==='colo'?COLO_R:RUN&&RUN.def.field==='relay'?RELAY_R:RUN&&RUN.def.field==='border'?BORDER_R:RUN&&RUN.def.field==='city'?CITY_R:RUN&&RUN.def.field==='ruins'?RUINS_R:RUN&&RUN.def.field==='factory'?FAC_R:ARENA;
+const fieldG=()=>isCanyon()?CANYON:RUN&&RUN.def.field==='colo'?COLO:RUN&&RUN.def.field==='relay'?RELAY:RUN&&RUN.def.field==='border'?BORDER:RUN&&RUN.def.field==='city'?CITY:isRoad()?ROAD:RUN&&RUN.def.field==='ruins'?RUINS:RUN&&RUN.def.field==='factory'?FAC:world;
 /* ===== 障害物の当たり判定 =====
  各ステージのグループ（演習場 world／CITY／ROAD／RUINS）から、地面に立っている箱（高さ1.5m以上・ほぼ水平）を
  向きつきの箱 {x,z,c,s,hw,hd,top} として自動で集める（最初に使うときに1回）。新しいステージも同じ作り方なら自動で入る */
@@ -5559,7 +5602,7 @@ function setMode(m,training=false,mis=null,tt=false){introClear();goWaitClear();
  if(p){selSlot=null;view='overview';highlight(null)}
  if(p&&builtKey!==JSON.stringify(cfg))buildMech(cfg);
  if(p)SND.bgm(RUN&&RUN.def.boss?'boss':'sortie');else if(!wasMis)SND.bgm('garage');
- $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';FAC.visible=p&&!!RUN&&RUN.def.field==='factory';BORDER.visible=p&&!!RUN&&RUN.def.field==='border';RELAY.visible=p&&!!RUN&&RUN.def.field==='relay';CANYON.visible=p&&!!RUN&&RUN.def.field==='canyon';gnd.visible=!CANYON.visible&&!ROAD.visible&&!RUINS.visible&&!FAC.visible&&!BORDER.visible&&!RELAY.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}GOALM.visible=p&&!!RUN&&!!RUN.def.reach;{const cl=p&&!!RUN&&!!RUN.def.collect;DROPM.visible=WRECKG.visible=cl;CRATES.forEach(c=>c.visible=cl)}if(GOALM.visible)GOALM.position.set(RUN.def.reach.x,0,RUN.def.reach.z);dock.visible=!p;
+ $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';FAC.visible=p&&!!RUN&&RUN.def.field==='factory';BORDER.visible=p&&!!RUN&&RUN.def.field==='border';RELAY.visible=p&&!!RUN&&RUN.def.field==='relay';CANYON.visible=p&&!!RUN&&RUN.def.field==='canyon';COLO.visible=p&&!!RUN&&RUN.def.field==='colo';gnd.visible=!COLO.visible&&!CANYON.visible&&!ROAD.visible&&!RUINS.visible&&!FAC.visible&&!BORDER.visible&&!RELAY.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}GOALM.visible=p&&!!RUN&&!!RUN.def.reach;{const cl=p&&!!RUN&&!!RUN.def.collect;DROPM.visible=WRECKG.visible=cl;CRATES.forEach(c=>c.visible=cl)}if(GOALM.visible)GOALM.position.set(RUN.def.reach.x,0,RUN.def.reach.z);dock.visible=!p;
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
  S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}wxApply(p&&RUN?RUN.def.wx:null);C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
@@ -6166,15 +6209,7 @@ function buildOpScenes(){
   for(let i=0;i<14;i++)box(g,.4,.4,.4,psMat(0x55606a),rnd(-6,6),.2,rnd(-24,4));
   OSC.push({g,bg:0x1e2427,fog:[30,150],amb:0x6c7a80,from:[[-16,.7,-12],[0,26,-40],-.14,52],to:[[-7,1,-24],[0,64,-40],-.05,44]})}
  // 3) 闘技場：満員の観客席と向かい合う2機
- {const g=grp(OS);const fl=new THREE.Mesh(new THREE.CircleGeometry(30,32),psMat(0xd4dcde));fl.rotation.x=-Math.PI/2;fl.position.y=.02;g.add(fl);{const gg=ground(0x101a1d,220);gg.position.y=-.4;g.add(gg)}
-  const cy=new THREE.MeshBasicMaterial({color:0x6fd3e0}),ln=new THREE.Mesh(new THREE.RingGeometry(14,14.4,48),cy);ln.rotation.x=-Math.PI/2;ln.position.y=.05;g.add(ln);
-  const sm=T('#2a3a40','#16242a');const N=40;
-  const crowd=new THREE.InstancedMesh(new THREE.BoxGeometry(.7,1,.7),new THREE.MeshLambertMaterial({color:0xffffff}),N*4*7);let ci=0;const mx=new THREE.Matrix4(),col=new THREE.Color();
-  for(let i=0;i<N;i++){const a=i/N*Math.PI*2;
-   for(let t=0;t<4;t++){const r=33+t*3.4,y=1+t*2.4;const b=box(g,2*Math.PI*r/N+.2,y*2,3.2,sm,Math.sin(a)*r,y,Math.cos(a)*r);b.rotation.y=a;
-    for(let k=0;k<7;k++){const aa=a+(k-3)/7*(2*Math.PI/N);mx.makeTranslation(Math.sin(aa)*r,y*2+.5,Math.cos(aa)*r);crowd.setMatrixAt(ci,mx);crowd.setColorAt(ci,col.setHSL(Math.random(),.25,.25+Math.random()*.35));ci++}}}
-  g.add(crowd);
-  for(let i=0;i<8;i++){const a=i/8*Math.PI*2;box(g,1,26,1,psMat(0x22343a),Math.sin(a)*48,13,Math.cos(a)*48);box(g,3,.6,3,cy,Math.sin(a)*47,26,Math.cos(a)*47)}
+ {const g=grp(OS);buildColo(g,COLO_R);   // 試合と同じ闘技場（床・観客席・照明塔・高い柱）
   const red=new Map([[M.main,psMat(0xffffff,{map:M.main.map,color:0x8e2e26})],[M.sub,psMat(0xffffff,{map:M.sub.map,color:0xbdb6a3})],[M.warn,psMat(0xffffff,{map:M.warn.map,color:0xc39640})],[M.eye,new THREE.MeshBasicMaterial({color:0x55e0ff})]]);
   const a=gearModel(g,{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-01',rHand:'RF2',lHand:'SH2',rShoulder:'none',lShoulder:'none',ext:'RD2'},makeTint(OP_TINT.purple));a.position.set(-7,0,0);a.rotation.y=Math.PI/2;
   const b=spawnGear(g,'serena');b.position.x=7;b.position.z=0;b.rotation.y=-Math.PI/2;  // 赤いギア＝セレナ機（ROUGE FANFARE）
