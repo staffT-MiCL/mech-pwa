@@ -657,6 +657,7 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 .vtr .s{font-size:10px;font-weight:700;letter-spacing:.1em;white-space:nowrap;color:var(--dim)}.vtr .s.ok{color:var(--accent)}.vtr .s.on{color:var(--cyan)}
 .vtr.pend .k,.vtr.pend .o{color:var(--faint)}
 .vacts{display:flex;gap:8px;flex:0 0 auto}.vacts .btn-main{flex:1;height:36px;background:var(--cyan);color:#06161a}
+.vacts .btn-sub{height:36px;padding:0 12px;white-space:nowrap;flex:0 0 auto}
 .vacts .btn-main:disabled{background:#1a2427;color:#4f6266;opacity:1}
 #versus.walk #vtbox,#versus.walk #vsR,#versus.walk #vExit,#versus.walk .opcard{visibility:hidden}
 #versus.greet #vsR,#versus.greet #vExit{opacity:.25;pointer-events:none}
@@ -959,7 +960,7 @@ body.eqm #visit{display:none}
  <button id="keyBtn" hidden aria-label="入手したKEYを見る"><svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="3.5" cy="5" r="2.5"/><path d="M6 5h7.5M10.5 5v2.5M12.5 5v2"/></svg>KEY</button>
  <button id="mailBtn" hidden aria-label="メールを読む"><svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5"><rect x=".75" y=".75" width="12.5" height="8.5"/><path d="M1 1l6 5 6-5"/></svg>MAIL<i id="mailN">1</i></button>
  <span class="kv cr"><small>CREDIT</small><b id="hCr"></b><small>CR</small></span>
- <button id="eqClose" aria-label="装備変更を終えてショップへ戻る">◀ SHOP へ戻る</button>
+ <button id="eqClose" aria-label="装備変更を終えて戻る">◀ SHOP</button>
  <button id="menuBtn" class="cut" aria-haspopup="true"><svg width="14" height="12" viewBox="0 0 14 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 1h14M0 6h14M0 11h14"/></svg>MENU</button>
  <button id="chkBack" class="cut" hidden><span class="l">◀ BRIEFING</span><span class="s">◀ BRIEF</span></button>
 </header>
@@ -1074,7 +1075,7 @@ body.eqm #visit{display:none}
   <div class="stabs" id="vTabs" role="tablist"><button data-t="card" role="tab">対戦カード</button><button data-t="table" role="tab">対戦表</button></div>
   <div class="shd"><span class="ttl en" id="vTitle">CLASS C 大会</span><span class="sub" id="vSub"></span></div><div class="rule"></div>
   <div id="vBody"></div>
-  <div class="vacts"><button class="btn-main cut" id="vGo" disabled>試合へ ▶</button></div>
+  <div class="vacts"><button class="btn-sub" id="vEq">装備を変更する</button><button class="btn-main cut" id="vGo" disabled>試合へ ▶</button></div>
  </div>
 </div>
 <div id="mis" hidden></div>
@@ -3831,7 +3832,7 @@ function renderAlt(){
    <div class="tbtn"><button class="btn-sub" id="sEqm">装備を変更する</button></div>`;
   el.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tsel=b.dataset.t;renderShop();const k=tsel;
    talk([[{head:'ヘッドは<em>ロックの距離と角度</em>を鍛えられます。目がよくなる、ということですね。わたくしも鍛えたいものです。',core:'コアは<em>装甲とブースト容量</em>です。コアが壊れると終わりですので、ここは大事でございます。',arms:'アームは<em>積載と装甲</em>です。重い兵装を持ちたいなら、積載から。',legs:'レッグは<em>基本機動力</em>と<em>装甲</em>です。足が止まると狙われますので、どちらも大事でございます。'}[k],'normal']])});
-  $('sEqm').onclick=()=>fadeTo(openEquipModal);
+  $('sEqm').onclick=()=>fadeTo(()=>openEquipModal('shop'));
   el.querySelectorAll('.tup').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,lv=tLv(id,i),c=tCost(id,lv),d=def[i];
    $('sconfBox').innerHTML=`<div class="shd"><span class="code">TUNE</span><span class="ttl">${PART_LABEL[tsel]||'HEAD'} ${esc(ENM(tsel,id).trim())}</span><span class="sub" style="width:100%">${SER(id)}</span></div><div class="rule"></div>
     <div class="bal"><span>${d.lab}</span><span>LV ${lv} → <b>${lv+1}</b>（${show(i,lv)} → ${show(i,lv+1)}）</span><span>所持金</span><span>${fmtCR(CREDIT)} CR</span><span>費用</span><span class="dn">− ${fmtCR(c)} CR</span><span class="tot">強化後</span><span class="tot"><b>${fmtCR(CREDIT-c)} CR</b></span></div>
@@ -3934,10 +3935,15 @@ function buy(id,equip){
  else talk([['お買い上げ、ありがとうございます！ '+nm+' はガレージの棚に置いておきますね。','happy'],['……あ、棚を間違えました。いえ、<strong>合っています</strong>。たぶん。','sorry']]);
 }
 /* 装備変更（TUNE から）：ガレージの画面を、ショップの上にモーダルとして開く */
-function openEquipModal(){stopShop3D();$('shop').hidden=true;document.body.classList.add('eqm');view='overview';selSlot=null;renderGarage();requestAnimationFrame(resize);resize()}
+// 装備変更（ガレージの画面を重ねる）。from＝呼び出し元（'shop'／'versus'）。戻るボタンは「◀ SHOP」／「◀ VERSUS」
+let EQFROM='shop';
+function openEquipModal(from='shop'){EQFROM=from;$('eqClose').textContent='◀ '+(from==='versus'?'VERSUS':'SHOP');
+ if(from==='versus'){VS3.stop();clearInterval(VT.iv);VT.iv=null;VT.q=[];$('vtChoice').innerHTML='';$('versus').hidden=true}else{stopShop3D();$('shop').hidden=true}
+ document.body.classList.add('eqm');view='overview';selSlot=null;renderGarage();requestAnimationFrame(resize);resize()}
 function closeEquipModal(){if(!document.body.classList.contains('eqm'))return;document.body.classList.remove('eqm');view='overview';selSlot=null;renderGarage();resize();
+ if(EQFROM==='versus'){$('versus').hidden=false;VS3.start();renderVs();vtSay([['b','機体の調整、お疲れさまでした。','bow']]);return}
  $('shop').hidden=false;startShop3D();renderShop();talk([['装備の調子はいかがですか？ ……おお、よくお似合いです。機体に似合う、という言い方で合っていますよね？','happy']])}
-$('eqClose').onclick=()=>fadeTo(closeEquipModal,'SHOP');
+$('eqClose').onclick=()=>fadeTo(closeEquipModal,EQFROM==='versus'?'VERSUS':'SHOP');
 function openShop(){
  openMenu(false);startShop3D();closeModal();$('shop').hidden=false;SND.bgm('shop');smode='buy';scmpSide='R';rview='equip';rsel=null;ramt=null;spath=[];scat=null;ssel=null;renderShop();setMood('normal');
  if(TUT!=='done'){shopVisits++;saveGame();return firstShop()}
@@ -4126,7 +4132,8 @@ function vtNext(){const ch=$('vtChoice');ch.innerHTML='';clearInterval(VT.iv);VT
 function vtChoices(){const ch=$('vtChoice');ch.innerHTML='';if(typeof VT.ch==='function'){const f=VT.ch;VT.ch=null;return f()}const list=VT.ch||vsMenu();VT.ch=null;
  list.forEach(([lab,fn])=>{const b=document.createElement('button');b.textContent=lab;b.onclick=fn;ch.appendChild(b)})}
 $('vtText').onclick=()=>{if(VT.iv&&VT.done)VT.done();else if(VT.q.length)vtNext()};
-const vsMenu=()=>[['対戦カードを見る',()=>{setVTab('card');vtSay(vsStatus(true))}],['対戦表を見る',()=>{setVTab('table');vtSay([['b','対戦表です。勝ち進むと、次の試合が表に加わります。','point']])}],['ルールを聞く',vsRules],['ガレージへ戻る',leaveVersus]];
+const vsMenu=()=>[['対戦カードを見る',()=>{setVTab('card');vtSay(vsStatus(true))}],['対戦表を見る',()=>{setVTab('table');vtSay([['b','対戦表です。勝ち進むと、次の試合が表に加わります。','point']])}],['装備を変更する',vsEquip],['ルールを聞く',vsRules],['ガレージへ戻る',leaveVersus]];
+function vsEquip(){if(vLeaving)return;fadeTo(()=>openEquipModal('versus'))}
 // ベルの案内：いまの試合の状態（日程調整中なら「追って連絡」）
 function vsStatus(card){const i=vsCur();
  if(i>=VSC.rounds.length)return [['b',VSC.name+'、<strong>優勝</strong>おめでとうございます、○○様。記録に残しました。','bow']];
@@ -4187,6 +4194,7 @@ function leaveVersus(){if(vLeaving)return;vLeaving=true;$('vtChoice').innerHTML=
   ()=>setTimeout(()=>fadeTo(closeVersus,'GARAGE'),800))}
 function closeVersus(){VS3.stop();SND.bgm('garage');clearInterval(VT.iv);VT.iv=null;VT.q=[];vtChar(null);$('versus').hidden=true;$('versus').classList.remove('walk','greet');vLeaving=false;
  view='overview';selSlot=null;renderGarage();garageGreet('versus')}
+$('vEq').onclick=vsEquip;
 $('mVersus').onclick=()=>{if(tutBlock())return;if(!vsOk())return;openMenu(false);fadeTo(openVersus,'VERSUS')};$('vExit').onclick=leaveVersus;
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sconf').hidden)closeConfirm()});
 
