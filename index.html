@@ -4715,6 +4715,7 @@ function drawMap(){
  MG.beginPath();MG.moveTo(cx,0);MG.lineTo(cx,H0);MG.moveTo(0,cy);MG.lineTo(W0,cy);MG.stroke();
  // 演習場の外周
  MG.strokeStyle='rgba(184,168,120,.6)';if(isCanyon()){[-1,1].forEach(sg=>{MG.beginPath();for(let z=CAN_Z0,i=0;z<=CAN_Z1;z+=4,i++){const [x,y]=toM(canX(z)+sg*canW(z),z);i?MG.lineTo(x,y):MG.moveTo(x,y)}MG.stroke()})}else if(isRoad()){[-1,1].forEach(sg=>{MG.beginPath();for(let z=ROAD_Z0,i=0;z<=ROAD_Z1;z+=6,i++){const [x,y]=toM(roadX(z)+sg*ROAD_W,z);i?MG.lineTo(x,y):MG.moveTo(x,y)}MG.stroke()});MG.strokeStyle='rgba(184,168,120,.25)';MG.beginPath();for(let z=ROAD_Z0,i=0;z<=ROAD_Z1;z+=6,i++){const [x,y]=toM(roadX(z),z);i?MG.lineTo(x,y):MG.moveTo(x,y)}MG.stroke()}
+ else if(RUN&&RUN.def.field==='viaduct'){MG.beginPath();[[-VIAD_R,-VIAD_R],[VIAD_R,-VIAD_R],[VIAD_R,VIAD_ZN],[-VIAD_R,VIAD_ZN],[-VIAD_R,-VIAD_R]].forEach(([px,pz],i)=>{const [x,y]=toM(px,pz);i?MG.lineTo(x,y):MG.moveTo(x,y)});MG.stroke()}
  else{MG.beginPath();for(let i=0;i<=48;i++){const a=i/48*Math.PI*2,[x,y]=toM(Math.sin(a)*fieldR(),Math.cos(a)*fieldR());i?MG.lineTo(x,y):MG.moveTo(x,y)}MG.stroke()}
  // 建物
  MG.fillStyle='rgba(120,130,120,.35)';fieldG().children.forEach(b=>{if(!b.isMesh||!b.geometry.parameters||b.geometry.parameters.height<2)return;const [x,y]=toM(b.position.x,b.position.z);MG.fillRect(x-2,y-2,4,4)});
@@ -4972,9 +4973,9 @@ const MLIST=[
   comm:{start:'搬入高架の防衛を開始します。北から3波です。',wave:'次の波が来ます。',wave1:'第2波です。砲台と、自走地雷も混ざっています。',wave2:'最後の波です。浮遊自爆機が多い。',bomb:'浮遊自爆機です。高架へ向かっています。近づく前に落としてください。',mine:'自走地雷です。高架に近づけないでください。',hurt:'高架の損傷が増えています。',last:'最後の波です。残りを片づけましょう。',clear:'敵影なし。高架は無事です。任務完了です。'},
   res:{ok:'ペトラさんから通信です。「うわ、本当に守りきったの！？ 高架も無事！ ……ありがとう、あとでお茶でも」と。',ng:'撤退します。……高架の補修は、整備班が徹夜になりそうですね。'},
   start:{x:0,z:-12},defend:{kill:true,gap:25,hp:3000,hr:9,hy:9,lab:'高架'},enemies:[],
-  waves:[{at:3,en:[{type:'bomber',x:-18,z:52},{type:'bomber',x:14,z:56},{type:'bomber',x:0,z:62},{type:'drone',x:-24,z:46},{type:'drone',x:22,z:48},{type:'drone',x:4,z:54}]},
-   {at:0,en:[{type:'bomber',x:-26,z:50},{type:'bomber',x:-8,z:58},{type:'bomber',x:10,z:54},{type:'bomber',x:26,z:52},{type:'drone',x:-16,z:46},{type:'drone',x:18,z:44},{type:'drone',x:0,z:64},{type:'turret',x:-12,z:48},{type:'crawler',x:-4,z:46},{type:'crawler',x:8,z:48}]},
-   {at:0,en:[{type:'bomber',x:-28,z:52},{type:'bomber',x:-14,z:60},{type:'bomber',x:-2,z:56},{type:'bomber',x:12,z:62},{type:'bomber',x:24,z:54},{type:'bomber',x:30,z:48},{type:'drone',x:-20,z:46},{type:'drone',x:20,z:46},{type:'drone',x:0,z:66},{type:'drone',x:-6,z:50},{type:'crawler',x:-10,z:44},{type:'crawler',x:0,z:42},{type:'crawler',x:10,z:44}]}],
+  waves:[{at:3,en:[{type:'bomber',x:-18,z:88},{type:'bomber',x:14,z:92},{type:'bomber',x:0,z:98},{type:'drone',x:-24,z:82},{type:'drone',x:22,z:84},{type:'drone',x:4,z:90}]},
+   {at:0,en:[{type:'bomber',x:-26,z:86},{type:'bomber',x:-8,z:94},{type:'bomber',x:10,z:90},{type:'bomber',x:26,z:88},{type:'drone',x:-16,z:82},{type:'drone',x:18,z:80},{type:'drone',x:0,z:100},{type:'turret',x:-12,z:84},{type:'crawler',x:-4,z:82},{type:'crawler',x:8,z:84}]},
+   {at:0,en:[{type:'bomber',x:-28,z:88},{type:'bomber',x:-14,z:96},{type:'bomber',x:-2,z:92},{type:'bomber',x:12,z:98},{type:'bomber',x:24,z:90},{type:'bomber',x:30,z:84},{type:'drone',x:-20,z:82},{type:'drone',x:20,z:82},{type:'drone',x:0,z:102},{type:'drone',x:-6,z:86},{type:'crawler',x:-10,z:80},{type:'crawler',x:0,z:78},{type:'crawler',x:10,z:80}]}],
   after:{ok:'助かるわ！ 搬入路で待ってる。……あたしの工具には、触らないでよ？',later:'そう……。急がなくても、高架は……たぶん、まだ持つから。'},
   talk:[['c','あんたが第7区画の代表さん？ あたしは、闘技場で整備主任をやってる、ペトラ。……いきなりで悪いんだけど、搬入路の高架に、変な飛行機械が群れてるのよ。'],
    ['c','丸い胴で、下に爆薬みたいな箱を抱えてる。近づくと赤く光って……ドカン、よ。地面を這う地雷も混ざってるわ。'],
@@ -5220,15 +5221,16 @@ const HANG_R=50,HANG=grp(S);HANG.visible=false;const HANG_MAP=[];
  box(HANG,16,12,.8,wall2,0,6,-HANG_R-1);box(HANG,16.2,.5,.9,hz,0,12.2,-HANG_R-1)}
 /* ----- 地形：闘技場の搬入路（3-1）。薄曇りの昼。中央を南北に搬入路が通り、東西に長い搬入高架（橋）が路をまたぐ。
  両側にコンテナの山とジャージーバリア、奥にクレーン。高架（VIAD）は守る対象：壊れると右半分が落ちる ----- */
-const VIAD_R=55,VIAD=grp(S);VIAD.visible=false;const VIAD_MAP=[];
+const VIAD_R=55,VIAD_ZN=112,VIAD=grp(S);VIAD.visible=false;const VIAD_MAP=[];
 {let sd=0x0301;const rnd=(a=0,b=1)=>{sd=(sd*1664525+1013904223)>>>0;return a+sd/4294967296*(b-a)};
  const T=(c,l)=>psMat(0xffffff,{map:panel(c,l)}),asp=psMat(0x3a3e40),asp2=psMat(0x2f3234),conc=T('#8e8e88','#54544e'),conc2=T('#74746e','#44443e'),dk=psMat(0x1f2224),
   hz=psMat(0xffffff,{map:stripes('#d8b020','#1a1a14')}),grey=T('#6a7270','#3a403e'),orng=psMat(0xffffff,{map:panel('#c86a2a','#6a3414')}),
   cm=[T('#a8432c','#5a2216'),T('#2f5f8a','#16304a'),T('#5f7f3a','#2e4219'),T('#c8a030','#6a5214')],yel=psMat(0xd8c040);
  const gp=new THREE.Mesh(new THREE.CircleGeometry(90,24),asp2);gp.rotation.x=-Math.PI/2;gp.position.y=.01;VIAD.add(gp);
- const road=new THREE.Mesh(new THREE.PlaneGeometry(15,120),asp);road.rotation.x=-Math.PI/2;road.position.set(0,.02,0);VIAD.add(road);
- for(let z=-56;z<=56;z+=8)box(VIAD,.3,.02,3.4,yel,0,.04,z);
- [-7.6,7.6].forEach(x=>{for(let z=-56;z<=56;z+=4)box(VIAD,.25,.02,2,psMat(0xb8b8b0),x,.04,z)});
+ const gn=new THREE.Mesh(new THREE.PlaneGeometry(150,70),asp2);gn.rotation.x=-Math.PI/2;gn.position.set(0,.011,125);VIAD.add(gn);
+ const road=new THREE.Mesh(new THREE.PlaneGeometry(15,190),asp);road.rotation.x=-Math.PI/2;road.position.set(0,.02,36);VIAD.add(road);
+ for(let z=-56;z<=VIAD_ZN;z+=8)box(VIAD,.3,.02,3.4,yel,0,.04,z);
+ [-7.6,7.6].forEach(x=>{for(let z=-56;z<=VIAD_ZN;z+=4)box(VIAD,.25,.02,2,psMat(0xb8b8b0),x,.04,z)});
  // 搬入高架：中心 (0,24)。右半分（+X）は壊れると落ちる
  const VG=grp(VIAD,0,0,24);const dkA=grp(VG,0,0,0),dkB=grp(VG,0,0,0);
  box(dkA,28,1.2,10,conc,-14,7.6,0);box(dkA,28,.9,.3,hz,-14,8.65,-4.8);box(dkA,28,.9,.3,hz,-14,8.65,4.8);box(dkA,28,.7,9,dk,-14,6.65,0);
@@ -5240,14 +5242,16 @@ const VIAD_R=55,VIAD=grp(S);VIAD.visible=false;const VIAD_MAP=[];
  VIAD_MAP.push({x:0,z:24,w:56,d:10,ry:0,k:'w'});
  const wreck=[];for(let i=0;i<12;i++){const r=box(VG,rnd(1,2.6),rnd(.5,1.4),rnd(1,2.6),i%2?conc:dk,rnd(6,26),.4,rnd(-4,4),rnd(-.4,.4),rnd(0,3),rnd(-.4,.4));r.visible=false;wreck.push(r)}
  // 山積みのコンテナ（上段は高さ 2.6 の2段目）。奥側にも
- [[-30,-8,0],[-30,3,0],[-35,19,.25],[31,-6,.1],[34,8,0],[28,-20,-.2],[-26,40,.1],[27,38,-.2],[-16,48,0],[17,50,.15],[-38,-26,0],[36,-28,.3]].forEach(([x,z,ry],i)=>{
+ [[-30,-8,0],[-30,3,0],[-35,19,.25],[31,-6,.1],[34,8,0],[28,-20,-.2],[-26,40,.1],[27,38,-.2],[-16,48,0],[17,50,.15],[-38,-26,0],[36,-28,.3],[-27,64,.1],[29,70,-.15],[-31,82,.2],[27,92,0],[-24,102,-.1],[32,106,.1]].forEach(([x,z,ry],i)=>{
   box(VIAD,6,2.6,2.5,cm[i%4],x,1.3,z,0,ry,0);VIAD_MAP.push({x,z,w:6,d:2.5,ry,k:'b'});if(i%3===0)box(VIAD,6,2.6,2.5,cm[(i+1)%4],x+.4,3.9,z,0,ry+.05,0)});
  // ジャージーバリア（遮蔽。越えられない高さ）
- [[-11,-3,.15],[11,-3,-.15],[-10,10,0],[10,10,0],[-14,38,.3],[14,38,-.3],[0,44,0]].forEach(([x,z,ry])=>{box(VIAD,4.4,1.6,1,conc,x,.8,z,0,ry,0);box(VIAD,4.4,.12,1.05,hz,x,1.65,z,0,ry,0);VIAD_MAP.push({x,z,w:4.4,d:1,ry,k:'b'})});
+ [[-11,-3,.15],[11,-3,-.15],[-10,10,0],[10,10,0],[-14,38,.3],[14,38,-.3],[0,44,0],[-6,62,.2],[7,74,-.2],[-10,88,0],[9,98,.1],[0,108,0]].forEach(([x,z,ry])=>{box(VIAD,4.4,1.6,1,conc,x,.8,z,0,ry,0);box(VIAD,4.4,.12,1.05,hz,x,1.65,z,0,ry,0);VIAD_MAP.push({x,z,w:4.4,d:1,ry,k:'b'})});
  // 奥のクレーン（門型）
  [-13,13].forEach(x=>{box(VIAD,1.4,18,1.4,orng,x,9,-48);VIAD_MAP.push({x,z:-48,w:1.4,d:1.4,ry:0,k:'b'})});box(VIAD,34,1.6,1.8,orng,0,18,-48);box(VIAD,2.4,2.2,2.4,dk,-6,16.5,-48);cyl(VIAD,.08,.08,10,dk,-6,11,-48);
  // 外周：搬入口の建物と倉庫
- for(let i=0;i<26;i++){const a=i/26*Math.PI*2,r=rnd(60,72),h=rnd(6,15);box(VIAD,rnd(10,18),h,rnd(6,10),i%2?grey:conc2,Math.sin(a)*r,h/2-.5,Math.cos(a)*r,0,a,0)}
+ for(let i=0;i<26;i++){const a=i/26*Math.PI*2,r=rnd(60,72),h=rnd(6,15);if(Math.cos(a)*r>30)continue;box(VIAD,rnd(10,18),h,rnd(6,10),i%2?grey:conc2,Math.sin(a)*r,h/2-.5,Math.cos(a)*r,0,a,0)}
+ for(let z=36;z<=VIAD_ZN+8;z+=14)[-1,1].forEach(sg=>{const h=rnd(6,15);box(VIAD,rnd(10,16),h,rnd(8,12),(z/14+sg)%2?grey:conc2,sg*rnd(62,70),h/2-.5,z,0,0,0)});
+ for(let x=-56;x<=56;x+=16){const h=rnd(8,16);box(VIAD,rnd(12,16),h,8,x%32?grey:conc2,x+rnd(-2,2),h/2-.5,VIAD_ZN+10,0,0,0)}
  VG.userData={tick(tt){wl.forEach((m,i)=>m.material.color.setHSL(.06,1,Math.floor(tt*2+i)%2?.55:.2))},
   wreck(){rb.rotation.z=-.3;rb.position.y=-2.2;rb.position.x=2;wreck.forEach(r=>r.visible=true)},fix(){rb.rotation.z=0;rb.position.set(0,0,0);wreck.forEach(r=>r.visible=false)}};
  // 守る対象は VG（高架の中心）。TOBJ() の位置＝ (0,0,24)
@@ -5364,7 +5368,7 @@ function pushOut(v,r,y=0){const L=curCols();for(const o of L){if(y>=o.top-.2)con
 function hitCol(p,pad=0){const L=curCols();for(const o of L){if(p.y>o.top+pad||p.y<-1)continue;const dx=p.x-o.x,dz=p.z-o.z;if(Math.abs(dx)>o.b+pad||Math.abs(dz)>o.b+pad)continue;
  const lx=dx*o.c-dz*o.s,lz=dx*o.s+dz*o.c;if(Math.abs(lx)<=o.hw+pad&&Math.abs(lz)<=o.hd+pad)return o}return null}
 function clampField(v){if(isCanyon()){v.z=Math.max(CAN_Z0,Math.min(CAN_Z1,v.z));const c=canX(v.z),w=canW(v.z);v.x=Math.max(c-w,Math.min(c+w,v.x));return}if(isRoad()){v.z=Math.max(ROAD_Z0,Math.min(ROAD_Z1,v.z));const c=roadX(v.z);v.x=Math.max(c-ROAD_W,Math.min(c+ROAD_W,v.x));return}
- const pl=Math.hypot(v.x,v.z),FR=fieldR();if(pl>FR){v.x*=FR/pl;v.z*=FR/pl}
+ if(RUN&&RUN.def.field==='viaduct'){v.x=Math.max(-VIAD_R,Math.min(VIAD_R,v.x));v.z=Math.max(-VIAD_R,Math.min(VIAD_ZN,v.z))}else{const pl=Math.hypot(v.x,v.z),FR=fieldR();if(pl>FR){v.x*=FR/pl;v.z*=FR/pl}}
  if(RUN&&RUN.boss){const bp=RUN.boss.g.position,dx=v.x-bp.x,dz=v.z-bp.z,l=Math.hypot(dx,dz);if(l<8.2&&l>.01){v.x=bp.x+dx/l*8.2;v.z=bp.z+dz/l*8.2}}}
 
 /* ----- 進行 ----- */
@@ -5537,14 +5541,14 @@ function briefMapHangar(d){const s=[];
  const st=d.start;s.push(`<path d="M${st.x} ${-st.z-4}l3 6h-6z" fill="#8cf06e"/><text x="${st.x}" y="${-st.z+8}" fill="#8cf06e" font-size="3.6" text-anchor="middle" font-family="Chakra Petch,monospace">START</text>`);
  return `<svg viewBox="-64 -64 128 128" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
 function briefMapViaduct(d){const s=[];
- for(let i=-60;i<=60;i+=20)s.push(`<path d="M-62 ${i}H62M${i} -62V62" stroke="#173236" stroke-width=".4"/>`);
- s.push(`<circle r="${VIAD_R}" fill="none" stroke="#2f7e86" stroke-width=".6" stroke-dasharray="3 2"/><rect x="-7.5" y="-60" width="15" height="120" fill="none" stroke="#24585e" stroke-width=".4" stroke-dasharray="1.5 1.5"/>`);
+ for(let i=-60;i<=120;i+=20)s.push(`<path d="M-62 ${-i}H62" stroke="#173236" stroke-width=".4"/>`);for(let i=-60;i<=60;i+=20)s.push(`<path d="M${i} -114V58" stroke="#173236" stroke-width=".4"/>`);
+ s.push(`<rect x="${-VIAD_R}" y="${-VIAD_ZN}" width="${VIAD_R*2}" height="${VIAD_ZN+VIAD_R}" fill="none" stroke="#2f7e86" stroke-width=".6" stroke-dasharray="3 2"/><rect x="-7.5" y="-112" width="15" height="170" fill="none" stroke="#24585e" stroke-width=".4" stroke-dasharray="1.5 1.5"/>`);
  VIAD_MAP.forEach(o=>s.push(`<rect x="${-o.w/2}" y="${-o.d/2}" width="${o.w}" height="${o.d}" transform="translate(${o.x.toFixed(1)} ${(-o.z).toFixed(1)}) rotate(${(o.ry*180/Math.PI).toFixed(1)})" fill="${o.k==='w'?'rgba(111,211,224,.25)':'none'}" stroke="${o.k==='w'?'#6fd3e0':'#2f7e86'}" stroke-width="${o.k==='w'?.9:.5}"/>`));
  s.push(`<text x="0" y="-27" fill="#6fd3e0" font-size="4.4" text-anchor="middle" font-family="DotGothic16,monospace">搬入高架</text>`);
  d.waves.forEach((wv,i)=>wv.en.forEach(e=>s.push(e.type==='bomber'?`<circle cx="${e.x}" cy="${-e.z}" r="2.2" fill="none" stroke="#ff6a4c" stroke-width=".7"/><path d="M${e.x-3} ${-e.z}h6M${e.x} ${-e.z-3}v6" stroke="#ff6a4c" stroke-width=".5"/>`:e.type==='turret'?`<rect x="${e.x-2}" y="${-e.z-2}" width="4" height="4" fill="#ff6a4c"/>`:`<path d="M${e.x} ${-e.z-2.2}l2.2 3.8h-4.4z" fill="#ff6a4c" opacity="${1-i*.25}"/>`)));
- s.push(`<text x="-60" y="58" fill="#ff6a4c" font-size="3.6" font-family="DotGothic16,monospace">▲ 北から3波。浮遊自爆機は高架へ向かう</text>`);
+ s.push(`<text x="-60" y="-106" fill="#ff6a4c" font-size="3.6" font-family="DotGothic16,monospace">▲ 北から3波。浮遊自爆機は高架へ向かう</text>`);
  const st=d.start;s.push(`<path d="M${st.x} ${-st.z-4}l3 6h-6z" fill="#8cf06e"/><text x="${st.x}" y="${-st.z+8}" fill="#8cf06e" font-size="3.6" text-anchor="middle" font-family="Chakra Petch,monospace">START</text>`);
- return `<svg viewBox="-64 -64 128 128" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
+ return `<svg viewBox="-64 -116 128 176" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
 function briefMapBorder(d){const s=[];
  for(let i=-60;i<=60;i+=20)s.push(`<path d="M-62 ${i}H62M${i} -62V62" stroke="#173236" stroke-width=".4"/>`);
  s.push(`<circle r="${BORDER_R}" fill="none" stroke="#2f7e86" stroke-width=".6" stroke-dasharray="3 2"/><path d="M-54 -32H54" stroke="#d8a35a" stroke-width=".6" stroke-dasharray="2 1.5"/><text x="44" y="-34" fill="#d8a35a" font-size="3.6" text-anchor="middle" font-family="DotGothic16,monospace">境界</text>`);
