@@ -4315,15 +4315,25 @@ const GEAR_MOB={
    box(t,.9,.7,.5,gr,0,1.3,-1.1);cyl(t,.08,.1,4.2,dk,0,3.5,-1.2,0,0,6);const dsh=grp(t,0,5.2,-1.2);dsh.rotation.set(-.6,0,0);cyl(dsh,1.1,.4,.18,wh,0,0,0,0,0,10);box(dsh,.12,.12,.12,gl,0,.3,0);
    [[-.35,4],[.35,3.2]].forEach(([x,h])=>{cyl(t,.04,.04,h,dk,x,1.4+h/2,-1.0,0,0,4);box(t,.14,.14,.14,new THREE.MeshBasicMaterial({color:0xff3020}),x,1.4+h,-1.0)});
    box(t,1.1,1.1,1.4,gr,1.5,1.85,-.1,0,0,-.25);box(t,1.12,.12,1.42,wh,1.5,2.35,-.1,0,0,-.25);box(t,.5,.32,.04,wh,1.62,1.75,.62,0,0,-.25);box(t,.3,.32,.05,wh,0,1.2,.7)}},
- // VERSUS の相手（仮。2-c で機体・強さを作り込む）。vs3（セレナ）は ROUGE FANFARE の見た目に差し替える予定
- vs1:{name:'オスカー機',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'SH',rShoulder:'none',lShoulder:'none'},tint:'rust',hp:5200,dmg:30,rate:2.2,rng:40,spd:5,keep:18,bs:22,rw:0,tier:'mid'},
- vs2:{name:'ザラ機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'none',lShoulder:'none'},tint:'sand',hp:4600,dmg:50,rate:2.6,rng:55,spd:9,keep:20,bs:30,rw:0,tier:'mid'},
- vs3:{name:'セレナ機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'MS'},tint:'rust',hp:7000,dmg:55,rate:2.4,rng:60,spd:9,keep:22,bs:30,rw:0,tier:'boss'},
+ /* VERSUS の相手（2-c）。tx＝段階（GEAR_TIER）の値の上書き、guard＝盾の使い方（p：構える頻度／near：これより近いと構えにくい／t：構える秒数／cd：次まで）、
+  rush＝近接で踏み込む距離、msMax＝1斉射のミサイル数、rage＝耐久が半分を切ると攻撃の間が短くなる、model＝ライバル機の本物のモデル（GEARS の名前） */
+ vs1:{name:'オスカー機',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'BZ',lHand:'SH3',rShoulder:'MS',lShoulder:'MS'},tint:{main:0x5a6a78,sub:0xc8ccc8,warn:0x2a4a8a,joint:0x23262a,eye:0x6fd3ff},
+  hp:4800,dmg:0,rate:2.6,rng:70,spd:5,keep:30,bs:22,rw:0,tier:'mid',tx:{dk:.11,spread:2.2,cdK:1.6,gap:1},guard:{p:4,near:14,t:[1.2,1.8],cd:[1.8,2.8]},msMax:3},
+ vs2:{name:'ザラ機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'MG',rShoulder:'none',lShoulder:'none'},tint:{main:0x26282b,sub:0x3a3c40,warn:0xe0b020,joint:0x161718,eye:0xffd040},
+  hp:5600,dmg:0,rate:2.2,rng:60,spd:10,keep:24,bs:32,rw:0,tier:'boss',tx:{dk:.08,spread:1.8,cdK:1.5,gap:.8}},
+ vs3:{name:'ルージュ・ファンファーレ',model:'serena',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'BL3',lHand:'SH',rShoulder:'MS',lShoulder:'MS'},
+  hp:12000,dmg:0,rate:1.5,rng:70,spd:10,keep:14,bs:32,rw:0,tier:'boss',tx:{dk:.08,mk:.18,spread:1.6,cdK:1.3,gap:.6},guard:{p:6,near:0,t:[.8,1.2],cd:[1.5,2.5]},rush:26,msMax:3,rage:1},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
 };
+function rivalGear(g,key,c){const Sx=GX.SERIES[GEARS[key].s],bot=GX.build(g,Sx.base,Sx.rival,Sx.rival.pal),weps={},hide=o=>o.traverse(x=>{if(x.isMesh)x.visible=false});
+ bot.arms.forEach(a=>{const s=a.s,hk=s<0?'rHand':'lHand',sk=s<0?'rShoulder':'lShoulder';
+  if(c[hk]&&c[hk]!=='none'){const mh=mountHand(a.hand);weps[hk]=HAND[c[hk]].build(mh,s);hide(mh)}
+  if(c[sk]&&c[sk]!=='none'){const hp=grp(bot.torso,s*bot.P.so.shoulder[0],bot.P.so.shoulder[1],bot.P.so.shoulder[2]);weps[sk]=SHOULDER[c[sk]].build(mountShoulder(hp),s);hide(hp)}});
+ let mm=null;bot.traverse(x=>{if(!mm&&x.isMesh&&x.material&&x.material.emissive&&x.material.color&&x.material.color.getHex()===Sx.rival.pal.main)mm=x.material});
+ bot.weps=weps;bot.mm=mm;return bot}
 function makeGearEnemy(k){const sp=typeof k==='string'?GEAR_MOB[k]:k,tn=sp.tint||'graph',tint=makeTint(typeof tn==='string'?OP_TINT[tn]:tn),g=grp(S);
- const m=gearModel(g,{rHand:'none',lHand:'none',rShoulder:'none',lShoulder:'none',ext:'none',...sp.cfg},tint);if(sp.deco)sp.deco(m);if(sp.scale)g.scale.setScalar(sp.scale);
- const e={type:'gear',gk:typeof k==='string'?k:null,spec:sp,model:m,g,mat:tint.get(M.main),alive:true,hp:0,max:sp.hp||2400,stun:0,kb:new THREE.Vector3(),r:2.6,cd:2+Math.random()*2,ang:Math.random()*6,home:new THREE.Vector3(),hit:0,respawn:0,head:null,ph:0,
+ const m=sp.model?rivalGear(g,sp.model,sp.cfg):gearModel(g,{rHand:'none',lHand:'none',rShoulder:'none',lShoulder:'none',ext:'none',...sp.cfg},tint);if(sp.deco)sp.deco(m);if(sp.scale)g.scale.setScalar(sp.scale);
+ const e={type:'gear',gk:typeof k==='string'?k:null,spec:sp,model:m,g,mat:m.mm||tint.get(M.main),alive:true,hp:0,max:sp.hp||2400,stun:0,kb:new THREE.Vector3(),r:2.6,cd:2+Math.random()*2,ang:Math.random()*6,home:new THREE.Vector3(),hit:0,respawn:0,head:null,ph:0,
   center(v){return v.copy(g.position).add(new THREE.Vector3(0,4.2*(sp.scale||1),0))}};
  e.hpBar=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0x8cf06e}));e.hpBar.position.y=9.2;g.add(e.hpBar);
  ENEMIES.push(e);e.alive=false;g.visible=false;e.off=true;return e}
@@ -4337,10 +4347,11 @@ const GEAR_TIER={mob:{qb:0,jump:0,dk:.18,mk:.25,spread:3.4,cdK:1.6},mid:{qb:1,ju
 const GEAR_MS_MAX=2; // 敵のミサイルは1回の斉射で2発まで
 const GSLOTS=[['rHand',-1,HAND],['lHand',1,HAND],['rShoulder',-1,SHOULDER],['lShoulder',1,SHOULDER]];
 const PTGT={get alive(){return P.hp.core>0&&P.down<=0},center:v=>playerCenter(v)};
-function gearInit(e){const sp=e.spec;e.tier=GEAR_TIER[sp.tier||'mob'];e.ws=[];
+function gearInit(e){const sp=e.spec;e.tier={...GEAR_TIER[sp.tier||'mob'],...(sp.tx||{})};e.ws=[];
  GSLOTS.forEach(([k,s,T])=>{const id=sp.cfg[k];if(!id||id==='none')return;const def=T[id];if(!def||!def.act||!def.st)return;e.ws.push({k,s,id,def,kind:def.st.kind,cd:1+Math.random()*2.5,w:e.model.weps[k]||{}})});
  e.act=null;e.y=0;e.vy=0;e.dashT=0;e.dashCd=1+Math.random()*3;e.qb=null;e.qbCd=2+Math.random()*2;e.jCd=3+Math.random()*4;e.guardT=0;e.gCd=0;e.rushT=0;e.fxT=0;e.dSide=1;
- e.lean=CORES[sp.cfg.core]?.lean||0;e.B={arms:[{x:-.28,z:-.12,e:-.82},{x:-.28,z:.12,e:-.82}],legs:[{th:0,kn:0},{th:0,kn:0}],tX:0}}
+ e.shw=e.ws.find(w=>w.kind==='防御')||null;e.gFront=e.shw?(e.shw.def.st.front??.2):.2;
+ e.lean=sp.model?0:CORES[sp.cfg.core]?.lean||0;e.B={arms:[{x:-.28,z:-.12,e:-.82},{x:-.28,z:.12,e:-.82}],legs:[{th:0,kn:0},{th:0,kn:0}],tX:0}}
 function gearAim(e){return e.atT&&RUN&&RUN.tr?new THREE.Vector3(TOBJ().position.x,1.8+Math.random()*1.6,TOBJ().position.z):playerCenter(new THREE.Vector3())}
 function gearShot(e,A,obj,vis={}){const S0=A.def.st,T=e.tier;obj.getWorldPosition(_p);const from=_p.clone(),aim=gearAim(e),spd=Math.max(22,Math.min(52,(S0.spd||40)*.6));
  if(T.lead&&!e.atT&&P.vel)aim.addScaledVector(P.vel,from.distanceTo(aim)/spd*.5);
@@ -4368,11 +4379,12 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
  // 跳躍（mid／boss）
  if(T.jump&&free&&ground&&e.jCd<=0&&!e.qb&&Math.random()<dt*.2){e.vy=14;e.jCd=4.5+Math.random()*4;sAt('jump',e.g.position,{g:.35})}
  // 近接兵装の準備ができていて距離が近い：踏み込んで詰める
- const mel=e.ws.find(w=>w.kind==='近接'&&w.cd<=0);if(mel&&free&&!A&&d<18&&d>mel.def.st.range+2&&e.rushT<=-1.5&&armed)e.rushT=.55;
+ const mel=e.ws.find(w=>w.kind==='近接'&&w.cd<=0);if(mel&&free&&!A&&d<(sp.rush||18)&&d>mel.def.st.range+2&&e.rushT<=-1.5&&armed&&e.guardT<=0)e.rushT=sp.rush?Math.min(.9,(d-mel.def.st.range)/(base*3.4)):.55;
  let vx=0,vz=0,spd=base*(e.stun>0?0:1),mvAmt=0;
  if(e.rushT>0&&free){vx=fx*base*3.4;vz=fz*base*3.4;mvAmt=2}
  else if(e.dashT>0&&free){const s2=base*2.5;vx=(fx*e.dFwd+rx*e.dSide*(1-Math.abs(e.dFwd)*.5))*s2;vz=(fz*e.dFwd+rz*e.dSide*(1-Math.abs(e.dFwd)*.5))*s2;mvAmt=2}
  else if(!root){const mv=d>keep+4?1:d<keep-4?-1:0;e.ang+=dt*.5;const side=Math.sin(e.ang)*.6;vx=(fx*mv+rx*side)*spd;vz=(fz*mv+rz*side)*spd;mvAmt=Math.min(1,Math.abs(mv)+Math.abs(side)*.6)*(spd>0?1:0)}
+ if(e.guardT>0&&e.shw&&e.shw.def.st.grd&&e.shw.def.st.grd.walk===0&&!e.qb){vx=vz=0;mvAmt=0}   // 大型シールドを構えている間は動かない
  if(e.qb){e.qb.u+=dt/.32;const k=36*(1-e.qb.u*.6);vx=e.qb.x*k;vz=e.qb.z*k;mvAmt=2;if(e.qb.u>=1)e.qb=null}
  if(!ground||e.vy>0){e.vy-=26*dt;e.y=Math.max(0,e.y+e.vy*dt);if(e.y<=0){e.vy=0;if(e.prevAir)sAt('step',e.g.position,{g:.4})}}e.prevAir=e.y>0;
  e.home.x+=vx*dt;e.home.z+=vz*dt;
@@ -4381,15 +4393,17 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
  const shk=shake;let o=null,scroll=0;
  if(A){const c={u:(t-A.t0)/A.def.act.dur,sus:(()=>{const q=A.def.act.sus,u=(t-A.t0)/A.def.act.dur;return !!q&&u>=q[0]&&u<q[1]})(),dt,s:A.s,w:A.w,st:A.st,S:A.def.st,tgt:null,use:()=>true,
    once:(id,u0)=>c.u>=u0&&!A.fired.has(id)&&(A.fired.add(id),true),
-   shot:(obj,vis)=>{A.st.ns=(A.st.ns||0)+1;if(T.rf&&/^RF/.test(A.id)&&A.st.ns>T.rf)return false;gearShot(e,A,obj,vis);return true},missile:(obj,i)=>{A.st.nm=(A.st.nm||0)+1;if(A.st.nm>GEAR_MS_MAX)return false;gearMissile(e,A,obj,i);return true},melee:()=>gearMelee(e,A)};
+   shot:(obj,vis)=>{A.st.ns=(A.st.ns||0)+1;if(T.rf&&/^RF/.test(A.id)&&A.st.ns>T.rf)return false;gearShot(e,A,obj,vis);return true},missile:(obj,i)=>{A.st.nm=(A.st.nm||0)+1;if(A.st.nm>(sp.msMax||GEAR_MS_MAX))return false;gearMissile(e,A,obj,i);return true},melee:()=>gearMelee(e,A)};
   if(c.u>=1||e.stun>.3){endOf(A.def)?.(A.w);e.act=null;e.gapT=T.gap||0}else{o=A.def.act.run(c);if(o&&o.scroll)scroll=o.scroll}}
  shake=shk+Math.max(0,shake-shk)*(Math.hypot(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z)<16?.3:0);
  if(scroll){const ry=e.g.rotation.y;e.home.x+=Math.sin(ry)*scroll*dt;e.home.z+=Math.cos(ry)*scroll*dt}
  pushOut(e.home,1.8,e.y);clampField(e.home);e.g.position.set(e.home.x,e.y,e.home.z);
  e.gapT=(e.gapT||0)-dt;if(!e.act&&free&&armed&&e.guardT<=0&&e.gapT<=0){const r=e.ws.filter(w=>w.cd<=0&&w.kind!=='防御'&&(w.kind==='近接'?d<w.def.st.range+4:d<Math.min(w.def.st.range,sp.rng||w.def.st.range)));
-  if(r.length){const w=r.find(x=>x.kind==='近接')||r[Math.floor(Math.random()*r.length)];e.act={def:w.def,id:w.id,s:w.s,w:w.w,t0:t,st:{},fired:new Set()};w.cd=w.def.act.dur+(sp.rate||3)*T.cdK*(.8+Math.random()*.4)}}
+  if(r.length){const w=r.find(x=>x.kind==='近接')||r[Math.floor(Math.random()*r.length)];e.act={def:w.def,id:w.id,s:w.s,w:w.w,t0:t,st:{},fired:new Set()};w.cd=w.def.act.dur+(sp.rate||3)*T.cdK*(.8+Math.random()*.4)*(sp.rage&&e.hp<e.max*.5?.65:1)}}
  // シールド（どの段階でも）：自機が撃っている間、正面に構える
- const shw=e.ws.find(w=>w.kind==='防御');if(shw&&!e.act&&pa&&e.gCd<=0&&e.stun<=0&&Math.random()<dt*3){e.guardT=1.1+Math.random()*.6;e.gCd=3+Math.random()*2}
+ const shw=e.shw,G=sp.guard;
+ if(G){if(shw&&!e.act&&pa&&e.gCd<=0&&e.stun<=0&&e.rushT<=0&&Math.random()<dt*G.p*(d<G.near?.15:1)){e.guardT=G.t[0]+Math.random()*(G.t[1]-G.t[0]);e.gCd=G.cd[0]+Math.random()*(G.cd[1]-G.cd[0])}}
+ else if(shw&&!e.act&&pa&&e.gCd<=0&&e.stun<=0&&Math.random()<dt*3){e.guardT=1.1+Math.random()*.6;e.gCd=3+Math.random()*2}
  // 姿勢（自機と同じ組み方：基本動作 → 兵装の上書き → 書き込み）
  const dash=mvAmt>=2,air=e.y>.3,walk=!dash&&!air&&mvAmt>0,B=e.B,k=Math.min(1,dt*8);
  if(walk)e.ph+=dt*spd*.9;
@@ -4493,7 +4507,7 @@ function dmgNumTick(dt){DN.forEach(d=>{if(!d.on)return;d.t+=dt;const u=d.t;if(u>
 function dmgNumClear(){DN.forEach(d=>{d.on=false;d.el.hidden=true})}
 const IMP={S:{st:.8,kb:4,p:1},A:{st:.6,kb:2.5,p:1},B:{st:.45,kb:1.5,p:1},C:{st:.35,kb:.8,p:.5},D:{st:.3,kb:.4,p:.25}};
 let HITSRC=null;
-function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>.2){dmg*=.15;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4})}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=.25;spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
+function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){dmg*=e.gFront<0?.1:.15;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4})}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=.25;spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
  // 命中の演出：共通の命中音・威力に応じた光と火花・小さな振動・ダメージの数字（CONFIG で ON のとき）
  const pw=Math.max(0,Math.min(1,(dmg-30)/700));e.hit=Math.max(e.hit,.06+.09*pw);e.vib=.12;spawn(0xffffff,.5,pos,{life:.08});
  for(let i=0,n=Math.round(3+7*pw);i<n;i++)spawn(i%2?0xffa040:0xffd070,.1+.06*pw,pos,{vel:new THREE.Vector3((Math.random()-.5)*10,2+Math.random()*6,(Math.random()-.5)*10),grav:16,life:.25+Math.random()*.2});
@@ -4890,11 +4904,11 @@ const MDEF=Object.fromEntries(MLIST.map(d=>[d.id,d]));
  対戦表は、1回戦だけを出し、勝つたびに次の試合の枠を出す（条件がそろうまでは「日程調整中」で相手を伏せる）。
  need の依頼（3-1〜3-3）は CH3 のミッションを作るときに MLIST へ足す。opp の名前・紹介は仮（決勝のセレナ以外） */
 const VSC={cls:'C',ch:3,name:'CLASS C 大会',rounds:[
- {label:'ROUND 1',ja:'1回戦',need:'3-1',mail:'v-c1',prize:15000,opp:{name:'オスカー・リンド',en:'OSCAR LIND',reg:'第4区画',pastor:'NOAH',mech:'BULWARK 02 系の重装機',note:'盾と厚い装甲で粘る、守りの戦い方をする。',gear:'vs1',v:'adultM',
+ {label:'ROUND 1',ja:'1回戦',need:'3-1',mail:'v-c1',prize:15000,opp:{name:'オスカー・リンド',en:'OSCAR LIND',reg:'第4区画',pastor:'NOAH',mech:'BULWARK 02 系の重装機',note:'大型の盾で守りを固め、バズーカとミサイルで中・遠距離から削ってくる。',gear:'vs1',v:'adultM',
    talk:{start:['第7区画の新顔か。……この盾を抜けるものなら、抜いてみろ。'],win:['……見事だ。この盾を抜かれたのは、久しぶりだよ。'],lose:['守りを崩せなかったな。また来るといい。']}}},
- {label:'SEMIFINAL',ja:'準決勝',need:'3-2',mail:'v-c2',prize:20000,opp:{name:'ザラ・クーン',en:'ZARA KUHN',reg:'第6区画',pastor:'NIMROD',mech:'VANGUARD 03 系の高機動機',note:'急加速と跳躍で、一気に間合いを詰めてくる。',gear:'vs2',v:'youthF',
+ {label:'SEMIFINAL',ja:'準決勝',need:'3-2',mail:'v-c2',prize:20000,opp:{name:'ザラ・クーン',en:'ZARA KUHN',reg:'第6区画',pastor:'NIMROD',mech:'VANGUARD 03 系の高機動機',note:'高い機動力で動き回り、ライフルとマシンガンで中距離から攻め続ける。',gear:'vs2',v:'youthF',
    talk:{start:['間合いは、あたしが決める。ついてこられる？'],win:['……速さで負けるなんてね。覚えておくよ、第7区画。'],lose:['遅い、遅い。出直してきな。']}}},
- {label:'FINAL',ja:'決勝',need:'3-3',mail:'v-c3',prize:30000,opp:{name:'セレナ・ヴァルデス',en:'SERENA VALDES',ali:'緋色の喝采',reg:'第3区画',pastor:'DAVID',mech:'ルージュ・ファンファーレ（GLADIATOR 04）',note:'第3区画のエースパイロット。ブレードの突進と両肩のミサイルで、魅せて押し切る。',gear:'vs3',v:'youthF',riv:'serena',
+ {label:'FINAL',ja:'決勝',need:'3-3',mail:'v-c3',prize:30000,opp:{name:'セレナ・ヴァルデス',en:'SERENA VALDES',ali:'緋色の喝采',reg:'第3区画',pastor:'DAVID',mech:'ルージュ・ファンファーレ（GLADIATOR 04）',note:'第3区画のエースパイロット。両肩のミサイルでどの距離からも攻め、中・近距離では長剣で猛攻。円盾も巧みに使う。',gear:'vs3',v:'youthF',riv:'serena',
    talk:{start:['さあ、始めましょう。観客を退屈させないでね、名無しさん。'],win:['……っ。……いいわ、今日のところは拍手を贈ってあげる。'],lose:['ブラボー。……でも、喝采はわたしのものよ。']}}}]};
 const vsOk=()=>TUT==='done'&&CLASSES.indexOf(CLS)>=CLASSES.indexOf(VSC.cls);   // ★2-S をクリアして CLASS C になると受付が開く
 // 試合の状態：won（勝利）／open（カードが届いた）／pend（日程調整中）。表に出すのは 1回戦と、前の試合に勝った試合だけ
@@ -5528,7 +5542,7 @@ function misAbort(){if(!RUN||RUN.leaving)return;misFinish(false,'撤退')}
 const VSCAM={on:false,t:0};
 const COLO_PP=COLO_PIL.map(([d,k])=>{const a=d*Math.PI/180;return [Math.sin(a)*COLO_R*k,Math.cos(a)*COLO_R*k]});
 // ノーナの通信（すべての試合で共通）
-const VSN={start:[['盾持ちの重装機です。正面は固い。側面に回り込みましょう、○○。'],['高機動機です。間合いを詰められる前に、削りましょう。'],['……王座戦の経験者です。○○、集中していきましょう。']],win:['勝利です、○○。……お疲れさまでした。受付へ戻りましょう。'],lose:['……機体の回収を確認しました。次は勝ちましょう、○○。'],
+const VSN={start:[['盾持ちの重装機です。正面は固い。側面に回り込みましょう、○○。'],['高機動機です。撃ち合いになります。足を止めないでください、○○。'],['……王座戦の経験者です。○○、集中していきましょう。']],win:['勝利です、○○。……お疲れさまでした。受付へ戻りましょう。'],lose:['……機体の回収を確認しました。次は勝ちましょう、○○。'],
  eHalf:'相手の装甲、半分を切りました。',pHalf:'CORE、50% を切りました。無理はしないでください。',eLow:'相手の装甲、限界が近いです。押し切りましょう。',pLow:'CORE、残りわずかです。……距離を取ってください。',
  arms:'腕部、損傷限界。手持ちの兵装が使えません。',legs:'脚部、損傷限界。機動が落ちます。'};
 /* ライバルの試合中の通信。once＝1試合に1回／rep＝何度でも（30秒以上あけ、順に使う）。pri が大きいほど優先 */
@@ -6026,6 +6040,7 @@ function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).m
  box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const ids=b.dataset.p.split(','),on=!ids.every(i=>DW.own.has(i));ids.forEach(i=>on?DW.own.add(i):DW.own.delete(i));const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
  box.querySelectorAll('[data-pall]').forEach(b=>b.onclick=()=>{if(b.dataset.pall==='1')dbgAllParts().forEach(i=>DW.own.add(i));else{DW.own=new Set(START_OWN)}const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
  box.querySelectorAll('[data-vs]').forEach(b=>b.onclick=()=>{dbgVsSet(+b.dataset.vs,+b.dataset.v);const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
+ box.querySelectorAll('[data-vgo]').forEach(b=>b.onclick=()=>{const i=+b.dataset.vgo;dbgClose();fadeTo(()=>{openMenu(false);closeModal();setMode('play',false,{def:vsDef(i)})},'VERSUS')});   // 受付を通さずに試合を始める（確認用）
  box.querySelectorAll('[data-vr]').forEach(b=>b.onclick=()=>{DW.vs.reg=b.dataset.vr==='1';const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
  box.querySelectorAll('[data-cv]').forEach(b=>b.onclick=()=>{dbgClose();charView(+b.dataset.cv)});
  $('dbgX').onclick=dbgClose;$('dbgGo').onclick=dbgApply;
@@ -6058,7 +6073,7 @@ function dbgParts(){const all=dbgAllParts(),st=new Set(START_OWN),btn=(ids,lab)=
 function dbgVsSet(i,v){const st=DW.vs.st;st[i]=v;if(v>=1)for(let j=0;j<i;j++)st[j]=2;if(v<2)for(let j=i+1;j<st.length;j++)st[j]=0}
 function dbgVs(){const v=DW.vs;return `<div class="dc">VERSUS（${VSC.name}）　受付は CLASS C（★2-S クリア）で開く</div>
   <div class="dt"><span>受付の初回（歩いて近づく演出）。「未」にすると一度だけの場面も見直せる</span><span class="sg"><button data-vr="0" class="${v.reg?'':'on'}">未</button><button data-vr="1" class="${v.reg?'on':''}">済</button></span></div>
-  ${VSC.rounds.map((r,i)=>`<div class="dr"><span><b>${r.label}</b>${r.ja}（${r.opp.name}）</span><span class="sg">${['未開放','開放（メール）','勝利'].map((l,k)=>`<button data-vs="${i}" data-v="${k}" class="${v.st[i]===k?'on':''}">${l}</button>`).join('')}</span></div>`).join('')}`}
+  ${VSC.rounds.map((r,i)=>`<div class="dr"><span><b>${r.label}</b>${r.ja}（${r.opp.name}）</span><span class="sg">${['未開放','開放（メール）','勝利'].map((l,k)=>`<button data-vs="${i}" data-v="${k}" class="${v.st[i]===k?'on':''}">${l}</button>`).join('')}<button data-vgo="${i}">試合</button></span></div>`).join('')}`}
 function dbgDerive(){let ci=0,ch=1;MLIST.forEach(d=>{if(d.story&&DW.m[d.id]===2){if(d.cls)ci=Math.max(ci,CLASSES.indexOf(d.cls));ch=Math.max(ch,d.ch+1)}});
  const maxCh=Math.max(...Object.keys(CHAPTERS).map(Number));return {cls:CLASSES[ci],ch:Math.min(ch,maxCh)}}
 function dbgClose(){$('dbgBox').hidden=true;DW=null}
