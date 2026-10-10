@@ -892,6 +892,8 @@ input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:d
 #comm.tt{height:auto;min-height:22px;max-width:min(380px,calc(100% - 604px))}
 @media (pointer:fine){#comm{bottom:calc(120px + env(safe-area-inset-bottom,0px))}}#comm.tt span{white-space:normal;padding:3px 0}
 #comm.ok b{background:rgba(140,240,110,.55);color:#0b1408}
+/* VERSUS：対戦相手の通信は赤い帯と名札（ノーナはシアンのまま） */
+#comm.opp{background:rgba(42,12,14,.5);border-color:rgba(255,112,96,.5)}#comm.opp b{background:rgba(160,44,40,.72);color:#ffe4dc}#comm.opp span{color:#ffe6e0}
 .tth{animation:tthl .7s ease-in-out infinite alternate}@keyframes tthl{from{filter:none}to{filter:drop-shadow(0 0 6px #6fd3e0) brightness(1.5)}}
 #comm span{font-family:var(--disp);font-size:13px;color:#cfeff4;line-height:1.35;white-space:normal;padding:3px 0;overflow:visible}
 #comm{height:auto!important;min-height:22px}
@@ -1757,6 +1759,7 @@ function sustainTick(key,a){const A=a.def.act;a.sus=false;if(!A.sus)return;const
 function run(key,def,side=0){active[key]={def,sl:{side},t0:t,st:{},fired:new Set()}}
 // 兵装の発動（出撃中は、硬直中と同じ兵装の動作中は受け付けない）
 function trigger(key){
+ if(mode==='play'&&RUN&&RUN.vs)RUN.vs.atk=RUN.time||0;
  const sl=WSLOTS.find(s=>s.key===key),def=sl.cat[cfg[key]];
  if(!def.act)return false;
  if(mode==='play'&&(P.stun>0||active[key]||!ammoReady(key)||def.st.kind==='防御'))return false;
@@ -4173,10 +4176,11 @@ function renderVs(){$('vMoney').textContent=fmtCR(CREDIT);$('vTitle').textConten
   html=`<div class="vtb">${shown.map(k=>{const r=R[k],st=vsState(k);return `<div class="vtr${st==='pend'?' pend':''}"><span class="k">${r.label}<small>${r.ja}</small></span><span class="o">${st==='pend'?'日程調整中':r.opp.name}<small>${st==='pend'?'相手は未定':r.opp.reg+' ／ '+r.opp.pastor}</small></span><span class="s ${st==='won'?'ok':st==='open'?'on':''}">${st==='won'?'勝利':st==='open'?'対戦待ち':'調整中'}</span></div>`}).join('')}</div>
    <div class="vnote">${i>=R.length?'すべての試合に勝利しました。':'勝ち進むと、次の試合が表に加わります。'}</div>`}
  $('vBody').innerHTML=html;$('vBody').scrollTop=0;$('vGo').disabled=!(i<R.length&&vsState(i)==='open');requestAnimationFrame(()=>scrollHints($('vsR'),'#vBody'))}
-$('vGo').onclick=()=>{const i=vsCur();if(i>=VSC.rounds.length||vsState(i)!=='open')return;const r=VSC.rounds[i];
- vtSay([['b',r.ja+'、'+r.opp.name+'様との試合ですね。','point'],['b','……申し訳ありません。試合の会場は、ただいま準備中です。（VERSUS の試合は、次の更新で実装します）','sorry']])};
-function openVersus(){openMenu(false);closeModal();mailClose();nbClose();$('versus').hidden=false;VS3.start();SND.bgm('arena');vTab='card';vLeaving=false;
+$('vGo').onclick=()=>{const i=vsCur();if(vLeaving||i>=VSC.rounds.length||vsState(i)!=='open')return;const r=VSC.rounds[i];vLeaving=true;$('vtChoice').innerHTML='';
+ vtSay([['b',r.ja+'、'+r.opp.name+'様との試合ですね。機体の整備は完了しています。','point'],['b','会場へご案内します。ご武運を、○○様。','bow']],()=>{setTimeout(()=>fadeTo(()=>{closeVersus();setMode('play',false,{def:vsDef(i)})},'VERSUS'),600)})};
+function openVersus(res=null){openMenu(false);closeModal();mailClose();nbClose();$('versus').hidden=false;VS3.start();SND.bgm('arena');vTab='card';vLeaving=false;
  VS3.mood('normal');vtChar(null);renderVs();
+ if(res)return vtSay(res);
  if(!VSS.reg)return firstVersus();
  vtSay([['b',pick(['ようこそ、○○様。闘技場の受付です。','お待ちしておりました、○○様。','照会しました。第7区画、○○様ですね。']),'bow'],...vsStatus(false),...vsEvents()])}
 /* 初回：入口から歩いて受付へ近づく → ベルのあいさつ → ノーナ（携帯端末）との掛け合い → 登録 → いまの試合の案内 */
@@ -4309,6 +4313,10 @@ const GEAR_MOB={
    box(t,.9,.7,.5,gr,0,1.3,-1.1);cyl(t,.08,.1,4.2,dk,0,3.5,-1.2,0,0,6);const dsh=grp(t,0,5.2,-1.2);dsh.rotation.set(-.6,0,0);cyl(dsh,1.1,.4,.18,wh,0,0,0,0,0,10);box(dsh,.12,.12,.12,gl,0,.3,0);
    [[-.35,4],[.35,3.2]].forEach(([x,h])=>{cyl(t,.04,.04,h,dk,x,1.4+h/2,-1.0,0,0,4);box(t,.14,.14,.14,new THREE.MeshBasicMaterial({color:0xff3020}),x,1.4+h,-1.0)});
    box(t,1.1,1.1,1.4,gr,1.5,1.85,-.1,0,0,-.25);box(t,1.12,.12,1.42,wh,1.5,2.35,-.1,0,0,-.25);box(t,.5,.32,.04,wh,1.62,1.75,.62,0,0,-.25);box(t,.3,.32,.05,wh,0,1.2,.7)}},
+ // VERSUS の相手（仮。2-c で機体・強さを作り込む）。vs3（セレナ）は ROUGE FANFARE の見た目に差し替える予定
+ vs1:{name:'オスカー機',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'SH',rShoulder:'none',lShoulder:'none'},tint:'rust',hp:5200,dmg:30,rate:2.2,rng:40,spd:5,keep:18,bs:22,rw:0,tier:'mid'},
+ vs2:{name:'ザラ機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'none',lShoulder:'none'},tint:'sand',hp:4600,dmg:50,rate:2.6,rng:55,spd:9,keep:20,bs:30,rw:0,tier:'mid'},
+ vs3:{name:'セレナ機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'MS'},tint:'rust',hp:7000,dmg:55,rate:2.4,rng:60,spd:9,keep:22,bs:30,rw:0,tier:'boss'},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
 };
 function makeGearEnemy(k){const sp=typeof k==='string'?GEAR_MOB[k]:k,tn=sp.tint||'graph',tint=makeTint(typeof tn==='string'?OP_TINT[tn]:tn),g=grp(S);
@@ -4483,13 +4491,13 @@ function dmgNumTick(dt){DN.forEach(d=>{if(!d.on)return;d.t+=dt;const u=d.t;if(u>
 function dmgNumClear(){DN.forEach(d=>{d.on=false;d.el.hidden=true})}
 const IMP={S:{st:.8,kb:4,p:1},A:{st:.6,kb:2.5,p:1},B:{st:.45,kb:1.5,p:1},C:{st:.35,kb:.8,p:.5},D:{st:.3,kb:.4,p:.25}};
 let HITSRC=null;
-function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>.2){dmg*=.15;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4})}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);if(e.shielded&&e.shielded()){dmg*=.25;spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
+function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>.2){dmg*=.15;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4})}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=.25;spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
  // 命中の演出：共通の命中音・威力に応じた光と火花・小さな振動・ダメージの数字（CONFIG で ON のとき）
  const pw=Math.max(0,Math.min(1,(dmg-30)/700));e.hit=Math.max(e.hit,.06+.09*pw);e.vib=.12;spawn(0xffffff,.5,pos,{life:.08});
  for(let i=0,n=Math.round(3+7*pw);i<n;i++)spawn(i%2?0xffa040:0xffd070,.1+.06*pw,pos,{vel:new THREE.Vector3((Math.random()-.5)*10,2+Math.random()*6,(Math.random()-.5)*10),grav:16,life:.25+Math.random()*.2});
  if(sOnce('ehit',.05))sAt('ehit',pos,{g:.5});dmgNum(e,dmg);
  const I=e.type==='boss'?null:IMP[imp];if(I&&Math.random()<I.p){e.stun=Math.max(e.stun,I.st);e.kb.copy(e.g.position).sub(P.pos).setY(0).normalize().multiplyScalar(I.kb*3)}
- if(e.hp<=0){if(RUN&&RUN.kills)RUN.kills[e.type]=(RUN.kills[e.type]||0)+1;e.alive=false;e.g.visible=e.type==='boss';if(e.type==='boss'){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.head.rotation.x=.08;e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a)}e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN){const rw=e.type==='gear'?(e.spec.rw||2000):e.type==='drone'?REWARD.drone:e.type==='walker'?1500:e.type==='crawler'?600:e.type==='antenna'?1000:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
+ if(e.hp<=0){if(RUN&&RUN.kills)RUN.kills[e.type]=(RUN.kills[e.type]||0)+1;e.alive=false;e.g.visible=e.type==='boss';if(e.type==='boss'){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.head.rotation.x=.08;e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a)}e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN&&!(RUN&&RUN.vs)){const rw=e.type==='gear'?(e.spec.rw||2000):e.type==='drone'?REWARD.drone:e.type==='walker'?1500:e.type==='crawler'?600:e.type==='antenna'?1000:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
 // 索敵レーダー（RD-3）：壁の向こうでも敵の輪郭が見える（奥行きを無視して描く線）
 const XR_M=new THREE.LineBasicMaterial({color:0xff6a4c,transparent:true,opacity:.55,depthTest:false});
 function xrayMark(e){const on=mode==='play'&&SS.xray&&e.alive&&!e.off;
@@ -4561,9 +4569,10 @@ function hitPlayer(dmg,imp,pos){if(P.down>0)return;if(DBG.inv){spawn(0xc0a8ff,.6
  if(left>0)P.hp.core=Math.max(0,P.hp.core-left);pDmgNum(dmg,zone);
  if(P.hp.core>0)SND.play(zone!=='core'&&P.hp[zone]<=0&&take0>0?'broken':'hit',{g:.55});
  if(RUN&&RUN.def.comm.hot&&RUN.hits){RUN.hits=RUN.hits.filter(x=>t-x<3);RUN.hits.push(t);if(RUN.hits.length>=3&&t-RUN.hotT>10){RUN.hotT=t;RUN.hits=[];comm(RUN.def.comm.hot)}}
- PART_KEYS.forEach(k=>{DMG[cfg[k]]=P.hpMax[k]-P.hp[k];if(DMG[cfg[k]]<=0)delete DMG[cfg[k]]});saveGame();
+ if(RUN&&RUN.vs){vsHitP();if(zone!=='core'&&take0>0&&P.hp[zone]<=0)vsBreak(zone)}
+ else{PART_KEYS.forEach(k=>{DMG[cfg[k]]=P.hpMax[k]-P.hp[k];if(DMG[cfg[k]]<=0)delete DMG[cfg[k]]});saveGame()}
  shake=Math.max(shake,.2);spawn(0xffffff,.8,pos,{life:.1});
- if(P.hp.core<=0){P.down=3.2;P.stun=4;if(RUN)banner('MISSION FAILED','CORE 大破',true,2.4);else say('CORE 大破',3);SND.play('coreDown',{g:.7});explode(playerCenter(new THREE.Vector3()),2.5);return}
+ if(P.hp.core<=0){P.down=3.2;P.stun=4;if(RUN&&RUN.vs){}else if(RUN)banner('MISSION FAILED','CORE 大破',true,2.4);else say('CORE 大破',3);SND.play('coreDown',{g:.7});explode(playerCenter(new THREE.Vector3()),2.5);return}
  const I=IMP[imp];if(I&&Math.random()<I.p){P.stun=Math.max(P.stun,I.st);say('被弾',.5);run('hit',STAGGER);P.vel.addScaledVector(from,-I.kb*4)}}
 function autoGuard(sd){const key=sd<0?'rHand':'lHand',other=sd<0?'lHand':'rHand',g=HAND[cfg[key]].st.grd||{};
  const oa=active[other]&&HAND[cfg[other]].st&&HAND[cfg[other]].st.kind!=='防御',sa=['rShoulder','lShoulder'].some(k=>active[k]&&stOf(k)&&stOf(k).kind==='射撃');
@@ -4879,9 +4888,12 @@ const MDEF=Object.fromEntries(MLIST.map(d=>[d.id,d]));
  対戦表は、1回戦だけを出し、勝つたびに次の試合の枠を出す（条件がそろうまでは「日程調整中」で相手を伏せる）。
  need の依頼（3-1〜3-3）は CH3 のミッションを作るときに MLIST へ足す。opp の名前・紹介は仮（決勝のセレナ以外） */
 const VSC={cls:'C',ch:3,name:'CLASS C 大会',rounds:[
- {label:'ROUND 1',ja:'1回戦',need:'3-1',mail:'v-c1',prize:15000,opp:{name:'オスカー・リンド',en:'OSCAR LIND',reg:'第4区画',pastor:'NOAH',mech:'BULWARK 02 系の重装機',note:'盾と厚い装甲で粘る、守りの戦い方をする。'}},
- {label:'SEMIFINAL',ja:'準決勝',need:'3-2',mail:'v-c2',prize:20000,opp:{name:'ザラ・クーン',en:'ZARA KUHN',reg:'第6区画',pastor:'NIMROD',mech:'VANGUARD 03 系の高機動機',note:'急加速と跳躍で、一気に間合いを詰めてくる。'}},
- {label:'FINAL',ja:'決勝',need:'3-3',mail:'v-c3',prize:30000,opp:{name:'セレナ・ヴァルデス',en:'SERENA VALDES',ali:'緋色の喝采',reg:'第3区画',pastor:'DAVID',mech:'ルージュ・ファンファーレ（GLADIATOR 04）',note:'第3区画のエースパイロット。ブレードの突進と両肩のミサイルで、魅せて押し切る。'}}]};
+ {label:'ROUND 1',ja:'1回戦',need:'3-1',mail:'v-c1',prize:15000,opp:{name:'オスカー・リンド',en:'OSCAR LIND',reg:'第4区画',pastor:'NOAH',mech:'BULWARK 02 系の重装機',note:'盾と厚い装甲で粘る、守りの戦い方をする。',gear:'vs1',v:'adultM',
+   talk:{start:['第7区画の新顔か。……この盾を抜けるものなら、抜いてみろ。'],win:['……見事だ。この盾を抜かれたのは、久しぶりだよ。'],lose:['守りを崩せなかったな。また来るといい。']}}},
+ {label:'SEMIFINAL',ja:'準決勝',need:'3-2',mail:'v-c2',prize:20000,opp:{name:'ザラ・クーン',en:'ZARA KUHN',reg:'第6区画',pastor:'NIMROD',mech:'VANGUARD 03 系の高機動機',note:'急加速と跳躍で、一気に間合いを詰めてくる。',gear:'vs2',v:'youthF',
+   talk:{start:['間合いは、あたしが決める。ついてこられる？'],win:['……速さで負けるなんてね。覚えておくよ、第7区画。'],lose:['遅い、遅い。出直してきな。']}}},
+ {label:'FINAL',ja:'決勝',need:'3-3',mail:'v-c3',prize:30000,opp:{name:'セレナ・ヴァルデス',en:'SERENA VALDES',ali:'緋色の喝采',reg:'第3区画',pastor:'DAVID',mech:'ルージュ・ファンファーレ（GLADIATOR 04）',note:'第3区画のエースパイロット。ブレードの突進と両肩のミサイルで、魅せて押し切る。',gear:'vs3',v:'youthF',riv:'serena',
+   talk:{start:['さあ、始めましょう。観客を退屈させないでね、名無しさん。'],win:['……っ。……いいわ、今日のところは拍手を贈ってあげる。'],lose:['ブラボー。……でも、喝采はわたしのものよ。']}}}]};
 const vsOk=()=>TUT==='done'&&CLASSES.indexOf(CLS)>=CLASSES.indexOf(VSC.cls);   // ★2-S をクリアして CLASS C になると受付が開く
 // 試合の状態：won（勝利）／open（カードが届いた）／pend（日程調整中）。表に出すのは 1回戦と、前の試合に勝った試合だけ
 const vsState=i=>VSS.win[i]?'won':(MIS[VSC.rounds[i].mail]&&MIS[VSC.rounds[i].mail].got)?'open':'pend';
@@ -5388,8 +5400,10 @@ const COMM={iv:null,t:0};
 COMM.q=[];COMM.busy=false;
 function comm(txt,dur=0.001){if(dur===0){COMM.q=[];commShow(txt,0);return}COMM.q.push([txt,dur]);if(!COMM.busy)commNext()}
 function commNext(){const it=COMM.q.shift();if(it)commShow(it[0],it[1])}
-function commShow(txt,dur){clearInterval(COMM.iv);SND.play('comm',{g:.3});const el=$('commTx');$('comm').hidden=false;let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
- COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip('nona',n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;COMM.end=performance.now();
+function commShow(txt,dur){clearInterval(COMM.iv);SND.play('comm',{g:.3});const el=$('commTx');$('comm').hidden=false;
+ let who='n';if(Array.isArray(txt)){who=txt[0];txt=txt[1]}txt=String(txt).replace(/○○/g,PILOT||'操縦者');const OP=who==='o'&&RUN&&RUN.vs?RUN.vs.r.opp:null;
+ $('comm').classList.toggle('opp',!!OP);$('comm').querySelector('b').textContent=OP?OP.en.split(' ')[0]:'N-07';const vc=OP?OP.v||'adultM':'nona';let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
+ COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip(vc,n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;COMM.end=performance.now();
   if(dur===0){COMM.busy=false;COMM.t=0}else COMM.t=Math.max(1.5,1+txt.length*.12,dur)}},TXT_SPD)}
 function commClear(){COMM.q=[];clearInterval(COMM.iv);COMM.iv=null;COMM.busy=false;COMM.t=0;$('comm').hidden=true}
 function misSpawn(sp){const e=(sp.type==='gear'?ENEMIES.find(x=>x.type==='gear'&&!x.tg&&x.off&&typeof sp.gear==='string'&&x.gk===sp.gear):ENEMIES.find(x=>!x.tr&&x.off&&x.type===sp.type))||makeEnemy(sp.type,sp);
@@ -5499,12 +5513,75 @@ function reachTick(dt){const d=RUN.def,g=d.reach,dist=Math.hypot(P.pos.x-g.x,P.p
 const misLeft=()=>ENEMIES.filter(e=>!e.off&&e.alive&&(!RUN||!RUN.def.goal||e.type===RUN.def.goal)).length;
 function misTick(dt){if(COMM.t>0){COMM.t-=dt;if(COMM.t<=0){COMM.busy=false;if(COMM.q.length)commNext();else $('comm').hidden=true}}
  if(RUN&&!RUN.leaving&&!RUN.ok)RUN.time=(RUN.time||0)+dt;
- if(!RUN||RUN.leaving)return;if(RUN.tr){if(RUN.def.defend)defendTick(dt);else escortTick(dt);return}if(RUN.boss){bossMisTick(dt);return}if(RUN.def.reach){reachTick(dt);return}if(RUN.def.collect){collectTick(dt);return}if(RUN.def.relay){relayTick(dt);return}const n=misLeft();
+ if(!RUN||RUN.leaving)return;if(RUN.vs){vsTick(dt);return}if(RUN.tr){if(RUN.def.defend)defendTick(dt);else escortTick(dt);return}if(RUN.boss){bossMisTick(dt);return}if(RUN.def.reach){reachTick(dt);return}if(RUN.def.collect){collectTick(dt);return}if(RUN.def.relay){relayTick(dt);return}const n=misLeft();
  if(n!==RUN.left){const dn=n<RUN.left;RUN.left=n;if(dn&&n>0&&RUN.def.comm.left)comm(RUN.def.comm.left.replace('{n}',n));else if(n===1&&RUN.total>1&&RUN.def.comm.last)comm(RUN.def.comm.last,2.4)}
  if(n===0&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=3.4;comm(RUN.def.comm.clear,3);banner('MISSION COMPLETE',RUN.def.title)}
  if(RUN.ok){if(finishWait(dt))misFinish(true)}}
 function misAbort(){if(!RUN||RUN.leaving)return;misFinish(false,'撤退')}
-function misFinish(ok,reason=''){if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;
+
+/* ===== VERSUS：試合の流れ（2-b）=====
+ 受付の［試合へ］→ 出撃前の演出 → 相手の紹介（カメラが相手を映し、帯に名前・異名・区画）→ 相手の通信 → ノーナの通信 → 帯「MATCH START」（下に1回戦など）→ 操作開始
+ → 相手を大破させれば WIN／自機の CORE が 0 で LOSE（時間制限なし）→ 帯のあと相手とノーナの通信 → すぐ受付へ（ベルが結果を伝える）
+ 試合中の相手の通信はライバル（opp.riv）だけ。通信どうしは最低 8秒あける（自機の部位破壊だけは待たずに入る）。セリフは仮 */
+const VSCAM={on:false,t:0};
+const COLO_PP=COLO_PIL.map(([d,k])=>{const a=d*Math.PI/180;return [Math.sin(a)*COLO_R*k,Math.cos(a)*COLO_R*k]});
+// ノーナの通信（すべての試合で共通）
+const VSN={start:['相手機、正面に確認。……○○、いつも通りにいきましょう。'],win:['勝利です、○○。……お疲れさまでした。受付へ戻りましょう。'],lose:['……機体の回収を確認しました。次は勝ちましょう、○○。'],
+ eHalf:'相手の装甲、半分を切りました。',pHalf:'CORE、50% を切りました。無理はしないでください。',eLow:'相手の装甲、限界が近いです。押し切りましょう。',pLow:'CORE、残りわずかです。……距離を取ってください。',
+ arms:'腕部、損傷限界。手持ちの兵装が使えません。',legs:'脚部、損傷限界。機動が落ちます。'};
+/* ライバルの試合中の通信。once＝1試合に1回／rep＝何度でも（30秒以上あけ、順に使う）。pri が大きいほど優先 */
+const VSEV_K={stand:{pri:1},firstE:{pri:1},firstP:{pri:1},cover:{pri:1,rep:1},melee:{pri:1},eHalf:{pri:2},pHalf:{pri:2},eLow:{pri:2},pLow:{pri:2},idle:{pri:1,rep:1}};
+const VRIV={serena:{stand:['様子見？　退屈させないで。'],firstE:['まずは一つ。'],firstP:['へえ……当ててくるのね。'],cover:['隠れても無駄よ。','柱の陰が好きなのね。','観客が退屈しているわ。出てきなさい。'],
+ melee:['その距離で来る？　いいわ。'],eHalf:['……やるじゃない。'],pHalf:['まだ立っていられる？'],eLow:['ここからが本番よ。'],pLow:['終わりにしましょう。'],idle:['どうしたの、手が止まってる。','撃たないの？　つまらないわ。','見とれている場合じゃないわよ。'],
+ arms:['腕はもう使えないわね。'],legs:['脚が止まったわ。どう逃げるの？']}};
+function vsDef(i){const r=VSC.rounds[i];return {id:'VS'+(i+1),vs:i,vsJa:r.ja,title:VSC.name+' '+r.ja,ch:VSC.ch,field:'colo',fieldJa:'闘技場',ready:true,bgm:i===2?'boss':'sortie',
+ start:{x:0,z:-COLO_R*.76},enemies:[{type:'gear',gear:r.opp.gear,x:0,z:COLO_R*.76}],comm:{},reward:0}}
+function vsInit(){const i=RUN.def.vs,r=VSC.rounds[i],e=ENEMIES.find(x=>x.type==='gear'&&!x.off&&x.gk===r.opp.gear);
+ e.g.rotation.y=Math.atan2(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z);
+ RUN.vs={i,r,e,riv:r.opp.riv?VRIV[r.opp.riv]:null,go:false,first:null,atk:0,last:-99,cov:0,covT:-99,idleT:-99,done:{},pend:[],rep:{}};VSCAM.on=false}
+function vsGo(){if(!RUN||!RUN.vs)return;const V=RUN.vs,o=V.r.opp;goWaitClear();GOW=true;VSCAM.on=true;VSCAM.t=0;commClear();
+ // まず機体だけを見せ、1.8秒後に名前の帯
+ GOWT.push(setTimeout(()=>{banner(o.en,(o.ali?'「'+o.ali+'」 ／ ':'')+o.reg+'代表 ／ '+o.mech,false,2.4);SND.play('start',{g:.35})},1800));
+ GOWT.push(setTimeout(()=>{VSCAM.on=false;goSeq('MATCH START',V.r.ja,[...o.talk.start.map(x=>['o',x]),...VSN.start.map(x=>['n',x])],()=>{if(RUN&&RUN.vs){V.go=true;V.last=RUN.time||0}})},5400))}
+// 試合中の出来事を通信の候補に積む（ライバルの通信と、ノーナの短い返し）
+function vsEv(k){const V=RUN.vs,K=VSEV_K[k];if(!K.rep){if(V.done[k])return;V.done[k]=1}
+ const o=V.riv&&V.riv[k]?V.riv[k]:null,n=VSN[k]&&typeof VSN[k]==='string'?VSN[k]:null;if(!o&&!n)return;
+ V.pend.push({k,pri:K.pri,t:RUN.time||0})}
+function vsSayNext(){const V=RUN.vs,tm=RUN.time||0;V.pend=V.pend.filter(p=>tm-p.t<(p.pri>1?15:6));   // CORE の残りに関わるものは長めに待つ
+ if(!V.pend.length||COMM.busy||COMM.q.length||tm-V.last<8)return;
+ V.pend.sort((a,b)=>b.pri-a.pri||b.t-a.t);const p=V.pend.shift(),k=p.k;
+ if(V.riv&&V.riv[k]){const L=V.riv[k],j=V.rep[k]||0;V.rep[k]=j+1;comm(['o',L[j%L.length]],2)}
+ if(typeof VSN[k]==='string')comm(['n',VSN[k]],2);V.last=tm}
+function vsHitE(){const V=RUN.vs;if(!V.go)return;if(!V.first){V.first='p';vsEv('firstP')}const st=HITSRC&&stOf(HITSRC);if(st&&st.kind==='近接')vsEv('melee')}
+function vsHitP(){const V=RUN.vs;if(!V.go)return;if(!V.first){V.first='e';vsEv('firstE')}}
+// 自機の部位破壊：待たずに入る（相手→ノーナ）
+function vsBreak(z){const V=RUN.vs;if(!V||RUN.ok||RUN.lost)return;COMM.q=[];if(V.riv&&V.riv[z])comm(['o',V.riv[z][0]],2);comm(['n',VSN[z]],2);V.last=RUN.time||0}
+// 柱の陰：自機と相手を結ぶ線が柱（半径 2.2m）をさえぎる
+function vsCovered(){const a=P.pos,b=RUN.vs.e.g.position,dx=b.x-a.x,dz=b.z-a.z,L2=dx*dx+dz*dz||1;
+ return COLO_PP.some(([x,z])=>{const u=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/L2));return Math.hypot(a.x+dx*u-x,a.z+dz*u-z)<2.2})}
+function vsTick(dt){const V=RUN.vs,e=V.e,tm=RUN.time||0;
+ if(RUN.ok||RUN.lost){if(finishWait(dt))vsFinish(RUN.ok);return}
+ if(!e.alive&&P.down<=0){vsEnd(true);return}
+ if(P.hp.core<=0){vsEnd(false);return}
+ if(!V.go)return;
+ const ek=e.hp/e.max,pk=P.hp.core/P.hpMax.core;
+ if(V.riv){if(tm-V.last>=0&&tm>20&&!V.first)vsEv('stand');
+  if(vsCovered()){V.cov+=dt;if(V.cov>=5&&tm-V.covT>=30){V.covT=tm;V.cov=0;vsEv('cover')}}else V.cov=0;
+  if(V.first&&tm>20&&tm-V.atk>=10&&tm-V.idleT>=30){V.idleT=tm;vsEv('idle')}}
+ if(ek<=.5)vsEv('eHalf');if(pk<=.5)vsEv('pHalf');if(ek<=.2)vsEv('eLow');if(pk<=.2)vsEv('pLow');
+ vsSayNext()}
+// 決着：WIN／LOSE の帯 → 相手とノーナの通信 → （finishWait）→ 受付へ
+function vsEnd(ok){const V=RUN.vs,o=V.r.opp;if(ok)RUN.ok=true;else RUN.lost=true;V.pend=[];COMM.q=[];
+ banner(ok?'WIN':'LOSE',V.r.ja+(ok?' 勝利':' 敗北'),!ok,2.6);if(ok)SND.play('complete',{g:.55});
+ if(ok)ENEMIES.forEach(x=>{if(x!==V.e&&!x.off&&x.alive){x.alive=false;x.g.visible=false}});
+ RUN.hold=performance.now()+3800;
+ setTimeout(()=>{if(!RUN||!RUN.vs||RUN.leaving)return;(ok?o.talk.win:o.talk.lose).forEach(x=>comm(['o',x],2));(ok?VSN.win:VSN.lose).forEach(x=>comm(['n',x],2))},3600)}
+// 受付へ戻る（すぐ）。ベルが結果を伝える。勝敗の記録・賞金は 2-d で行う
+function vsFinish(ok,abort=false){if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;const r=RUN.vs.r;commClear();VSCAM.on=false;
+ fadeTo(()=>{setMode('garage');openVersus(ok?[['b',r.ja+'、<strong>勝利</strong>を確認しました。おめでとうございます、○○様。','bow'],['b','……勝ち上がりと賞金の記録は、ただいま準備中です。（次の更新で実装します）','sorry']]
+  :abort?[['b',r.ja+'の棄権を受け付けました。機体の整備は済んでいます。','normal'],['b','準備ができましたら、いつでも再挑戦いただけます。','bow']]
+  :[['b',r.ja+'の試合結果を確認しました。……機体の整備は済んでいます。','normal'],['b','準備ができましたら、いつでも再挑戦いただけます。','bow']])},'VERSUS')}
+function misFinish(ok,reason=''){if(RUN&&RUN.vs)return vsFinish(ok,reason==='撤退');if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;
  const def=RUN.def,tm=RUN.time||0,r={def,ok,reason,earned:P.earned||0,reward:ok?def.reward:0,time:tm,kills:{...(RUN.kills||{})},best:(MIS[def.id]&&MIS[def.id].best)||0,rec:false};commClear();
  fadeTo(()=>{DAY++;if(ok){CREDIT+=def.reward;const m=MIS[def.id]||(MIS[def.id]={got:true,read:true,clear:false,n:0});m.clear=true;m.cdy=DAY;m.n++;if(!m.best||tm<m.best){r.rec=!!m.best;if(!m.best)r.first=true;m.best=tm}}
   saveGame();setMode('garage');renderResult(r)},'DEBRIEF')}
@@ -5579,12 +5656,12 @@ function introTick(dt){const I=INTRO,T=INTRO_T,el=$('intro');I.t+=dt;
  at('h1',()=>{play.classList.remove('ih1');SND.play('hudon',{g:.4})});
  at('h2',()=>play.classList.remove('ih2'));
  at('h3',()=>play.classList.remove('ih3'));
- at('say',()=>commShow((PILOT||'HX-07')+'、システム、オールグリーン。……ミッション開始。',0));
+ at('say',()=>commShow((PILOT||'HX-07')+(RUN&&RUN.def.vs!=null?'、システム、オールグリーン。……会場に入ります。':'、システム、オールグリーン。……ミッション開始。'),0));
  if(I.t>=T.go){const f=I.go;introClear();if(f)f()}}
 function pauseSet(on){if(mode!=='play'||(RUN&&RUN.leaving)||fading){on=false}
  PAUSED=on;$('pause').hidden=!on;if(on)SND.stopLoops();SND.bgmPause(on);if(on){HOLD.rHand=HOLD.lHand=HOLD.sh=false;GUARD[-1]=GUARD[1]=false;keys.clear();IN.x=IN.y=0;
   $('pzSub').textContent=RUN?'MISSION '+RUN.def.id+' ／ '+RUN.def.title:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';
-  $('pzAb').textContent=RUN?'撤退する（失敗）':'ガレージへ戻る';$('pzCam').textContent='視点：'+(CAMMODE==='top'?'OVERHEAD':'CHASE')}}
+  $('pzAb').textContent=RUN&&RUN.def.vs!=null?'棄権する（敗北）':RUN?'撤退する（失敗）':'ガレージへ戻る';$('pzCam').textContent='視点：'+(CAMMODE==='top'?'OVERHEAD':'CHASE')}}
 $('pauseBtn').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();pauseSet(true)});
 $('pzGo').onclick=()=>pauseSet(false);
 $('pzCam').onclick=()=>{setCam(CAMMODE==='top'?'tps':'top');saveCfg();$('pzCam').textContent='視点：'+(CAMMODE==='top'?'OVERHEAD':'CHASE')};
@@ -5601,7 +5678,7 @@ function setMode(m,training=false,mis=null,tt=false){introClear();goWaitClear();
  mode=m;const p=m==='play';TRAIN=p&&training;
  if(p){selSlot=null;view='overview';highlight(null)}
  if(p&&builtKey!==JSON.stringify(cfg))buildMech(cfg);
- if(p)SND.bgm(RUN&&RUN.def.boss?'boss':'sortie');else if(!wasMis)SND.bgm('garage');
+ if(p)SND.bgm(RUN&&RUN.def.bgm||(RUN&&RUN.def.boss?'boss':'sortie'));else if(!wasMis)SND.bgm('garage');
  $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';FAC.visible=p&&!!RUN&&RUN.def.field==='factory';BORDER.visible=p&&!!RUN&&RUN.def.field==='border';RELAY.visible=p&&!!RUN&&RUN.def.field==='relay';CANYON.visible=p&&!!RUN&&RUN.def.field==='canyon';COLO.visible=p&&!!RUN&&RUN.def.field==='colo';gnd.visible=!COLO.visible&&!CANYON.visible&&!ROAD.visible&&!RUINS.visible&&!FAC.visible&&!BORDER.visible&&!RELAY.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}GOALM.visible=p&&!!RUN&&!!RUN.def.reach;{const cl=p&&!!RUN&&!!RUN.def.collect;DROPM.visible=WRECKG.visible=cl;CRATES.forEach(c=>c.visible=cl)}if(GOALM.visible)GOALM.position.set(RUN.def.reach.x,0,RUN.def.reach.z);dock.visible=!p;
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
@@ -5609,9 +5686,11 @@ function setMode(m,training=false,mis=null,tt=false){introClear();goWaitClear();
  P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=lockT3=null;LOCKS=[];pinned=null;reveal=0;topYaw=topYawC=Math.PI;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
  if(p&&RUN&&RUN.def.start){P.pos.set(RUN.def.start.x,0,RUN.def.start.z);mech.bot.position.copy(P.pos)}
- $('dbgInv').hidden=!(p&&DBG.inv);$('modeBadge').textContent=TRT?'TRAINING ／ TUTORIAL':RUN?'MISSION '+RUN.def.id:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';$('garage').textContent=RUN?'撤退':'ガレージ';$('comm').hidden=true;
+ if(p&&RUN&&RUN.def.vs!=null)PART_KEYS.forEach(k=>P.hp[k]=P.hpMax[k]);   // VERSUS：試合前に運営局が整備（損傷は持ち越さない）
+ $('dbgInv').hidden=!(p&&DBG.inv);$('modeBadge').textContent=TRT?'TRAINING ／ TUTORIAL':RUN&&RUN.def.vs!=null?'VERSUS ／ '+RUN.def.vsJa:RUN?'MISSION '+RUN.def.id:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';$('garage').textContent=RUN&&RUN.def.vs!=null?'棄権':RUN?'撤退':'ガレージ';$('comm').hidden=true;
  if(p){untintDamage();hudCache={};updateHUD();P.kills=0;P.earned=0;
-  if(RUN){misStartEnemies();introStart('第7区画 ／ '+RUN.def.fieldJa,prDate(DAY).replace(' ／ ',' ')+' ／ '+prTime(RUN.def.id),misGo)}else{const useG=TSEL.target==='gear'&&!TRT;if(useG&&!ENEMIES.some(e=>e.tg))['militia','bulwark','vanguard'].forEach(k=>makeEnemy('gear',{gear:k}).tg=true);
+  if(RUN&&RUN.def.vs!=null){misStartEnemies();vsInit();introStart(VSC.name+' ／ 闘技場 中央アリーナ',prDate(DAY).replace(' ／ ',' ')+' ／ 14:00',vsGo)}
+  else if(RUN){misStartEnemies();introStart('第7区画 ／ '+RUN.def.fieldJa,prDate(DAY).replace(' ／ ',' ')+' ／ '+prTime(RUN.def.id),misGo)}else{const useG=TSEL.target==='gear'&&!TRT;if(useG&&!ENEMIES.some(e=>e.tg))['militia','bulwark','vanguard'].forEach(k=>makeEnemy('gear',{gear:k}).tg=true);
   ENEMIES.forEach(e=>{if(useG?e.tg:e.tr){e.off=false;placeEnemy(e)}else{e.off=true;e.alive=false;e.g.visible=false}});
   introStart('第7区画 ／ 演習場',prDate(DAY).replace(' ／ ',' ')+' ／ 09:00',()=>{goSeq('TRAINING',TRT?'TUTORIAL':TRAIN?'演習開始（攻撃なし）':'演習開始（攻撃あり）','',()=>{if(TRT)ttStart();else setTimeout(()=>{if(mode==='play'&&!RUN&&!TRT&&!INTRO.on&&!GOW)commClear()},1200)})})}}
  else{ENEMIES.forEach(e=>{e.off=true;e.alive=false;e.g.visible=false;if(e.shadow)e.shadow.visible=false});view='overview';selSlot=null;renderGarage();tintDamage();ttClear();if(wasPlay&&!wasMis)garageGreet(wasTT&&TTUT>=TT_N?'ttdone':'train',{fire:wasFire,earned,tt:wasTT})}
@@ -5832,6 +5911,7 @@ R.setAnimationLoop(()=>{
    C.lookAt(P.pos.x+f.x*26,5.4*K+y*.7,P.pos.z+f.z*26);
   }
  }else{C.position.set(Math.sin(az)*dist*Math.cos(el2),camTY+Math.sin(el2)*dist,Math.cos(az)*dist*Math.cos(el2));C.lookAt(0,camTY,0)}
+ if(mode==='play'&&VSCAM.on&&RUN&&RUN.vs){VSCAM.t+=dt;const p=RUN.vs.e.g.position,a=-.5+VSCAM.t*.1,dd=13-VSCAM.t*.5;C.position.set(p.x+Math.sin(a)*dd,3.4+VSCAM.t*.2,p.z-Math.cos(a)*dd);C.lookAt(p.x,4.6,p.z)}
  updateFX(dt);tickWX(dt);
  if(shake>0&&!reduce){C.position.x+=(Math.random()-.5)*shake;C.position.y+=(Math.random()-.5)*shake;shake*=.85;if(shake<.005)shake=0}
  Wp.glow.color.setHSL(.07,1,.5+Math.sin(t*6)*.08);
