@@ -1142,6 +1142,7 @@ const WX={ // v116：暗すぎたため全体を底上げ（一番暗い夜を�
  dust:{bg:0x52422e,top:0x32281e,fog:[22,88],amb:[0x8e7e64,2.4],key:[0xffd8a0,2.3],rim:[0x8a7a6a,.7],fx:'dust'},
  evening:{bg:0x50402f,top:0x2a2634,fog:[38,118],amb:[0x8e7e70,2.4],key:[0xffc890,2.6],rim:[0x7a80b0,.9],fx:null},
  nightfog:{bg:0x343a44,top:0x161a22,fog:[22,85],amb:[0x8090a2,2.6],key:[0xb0c4d8,2.0],rim:[0x7a8aa8,.9],fx:null},
+ arena:{bg:0x46525c,top:0x24303a,fog:[70,170],amb:[0x9aa6ae,3.0],key:[0xfff8f0,3.3],rim:[0xc4dcff,1.4],fx:null},
  dawn:{bg:0x323a46,top:0x182030,fog:[32,108],amb:[0x707a90,2.5],key:[0xe0c8d0,2.3],rim:[0x7a8ab8,.9],fx:'dust'}};
 const WXJA={dusk:'夕暮れ',overcast:'曇り',drizzle:'小雨',night:'夜',dust:'砂ぼこり',evening:'夕方',nightfog:'夜霧',dawn:'明け方'};
 const WX0={amb:[0x707a80,2.2],key:[0xfff0d8,2.8],rim:[0x9fb8ff,1.0]};
@@ -3425,6 +3426,26 @@ const SONGS={
  garage:{bpm:88,rev:0.2,dly:.3,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[45,41,43,40][bar];if(s%16===0)supersaw(t,[root+12,root+15,root+19,root+22],b*16,pb,{v:.012,cut:900});if(s%8===0){kick(t,d,.55);duck(pb,t,.55);}if(s%16===8)clap(t,d,.35);if(s%4===2)hat(t,d,.35);if(s%16===0||s%16===10)sub808(t,root-24,b*5,pb,.35);const arp=[0,7,12,15,19,15,12,7];if(s%2===0)pluck(t,root+24+arp[(s/2)%8],b*2,d,.035,((s/2)%2?-.4:.4));}},
  shop:{bpm:98,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[60,65,57,67][bar],q=[[0,4,7,11],[0,4,7,9],[0,3,7,10],[0,4,7,10]][bar];t+=(s%2)?b*.14:0;if(s%16===0)supersaw(t,q.map(x=>root+x),b*16,pb,{v:.01,cut:2800});if(s%4===0){kick(t,d,.5);duck(pb,t,.55,.15);}if(s%8===4)clap(t,d,.45);if(s%4===2)hat(t,d,.4);if(s%16===14)hat(t,d,.3,true);if(s%4===2)sub808(t,root-24,b*1.2,pb,.28);if(s%16===14)sub808(t,root-17,b,pb,.22);const mel=[[12,-1,16,19,-1,24,-1,19,21,-1,19,16,-1,14,12,-1],[12,-1,16,19,-1,21,23,24,-1,23,21,19,-1,16,-1,-1]][Math.floor(s/64)%2];const m=mel[s%16];if(m>=0){osc('triangle',N(root+m),t,b*1.4,d,{a:.004,r:b*1.4,peak:.07});osc('sine',N(root+m+12),t,b*.6,d,{peak:.025});}if(s%2===0)pluck(t,root+12+q[(s/2)%4],b,d,.02,((s/2)%2?-.35:.35));if(s%32===31)osc('sine',N(root+31),t,b*2,d,{peak:.04,f2:N(root+36)});}},
  arena:{bpm:120,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,st=s%16,root=[50,50,53,48][bar],ch=[[0,3,7],[0,3,7],[0,4,7],[0,4,7]][bar];if(s%4===0){kick(t,d,.36);duck(pb,t,.7,.12)}if(s%8===4)clap(t,d,.26);if(s%2===1)hat(t,d,.2);const tm=bar===3?{10:165,11:150,12:135,13:120,14:105,15:95}:{14:140,15:115};if(tm[st])osc('sine',tm[st],t,.24,d,{f2:tm[st]*.55,peak:.26});if([0,3,6,10,12].includes(st)){const f=A.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(2600,t);f.frequency.exponentialRampToValueAtTime(900,t+b*.6);f.connect(pb);ch.forEach((x,k)=>osc('sawtooth',N(root+12+x),t,b*.6,f,{a:.003,r:b*.55,peak:.02,detune:k%2?6:-6}))}if(st===0||st===8||st===11)sub808(t,root-12,b*1.6,pb,.2);const fan={64:[0,1],66:[7,1],68:[12,1],70:[15,5]}[s%128];if(fan){osc('triangle',N(root+24+fan[0]),t,b*fan[1],d,{a:.005,r:b*fan[1],peak:.06});osc('square',N(root+24+fan[0]),t,b*fan[1],d,{a:.005,r:b*fan[1]*.8,peak:.01})}}},
+ // 闘技場の試合（1回戦・準決勝）：長調寄りのロック風。跳ねるドラム、8分で刻むベース、金管風の和音、後半に勇ましい主旋律
+ avs:{bpm:150,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,st=s%16,root=[38,45,47,43][bar],ch=[[0,4,7],[0,4,7],[0,3,7],[0,4,7]][bar];
+  if(st===0||st===6||st===8||st===10&&bar===3){kick(t,d,1);duck(pb,t,.45,.16)}if(st===4||st===12)clap(t,d,.85);if(s%2===0)hat(t,d,st%4===2?.5:.3);if(st===14)hat(t,d,.45,true);
+  if(s%2===0)osc('sawtooth',N(root-12+(st%4===2?12:0)),t,b*1.7,sharedF(pb,'lowpass',900,4),{a:.004,r:b*1.6,peak:.13});
+  if(st===0||st===3||st===6){const bf=sharedF(pb,'lowpass',2400,1);ch.forEach(x=>osc('square',N(root+12+x),t,b*(st===6?2.4:1),bf,{a:.004,r:b*.9,peak:.022}))}
+  if(st===0&&bar===0)sub808(t,root-12,b*4,pb,.18);
+  const ld=[[14,-1,-1,18,-1,21,-1,-1,19,-1,18,-1,16,-1,-1,-1],[21,-1,-1,19,-1,18,-1,-1,16,-1,18,-1,19,-1,-1,-1],[18,-1,-1,19,-1,21,-1,-1,23,-1,21,-1,19,-1,18,-1],[19,-1,-1,-1,18,-1,16,-1,14,-1,-1,-1,-1,-1,-1,-1]][bar][st];
+  if(Math.floor(s/64)%2===1&&ld>=0){osc('triangle',N(50+ld),t,b*2.6,d,{a:.006,r:b*2.4,peak:.07});osc('square',N(50+ld),t,b*2,sharedF(d,'lowpass',3000,1),{a:.006,r:b*1.8,peak:.012})}
+  if(s%64===60)riser(t,b*4,d,.08)}},
+ // 闘技場の決勝：短調の緊迫感と華やかさ。四つ打ちと強い手拍子、16分で走るベース、ファンファーレ風の高い主旋律。相手が半分を切る（I）と主旋律に3度上の声部と和音の厚みが加わる
+ avsf:{bpm:160,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,st=s%16,root=[38,46,48,45][bar],ch=[[0,3,7],[0,4,7],[0,4,7],[0,4,7]][bar];
+  if(st%4===0||st===14){kick(t,d,1.1);duck(pb,t,.35,.14)}if(st===4||st===12)clap(t,d,1.05);hat(t,d,s%2?.5:.22);if(st===10)hat(t,d,.4,true);
+  osc('sawtooth',N(root-12+[0,0,12,0][st%4]),t,b*.9,sharedF(pb,'lowpass',1100,5),{a:.003,r:b*.85,peak:.12});
+  if(st===0||st===10){const bf=sharedF(pb,'lowpass',2800,1);ch.forEach(x=>osc('square',N(root+12+x),t,b*(st===0?3:1.4),bf,{a:.004,r:b*1.2,peak:.02}))}
+  if(st===0)sub808(t,root-12,b*6,pb,.22);
+  const ld=[[14,-1,12,14,-1,17,-1,14,19,-1,17,-1,14,-1,12,-1],[17,-1,14,17,-1,22,-1,21,19,-1,17,-1,14,-1,-1,-1],[19,-1,17,19,-1,24,-1,22,21,-1,19,-1,17,-1,16,-1],[16,-1,-1,-1,13,-1,16,-1,19,-1,22,-1,21,-1,19,-1]][bar][st];
+  if(Math.floor(s/64)%2===1&&ld>=0){osc('square',N(62+ld),t,b*1.8,sharedF(d,'lowpass',3400,1),{a:.004,r:b*1.6,peak:.028});osc('triangle',N(62+ld),t,b*2,d,{a:.004,r:b*1.8,peak:.06});
+   if(I)osc('triangle',N(62+ld+(ch[1]===4?4:3)),t,b*1.8,d,{a:.004,r:b*1.6,peak:.035})}
+  if(I&&s%32===0)supersaw(t,[root+12,root+12+ch[1],root+19],b*32,pb,{v:.008,cut:1600,cut2:2600});
+  if(s%64===56)riser(t,b*8,d,.1)}},
  sortie:{bpm:132,rev:0.1,dly:.15,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[40,40,43,38][bar];if(s%4===0){kick(t,d,1);duck(pb,t,.3);}if(s%8===4)clap(t,d,.8);hat(t,d,s%2?.55:.25);if(s%16===14)hat(t,d,.5,true);const bl=[0,0,12,0,0,10,0,7,0,0,12,0,15,0,12,10];const f=A.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(1800,t);f.frequency.exponentialRampToValueAtTime(220,t+b*.9);f.Q.value=6;f.connect(pb);osc('sawtooth',N(root-12+bl[s%16]),t,b*.9,f,{peak:.16});if(s%4===0)sub808(t,root-24,b*3,pb,.35);if(s%32===0)supersaw(t,[root+12,root+15,root+19],b*32,pb,{v:.012,cut:700,cut2:2400});const ld=[24,-1,22,24,-1,27,-1,26,24,-1,22,-1,19,-1,22,-1];if(Math.floor(s/64)%2===1&&ld[s%16]>=0)pluck(t,root+12+ld[s%16],b*2,d,.035,.2);if(s%64===48)riser(t,b*16,d,.12);}},
  boss:{bpm:146,rev:0.12,dly:.12,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[38,38,39,36][bar];if(s%4===0||s%16===10){kick(t,d,1.15);duck(pb,t,.25);}if(s%8===4)clap(t,d,1);hat(t,d,s%2?.6:.3);const bl=[0,0,12,0,1,0,13,0];const f=A.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(2400,t);f.frequency.exponentialRampToValueAtTime(300,t+b);f.Q.value=7;f.connect(pb);[-10,10].forEach(dt=>osc('sawtooth',N(root-12+bl[s%8]),t,b*.95,f,{peak:.09*1.15,detune:dt}));if(s%8===0)sub808(t,root-24,b*6,pb,.4);if(s%32===0)supersaw(t,[root+12,root+13,root+19],b*32,pb,{v:.013,cut:900,cut2:3000});if(s%16===8)osc('sawtooth',N(root+36),t,b*6,d,{f2:N(root+35),peak:.02,pan:.5});if(I){if(s%2===0)pluck(t,root+24+[0,3,7,8,12,8,7,3][(s/2)%8],b*1.8,d,.04,((s/2)%2?-.5:.5));if(s%16===0)supersaw(t,[root+24,root+27,root+31],b*16,d,{v:.01,cut:3500});}}},
  win:{bpm:96,rev:0.28,dly:.3,play(s,t,d,b,I,pb){if(s===0){impact(t,d,.7);[55,59,62,67].forEach((n,i)=>pluck(t+i*b,n+12,b*8,d,.05,(i-1.5)*.4));}if(s===8){supersaw(t,[55,59,62,67,71],b*24,pb,{v:.02,cut:1200,cut2:4000});osc('sine',N(31),t,b*24,pb,{peak:.45});shimmer(t,d,N(79),3,.1);}if(s>=40){const bar=Math.floor(s/16)%2,root=[43,48][bar];if(s%16===8)supersaw(t,[root+12,root+16,root+19],b*16,pb,{v:.01,cut:1200});if(s%16===8)sub808(t,root-12,b*8,pb,.25);if(s%4===0)pluck(t,root+24+[0,4,7,11][(s/4)%4],b*3,d,.025,.3);}}},
@@ -4318,11 +4339,11 @@ const GEAR_MOB={
  /* VERSUS の相手（2-c）。tx＝段階（GEAR_TIER）の値の上書き、guard＝盾の使い方（p：構える頻度／near：これより近いと構えにくい／t：構える秒数／cd：次まで）、
   rush＝近接で踏み込む距離、msMax＝1斉射のミサイル数、rage＝耐久が半分を切ると攻撃の間が短くなる、model＝ライバル機の本物のモデル（GEARS の名前） */
  vs1:{name:'オスカー機',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'BZ',lHand:'SH3',rShoulder:'MS',lShoulder:'MS'},tint:{main:0x5a6a78,sub:0xc8ccc8,warn:0x2a4a8a,joint:0x23262a,eye:0x6fd3ff},
-  hp:4800,dmg:0,rate:2.6,rng:70,spd:5,keep:30,bs:22,rw:0,tier:'mid',tx:{dk:.11,spread:2.2,cdK:1.6,gap:1},guard:{p:4,near:14,t:[1.2,1.8],cd:[1.8,2.8]},msMax:3},
+  hp:10000,dmg:0,rate:2.6,rng:70,spd:5,keep:30,bs:22,rw:0,tier:'mid',msK:2,tx:{dk:.33,spread:2.2,cdK:1.6,gap:1},guard:{p:4,near:14,t:[1.2,1.8],cd:[1.8,2.8]},msMax:3},
  vs2:{name:'ザラ機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'MG',rShoulder:'none',lShoulder:'none'},tint:{main:0x26282b,sub:0x3a3c40,warn:0xe0b020,joint:0x161718,eye:0xffd040},
-  hp:5600,dmg:0,rate:2.2,rng:60,spd:10,keep:24,bs:32,rw:0,tier:'boss',tx:{dk:.08,spread:1.8,cdK:1.5,gap:.8}},
+  hp:10000,dmg:0,rate:2.2,rng:60,spd:10,keep:24,bs:32,rw:0,tier:'boss',tx:{dk:.24,spread:1.8,cdK:1.5,gap:.8}},
  vs3:{name:'ルージュ・ファンファーレ',model:'serena',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'BL3',lHand:'SH',rShoulder:'MS',lShoulder:'MS'},
-  hp:12000,dmg:0,rate:1.5,rng:70,spd:10,keep:14,bs:32,rw:0,tier:'boss',tx:{dk:.08,mk:.18,spread:1.6,cdK:1.3,gap:.6},guard:{p:6,near:0,t:[.8,1.2],cd:[1.5,2.5]},rush:26,msMax:3,rage:1},
+  hp:20000,dmg:0,rate:1.5,rng:70,spd:10,keep:14,bs:32,rw:0,tier:'boss',msK:2,tx:{dk:.24,mk:.273,spread:1.6,cdK:1.3,gap:.6},guard:{p:6,near:0,t:[.8,1.2],cd:[1.5,2.5]},rush:26,msMax:3,rage:1},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
 };
 function rivalGear(g,key,c){const Sx=GX.SERIES[GEARS[key].s],bot=GX.build(g,Sx.base,Sx.rival,Sx.rival.pal),weps={},hide=o=>o.traverse(x=>{if(x.isMesh)x.visible=false});
@@ -4361,7 +4382,7 @@ function gearShot(e,A,obj,vis={}){const S0=A.def.st,T=e.tier;obj.getWorldPositio
  spawn(0xffd090,.8,from,{life:.07});return f}
 function gearMissile(e,A,obj,i){const st=A.def.st;obj.getWorldPosition(_p);obj.getWorldDirection(_d);if(st.vert?!(i|0):(i|0)%2===0)sAt(st.vert?'vmissile':'missile',_p,{g:.38});
  const m=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0xffa080}));m.scale.set(.16,.16,.55);m.position.copy(_p);S.add(m);
- FX.push({m,homeT:st.vert?.7:.45,homeK:st.vert?3:1.4,arc:!!st.arc,vel:st.vert?_d.clone().multiplyScalar(20):_d.clone().multiplyScalar(7).add(new THREE.Vector3(0,st.arc?8:5,0)),life:st.range/st.spd+1.6,age:0,missile:true,base:.16,tt:0,team:'e',vmax:26,dmg:Math.round(st.dmg*e.tier.dk*.5),splash:st.area||0,imp:st.imp,home:e.atT?null:PTGT})}
+ FX.push({m,homeT:st.vert?.7:.45,homeK:st.vert?3:1.4,arc:!!st.arc,vel:st.vert?_d.clone().multiplyScalar(20):_d.clone().multiplyScalar(7).add(new THREE.Vector3(0,st.arc?8:5,0)),life:st.range/st.spd+1.6,age:0,missile:true,base:.16,tt:0,team:'e',vmax:26,dmg:Math.round(st.dmg*e.tier.dk*.5*(e.spec.msK||1)),splash:st.area||0,imp:st.imp,home:e.atT?null:PTGT})}
 function gearMelee(e,A){const S0=A.def.st,ry=e.g.rotation.y,fx=Math.sin(ry),fz=Math.cos(ry),dmg=Math.round(S0.dmg*e.tier.mk);
  const tg=e.atT&&RUN&&RUN.tr?TOBJ().position:P.pos,dx=tg.x-e.g.position.x,dz=tg.z-e.g.position.z,d=Math.hypot(dx,dz)||1;
  if(d<S0.range+3.2&&(dx*fx+dz*fz)/d>.3){if(e.atT)truckHit(dmg,new THREE.Vector3(tg.x,2,tg.z));else if(Math.abs(mech.bot.position.y-e.y)<5)hitPlayer(dmg,S0.imp,playerCenter(new THREE.Vector3()))}}
@@ -5550,10 +5571,11 @@ const VSEV_K={stand:{pri:1},firstE:{pri:1},firstP:{pri:1},cover:{pri:1,rep:1},me
 const VRIV={serena:{stand:['様子見？　退屈させないで。'],firstE:['まずは一つ。'],firstP:['へえ……当ててくるのね。'],cover:['隠れても無駄よ。','柱の陰が好きなのね。','観客が退屈しているわ。出てきなさい。'],
  melee:['その距離で来る？　いいわ。'],eHalf:['……やるじゃない。'],pHalf:['まだ立っていられる？'],eLow:['ここからが本番よ。'],pLow:['終わりにしましょう。'],idle:['どうしたの、手が止まってる。','撃たないの？　つまらないわ。','見とれている場合じゃないわよ。'],
  arms:['腕はもう使えないわね。'],legs:['脚が止まったわ。どう逃げるの？']}};
-function vsDef(i){const r=VSC.rounds[i];return {id:'VS'+(i+1),vs:i,vsJa:r.ja,title:VSC.name+' '+r.ja,ch:VSC.ch,field:'colo',fieldJa:'闘技場',ready:true,bgm:i===2?'boss':'sortie',
- start:{x:0,z:-COLO_R*.76},enemies:[{type:'gear',gear:r.opp.gear,x:0,z:COLO_R*.76}],comm:{},reward:0}}
+function vsDef(i){const r=VSC.rounds[i];return {id:'VS'+(i+1),vs:i,vsJa:r.ja,title:VSC.name+' '+r.ja,ch:VSC.ch,field:'colo',fieldJa:'闘技場',ready:true,bgm:i===2?'avsf':'avs',
+ start:{x:0,z:-COLO_R*.76},enemies:[{type:'gear',gear:r.opp.gear,x:0,z:COLO_R*.76}],comm:{},reward:0,wx:'arena'}}
 function vsInit(){const i=RUN.def.vs,r=VSC.rounds[i],e=ENEMIES.find(x=>x.type==='gear'&&!x.off&&x.gk===r.opp.gear);
  e.g.rotation.y=Math.atan2(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z);
+ $('esc').hidden=false;$('escL').textContent='TARGET';$('escS').textContent=r.opp.en;   // 機体名まで入れると 844px で CORE の欄に重なるため名前だけ$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo');
  RUN.vs={i,r,e,riv:r.opp.riv?VRIV[r.opp.riv]:null,go:false,first:null,atk:0,last:-99,cov:0,covT:-99,idleT:-99,done:{},pend:[],rep:{}};VSCAM.on=false}
 function vsGo(){if(!RUN||!RUN.vs)return;const V=RUN.vs,o=V.r.opp;goWaitClear();GOW=true;VSCAM.on=true;VSCAM.t=0;commClear();
  // まず機体だけを見せ、1.8秒後に名前の帯
@@ -5578,6 +5600,7 @@ function vsBreak(z){const V=RUN.vs;if(!V||RUN.ok||RUN.lost)return;COMM.q=[];if(V
 function vsCovered(){const a=P.pos,b=RUN.vs.e.g.position,dx=b.x-a.x,dz=b.z-a.z,L2=dx*dx+dz*dz||1;
  return COLO_PP.some(([x,z])=>{const u=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/L2));return Math.hypot(a.x+dx*u-x,a.z+dz*u-z)<2.2})}
 function vsTick(dt){const V=RUN.vs,e=V.e,tm=RUN.time||0;
+ {const k=Math.max(0,e.hp/e.max);$('escHp').style.width=(100*k)+'%';$('escHp').classList.toggle('lo',k<.35);$('escD').textContent=Math.ceil(k*100)+'%';if(V.i===2&&k<=.5&&!V.bi){V.bi=1;SND.bgmI(1)}}   // 決勝は相手が半分を切ると曲が盛り上がる
  if(RUN.ok||RUN.lost){if(finishWait(dt))vsFinish(RUN.ok);return}
  if(!e.alive&&P.down<=0){vsEnd(true);return}
  if(P.hp.core<=0){vsEnd(false);return}
