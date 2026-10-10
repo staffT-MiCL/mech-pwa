@@ -1760,7 +1760,7 @@ function sustainTick(key,a){const A=a.def.act;a.sus=false;if(!A.sus)return;const
 function run(key,def,side=0){active[key]={def,sl:{side},t0:t,st:{},fired:new Set()}}
 // 兵装の発動（出撃中は、硬直中と同じ兵装の動作中は受け付けない）
 function trigger(key){
- if(mode==='play'&&RUN&&RUN.vs)RUN.vs.atk=RUN.time||0;
+ if(mode==='play'&&RUN&&RUN.vs){if(RUN.ok||RUN.lost)return false;RUN.vs.atk=RUN.time||0}
  const sl=WSLOTS.find(s=>s.key===key),def=sl.cat[cfg[key]];
  if(!def.act)return false;
  if(mode==='play'&&(P.stun>0||active[key]||!ammoReady(key)||def.st.kind==='防御'))return false;
@@ -3427,24 +3427,27 @@ const SONGS={
  shop:{bpm:98,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[60,65,57,67][bar],q=[[0,4,7,11],[0,4,7,9],[0,3,7,10],[0,4,7,10]][bar];t+=(s%2)?b*.14:0;if(s%16===0)supersaw(t,q.map(x=>root+x),b*16,pb,{v:.01,cut:2800});if(s%4===0){kick(t,d,.5);duck(pb,t,.55,.15);}if(s%8===4)clap(t,d,.45);if(s%4===2)hat(t,d,.4);if(s%16===14)hat(t,d,.3,true);if(s%4===2)sub808(t,root-24,b*1.2,pb,.28);if(s%16===14)sub808(t,root-17,b,pb,.22);const mel=[[12,-1,16,19,-1,24,-1,19,21,-1,19,16,-1,14,12,-1],[12,-1,16,19,-1,21,23,24,-1,23,21,19,-1,16,-1,-1]][Math.floor(s/64)%2];const m=mel[s%16];if(m>=0){osc('triangle',N(root+m),t,b*1.4,d,{a:.004,r:b*1.4,peak:.07});osc('sine',N(root+m+12),t,b*.6,d,{peak:.025});}if(s%2===0)pluck(t,root+12+q[(s/2)%4],b,d,.02,((s/2)%2?-.35:.35));if(s%32===31)osc('sine',N(root+31),t,b*2,d,{peak:.04,f2:N(root+36)});}},
  arena:{bpm:120,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,st=s%16,root=[50,50,53,48][bar],ch=[[0,3,7],[0,3,7],[0,4,7],[0,4,7]][bar];if(s%4===0){kick(t,d,.36);duck(pb,t,.7,.12)}if(s%8===4)clap(t,d,.26);if(s%2===1)hat(t,d,.2);const tm=bar===3?{10:165,11:150,12:135,13:120,14:105,15:95}:{14:140,15:115};if(tm[st])osc('sine',tm[st],t,.24,d,{f2:tm[st]*.55,peak:.26});if([0,3,6,10,12].includes(st)){const f=A.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(2600,t);f.frequency.exponentialRampToValueAtTime(900,t+b*.6);f.connect(pb);ch.forEach((x,k)=>osc('sawtooth',N(root+12+x),t,b*.6,f,{a:.003,r:b*.55,peak:.02,detune:k%2?6:-6}))}if(st===0||st===8||st===11)sub808(t,root-12,b*1.6,pb,.2);const fan={64:[0,1],66:[7,1],68:[12,1],70:[15,5]}[s%128];if(fan){osc('triangle',N(root+24+fan[0]),t,b*fan[1],d,{a:.005,r:b*fan[1],peak:.06});osc('square',N(root+24+fan[0]),t,b*fan[1],d,{a:.005,r:b*fan[1]*.8,peak:.01})}}},
  // 闘技場の試合（1回戦・準決勝）：長調寄りのロック風。跳ねるドラム、8分で刻むベース、金管風の和音、後半に勇ましい主旋律
- avs:{bpm:150,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,st=s%16,root=[38,45,47,43][bar],ch=[[0,4,7],[0,4,7],[0,3,7],[0,4,7]][bar];
-  if(st===0||st===6||st===8||st===10&&bar===3){kick(t,d,1);duck(pb,t,.45,.16)}if(st===4||st===12)clap(t,d,.85);if(s%2===0)hat(t,d,st%4===2?.5:.3);if(st===14)hat(t,d,.45,true);
-  if(s%2===0)osc('sawtooth',N(root-12+(st%4===2?12:0)),t,b*1.7,sharedF(pb,'lowpass',900,4),{a:.004,r:b*1.6,peak:.13});
+ avs:{bpm:165,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,st=s%16,root=[38,45,47,43][bar],ch=[[0,4,7],[0,4,7],[0,3,7],[0,4,7]][bar];
+  if(st===0||st===6||st===8||st===10&&bar===3){kick(t,d,1);duck(pb,t,.45,.16)}if(st===4||st===12)clap(t,d,.85);if(s%2===0||st%4===3)hat(t,d,st%4===2?.5:(s%2?.16:.3));if(st===14)hat(t,d,.45,true);if(bar===3&&st>=12)osc('sine',[150,125,105,85][st-12],t,.2,d,{f2:[150,125,105,85][st-12]*.55,peak:.22});
+  if(s%2===0){osc('sawtooth',N(root-12+(st%4===2?12:0)),t,b*1.7,sharedF(pb,'lowpass',900,4),{a:.004,r:b*1.6,peak:.13});osc('square',N(root+(st%4===2?12:0)),t,b*1.2,sharedF(pb,'lowpass',1400,2),{a:.004,r:b*1.1,peak:.035})}
+  if(s%32===0)supersaw(t,[root+12,root+12+ch[1],root+19],b*32,pb,{v:.007,cut:1500,cut2:2400});
   if(st===0||st===3||st===6){const bf=sharedF(pb,'lowpass',2400,1);ch.forEach(x=>osc('square',N(root+12+x),t,b*(st===6?2.4:1),bf,{a:.004,r:b*.9,peak:.022}))}
   if(st===0&&bar===0)sub808(t,root-12,b*4,pb,.18);
   const ld=[[14,-1,-1,18,-1,21,-1,-1,19,-1,18,-1,16,-1,-1,-1],[21,-1,-1,19,-1,18,-1,-1,16,-1,18,-1,19,-1,-1,-1],[18,-1,-1,19,-1,21,-1,-1,23,-1,21,-1,19,-1,18,-1],[19,-1,-1,-1,18,-1,16,-1,14,-1,-1,-1,-1,-1,-1,-1]][bar][st];
   if(Math.floor(s/64)%2===1&&ld>=0){osc('triangle',N(50+ld),t,b*2.6,d,{a:.006,r:b*2.4,peak:.07});osc('square',N(50+ld),t,b*2,sharedF(d,'lowpass',3000,1),{a:.006,r:b*1.8,peak:.012})}
+  if(Math.floor(s/64)%2===1&&ld>=0)osc('triangle',N(62+ld),t,b*2,d,{a:.006,r:b*1.8,peak:.035});
+  if(Math.floor(s/64)%2===0){const cr=bar%2===0?{0:0,3:4,6:7}[st]:{8:7,10:4,12:0}[st];if(cr!=null){const f=N(root+24+cr);osc('square',f,t,b*1.4,sharedF(d,'lowpass',2600,1),{a:.004,r:b*1.2,peak:.03});osc('triangle',f,t,b*1.5,d,{a:.004,r:b*1.3,peak:.05})}}
   if(s%64===60)riser(t,b*4,d,.08)}},
  // 闘技場の決勝：短調の緊迫感と華やかさ。四つ打ちと強い手拍子、16分で走るベース、ファンファーレ風の高い主旋律。相手が半分を切る（I）と主旋律に3度上の声部と和音の厚みが加わる
- avsf:{bpm:160,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,st=s%16,root=[38,46,48,45][bar],ch=[[0,3,7],[0,4,7],[0,4,7],[0,4,7]][bar];
-  if(st%4===0||st===14){kick(t,d,1.1);duck(pb,t,.35,.14)}if(st===4||st===12)clap(t,d,1.05);hat(t,d,s%2?.5:.22);if(st===10)hat(t,d,.4,true);
-  osc('sawtooth',N(root-12+[0,0,12,0][st%4]),t,b*.9,sharedF(pb,'lowpass',1100,5),{a:.003,r:b*.85,peak:.12});
+ avsf:{bpm:175,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,st=s%16,root=[38,46,48,45][bar],ch=[[0,3,7],[0,4,7],[0,4,7],[0,4,7]][bar];
+  if(st%4===0||st===14){kick(t,d,1.1);duck(pb,t,.35,.14)}if(st===4||st===12)clap(t,d,1.05);if(s%2===0||st%4===3)hat(t,d,s%2?.5:.22);if(st===10)hat(t,d,.4,true);if(bar===3&&st>=12)osc('sine',[170,140,115,90][st-12],t,.2,d,{f2:[170,140,115,90][st-12]*.55,peak:.24});
+  osc('sawtooth',N(root-12+[0,0,12,0][st%4]),t,b*.9,sharedF(pb,'lowpass',1100,5),{a:.003,r:b*.85,peak:.12});if(s%2===0)osc('square',N(root+[0,0,12,0][st%4]),t,b*.8,sharedF(pb,'lowpass',1500,2),{a:.003,r:b*.75,peak:.03});
   if(st===0||st===10){const bf=sharedF(pb,'lowpass',2800,1);ch.forEach(x=>osc('square',N(root+12+x),t,b*(st===0?3:1.4),bf,{a:.004,r:b*1.2,peak:.02}))}
   if(st===0)sub808(t,root-12,b*6,pb,.22);
   const ld=[[14,-1,12,14,-1,17,-1,14,19,-1,17,-1,14,-1,12,-1],[17,-1,14,17,-1,22,-1,21,19,-1,17,-1,14,-1,-1,-1],[19,-1,17,19,-1,24,-1,22,21,-1,19,-1,17,-1,16,-1],[16,-1,-1,-1,13,-1,16,-1,19,-1,22,-1,21,-1,19,-1]][bar][st];
   if(Math.floor(s/64)%2===1&&ld>=0){osc('square',N(62+ld),t,b*1.8,sharedF(d,'lowpass',3400,1),{a:.004,r:b*1.6,peak:.028});osc('triangle',N(62+ld),t,b*2,d,{a:.004,r:b*1.8,peak:.06});
    if(I)osc('triangle',N(62+ld+(ch[1]===4?4:3)),t,b*1.8,d,{a:.004,r:b*1.6,peak:.035})}
-  if(I&&s%32===0)supersaw(t,[root+12,root+12+ch[1],root+19],b*32,pb,{v:.008,cut:1600,cut2:2600});
+  if(s%32===0)supersaw(t,[root+12,root+12+ch[1],root+19],b*32,pb,{v:I?.009:.007,cut:1600,cut2:2600});
   if(s%64===56)riser(t,b*8,d,.1)}},
  sortie:{bpm:132,rev:0.1,dly:.15,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[40,40,43,38][bar];if(s%4===0){kick(t,d,1);duck(pb,t,.3);}if(s%8===4)clap(t,d,.8);hat(t,d,s%2?.55:.25);if(s%16===14)hat(t,d,.5,true);const bl=[0,0,12,0,0,10,0,7,0,0,12,0,15,0,12,10];const f=A.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(1800,t);f.frequency.exponentialRampToValueAtTime(220,t+b*.9);f.Q.value=6;f.connect(pb);osc('sawtooth',N(root-12+bl[s%16]),t,b*.9,f,{peak:.16});if(s%4===0)sub808(t,root-24,b*3,pb,.35);if(s%32===0)supersaw(t,[root+12,root+15,root+19],b*32,pb,{v:.012,cut:700,cut2:2400});const ld=[24,-1,22,24,-1,27,-1,26,24,-1,22,-1,19,-1,22,-1];if(Math.floor(s/64)%2===1&&ld[s%16]>=0)pluck(t,root+12+ld[s%16],b*2,d,.035,.2);if(s%64===48)riser(t,b*16,d,.12);}},
  boss:{bpm:146,rev:0.12,dly:.12,play(s,t,d,b,I,pb){const bar=Math.floor(s/16)%4,root=[38,38,39,36][bar];if(s%4===0||s%16===10){kick(t,d,1.15);duck(pb,t,.25);}if(s%8===4)clap(t,d,1);hat(t,d,s%2?.6:.3);const bl=[0,0,12,0,1,0,13,0];const f=A.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(2400,t);f.frequency.exponentialRampToValueAtTime(300,t+b);f.Q.value=7;f.connect(pb);[-10,10].forEach(dt=>osc('sawtooth',N(root-12+bl[s%8]),t,b*.95,f,{peak:.09*1.15,detune:dt}));if(s%8===0)sub808(t,root-24,b*6,pb,.4);if(s%32===0)supersaw(t,[root+12,root+13,root+19],b*32,pb,{v:.013,cut:900,cut2:3000});if(s%16===8)osc('sawtooth',N(root+36),t,b*6,d,{f2:N(root+35),peak:.02,pan:.5});if(I){if(s%2===0)pluck(t,root+24+[0,3,7,8,12,8,7,3][(s/2)%8],b*1.8,d,.04,((s/2)%2?-.5:.5));if(s%16===0)supersaw(t,[root+24,root+27,root+31],b*16,d,{v:.01,cut:3500});}}},
@@ -4342,7 +4345,7 @@ const GEAR_MOB={
   hp:10000,dmg:0,rate:2.6,rng:70,spd:5,keep:30,bs:22,rw:0,tier:'mid',msK:2,tx:{dk:.33,spread:2.2,cdK:1.6,gap:1},guard:{p:4,near:14,t:[1.2,1.8],cd:[1.8,2.8]},msMax:3},
  vs2:{name:'ザラ機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'MG',rShoulder:'none',lShoulder:'none'},tint:{main:0x26282b,sub:0x3a3c40,warn:0xe0b020,joint:0x161718,eye:0xffd040},
   hp:10000,dmg:0,rate:2.2,rng:60,spd:10,keep:24,bs:32,rw:0,tier:'boss',tx:{dk:.24,spread:1.8,cdK:1.5,gap:.8}},
- vs3:{name:'ルージュ・ファンファーレ',model:'serena',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'BL3',lHand:'SH',rShoulder:'MS',lShoulder:'MS'},
+ vs3:{name:'ルージュ・ファンファーレ',model:'serena',vpose:'serena',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'BL3',lHand:'SH',rShoulder:'MS',lShoulder:'MS'},
   hp:20000,dmg:0,rate:1.5,rng:70,spd:10,keep:14,bs:32,rw:0,tier:'boss',msK:2,tx:{dk:.24,mk:.273,spread:1.6,cdK:1.3,gap:.6},guard:{p:6,near:0,t:[.8,1.2],cd:[1.5,2.5]},rush:26,msMax:3,rage:1},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
 };
@@ -4370,7 +4373,7 @@ const GSLOTS=[['rHand',-1,HAND],['lHand',1,HAND],['rShoulder',-1,SHOULDER],['lSh
 const PTGT={get alive(){return P.hp.core>0&&P.down<=0},center:v=>playerCenter(v)};
 function gearInit(e){const sp=e.spec;e.tier={...GEAR_TIER[sp.tier||'mob'],...(sp.tx||{})};e.ws=[];
  GSLOTS.forEach(([k,s,T])=>{const id=sp.cfg[k];if(!id||id==='none')return;const def=T[id];if(!def||!def.act||!def.st)return;e.ws.push({k,s,id,def,kind:def.st.kind,cd:1+Math.random()*2.5,w:e.model.weps[k]||{}})});
- e.act=null;e.y=0;e.vy=0;e.dashT=0;e.dashCd=1+Math.random()*3;e.qb=null;e.qbCd=2+Math.random()*2;e.jCd=3+Math.random()*4;e.guardT=0;e.gCd=0;e.rushT=0;e.fxT=0;e.dSide=1;
+ e.fin=null;e.finDone=false;e.hpBar.visible=true;e.act=null;e.y=0;e.vy=0;e.dashT=0;e.dashCd=1+Math.random()*3;e.qb=null;e.qbCd=2+Math.random()*2;e.jCd=3+Math.random()*4;e.guardT=0;e.gCd=0;e.rushT=0;e.fxT=0;e.dSide=1;
  e.shw=e.ws.find(w=>w.kind==='防御')||null;e.gFront=e.shw?(e.shw.def.st.front??.2):.2;
  e.lean=sp.model?0:CORES[sp.cfg.core]?.lean||0;e.B={arms:[{x:-.28,z:-.12,e:-.82},{x:-.28,z:.12,e:-.82}],legs:[{th:0,kn:0},{th:0,kn:0}],tX:0}}
 function gearAim(e){return e.atT&&RUN&&RUN.tr?new THREE.Vector3(TOBJ().position.x,1.8+Math.random()*1.6,TOBJ().position.z):playerCenter(new THREE.Vector3())}
@@ -4534,7 +4537,7 @@ function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(e.type==='gear'&&e.guardT
  for(let i=0,n=Math.round(3+7*pw);i<n;i++)spawn(i%2?0xffa040:0xffd070,.1+.06*pw,pos,{vel:new THREE.Vector3((Math.random()-.5)*10,2+Math.random()*6,(Math.random()-.5)*10),grav:16,life:.25+Math.random()*.2});
  if(sOnce('ehit',.05))sAt('ehit',pos,{g:.5});dmgNum(e,dmg);
  const I=e.type==='boss'?null:IMP[imp];if(I&&Math.random()<I.p){e.stun=Math.max(e.stun,I.st);e.kb.copy(e.g.position).sub(P.pos).setY(0).normalize().multiplyScalar(I.kb*3)}
- if(e.hp<=0){if(RUN&&RUN.kills)RUN.kills[e.type]=(RUN.kills[e.type]||0)+1;e.alive=false;e.g.visible=e.type==='boss';if(e.type==='boss'){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.head.rotation.x=.08;e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a)}e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN&&!(RUN&&RUN.vs)){const rw=e.type==='gear'?(e.spec.rw||2000):e.type==='drone'?REWARD.drone:e.type==='walker'?1500:e.type==='crawler'?600:e.type==='antenna'?1000:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
+ if(e.hp<=0){if(RUN&&RUN.kills)RUN.kills[e.type]=(RUN.kills[e.type]||0)+1;e.alive=false;const keepB=e.type==='gear'&&RUN&&((RUN.vs&&e===RUN.vs.e)||e.spec.tier==='boss');e.g.visible=e.type==='boss'||keepB;if(keepB)finDown(e);if(e.type==='boss'){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.head.rotation.x=.08;e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a)}e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN&&!(RUN&&RUN.vs)){const rw=e.type==='gear'?(e.spec.rw||2000):e.type==='drone'?REWARD.drone:e.type==='walker'?1500:e.type==='crawler'?600:e.type==='antenna'?1000:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}if(!keepB)explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
 // 索敵レーダー（RD-3）：壁の向こうでも敵の輪郭が見える（奥行きを無視して描く線）
 const XR_M=new THREE.LineBasicMaterial({color:0xff6a4c,transparent:true,opacity:.55,depthTest:false});
 function xrayMark(e){const on=mode==='play'&&SS.xray&&e.alive&&!e.off;
@@ -4542,10 +4545,11 @@ function xrayMark(e){const on=mode==='play'&&SS.xray&&e.alive&&!e.off;
  if(e.xr)e.xr.visible=on}
 function updateEnemies(dt){
  ENEMIES.forEach(e=>{
-  if(e.shadow)e.shadow.visible=e.alive&&!e.off;
+  if(e.shadow)e.shadow.visible=(e.alive||!!e.fin)&&!e.off;
   if(e.alive&&!e.off&&dt>0){if(!e.vel){e.vel=new THREE.Vector3();e.pv=e.g.position.clone()}e.vel.copy(e.g.position).sub(e.pv).divideScalar(dt);e.pv.copy(e.g.position)}
   xrayMark(e);
   if(e.off)return;
+  if(e.fin){finTick(e,dt);return}
   if(!e.alive){if(RUN)return;e.respawn-=dt;if(e.respawn<=0)placeEnemy(e);return}
   const tr=RUN&&RUN.tr&&RUN.tr.hp>0?RUN.tr:null,dP=Math.hypot(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z),dT=tr?Math.hypot(TOBJ().position.x-e.g.position.x,TOBJ().position.z-e.g.position.z):1e9,atT=tr&&(e.cargo?dT<60:dT<dP-6);
   const to=_q.copy(atT?TOBJ().position:P.pos).sub(e.g.position);to.y=0;const d=to.length(),yaw=Math.atan2(to.x,to.z);
@@ -5560,7 +5564,50 @@ function misAbort(){if(!RUN||RUN.leaving)return;misFinish(false,'撤退')}
  受付の［試合へ］→ 出撃前の演出 → 相手の紹介（カメラが相手を映し、帯に名前・異名・区画）→ 相手の通信 → ノーナの通信 → 帯「MATCH START」（下に1回戦など）→ 操作開始
  → 相手を大破させれば WIN／自機の CORE が 0 で LOSE（時間制限なし）→ 帯のあと相手とノーナの通信 → すぐ受付へ（ベルが結果を伝える）
  試合中の相手の通信はライバル（opp.riv）だけ。通信どうしは最低 8秒あける（自機の部位破壊だけは待たずに入る）。セリフは仮 */
-const VSCAM={on:false,t:0};
+/* ===== 決着の演出：撃破のうなだれ・勝利ポーズ =====
+ 姿勢は15個の数字（右腕[x,z,肘]・左腕[x,z,肘]・胴[x,y]・頭[x,y]・脚[腿,膝]・逆関節の脚[3つ]）。ポーズは「ため→振り抜き→決め」の3段。
+ ライバル固有のポーズは GEAR_MOB の vpose:'キー'（1行）で FPOSE に足したものを指す。指定がなければ共通 */
+const FIN={me:null};
+const FPOSE=(()=>{const mk=(R,Lf,T,H,K)=>[...R,...Lf,...T,...H,-.12-.55*K,.24+K,-.25*K,.6*K,K*.5];
+ return {
+  me:[mk([-1.5,-1.3,-1.4],[-.3,.1,-1.5],[.25,.5],[.25,.35],.9),mk([-1.6,.9,-.3],[-.5,.1,-1.6],[.05,-.2],[0,-.25],.8),mk([-2.7,.55,-.05],[-.2,.25,-1.7],[.14,-.15],[-.04,-.2],.65)],
+  serena:[mk([.2,.3,-.2],[-.9,-.6,-1.4],[.55,0],[.35,0],.5),mk([-1.5,1.3,-.2],[-.6,.3,-1.0],[0,.3],[0,.25],.4),mk([-2.95,.1,-.1],[-.6,1.25,-.35],[-.15,-.25],[-.3,.2],.15)],
+  common:[mk([-1.3,-.6,-1.3],[-.6,.4,-1.4],[.3,0],[.3,0],.8),mk([-2.0,.3,-.8],[-.3,.3,-.9],[.05,0],[0,0],.5),mk([-2.75,.25,-.25],[-.15,.35,-.5],[-.12,0],[-.25,0],.2)],
+  down:[.45,-.15,-.05,.45,.15,-.05,.85,0,.7,0,-1.25,2.1,-.9,1.9,1]};})();
+const finEase=x=>1-(1-x)*(1-x),finSm=x=>x*x*(3-2*x),finLerp=(p,q,u)=>p.map((x,i)=>x+(q[i]-x)*u);
+// いまの姿を読み取る（ここから最初のポーズへなめらかにつなぐ）
+function finStart(m){const v=[];m.arms.forEach(a=>v.push(a.sh.rotation.x,a.sh.rotation.z,a.el.rotation.x));
+ v.push(m.torso.rotation.x,m.torso.rotation.y,m.head.rotation.x,m.head.rotation.y,m.legs[0].th.rotation.x,m.legs[0].kn.rotation.x,0,0,0);return v}
+function finApply(m,v,bot){m.arms.forEach((a,i)=>{const o=i*3;a.sh.rotation.set(v[o],0,v[o+1]);a.el.rotation.x=v[o+2]});
+ m.torso.rotation.set(v[6],v[7],0);m.head.rotation.x=v[8];m.head.rotation.y=v[9];
+ m.legs.forEach(l=>{if(l.dg){digiPose(l,v[12],v[13],v[14]);return}const z=l.sz||0;l.th.rotation.x=v[10];l.kn.rotation.x=v[11];l.th.rotation.z=z;l.ft.rotation.x=-(v[10]+v[11]);l.ft.rotation.z=-z});
+ if(bot){bot.position.y=0;bot.updateMatrixWorld(true);bot.position.y=-soleY(m.legs)}}
+// ため0.5秒 → 構えを保つ0.6秒（わずかに震える）→ 振り抜き0.25秒 → 決め0.3秒 → 保持
+function finEval(F,t){const [A,B,C]=F.keys;
+ if(t<.5)return finLerp(F.from,A,finSm(t/.5));
+ if(t<1.1){const v=A.slice(),w=Math.sin(t*50)*.012;v[6]+=w;v[8]-=w;return v}
+ if(t<1.35)return finLerp(A,B,finEase((t-1.1)/.25));
+ if(t<1.65)return finLerp(B,C,finEase((t-1.35)/.3));
+ return C}
+const FIN_T=1.65;
+function finFx(p){spawn(0xffffff,1.4,p,{life:.18,grow:1.6});spawn(0xfff0b0,2.4,p,{life:.3,grow:1.2});shake=Math.max(shake,.3);SND.play('unlock',{g:.35})}
+// 撃破：その場で連続爆発（小6回→大1回）し、黒い煙を上げながらうなだれる
+function finDown(e){e.fin={k:'down',t:0,n:0,big:false,sm:0,from:finStart(e.model)};e.hpBar.visible=false;e.mat.emissive.setRGB(0,0,0);e.guardT=0}
+// 相手の勝ちポーズ（自機が負けたとき）。以後ギアの思考・移動・攻撃は一切動かさない
+function finWin(e){const m=e.model;e.fin={k:'win',t:0,fx:0,from:finStart(m),keys:FPOSE[e.spec.vpose]||FPOSE.common};e.hpBar.visible=false;e.guardT=0}
+function finTick(e,dt){const F=e.fin,m=e.model,sc=e.spec.scale||1,gp=e.g.position;F.t+=dt;
+ if(e.y>0){e.vy-=26*dt;e.y=Math.max(0,e.y+e.vy*dt);gp.y=e.y}
+ let v;
+ if(F.k==='down'){
+  while(F.n<6&&F.t>=F.n*.46){F.n++;explode(new THREE.Vector3(gp.x+(Math.random()-.5)*3*sc,gp.y+(1.5+Math.random()*5.5)*sc,gp.z+(Math.random()-.5)*3*sc),.9+Math.random()*.5)}
+  if(!F.big&&F.t>=2.65){F.big=true;e.finDone=true;explode(e.center(new THREE.Vector3()),2.6);shake=Math.max(shake,.9)}
+  F.sm-=dt;if(F.sm<=0){F.sm=.09;spawn(0x2a2a28,.65*sc,new THREE.Vector3(gp.x+(Math.random()-.5)*2*sc,gp.y+(2+Math.random()*3)*sc,gp.z+(Math.random()-.5)*2*sc),{vel:new THREE.Vector3((Math.random()-.5)*.8,2.4+Math.random(),(Math.random()-.5)*.8),life:1.7,grow:1.6,spin:true})}
+  v=finLerp(F.from,FPOSE.down,finEase(Math.min(1,F.t/1)));
+ }else{
+  const to=Math.atan2(P.pos.x-gp.x,P.pos.z-gp.z);e.g.rotation.y+=Math.atan2(Math.sin(to-e.g.rotation.y),Math.cos(to-e.g.rotation.y))*Math.min(1,dt*6);
+  v=finEval(F,F.t);if(!F.fx&&F.t>=FIN_T){F.fx=1;finFx(e.center(new THREE.Vector3()))}}
+ finApply(m,v,m)}
+const VSCAM={on:false,t:0},VSEND={k:null};
 const COLO_PP=COLO_PIL.map(([d,k])=>{const a=d*Math.PI/180;return [Math.sin(a)*COLO_R*k,Math.cos(a)*COLO_R*k]});
 // ノーナの通信（すべての試合で共通）
 const VSN={start:[['盾持ちの重装機です。正面は固い。側面に回り込みましょう、○○。'],['高機動機です。撃ち合いになります。足を止めないでください、○○。'],['……王座戦の経験者です。○○、集中していきましょう。']],win:['勝利です、○○。……お疲れさまでした。受付へ戻りましょう。'],lose:['……機体の回収を確認しました。次は勝ちましょう、○○。'],
@@ -5576,7 +5623,7 @@ function vsDef(i){const r=VSC.rounds[i];return {id:'VS'+(i+1),vs:i,vsJa:r.ja,tit
 function vsInit(){const i=RUN.def.vs,r=VSC.rounds[i],e=ENEMIES.find(x=>x.type==='gear'&&!x.off&&x.gk===r.opp.gear);
  e.g.rotation.y=Math.atan2(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z);
  $('esc').hidden=false;$('escL').textContent='TARGET';$('escS').textContent=r.opp.en;   // 機体名まで入れると 844px で CORE の欄に重なるため名前だけ$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo');
- RUN.vs={i,r,e,riv:r.opp.riv?VRIV[r.opp.riv]:null,go:false,first:null,atk:0,last:-99,cov:0,covT:-99,idleT:-99,done:{},pend:[],rep:{}};VSCAM.on=false}
+ RUN.vs={i,r,e,riv:r.opp.riv?VRIV[r.opp.riv]:null,go:false,first:null,atk:0,last:-99,cov:0,covT:-99,idleT:-99,done:{},pend:[],rep:{}};VSCAM.on=false;VSEND.k=null;FIN.me=null}
 function vsGo(){if(!RUN||!RUN.vs)return;const V=RUN.vs,o=V.r.opp;goWaitClear();GOW=true;VSCAM.on=true;VSCAM.t=0;commClear();
  // まず機体だけを見せ、1.8秒後に名前の帯
  GOWT.push(setTimeout(()=>{banner(o.en,(o.ali?'「'+o.ali+'」 ／ ':'')+o.reg+'代表 ／ '+o.mech,false,2.4);SND.play('start',{g:.35})},1800));
@@ -5601,7 +5648,7 @@ function vsCovered(){const a=P.pos,b=RUN.vs.e.g.position,dx=b.x-a.x,dz=b.z-a.z,L
  return COLO_PP.some(([x,z])=>{const u=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/L2));return Math.hypot(a.x+dx*u-x,a.z+dz*u-z)<2.2})}
 function vsTick(dt){const V=RUN.vs,e=V.e,tm=RUN.time||0;
  {const k=Math.max(0,e.hp/e.max);$('escHp').style.width=(100*k)+'%';$('escHp').classList.toggle('lo',k<.35);$('escD').textContent=Math.ceil(k*100)+'%';if(V.i===2&&k<=.5&&!V.bi){V.bi=1;SND.bgmI(1)}}   // 決勝は相手が半分を切ると曲が盛り上がる
- if(RUN.ok||RUN.lost){if(finishWait(dt))vsFinish(RUN.ok);return}
+ if(RUN.ok||RUN.lost){vsEndTick(dt);if(finishWait(dt))vsFinish(RUN.ok);return}
  if(!e.alive&&P.down<=0){vsEnd(true);return}
  if(P.hp.core<=0){vsEnd(false);return}
  if(!V.go)return;
@@ -5611,14 +5658,22 @@ function vsTick(dt){const V=RUN.vs,e=V.e,tm=RUN.time||0;
   if(V.first&&tm>20&&tm-V.atk>=10&&tm-V.idleT>=30){V.idleT=tm;vsEv('idle')}}
  if(ek<=.5)vsEv('eHalf');if(pk<=.5)vsEv('pHalf');if(ek<=.2)vsEv('eLow');if(pk<=.2)vsEv('pLow');
  vsSayNext()}
-// 決着：WIN／LOSE の帯 → 相手とノーナの通信 → （finishWait）→ 受付へ
-function vsEnd(ok){const V=RUN.vs,o=V.r.opp;if(ok)RUN.ok=true;else RUN.lost=true;V.pend=[];COMM.q=[];
- banner(ok?'WIN':'LOSE',V.r.ja+(ok?' 勝利':' 敗北'),!ok,2.6);if(ok){SND.play('complete',{g:.55});SND.play('cheer',{g:.6,size:1.6})}else SND.play('groan',{g:.5});
- if(ok)ENEMIES.forEach(x=>{if(x!==V.e&&!x.off&&x.alive){x.alive=false;x.g.visible=false}});
- RUN.hold=performance.now()+3800;
- setTimeout(()=>{if(!RUN||!RUN.vs||RUN.leaving)return;(ok?o.talk.win:o.talk.lose).forEach(x=>comm(['o',x],2));(ok?VSN.win:VSN.lose).forEach(x=>comm(['n',x],2))},3600)}
+// 決着。勝ち：相手が連続爆発してうなだれる（寄りのカメラ）→ 大爆発のあと自機の勝ちポーズ（正面）→ WIN の帯と歓声
+//        負け：相手が動きを止めて勝ちポーズ → LOSE の帯とうめき声。そのあと相手とノーナの通信 → （finishWait）→ 受付へ
+function vsEnd(ok){const V=RUN.vs,e=V.e;if(ok)RUN.ok=true;else RUN.lost=true;V.pend=[];COMM.q=[];commClear();lockT=lockT2=lockT3=null;LOCKS=[];V.ph=ok?'slump':'pose';V.pt=0;
+ for(let i=FX.length-1;i>=0;i--){const f=FX[i];if(f.team==='e'){S.remove(f.m);FX.splice(i,1)}}   // 飛んでいる相手の弾・ミサイルを消す
+ ENEMIES.forEach(x=>{if(x!==e&&!x.off&&x.alive){x.alive=false;x.g.visible=false}});
+ if(ok){VSEND.k='slump'}else{finWin(e);VSEND.k='opp'}
+ RUN.hold=performance.now()+60000}
+function vsEndTick(dt){const V=RUN.vs,e=V.e,o=V.r.opp,ok=RUN.ok;V.pt+=dt;
+ if(V.ph==='slump'&&e.finDone){V.ph='wait';V.pt=0}
+ else if(V.ph==='wait'&&V.pt>=.35){V.ph='pose';V.pt=0;VSEND.k='me';FIN.me={t:0,from:finStart(mech),keys:FPOSE.me,fx:0}}
+ else if(V.ph==='pose'&&V.pt>=FIN_T+.05){V.ph='done';
+  banner(ok?'WIN':'LOSE',V.r.ja+(ok?' 勝利':' 敗北'),!ok,2.6);if(ok){SND.play('complete',{g:.55});SND.play('cheer',{g:.6,size:1.6})}else SND.play('groan',{g:.5});
+  RUN.hold=performance.now()+3800;
+  setTimeout(()=>{if(!RUN||!RUN.vs||RUN.leaving)return;(ok?o.talk.win:o.talk.lose).forEach(x=>comm(['o',x],2));(ok?VSN.win:VSN.lose).forEach(x=>comm(['n',x],2))},3600)}}
 // 受付へ戻る（すぐ）。ベルが結果を伝える。勝敗の記録・賞金は 2-d で行う
-function vsFinish(ok,abort=false){if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;const r=RUN.vs.r;commClear();VSCAM.on=false;
+function vsFinish(ok,abort=false){if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;const r=RUN.vs.r;commClear();VSCAM.on=false;VSEND.k=null;FIN.me=null;
  fadeTo(()=>{setMode('garage');openVersus(ok?[['b',r.ja+'、<strong>勝利</strong>を確認しました。おめでとうございます、○○様。','bow'],['b','……勝ち上がりと賞金の記録は、ただいま準備中です。（次の更新で実装します）','sorry']]
   :abort?[['b',r.ja+'の棄権を受け付けました。機体の整備は済んでいます。','normal'],['b','準備ができましたら、いつでも再挑戦いただけます。','bow']]
   :[['b',r.ja+'の試合結果を確認しました。……機体の整備は済んでいます。','normal'],['b','準備ができましたら、いつでも再挑戦いただけます。','bow']])},'VERSUS')}
@@ -5824,7 +5879,7 @@ R.setAnimationLoop(()=>{
  // 1) 出撃中の移動
  if(mode==='play'&&(INTRO.on||GOW)){if(INTRO.on)introTick(dt)} // 出撃前の演出中は操作・敵・時間を止める
  else if(mode==='play'){
-  const inp=readInput(dt);
+  const inp=readInput(dt);if(RUN&&RUN.vs&&(RUN.ok||RUN.lost)){inp.x=0;inp.y=0;inp.dash=false}
   P.stun=Math.max(0,P.stun-dt);
   if(P.down>0){P.down-=dt;if(P.down<=0&&RUN){if(finishWait(dt))misFinish(false,'CORE 大破');else P.down=.01}else if(P.down<=0){fadeTo(()=>{setMode('garage');openModal(`<div class="shd"><span class="code">MISSION FAILED</span><span class="ttl">CORE 大破</span></div><div class="rule"></div><p class="note" style="margin:0">コアが破壊され、機体は回収されました。SHOP の REPAIR で修理するまで、攻撃ありの TRAINING には出撃できません。</p>`)},'GARAGE')}}
   tickAmmo(dt);reveal=Math.max(0,reveal-dt);
@@ -5923,6 +5978,8 @@ R.setAnimationLoop(()=>{
    if(w>.001){m.torso.rotation.x=L(m.torso.rotation.x,LN,w);m.arms.forEach(a=>a.sh.rotation.x+=w*LN*.6);
     m.legs.forEach(l=>{l.th.rotation.x=L(l.th.rotation.x,TH,w);l.kn.rotation.x=L(l.kn.rotation.x,KN,w);l.ft.rotation.x=L(l.ft.rotation.x,-(TH+KN)+TO,w)})}
    m.legs.forEach(l=>l.ft.scale.z=L(.75,.6,w))}}
+
+ if(FIN.me&&mode==='play'){const F=FIN.me;F.t+=dt;finApply(m,finEval(F,F.t),null);if(!F.fx&&F.t>=FIN_T){F.fx=1;finFx(playerCenter(new THREE.Vector3()))}}
  if(m.wings&&m.wings.length){const want=mode==='play'&&CAMMODE!=='top'&&!(dash||P.qb||active.jump)?.5:1;m.wo=L(m.wo,want,Math.min(1,dt*(want>m.wo?4:2.5)));m.wings.forEach(o=>m.wf(o,m.wo))}
  if(mode==='play'){
   // アクションの踏み込み・反動（scroll）は機体の前後移動として反映
@@ -5954,6 +6011,10 @@ R.setAnimationLoop(()=>{
   }
  }else{C.position.set(Math.sin(az)*dist*Math.cos(el2),camTY+Math.sin(el2)*dist,Math.cos(az)*dist*Math.cos(el2));C.lookAt(0,camTY,0)}
  if(mode==='play'&&VSCAM.on&&RUN&&RUN.vs){VSCAM.t+=dt;const p=RUN.vs.e.g.position,a=-.5+VSCAM.t*.1,dd=13-VSCAM.t*.5;C.position.set(p.x+Math.sin(a)*dd,3.4+VSCAM.t*.2,p.z-Math.cos(a)*dd);C.lookAt(p.x,4.6,p.z)}
+ if(mode==='play'&&VSEND.k&&RUN&&RUN.vs){const E=RUN.vs.e.g,sc=RUN.vs.e.spec?1:1;let p,y,fd,rd,hy,ly,ff,rr;
+  if(VSEND.k==='me'){p=P.pos;const yw=P.yaw;fd=7.6;rd=2.4;y=5;ly=4.8;C.position.set(p.x+Math.sin(yw)*fd-Math.cos(yw)*rd,y,p.z+Math.cos(yw)*fd+Math.sin(yw)*rd)}
+  else{p=E.position;const ry=E.rotation.y;if(VSEND.k==='opp'){fd=7.2;rd=2.2;y=5.2;ly=5}else{fd=8;rd=3;y=4.2;ly=3.4}C.position.set(p.x+Math.sin(ry)*fd-Math.cos(ry)*rd,y,p.z+Math.cos(ry)*fd+Math.sin(ry)*rd)}
+  C.lookAt(p.x,ly,p.z)}
  updateFX(dt);tickWX(dt);
  if(shake>0&&!reduce){C.position.x+=(Math.random()-.5)*shake;C.position.y+=(Math.random()-.5)*shake;shake*=.85;if(shake<.005)shake=0}
  Wp.glow.color.setHSL(.07,1,.5+Math.sin(t*6)*.08);
