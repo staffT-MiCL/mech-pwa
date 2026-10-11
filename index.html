@@ -653,6 +653,7 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 .vnote{font-family:var(--body);font-size:11px;line-height:1.55;color:#9aa6a0;padding:6px 10px;background:var(--panel2);border-left:2px solid var(--cyan)}
 .vprog{display:flex;align-items:center;gap:5px;font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--faint);white-space:nowrap}
 .vprog i{flex:1;height:1px;background:var(--line)}.vprog .on{color:var(--cyan)}.vprog .ok{color:var(--accent)}
+.vtt{display:flex;gap:6px}.vtt button{flex:1;font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:.12em;padding:5px 4px;color:var(--dim);background:var(--panel2);border:1px solid var(--line)}.vtt button.on{color:var(--cyan);border-color:var(--cyan)}
 .vtb{display:flex;flex-direction:column;gap:5px}
 .vtr{display:grid;grid-template-columns:6.4em minmax(0,1fr) auto;gap:2px 8px;align-items:center;padding:6px 10px;background:var(--panel2);border:1px solid var(--line);font-size:11px}
 .vtr .k{font-family:var(--mech);font-weight:700;letter-spacing:.12em;color:var(--cyan);white-space:nowrap}.vtr .k small{display:block;font-family:var(--body);font-weight:400;letter-spacing:0;font-size:9px;color:var(--dim)}
@@ -3250,8 +3251,8 @@ const START_CREDIT=30000,REWARD={drone:800,turret:1200};
 const OWN=new Set(START_OWN);let CREDIT=START_CREDIT,shopVisits=0;
 let PILOT='',TUT='intro',FIRE=true,TTUT=0,SHOPCLS=0;const TSEL={target:'std',field:'range'};
 // VERSUS の進行：reg＝受付で登録済み（初回の演出を見た）／win＝各試合の勝利（1回戦・準決勝・決勝）／seen＝一度だけ出す場面（キャラクターの登場など）
-const VSS={reg:false,win:[false,false,false],seen:{}};
-function vsReset(){VSS.reg=false;VSS.win=[false,false,false];VSS.seen={}}
+const VSS={reg:false,win:[false,false,false],winB:[false,false,false],seen:{}};   // win＝C 大会／winB＝B 大会（CH4。古いセーブには無いので false で補う）
+function vsReset(){VSS.reg=false;VSS.win=[false,false,false];VSS.winB=[false,false,false];VSS.seen={}}
 // 文字送りの速さ（1文字あたりのミリ秒）：セリフ／オープニングの字幕
 const TXT_SPD=62,SUB_SPD=85;
 /* 所持金の表示：ヘッダーは CR_SHOWN（表示中の値）。出撃の報酬はガレージに戻ってから数字が高速で増える（crCount）。
@@ -3315,7 +3316,7 @@ function loadGame(){
   if(d.col&&typeof d.col==='object'){Object.keys(COL).forEach(k=>{if(typeof d.col[k]==='string'&&/^#[0-9a-f]{6}$/i.test(d.col[k]))COL[k]=d.col[k]});applyColors()}
   if(d.mis)Object.entries(d.mis).forEach(([k,v])=>{if(!MDEF[k]&&v&&typeof v==='object'){MIS_X[k]=v;return}if(MDEF[k]&&v&&typeof v==='object')MIS[k]={got:!!v.got,read:!!v.read,clear:!!v.clear,n:v.n|0,t:+v.t||0,best:+v.best||0,dy:typeof v.dy==='number'?v.dy:null}});
   if(typeof d.day==='number'){DAY=Math.max(0,d.day|0);DAY_SAVED=true}
-  if(d.vs&&typeof d.vs==='object'){VSS.reg=!!d.vs.reg;if(Array.isArray(d.vs.win))VSS.win=[0,1,2].map(i=>!!d.vs.win[i]);if(d.vs.seen&&typeof d.vs.seen==='object')Object.keys(d.vs.seen).forEach(k=>{if(d.vs.seen[k])VSS.seen[k]=true})}
+  if(d.vs&&typeof d.vs==='object'){VSS.reg=!!d.vs.reg;if(Array.isArray(d.vs.win))VSS.win=[0,1,2].map(i=>!!d.vs.win[i]);if(Array.isArray(d.vs.winB))VSS.winB=[0,1,2].map(i=>!!d.vs.winB[i]);if(d.vs.seen&&typeof d.vs.seen==='object')Object.keys(d.vs.seen).forEach(k=>{if(d.vs.seen[k])VSS.seen[k]=true})}
   if(d.cfg)SLOTS.forEach(sl=>{const v=d.cfg[sl.key];if(v&&sl.cat[v]&&(v==='none'||OWN.has(v)))cfg[sl.key]=v});
  }catch(e){}
 }
@@ -4206,7 +4207,7 @@ const VSEV=[
  {id:'c-final-jonah',ok:()=>!!VSS.win[2],lines:[   // 同じ訪問の最後：JONAH の声だけの無線（CH3）
   ['j','勝ったか。……闘技場の観客は、勝った者の名前しか覚えない。それだけは、覚えておくといい。'],
   ['n','……JONAH。やはり、見ていたのですね。']]},
- {id:'c-final-serena',ok:()=>vsCur()===2&&vsState(2)==='open',lines:[
+ {id:'c-final-serena',ok:()=>VSC===VSC_C&&vsCur()===2&&vsState(2)==='open',lines:[
   ['serena','あら。あなたが噂の、第7区画の代表さん？'],
   ['serena','聞いたことのない名前ね。……<em>名無しさん</em>でいいかしら。'],
   ['serena','決勝の舞台は、わたしのためにあるの。観客にいい顔をしたいなら、せいぜい長く立っていてね。'],
@@ -4276,7 +4277,7 @@ function renderVs(){$('vMoney').textContent=fmtCR(CREDIT);$('vTitle').textConten
  let html='';
  if(vTab==='card'){
   if(i>=R.length){html=`<div class="vcard won"><div class="rd"><b>CHAMPION</b><small>${VSC.name} 優勝</small></div><div class="vsx"><div class="p"><small>第7区画</small><b>${N}</b>${myAli}<i>HX-07 VESTIGE</i></div><div class="x">★</div><div class="p"><small>${VSC.name}</small><b>優勝</b><i>WINNER</i></div></div></div>${prog}`;
-   VS3.holo('CHAMPION','C-CLASS','WINNER',false)}
+   VS3.holo('CHAMPION',VSC.cls+'-CLASS','WINNER',false)}
   else{const r=R[i],st=vsState(i),op=st==='open',m=MIS[r.mail];
    html=`<div class="vcard ${op?'':'pend'}"><div class="rd"><b>${r.label}</b><small>${r.ja} ／ ${op?vsDay(m)+' ・ 14:00':'日程調整中'}</small></div>
     <div class="vsx"><div class="p"><small>第7区画</small><b>${N}</b>${myAli}<i>HX-07 VESTIGE</i></div><div class="x">VS</div><div class="p${op?'':' q'}"><small>${op?r.opp.reg:'未定'}</small><b>${op?r.opp.name:'？？？'}</b>${op&&r.opp.ali?'<em>'+r.opp.ali+'</em>':'<em class="no">―</em>'}<i>${op?r.opp.en:'---'}</i></div></div></div>
@@ -4285,18 +4286,19 @@ function renderVs(){$('vMoney').textContent=fmtCR(CREDIT);$('vTitle').textConten
    VS3.holo(r.label,op?r.opp.en.split(' ')[0]:'???',op?vsDay(m).replace('P.R. ','').replace(' ／ ',' '):'SCHEDULING',!op)}}
  else{
   html=`<div class="vtb">${shown.map(k=>{const r=R[k],st=vsState(k);return `<div class="vtr${st==='pend'?' pend':''}"><span class="k">${r.label}<small>${r.ja}</small></span><span class="o">${st==='pend'?'日程調整中':r.opp.name}<small>${st==='pend'?'相手は未定':r.opp.reg+' ／ '+r.opp.pastor}</small></span><span class="s ${st==='won'?'ok':st==='open'?'on':''}">${st==='won'?'勝利 ✓':st==='open'?'対戦待ち':'調整中'}${st==='won'?`<button class="vrm" data-rm="${k}">再戦</button>`:''}</span></div>`}).join('')}</div>
-   <div class="vnote">${i>=R.length?'すべての試合に勝利しました。':'勝ち進むと、次の試合が表に加わります。勝った試合は［再戦］できます（賞金は初回のみ）。'}</div>`}
- $('vBody').innerHTML=html;$('vBody').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>vsRematch(+b.dataset.rm));$('vBody').scrollTop=0;$('vGo').disabled=!(i<R.length&&vsState(i)==='open');requestAnimationFrame(()=>scrollHints($('vsR'),'#vBody'))}
-function vsRematch(k){if(vLeaving||!VSS.win[k])return;const r=VSC.rounds[k];   // 勝った試合の再戦：確認のあと、セリフなし・記録と賞金は変えない
+   <div class="vnote">${i>=R.length?'すべての試合に勝利しました。':'勝ち進むと、次の試合が表に加わります。勝った試合は［再戦］できます（賞金は初回のみ）。'}</div>`;
+  if(vsOkB())html=`<div class="vtt">${VST.map(T=>`<button data-vt="${T.cls}" class="${T===VSC?'on':''}">${T.name}</button>`).join('')}</div>`+html}
+ $('vBody').innerHTML=html;$('vBody').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>vsRematch(+b.dataset.rm));$('vBody').querySelectorAll('[data-vt]').forEach(b=>b.onclick=()=>{if(vLeaving)return;VSC=VST.find(T=>T.cls===b.dataset.vt);renderVs();vtSay(vsStatus(true))});$('vBody').scrollTop=0;$('vGo').disabled=!(i<R.length&&vsState(i)==='open'&&R[i].ready!==false);requestAnimationFrame(()=>scrollHints($('vsR'),'#vBody'))}
+function vsRematch(k){if(vLeaving||!vsW()[k]||VSC.rounds[k].ready===false)return;const r=VSC.rounds[k];   // 勝った試合の再戦：確認のあと、セリフなし・記録と賞金は変えない
  $('sconfBox').innerHTML=`<div class="shd"><span class="code">REMATCH</span><span class="ttl">再戦しますか？</span></div><div class="rule"></div>
   <div class="tpn on">${r.ja}（${r.opp.name}）</div>
   <div class="acts"><button class="btn-main cut" id="cfEq">再戦する</button><button class="btn-sub" id="cfNo" style="width:90px">やめる</button></div>`;
  $('cfNo').onclick=closeConfirm;
  $('cfEq').onclick=()=>{closeConfirm();if(vLeaving)return;vLeaving=true;$('vtChoice').innerHTML='';fadeTo(()=>{closeVersus(true);setMode('play',false,{def:vsDef(k,true)})},'VERSUS')};
  $('sconf').hidden=false;$('cfNo').focus()}
-$('vGo').onclick=()=>{const i=vsCur();if(vLeaving||i>=VSC.rounds.length||vsState(i)!=='open')return;const r=VSC.rounds[i];vLeaving=true;$('vtChoice').innerHTML='';
+$('vGo').onclick=()=>{const i=vsCur();if(vLeaving||i>=VSC.rounds.length||vsState(i)!=='open'||VSC.rounds[i].ready===false)return;const r=VSC.rounds[i];vLeaving=true;$('vtChoice').innerHTML='';
  vtSay([['b',r.ja+'、'+r.opp.name+'様との試合ですね。機体の整備は完了しています。','point'],['b','会場へご案内します。ご武運を、○○様。','bow']],()=>{setTimeout(()=>fadeTo(()=>{closeVersus(true);setMode('play',false,{def:vsDef(i)})},'VERSUS'),600)})};
-function openVersus(res=null){openMenu(false);closeModal();mailClose();nbClose();$('versus').hidden=false;VS3.start();SND.bgm('arena');vTab='card';vLeaving=false;
+function openVersus(res=null){openMenu(false);closeModal();mailClose();nbClose();$('versus').hidden=false;VS3.start();SND.bgm('arena');vTab='card';vLeaving=false;VSC=vsOkB()?VSC_B:VSC_C;   // CLASS B になったら B 大会が既定（対戦表で C 大会に切り替えられる）
  VS3.mood('normal');vtChar(null);renderVs();
  if(res){if(!res.length)$('vtText').innerHTML='';return vtSay(res.length?[...res,...vsEvents()]:res)}
  if(!VSS.reg)return firstVersus();
@@ -5003,7 +5005,7 @@ function prTime(id){let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))>>>0;const
 function fixDays(){const L=MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got&&MIS[d.id].dy==null);if(!L.length)return;
  if(!DAY_SAVED){L.sort((a,b)=>(MIS[a.id].t||0)-(MIS[b.id].t||0)).forEach((d,i)=>MIS[d.id].dy=i);DAY=Math.max(DAY,L.length-1);DAY_SAVED=true}else L.forEach(d=>MIS[d.id].dy=DAY)}
 const MIS={}; // 依頼の状態 {got:届いた, read:メールを読んだ, clear:1回以上クリア, n:クリア回数}
-const CHAPTERS={1:'何でも屋の初仕事',2:'残響',3:'闘技場'};
+const CHAPTERS={1:'何でも屋の初仕事',2:'残響',3:'闘技場',4:'壁の向こう'};
 const PASTOR07='<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-07</span>',JONAH='<ruby class="mc">JONAH<rt>ヨナ</rt></ruby>',SOL='<ruby class="mc">SOLOMON<rt>ソロモン</rt></ruby>';
 const MLIST=[
  {id:'1-1',wx:'dusk',ch:1,kind:'mail',ready:true,need:['tut'],title:'配給所周辺の掃除',from:'第7区画管理局',fromFull:'第7区画管理局（'+PASTOR07+' '+JONAH+' 管轄）',
@@ -5177,10 +5179,29 @@ const MLIST=[
    ['c','観客が出口に流れてる。あれが出口のゲートに着いたら、人が逃げられなくなる。避難が終わるまで、およそ150秒。……お願い、足止めして。倒せるなら、倒して！'],
    ['n','N-07、ノーナです。……お受けします。○○、行きましょう。']],
   after:{ok:'ありがとう！ 観客は全員無事よ。……あんな機体、あたしの整備記録にはなかったのに。',later:'そう……。急いで、とは言えないけど。あれ、また動くかもしれないから。'},
-  cu:{mem:['○○。要塞の動力部の奥で……思い出したことがあります。','誰かの声です。知らない男性の……いえ、知っている声。','「あの子の糸を、どうか紡ぎ直して」。……そう、言っていました。','「あの子」が誰なのかは、まだ思い出せません。けれど、その人が、わたくしを作ってくれたのだと……そう思います。'],
+  cu:{mails:['n-c4-inv','n-c4-petra','n-c4-mira','n-c4-otto'],mem:['○○。要塞の動力部の奥で……思い出したことがあります。','誰かの声です。知らない男性の……いえ、知っている声。','「あの子の糸を、どうか紡ぎ直して」。……そう、言っていました。','「あの子」が誰なのかは、まだ思い出せません。けれど、その人が、わたくしを作ってくれたのだと……そう思います。'],
    key:{pre:['それと……動力部の奥から、これを持ち帰りました。'],post:['暗号化されたデータの断片です。中継局で見つけたものと、同じ形式をしています。','並べてみると……片方の欠けを、もう片方が補っているようです。まだ、全部ではありませんが。','これに触れたとき、あの声を思い出しました。……ありがとう、○○。']},
    news:['闘技場の速報が届いています。……「CLASS C 大会、優勝。第7区画の、<em>第七の黒羊</em>」。','観客の皆さんが、そう呼んでいるそうです。……○○のことですよ。'],
    after:['管理局からの通知も届いています。等級が上がりました。','次は CLASS B。……闘技場の奥にも、まだ見ていないものがありそうです。']}},
+ // ===== CHAPTER 4「壁の向こう」（準備中の枠。設計は claude/CH4設計メモ.md。ready:false の間は届かない。実装は 4-1 から順に ready:true にする）
+ //  CLASS UP（B）→ 4-1 → B 1回戦(vb0) → 4-2 → 準決勝(vb1) → 4-3 → 決勝(vb2) → ★4-S。タイトル・依頼人・報酬は仮 =====
+ {id:'4-1',ch:4,kind:'mail',ready:false,need:[],title:'逃げた輸送車列',from:'SOLOMON（仲介）',reward:18000},
+ {id:'4-2',ch:4,kind:'visit',ready:false,need:['vb0'],title:'壁際の妨害塔',from:'ハンス',reward:20000},
+ {id:'4-3',ch:4,kind:'visit',ready:false,need:['vb1'],title:'壁の外周調査',from:'ティモ',reward:22000},
+ {id:'4-S',ch:4,kind:'visit',story:true,ready:false,need:['vb2'],title:'壁の中の研究所',from:'ティモ（NOAH）',reward:36000,cls:'A'},
+ // CHAPTER 4 の始まりに届く後日談のメール（依頼ではない）。afterClear＝その依頼をクリア済みなら届く（既存のセーブにも1回ずつ）
+ {id:'n-c4-inv',ch:0,kind:'mail',notice:true,afterClear:'3-S',afterCls:'B',ready:false,title:'CLASS B 大会のご案内',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
+  subj:'CLASS B 大会 参加のご案内',body:'第7区画 代表 ○○ 殿<br>登録等級の更新に伴い、<b>CLASS B 大会</b>への参加資格を付与しました。<br>対戦カードは、条件がそろい次第、運営局からメールでお知らせします。<br>これまでの CLASS C 大会の試合も、受付の対戦表から引き続きご確認いただけます。<br><span class="end">── 闘技場運営局</span>',
+  mailNona:'B 大会の案内です。……次の舞台が、用意されたようですね。'},
+ {id:'n-c4-petra',ch:0,kind:'mail',notice:true,afterClear:'3-S',afterCls:'B',ready:false,title:'あのときは、ありがとう',from:'整備主任 ペトラ',fromFull:'第3区画 闘技場 整備主任 ペトラ・ホルン',reward:0,
+  subj:'あのときは、ありがとう',body:'○○へ<br>地下の要塞、運営局の調査が入ったわ。結局、起動した理由は「不明」のまま。……あたしは納得してないけどね。<br>補修班は総出で復旧中。観客席の手すりまで、あんたの話題で持ちきりよ。<br>落ち着いたら、機体の整備に寄りなさい。<br><span class="end">── ペトラ</span>',
+  mailNona:'ペトラさんからです。……心配してくださっているようですね。'},
+ {id:'n-c4-mira',ch:0,kind:'mail',notice:true,afterClear:'3-S',afterCls:'B',ready:false,title:'境界監視所より',from:'境界監視員 ミラ',fromFull:'第7境界監視所 ミラ',reward:0,
+  subj:'境界監視所より（近況）',body:'○○さんへ<br>優勝の中継、監視所のみんなで見ました。所長が一番、声を出してました。<br>こちらは変わりなし……と言いたいところですが、最近、北の壁のほうから変な雑音が入ります。気のせいだといいのですが。<br>お体に気をつけて。<br><span class="end">── ミラ</span>',
+  mailNona:'ミラさんからです。……壁のほうの雑音、というのが少し気になります。'},
+ {id:'n-c4-otto',ch:0,kind:'mail',notice:true,afterClear:'3-S',afterCls:'B',ready:false,title:'行商の道すがら',from:'行商人 オットー',fromFull:'行商人 オットー',reward:0,
+  subj:'行商の道すがら',body:'○○さん、ご無沙汰です！ オットーです。<br>闘技場の優勝、聞きましたよ。うちの荷車の自慢話になりました。<br>いまは北の砂原あたりを回っています。道は荒れていますが、近道ならお任せを。荷運びの用があれば、いつでも声をかけてください。<br><span class="end">── オットー</span>',
+  mailNona:'オットーさんです。……相変わらず、お元気そうですね。'},
  // SHOP の入荷のお知らせ（ドールから。shop＝届く等級。既存のセーブにも1回ずつ届く）
  {id:'n-shop-g',ch:0,kind:'mail',notice:true,shop:'G',ready:false,title:'入荷のお知らせ',from:'部品倉庫 D-06',fromFull:'第7整備区画 部品倉庫（整備管理AI D-06）',reward:0,
   subj:'ご優勝おめでとうございます！！！ 新しい部位が入荷いたしました！！！',body:'○○様<br>ご優勝、おめでとうございます！ 中継で拝見しておりました。ドール、思わず棚の上から身を乗り出してしまいました。<br>そこで、といっては何ですが、新しい品が入荷いたしました。闘技場の花形の系統、<b>GLADIATOR 04</b> の4部位でございます。兜のような頭部に、軽い装甲、近接戦に向いた軽量の脚。……セレナ様の機体と、同じ系列でございます。<br>出どころは、今回も、どうか、お聞きにならないでくださいませ。<br>ぜひ、ぜひお立ち寄りを！<br><span class="end">── D-06</span>',
@@ -5203,31 +5224,50 @@ const MLIST=[
   mailNona:'準決勝の知らせです。……ここまで来ましたね、○○。'},
  {id:'v-c3',ch:0,kind:'mail',notice:true,vs:2,ready:false,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
   subj:'対戦カード決定 ── 決勝',body:'第7区画 代表 ○○ 殿<br>CLASS C 大会、<b>決勝</b>の対戦カードが決まりました。<br>お相手：第3区画 代表 <b>セレナ・ヴァルデス</b><br>会場：闘技場 中央アリーナ<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
-  mailNona:'決勝の相手は、セレナ・ヴァルデス。闘技場の花形、だそうです。'}];
+  mailNona:'決勝の相手は、セレナ・ヴァルデス。闘技場の花形、だそうです。'},
+ // B 大会の対戦カード（CH4。vs は使わず、受付が VSC_B の need で届ける。文面は仮）
+ {id:'v-b1',ch:0,kind:'mail',notice:true,ready:false,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
+  subj:'対戦カード決定 ── 1回戦（B 大会）',body:'第7区画 代表 ○○ 殿<br>CLASS B 大会、<b>1回戦</b>の対戦カードが決まりました。<br>お相手：第○区画 代表 <b>（未定）</b><br>会場：闘技場 中央アリーナ<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
+  mailNona:'B 大会、1回戦の知らせです。（文面は仮）'},
+ {id:'v-b2',ch:0,kind:'mail',notice:true,ready:false,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
+  subj:'対戦カード決定 ── 準決勝（B 大会）',body:'第7区画 代表 ○○ 殿<br>CLASS B 大会、<b>準決勝</b>の対戦カードが決まりました。<br>お相手：第4区画 代表 <b>ティモ・アルケン</b><br>会場：闘技場 中央アリーナ<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
+  mailNona:'B 大会、準決勝の知らせです。（文面は仮）'},
+ {id:'v-b3',ch:0,kind:'mail',notice:true,ready:false,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
+  subj:'対戦カード決定 ── 決勝（B 大会）',body:'第7区画 代表 ○○ 殿<br>CLASS B 大会、<b>決勝</b>の対戦カードが決まりました。<br>お相手：第5区画 代表 <b>エーリヒ・ブラント</b><br>会場：闘技場 中央アリーナ<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
+  mailNona:'B 大会、決勝の知らせです。（文面は仮）'}];
 const MDEF=Object.fromEntries(MLIST.map(d=>[d.id,d]));
 /* ===== VERSUS（闘技場のクラス別トーナメント）=====
  1章に3試合（1回戦 → 準決勝 → 決勝）。各試合は「前の試合に勝つ」＋「need の依頼をクリア」で条件がそろい、
  次の帰還で運営局から対戦カードのメール（mail）が届く。メールが届いた時点でその試合が開く（受付の［試合へ］が押せる）。
  対戦表は、1回戦だけを出し、勝つたびに次の試合の枠を出す（条件がそろうまでは「日程調整中」で相手を伏せる）。
  need の依頼（3-1〜3-3）は CH3 のミッションを作るときに MLIST へ足す。opp の名前・紹介は仮（決勝のセレナ以外） */
-const VSC={cls:'C',ch:3,name:'CLASS C 大会',rounds:[
+const VSC_C={cls:'C',ch:3,name:'CLASS C 大会',rounds:[
  {label:'ROUND 1',ja:'1回戦',need:'3-1',mail:'v-c1',prize:15000,opp:{name:'オスカー・リンド',en:'OSCAR LIND',reg:'第4区画',pastor:'NOAH',mech:'BULWARK 02 系の重装機',note:'第4区画の「動く城壁」。無口で律儀な古参。大型の盾を前に構えて崩れず、バズーカとミサイルで静かに削ってくる。',gear:'vs1',v:'adultM',
    talk:{start:['第7区画の新顔か。……この盾を抜けるものなら、抜いてみろ。'],win:['……見事だ。この盾を抜かれたのは、久しぶりだよ。'],lose:['守りを崩せなかったな。また来るといい。']}}},
  {label:'SEMIFINAL',ja:'準決勝',need:'3-2',mail:'v-c2',prize:20000,opp:{name:'ザラ・クーン',en:'ZARA KUHN',reg:'第6区画',pastor:'NIMROD',mech:'VANGUARD 03 系の高機動機',note:'第6区画の風。勝ち気で口の悪い若手のエース。機動力で相手を振り回し、間合いを支配して撃ち続ける。',gear:'vs2',v:'youthF',
    talk:{start:['間合いは、あたしが決める。ついてこられる？'],win:['……速さで負けるなんてね。覚えておくよ、第7区画。'],lose:['遅い、遅い。出直してきな。']}}},
  {label:'FINAL',ja:'決勝',need:'3-3',mail:'v-c3',prize:30000,opp:{name:'セレナ・ヴァルデス',en:'SERENA VALDES',ali:'緋色の喝采',reg:'第3区画',pastor:'DAVID',mech:'ルージュ・ファンファーレ（GLADIATOR 04）',note:'第3区画のエース、「緋色の喝采」。観客を沸かせることを何より好む華やかな女王。ミサイルと長剣と円盾で、見せ場をつくりながら攻めてくる。',gear:'vs3',v:'youthF',riv:'serena',
    talk:{start:['さあ、始めましょう。観客を退屈させないでね、名無しさん。'],win:['……っ。……いいわ、今日のところは拍手を贈ってあげる。'],lose:['ブラボー。……でも、喝采はわたしのものよ。']}}}]};
-const vsOk=()=>TUT==='done'&&CLASSES.indexOf(CLS)>=CLASSES.indexOf(VSC.cls);
+/* CLASS B 大会（CH4）。C 大会と同じ形：1回戦 → 準決勝 → 決勝。ready:false の試合は、受付に枠だけ出て［試合へ］は押せない（CH4 の実装が進むごとに true にする）。
+ need＝4-1／4-2／4-3 のクリア。相手・賞金は仮（1回戦の相手は未定）。決勝のエーリヒ（05 CENTURION＝リブラ）に勝つと CLASS A の ★4-S へ */
+const VSC_B={cls:'B',ch:4,name:'CLASS B 大会',rounds:[
+ {label:'ROUND 1',ja:'1回戦',ready:false,need:'4-1',mail:'v-b1',prize:25000,opp:{name:'（未定）',en:'TBD',reg:'（未定）',pastor:'---',mech:'---',note:'',gear:'vb1',v:'adultM',talk:{start:[],win:[],lose:[]}}},
+ {label:'SEMIFINAL',ja:'準決勝',ready:false,need:'4-2',mail:'v-b2',prize:35000,opp:{name:'ティモ・アルケン',en:'TIMO ARKEN',reg:'第4区画',pastor:'NOAH',mech:'（未定）',note:'第4区画の使者。壁の外の砂原を知り尽くした、穏やかな若者。',gear:'vb2',v:'youthM',riv:'timo',talk:{start:[],win:[],lose:[]}}},
+ {label:'FINAL',ja:'決勝',ready:false,need:'4-3',mail:'v-b3',prize:50000,opp:{name:'エーリヒ・ブラント',en:'ERICH BRANDT',reg:'第5区画',pastor:'DEBORAH',mech:'リブラ（05 CENTURION）',note:'第5区画の審判官のトップ。丁寧な口調の63歳。盾とライフルで反撃する。',gear:'vb3',v:'adultM',riv:'erich',talk:{start:[],win:[],lose:[]}}}]};
+const VST=[VSC_C,VSC_B];let VSC=VSC_C;   // いま受付で見ている大会
+const vsW=(T=VSC)=>T===VSC_B?VSS.winB:VSS.win;
+const vsOk=()=>TUT==='done'&&CLASSES.indexOf(CLS)>=CLASSES.indexOf(VSC_C.cls);
+const vsOkB=()=>vsOk()&&CLASSES.indexOf(CLS)>=CLASSES.indexOf(VSC_B.cls);
 /* 強制誘導：CLASS C になって受付が開いたら、初回の受付（VSS.reg）を済ませるまで、MENU の VERSUS 以外（TRAINING・MISSION・SHOP）は選べない */
 const vsForce=()=>vsOk()&&!VSS.reg;
 function vsLock(){if(!vsForce())return false;openMenu(false);nonaSay([['闘技場からの招待が先です、'+esc(PILOT||'')+'。MENU の <em>VERSUS</em> から、受付へ参りましょう。']],{hold:true});return true}   // ★2-S をクリアして CLASS C になると受付が開く
 // 試合の状態：won（勝利）／open（カードが届いた）／pend（日程調整中）。表に出すのは 1回戦と、前の試合に勝った試合だけ
-const vsState=i=>VSS.win[i]?'won':(MIS[VSC.rounds[i].mail]&&MIS[VSC.rounds[i].mail].got)?'open':'pend';
-const vsShown=i=>i===0||VSS.win[i-1];
-const vsCur=()=>{const i=VSS.win.findIndex(w=>!w);return i<0?VSC.rounds.length:i};   // いま進めている試合（すべて勝てば 3）
+const vsState=i=>vsW()[i]?'won':(MIS[VSC.rounds[i].mail]&&MIS[VSC.rounds[i].mail].got)?'open':'pend';
+const vsShown=i=>i===0||vsW()[i-1];
+const vsCur=()=>{const i=vsW().findIndex(w=>!w);return i<0?VSC.rounds.length:i};   // いま進めている試合（すべて勝てば 3）
 // 対戦カードのメール：条件（前の試合に勝利＋need の依頼をクリア）がそろった試合の分を届ける
-function vsNotice(){const out=[];if(!vsOk())return out;let t=Date.now();
- VSC.rounds.forEach((r,i)=>{if(MIS[r.mail]||!vsShown(i))return;if(r.need&&!(MIS[r.need]&&MIS[r.need].clear))return;MIS[r.mail]={got:true,read:false,clear:false,n:0,t:t++};out.push(MDEF[r.mail])});return out}
+function vsNotice(){const out=[];if(!vsOk())return out;let t=Date.now();const keep=VSC;   // vsShown は「いま見ている大会」で決まるので、大会ごとに VSC を切り替えて調べる
+ VST.forEach(T=>{if(T===VSC_B&&!vsOkB())return;VSC=T;T.rounds.forEach((r,i)=>{if(r.ready===false||MIS[r.mail]||!vsShown(i))return;if(r.need&&!(MIS[r.need]&&MIS[r.need].clear))return;MIS[r.mail]={got:true,read:false,clear:false,n:0,t:t++};out.push(MDEF[r.mail])})});VSC=keep;return out}
 const FIELD_BG={under:0x2a1214,power:0x1c2330,hangar:0x1a1f22,viaduct:0x363a3e,colo:0x0e1619,canyon:0x2a2622,relay:0x22262a,border:0x2e2a22,city:0x26241f,road:0x2b2721,ruins:0x2a2e2a,factory:0x23261f};
 const nameIn=s=>s.replace(/○○/g,esc(PILOT||'操縦者'));
 
@@ -5618,7 +5658,7 @@ function misDeps(d){const r=new Set((d.need||[]));
  else if(d.ch>1){const ps=MLIST.find(x=>x.ch===d.ch-1&&x.story);if(ps)r.add(ps.id)}
  if(!r.size)r.add('tut');return [...r]}
 const tutOk=()=>TUT==='done'&&TTUT>=TT_N;
-const depOk=(k,st)=>k==='tut'?(st?st.tut:tutOk()):/^vs\d$/.test(k)?(st?st.vs.st[+k[2]]===2:!!VSS.win[+k[2]]):(st?st.m[k]===2:!!(MIS[k]&&MIS[k].clear));
+const depOk=(k,st)=>k==='tut'?(st?st.tut:tutOk()):/^vs\d$/.test(k)?(st?st.vs.st[+k[2]]===2:!!VSS.win[+k[2]]):/^vb\d$/.test(k)?(st?st.vs.sb[+k[2]]===2:!!VSS.winB[+k[2]]):(st?st.m[k]===2:!!(MIS[k]&&MIS[k].clear));
 // 入荷のお知らせ：いまの等級までの分で、まだ届いていないものを届ける（古い等級から順に、時刻を1ずつずらす）
 function shopNotice(){const ci=CLASSES.indexOf(CLS),out=[];let t=Date.now();if(TTUT<TT_N)return out;  // 最初のトレーニングが済むまで入荷のお知らせは届かない
 
@@ -5626,6 +5666,7 @@ function shopNotice(){const ci=CLASSES.indexOf(CLS),out=[];let t=Date.now();if(T
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
  if(['train','continue','mission','shop','ttdone','versus'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(d.afterReg&&!VSS.reg)return;if(d.afterSeen&&!VSS.seen[d.afterSeen])return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;
   MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)});
+ MLIST.forEach(d=>{if(d.afterClear&&!MIS[d.id]&&MIS[d.afterClear]&&MIS[d.afterClear].clear&&(!d.afterCls||CLASSES.indexOf(CLS)>=CLASSES.indexOf(d.afterCls))){MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)}});   // 後日談のメール
  out.push(...shopNotice(),...vsNotice());
  if(out.length){saveGame();misHeader();if(out.some(d=>d.kind==='mail')){$('mailBtn').classList.add('new');SND.play('mail')}}return out}
 function misHeader(){const u=unreadMail().length,got=anyGot();
@@ -5720,7 +5761,7 @@ function renderBoard(sel){
  const stOpen=story&&story.ready&&MIS[story.id]&&MIS[story.id].got;
  const sRow=stOpen?row(story):'';
  // CHAPTER ごとに折りたたみ（CHAPTER 1 から順。最初は今の CHAPTER だけ開く。開閉は CHO に保存）
- const chOpen=c=>CHO[c]??(c===CH),chs=Object.keys(CHAPTERS).map(Number).filter(c=>c<=CH).sort((a,b)=>a-b);
+ const chOpen=c=>CHO[c]??(c===CH),chs=Object.keys(CHAPTERS).map(Number).filter(c=>c<=CH&&MLIST.some(d=>d.ch===c&&d.ready)).sort((a,b)=>a-b);   // 出撃できる依頼がまだ無い CHAPTER は出さない（CH4 の準備中の間）
  const chBlock=c=>{const op=chOpen(c),old=c<CH,rows=old?MLIST.filter(d=>d.ch===c&&MIS[d.id]&&MIS[d.id].got).sort((a,b)=>(a.story?1:0)-(b.story?1:0)).map(row).join(''):list.map(row).join('')+sRow+(none?none:'');
   return `<button class="chh${old?' old':''}" data-ch="${c}"><i>${op?'▼':'▶'}</i><b>CHAPTER ${c}</b><span>${CHAPTERS[c]||''}</span>${old?'<small>CLEAR ・ 再挑戦可</small>':''}</button>`+(op?rows:'')};
  const none=!list.length&&!sRow?`<div class="mnone">── 依頼はまだ届いていません</div>`:'';
@@ -6074,9 +6115,9 @@ const VSEV_K={stand:{pri:1},firstE:{pri:1},firstP:{pri:1},cover:{pri:1,rep:1},me
 const VRIV={serena:{stand:['様子見？　退屈させないで。'],firstE:['まずは一つ。'],firstP:['へえ……当ててくるのね。'],cover:['隠れても無駄よ。','柱の陰が好きなのね。','観客が退屈しているわ。出てきなさい。'],
  melee:['その距離で来る？　いいわ。'],eHalf:['……やるじゃない。'],pHalf:['まだ立っていられる？'],eLow:['ここからが本番よ。'],pLow:['終わりにしましょう。'],idle:['どうしたの、手が止まってる。','撃たないの？　つまらないわ。','見とれている場合じゃないわよ。'],
  arms:['腕はもう使えないわね。'],legs:['脚が止まったわ。どう逃げるの？']}};
-function vsDef(i,rem=false){const r=VSC.rounds[i];return {id:'VS'+(i+1),vs:i,rem,vsJa:r.ja,title:VSC.name+' '+r.ja,ch:VSC.ch,field:'colo',fieldJa:'闘技場',ready:true,bgm:i===2?'avsf':'avs',
+function vsDef(i,rem=false){const r=VSC.rounds[i];return {id:(VSC===VSC_B?'VB':'VS')+(i+1),vs:i,vt:VSC.cls,rem,vsJa:r.ja,title:VSC.name+' '+r.ja,ch:VSC.ch,field:'colo',fieldJa:'闘技場',ready:true,bgm:i===2?'avsf':'avs',
  start:{x:0,z:-COLO_R*.76},enemies:[{type:'gear',gear:r.opp.gear,x:0,z:COLO_R*.76}],comm:{},reward:0,wx:'arena'}}
-function vsInit(){const i=RUN.def.vs,r=VSC.rounds[i],e=ENEMIES.find(x=>x.type==='gear'&&!x.off&&x.gk===r.opp.gear);
+function vsInit(){VSC=RUN.def.vt==='B'?VSC_B:VSC_C;const i=RUN.def.vs,r=VSC.rounds[i],e=ENEMIES.find(x=>x.type==='gear'&&!x.off&&x.gk===r.opp.gear);
  e.g.rotation.y=Math.atan2(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z);
  $('esc').hidden=false;$('escL').textContent='TARGET';$('escS').textContent=r.opp.en;   // 機体名まで入れると 844px で CORE の欄に重なるため名前だけ$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo');
  RUN.vs={rem:!!RUN.def.rem,i,r,e,riv:r.opp.riv?VRIV[r.opp.riv]:null,go:false,first:null,atk:0,last:-99,cov:0,covT:-99,idleT:-99,done:{},pend:[],rep:{}};VSCAM.on=false;VSEND.k=null;FIN.me=null;mech.bot.visible=true}
@@ -6133,7 +6174,7 @@ function vsEndTick(dt){const V=RUN.vs,e=V.e,o=V.r.opp,ok=RUN.ok;V.pt+=dt;
 function vsFinish(ok,abort=false){if(!RUN||RUN.leaving||fading)return;RUN.leaving=true;const r=RUN.vs.r,i=RUN.vs.i,rem=RUN.vs.rem;commClear();VSCAM.on=false;VSEND.k=null;FIN.me=null;
  fadeTo(()=>{mech.bot.visible=true;setMode('garage');let res;
   if(rem)res=[];   // 再戦：記録も賞金も変えず、セリフもすべて省く
-  else if(ok){VSS.win[i]=true;CREDIT+=r.prize;saveGame();const nx=VSC.rounds[i+1];
+  else if(ok){vsW()[i]=true;CREDIT+=r.prize;saveGame();const nx=VSC.rounds[i+1];
    res=[['b',r.ja+'、<strong>勝利</strong>を確認しました。おめでとうございます、○○様。','bow'],['b','賞金 <em>'+fmtCR(r.prize)+' CR</em> をお支払いしました。所持金は <strong>'+fmtCR(CREDIT)+' CR</strong> です。','point'],
     nx?['b','次の'+nx.ja+'の日程は、ただいま調整中です。決まり次第、運営局から<em>メール</em>でご連絡いたします。','normal']:['b',VSC.name+'の全試合が終了しました。優勝、おめでとうございます。','bow']]}
   else res=abort?[['b',r.ja+'の棄権を受け付けました。機体の整備は済んでいます。','normal'],['b','準備ができましたら、いつでも再挑戦いただけます。','bow']]
@@ -6567,9 +6608,9 @@ const dependents=id=>MLIST.filter(d=>isMis(d)&&misDeps(d).includes(id));
 const vsKey=i=>'vs'+i;
 function dbgSet(id,v){if(id==='tut'){DW.tut=v;if(!v)dependents('tut').forEach(d=>dbgSet(d.id,0));return}
  const d=MDEF[id];if(!d.ready)v=0;DW.m[id]=v;
- if(v>=1)misDeps(d).forEach(k=>{if(k==='tut')DW.tut=true;else if(/^vs\d$/.test(k)){if(DW.vs.st[+k[2]]!==2)dbgVsSet(+k[2],2)}else if(DW.m[k]!==2)dbgSet(k,2)});
+ if(v>=1)misDeps(d).forEach(k=>{if(k==='tut')DW.tut=true;else if(/^vs\d$/.test(k)){if(DW.vs.st[+k[2]]!==2)dbgVsSet(+k[2],2)}else if(/^vb\d$/.test(k)){if(DW.vs.sb[+k[2]]!==2)dbgVsSet(+k[2],2,true)}else if(DW.m[k]!==2)dbgSet(k,2)});
  if(v<2)dependents(id).forEach(x=>{if(DW.m[x.id])dbgSet(x.id,0)})}
-function dbgOpen(){mailClose();nbClose();DW={tut:tutOk(),inv:DBG.inv,m:{},own:new Set(OWN),vs:{reg:VSS.reg,st:VSC.rounds.map((r,i)=>VSS.win[i]?2:(MIS[r.mail]&&MIS[r.mail].got)?1:0)}};MLIST.filter(isMis).forEach(d=>{const m=MIS[d.id];DW.m[d.id]=!m||!m.got?0:m.clear?2:1});dbgRender()}
+function dbgOpen(){mailClose();nbClose();DW={tut:tutOk(),inv:DBG.inv,m:{},own:new Set(OWN),vs:{reg:VSS.reg,st:VSC_C.rounds.map((r,i)=>VSS.win[i]?2:(MIS[r.mail]&&MIS[r.mail].got)?1:0),sb:VSC_B.rounds.map((r,i)=>VSS.winB[i]?2:(MIS[r.mail]&&MIS[r.mail].got)?1:0)}};MLIST.filter(isMis).forEach(d=>{const m=MIS[d.id];DW.m[d.id]=!m||!m.got?0:m.clear?2:1});dbgRender()}
 function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).map(d=>d.ch))].sort((a,b)=>a-b);
  const seg=(id,v,dis)=>`<span class="sg">${['未着','届いた','クリア'].map((l,i)=>`<button data-id="${id}" data-v="${i}" class="${v===i?'on':''}" ${dis?'disabled':''}>${l}</button>`).join('')}</span>`;
  box.innerHTML=`<div class="dh"><span>DEBUG ／ 進行状況</span><small>選ぶと、矛盾しないように関係する依頼も自動でそろいます</small></div>
@@ -6587,8 +6628,9 @@ function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).m
  box.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{DW.inv=b.dataset.i==='1';dbgRender()});
  box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const ids=b.dataset.p.split(','),on=!ids.every(i=>DW.own.has(i));ids.forEach(i=>on?DW.own.add(i):DW.own.delete(i));const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
  box.querySelectorAll('[data-pall]').forEach(b=>b.onclick=()=>{if(b.dataset.pall==='1')dbgAllParts().forEach(i=>DW.own.add(i));else{DW.own=new Set(START_OWN)}const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
+ box.querySelectorAll('[data-vb]').forEach(b=>b.onclick=()=>{dbgVsSet(+b.dataset.vb,+b.dataset.v,true);const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
  box.querySelectorAll('[data-vs]').forEach(b=>b.onclick=()=>{dbgVsSet(+b.dataset.vs,+b.dataset.v);const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
- box.querySelectorAll('[data-vgo]').forEach(b=>b.onclick=()=>{const i=+b.dataset.vgo;dbgClose();fadeTo(()=>{openMenu(false);closeModal();setMode('play',false,{def:vsDef(i)})},'VERSUS')});   // 受付を通さずに試合を始める（確認用）
+ box.querySelectorAll('[data-vgo]').forEach(b=>b.onclick=()=>{const i=+b.dataset.vgo;dbgClose();VSC=b.dataset.vt==='B'?VSC_B:VSC_C;fadeTo(()=>{openMenu(false);closeModal();setMode('play',false,{def:vsDef(i)})},'VERSUS')});   // 受付を通さずに試合を始める（確認用）
  box.querySelectorAll('[data-vr]').forEach(b=>b.onclick=()=>{DW.vs.reg=b.dataset.vr==='1';const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
  box.querySelectorAll('[data-cv]').forEach(b=>b.onclick=()=>{dbgClose();charView(+b.dataset.cv)});
  $('dbgX').onclick=dbgClose;$('dbgGo').onclick=dbgApply;
@@ -6619,13 +6661,16 @@ function dbgParts(){const all=dbgAllParts(),st=new Set(START_OWN),btn=(ids,lab)=
   ${ser.map(n=>{const ids=fr.filter(i=>PN[i][0]===n);return `<div class="pr"><span>${n}</span><span class="sg">${ids.some(is00)?btn(C00,'4部位セット（TUNE 全 MAX）'):ids.map(i=>btn([i],FRAME_CAT[slotOfItem(i)]+' '+PN[i][3])).join('')}</span></div>`}).join('')}
   ${cats.map(n=>`<div class="pr"><span>${n}</span><span class="sg">${wp.filter(i=>PN[i][0]===n).map(i=>btn([i],PN[i][3])).join('')}</span></div>`).join('')}`}
 // VERSUS：試合を「開放」「勝利」にすると前の試合は勝利に、「勝利」から外すと後の試合は未開放にそろえる（依頼の条件は見ない）
-function dbgVsSet(i,v){const st=DW.vs.st;st[i]=v;if(v>=1)for(let j=0;j<i;j++)st[j]=2;if(v<2)for(let j=i+1;j<st.length;j++)st[j]=0;
- // 試合の条件の依頼（1回戦＝3-1 …）のクリアと、勝利に頼る依頼（3-2 など）の未着をそろえる
- if(v>=1)for(let j=0;j<=i;j++){const n=VSC.rounds[j].need;if(n&&MDEF[n]&&MDEF[n].ready&&DW.m[n]!==2)dbgSet(n,2)}
- for(let j=0;j<st.length;j++)if(st[j]!==2)dependents(vsKey(j)).forEach(x=>{if(DW.m[x.id])dbgSet(x.id,0)})}
-function dbgVs(){const v=DW.vs;return `<div class="dc">VERSUS（${VSC.name}）　受付は CLASS C（★2-S クリア）で開く</div>
+function dbgVsSet(i,v,b=false){const st=b?DW.vs.sb:DW.vs.st,T=b?VSC_B:VSC_C,key=b?'vb':'vs';st[i]=v;if(v>=1)for(let j=0;j<i;j++)st[j]=2;if(v<2)for(let j=i+1;j<st.length;j++)st[j]=0;
+ // 試合の条件の依頼（1回戦＝3-1／B 大会は 4-1 …）のクリアと、勝利に頼る依頼（3-2 など）の未着をそろえる
+ if(v>=1)for(let j=0;j<=i;j++){const n=T.rounds[j].need;if(n&&MDEF[n]&&MDEF[n].ready&&DW.m[n]!==2)dbgSet(n,2)}
+ for(let j=0;j<st.length;j++)if(st[j]!==2)dependents(key+j).forEach(x=>{if(DW.m[x.id])dbgSet(x.id,0)})}
+function dbgVs(){const v=DW.vs,rows=(T,st,b)=>T.rounds.map((r,i)=>`<div class="dr${r.ready===false?' na':''}"><span><b>${r.label}</b>${r.ja}（${r.opp.name.startsWith('（')?r.opp.name.slice(1,-1):r.opp.name}）${r.ready===false?'（準備中）':''}</span><span class="sg">${['未開放','開放（メール）','勝利'].map((l,k)=>`<button data-${b?'vb':'vs'}="${i}" data-v="${k}" class="${st[i]===k?'on':''}">${l}</button>`).join('')}${r.ready===false?'':`<button data-vgo="${i}" data-vt="${T.cls}">試合</button>`}</span></div>`).join('');
+ return `<div class="dc">VERSUS（${VSC_C.name}）　受付は CLASS C（★2-S クリア）で開く</div>
   <div class="dt"><span>受付の初回（歩いて近づく演出）。「未」にすると一度だけの場面も見直せる</span><span class="sg"><button data-vr="0" class="${v.reg?'':'on'}">未</button><button data-vr="1" class="${v.reg?'on':''}">済</button></span></div>
-  ${VSC.rounds.map((r,i)=>`<div class="dr"><span><b>${r.label}</b>${r.ja}（${r.opp.name}）</span><span class="sg">${['未開放','開放（メール）','勝利'].map((l,k)=>`<button data-vs="${i}" data-v="${k}" class="${v.st[i]===k?'on':''}">${l}</button>`).join('')}<button data-vgo="${i}">試合</button></span></div>`).join('')}`}
+  ${rows(VSC_C,v.st,false)}
+  <div class="dc">VERSUS（${VSC_B.name}）　CLASS B（★3-S クリア）から。試合は CH4 の実装が進むと遊べる</div>
+  ${rows(VSC_B,v.sb,true)}`}
 function dbgDerive(){let ci=0,ch=1;MLIST.forEach(d=>{if(d.story&&DW.m[d.id]===2){if(d.cls)ci=Math.max(ci,CLASSES.indexOf(d.cls));ch=Math.max(ch,d.ch+1)}});
  const maxCh=Math.max(...Object.keys(CHAPTERS).map(Number));return {cls:CLASSES[ci],ch:Math.min(ch,maxCh)}}
 function dbgClose(){$('dbgBox').hidden=true;DW=null}
@@ -6638,7 +6683,7 @@ function dbgApply(){const now=Date.now();
  // 等級の通知メール：クリア済みの★の分だけ届いている状態にそろえる
  MLIST.filter(d=>d.story&&d.cls).forEach(d=>{const nid='n-cls-'+d.cls.toLowerCase();if(!MDEF[nid])return;if(DW.m[d.id]===2){if(!MIS[nid])MIS[nid]={got:true,read:true,clear:false,n:0,t:now}}else delete MIS[nid]});
  // VERSUS：受付の初回・各試合の勝利と対戦カードのメール
- if(!DW.vs.reg&&VSS.reg)VSS.seen={};VSS.reg=DW.vs.reg;const vsNew=[];VSC.rounds.forEach((r,i)=>{const v=DW.vs.st[i];VSS.win[i]=v===2;if(v>=1){if(!MIS[r.mail]){MIS[r.mail]={got:true,read:v===2,clear:false,n:0,t:now+i};if(v===1)vsNew.push(r)}}else delete MIS[r.mail]});
+ if(!DW.vs.reg&&VSS.reg)VSS.seen={};VSS.reg=DW.vs.reg;const vsNew=[];[[VSC_C,DW.vs.st,VSS.win],[VSC_B,DW.vs.sb,VSS.winB]].forEach(([T,sts,wins])=>T.rounds.forEach((r,i)=>{const v=sts[i];wins[i]=v===2;if(v>=1){if(!MIS[r.mail]){MIS[r.mail]={got:true,read:v===2,clear:false,n:0,t:now+i};if(v===1)vsNew.push(r)}}else delete MIS[r.mail]}));
  // パーツ：所持品を入れ替え。00 は TUNE を全 MAX に。持っていない品を装備していたら、その部位を初期装備に戻す
  const nOwn=DW.own.size;OWN.clear();START_OWN.forEach(i=>OWN.add(i));DW.own.forEach(i=>OWN.add(i));
  C00.forEach(i=>{if(OWN.has(i))TUNE[i]=[5,5]});
