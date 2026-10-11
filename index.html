@@ -961,7 +961,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v196</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v197</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1039,7 +1039,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v196</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v197</span></div>
  </div>
 </div>
 
@@ -1105,7 +1105,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v196</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v197</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -2293,25 +2293,25 @@ Object.assign(HAND,{
  // セレナ専用の三連斬り（敵機用）：0.9秒で3回斬る。1発 550×ボス係数0.273＝約150、全弾で約450
  'BLS':{...HAND.BL3,st:{kind:'近接',dmg:550,range:8,area:0,rate:'3連撃／0.9秒',count:1,ammo:INF,reload:0,wt:16,imp:'B',spd:0,hom:'－',note:'セレナの三連斬り（1発 約150）'},
   act:{name:'三連斬り',dur:.9,run(c){const u=c.u,s=c.s;
-   const slash=(u>.12&&u<.28)||(u>.40&&u<.56)||(u>.68&&u<.84);c.w.blade.scale.set(1,slash?1.7:1,1);
+   const slash=(u>.12&&u<.27)||(u>.40&&u<.55)||(u>.70&&u<.88);c.w.blade.scale.set(1,slash?1.7:1,1);
    if(slash&&(c.st.tt=(c.st.tt||0)+c.dt)>.015){c.st.tt=0;c.w.muzzle.getWorldPosition(_p);spawn(0xff9fb0,.28,_p,{life:.2,grow:-.6})}
-   if(c.once('h1',.22)){shake=.1;c.melee()}
-   if(c.once('h2',.50)){shake=.12;c.melee();SND.play('blade',{g:.45})}
-   if(c.once('h3',.78)){shake=.16;c.melee();SND.play('blade',{g:.5})}
-   return {w:env(u,.05,.85),
-    arm:{x:kf(u,[[0,0],[.08,.7],[.20,-1.6],[.32,-1.0],[.40,.5],[.50,-1.5],[.60,-.9],[.66,.6],[.78,-1.7],[.90,-.4],[1,0]]),
-         z:kf(u,[[0,s*.1],[.08,s*1.0],[.20,-s*.4],[.32,-s*.5],[.40,s*1.0],[.50,-s*.5],[.60,-s*.6],[.66,s*1.0],[.78,-s*.3],[.90,s*.4],[1,s*.1]]),
-         e:kf(u,[[0,-.2],[.08,-1.5],[.20,-.1],[.32,-.5],[.40,-1.3],[.50,-.1],[.60,-.5],[.66,-1.3],[.78,-.1],[.90,-.5],[1,-.2]])},
-    off:{x:kf(u,[[0,0],[.08,-.8],[.20,.6],[.50,-.2],[.66,.5],[.78,.3],[1,0]]),z:-s*.3,e:-1.1},
-    torsoY:kf(u,[[0,0],[.08,twist(s,-.6)],[.20,twist(s,.6)],[.40,twist(s,-.5)],[.50,twist(s,.6)],[.66,twist(s,-.5)],[.78,twist(s,.6)],[1,0]]),
-    torsoX:kf(u,[[0,0],[.20,.25],[.40,0],[.78,.25],[1,0]]),
-    headY:kf(u,[[0,0],[.08,twist(s,.35)],[.20,twist(s,-.4)],[.50,twist(s,.3)],[.78,twist(s,-.3)],[1,0]]),
-    legs:legsFor(s,kf(u,[[0,0],[.08,.35],[.20,-.8],[.32,-.5],[.50,-.7],[.66,.1],[.78,-.7],[.90,-.3],[1,0]]),
-                   kf(u,[[0,0],[.08,.2],[.20,.7],[.32,.3],[.50,.6],[.78,.6],[.90,.2],[1,0]]),
-                   kf(u,[[0,0],[.08,-.3],[.20,.5],[.32,.3],[.50,.4],[.78,.4],[.90,.2],[1,0]]),
-                   kf(u,[[0,0],[.08,.5],[.20,.15],[.50,.2],[.78,.2],[.90,.1],[1,0]])),
-    crouch:kf(u,[[0,0],[.08,.4],[.20,.25],[.32,.3],[.50,.3],[.66,.35],[.78,.25],[.90,.15],[1,0]]),
-    scroll:kf(u,[[0,0],[.10,5],[.20,8],[.30,1],[.40,0],[.45,5],[.50,7],[.60,1],[.66,0],[.72,5],[.78,7],[.90,1],[1,0]])}},
+   if(c.once('h1',.19)){shake=.1;c.melee()}
+   if(c.once('h2',.48)){shake=.12;c.melee();SND.play('blade',{g:.4})}
+   if(c.once('h3',.80)){shake=.22;c.melee();SND.play('rush',{g:.45})}
+   return {w:env(u,.05,.86),
+    arm:{x:kf(u,[[0,0],[.08,.7],[.19,-1.6],[.30,-1.0],[.40,-.6],[.48,.6],[.60,.9],[.66,.9],[.80,-1.5],[.92,-.9],[1,0]]),
+         z:kf(u,[[0,s*.1],[.08,s*1.0],[.19,-s*.4],[.30,-s*.5],[.40,-s*.8],[.48,s*1.0],[.66,s*1.2],[.80,-s*.9],[.92,-s*.6],[1,s*.1]]),
+         e:kf(u,[[0,-.2],[.08,-1.5],[.19,-.1],[.30,-.4],[.40,-.6],[.48,-1.2],[.66,-1.6],[.80,-.1],[.92,-.3],[1,-.2]])},
+    off:{x:kf(u,[[0,0],[.08,-.8],[.19,.6],[.40,-.2],[.48,.5],[.66,-.9],[.80,.7],[1,0]]),z:-s*.3,e:-1.1},
+    torsoY:kf(u,[[0,0],[.08,twist(s,-.6)],[.19,twist(s,.6)],[.30,twist(s,.45)],[.40,twist(s,.6)],[.48,twist(s,-.5)],[.66,twist(s,-.85)],[.80,twist(s,.95)],[.92,twist(s,.4)],[1,0]]),
+    torsoX:kf(u,[[0,0],[.19,.25],[.40,0],[.48,-.12],[.66,-.05],[.80,.3],[1,0]]),
+    headY:kf(u,[[0,0],[.08,twist(s,.35)],[.19,twist(s,-.4)],[.48,twist(s,.3)],[.80,twist(s,-.5)],[1,0]]),
+    legs:legsFor(s,kf(u,[[0,0],[.08,.35],[.19,-.8],[.30,-.5],[.40,.1],[.48,-.7],[.60,-.3],[.70,.35],[.80,-.9],[.92,-.6],[1,0]]),
+                   kf(u,[[0,0],[.08,.2],[.19,.7],[.30,.3],[.48,.5],[.60,.2],[.70,.2],[.80,.8],[1,0]]),
+                   kf(u,[[0,0],[.08,-.3],[.19,.5],[.30,.3],[.48,.4],[.70,-.3],[.80,.6],[.92,.4],[1,0]]),
+                   kf(u,[[0,0],[.08,.5],[.19,.15],[.48,.2],[.70,.5],[.80,.15],[1,0]])),
+    crouch:kf(u,[[0,0],[.08,.4],[.19,.25],[.30,.3],[.40,.35],[.48,.25],[.66,.45],[.80,.28],[.92,.25],[1,0]]),
+    scroll:kf(u,[[0,0],[.1,5],[.19,8],[.3,1],[.4,0],[.46,5],[.5,7],[.6,1],[.68,2],[.76,9],[.82,13],[.92,2],[1,0]])}},
    end(w){w.blade.scale.set(1,1,1)}},
   build(g){return HAND.BL3.build(g)}},
  // 展開シールド：2枚のパネルを扇形に開く新デザイン
