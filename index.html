@@ -1357,7 +1357,7 @@ const AIM={x:-1.45,e:-.1}; // 腕を前に構える角度（どの腕パーツ�
 const FX=[],UB=new THREE.BoxGeometry(1,1,1),_p=new THREE.Vector3(),_d=new THREE.Vector3(),_q=new THREE.Vector3();
 let mode='garage',lockT=null;
 /* 敵の弾の強さ（決定：2026-10-11）：弾速 ENEMY_BS 倍、VERSUS の敵はさらに VS_BS 倍の弾速・VS_DMG 倍の威力・撃つ間隔を 1/VS_FIRE。ここを変えるだけで調整できる */
-const ENEMY_BS=1.25,VS_BS=1.2,VS_DMG=1.2,VS_FIRE=1.3;
+const ENEMY_BS=1.6,VS_BS=1.25,VS_DMG=1.2,VS_FIRE=1.3;
 function spawn(color,size,pos,o={}){
  if(o.team==='e'&&o.vel){const k=ENEMY_BS*(RUN&&RUN.vs?VS_BS:1);o={...o,vel:o.vel.clone().multiplyScalar(k)};if(o.life)o.life/=k;if(RUN&&RUN.vs&&o.dmg)o.dmg=Math.round(o.dmg*VS_DMG)}
  const {vel=null,life=.3,grow=0,fade=true,len=1,spin=false,grav=0,trail=0,team=null,dmg=0,splash=0,imp='なし',src=null,hr=0}=o;
