@@ -6849,6 +6849,8 @@ function dbgApply(){const now=Date.now();
   if(!v){delete MIS[d.id];return}
   const nm=m||{got:true,read:false,clear:false,n:0,t:now};nm.got=true;nm.clear=v===2;if(v===2){nm.read=true;nm.n=Math.max(1,nm.n)}else nm.n=0;MIS[d.id]=nm});
  const dv=dbgDerive();CLS=dv.cls;CH=dv.ch;
+ // 来訪（once）：条件の依頼が「未着／届いた」なら、見た記録を消す（条件を満たしたら、また来訪する）。afterCls は CLASS が条件より低いとき
+ MLIST.filter(d=>d.kind==='visit'&&d.once).forEach(d=>{const lo=k=>k in DW.m&&DW.m[k]<2;if((d.afterRead&&lo(d.afterRead))||(d.afterClear&&lo(d.afterClear))||(d.afterCls&&CLASSES.indexOf(CLS)<CLASSES.indexOf(d.afterCls)))delete MIS[d.id]});
  // 等級の通知メール：クリア済みの★の分だけ届いている状態にそろえる
  MLIST.filter(d=>d.story&&d.cls).forEach(d=>{const nid='n-cls-'+d.cls.toLowerCase();if(!MDEF[nid])return;if(DW.m[d.id]===2){if(!MIS[nid])MIS[nid]={got:true,read:true,clear:false,n:0,t:now}}else delete MIS[nid]});
  // VERSUS：受付の初回・各試合の勝利と対戦カードのメール
