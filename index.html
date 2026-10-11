@@ -1384,6 +1384,7 @@ function missile(obj,st,tgt,src=null){
  obj.getWorldPosition(_p);obj.getWorldDirection(_d);
  const m=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0xdcdcdc}));m.scale.set(.12,.12,.45);m.position.copy(_p);S.add(m);
  FX.push({m,homeT:st&&st.vert?.7:.35,arc:!!(st&&st.arc),vel:st&&st.vert?_d.clone().multiplyScalar(20):_d.clone().multiplyScalar(7).add(new THREE.Vector3(0,st&&st.arc?8:5,0)),life:st?st.range/st.spd+1:3,age:0,missile:true,base:.12,tt:0,team:'p',dmg:st?st.dmg:0,splash:st?st.area:0,imp:st?st.imp:'なし',home:mode==='play'?tgt:null,src});
+ if(mode==='play'&&RUN&&RUN.chase)FX[FX.length-1].vel.z+=SS.dash;   // 追跡：自機の前進の勢いを引き継ぐ（後ろへ流れない）
 }
 // 迎撃装置用：自機に近い敵弾を1つ探す
 function interceptTarget(r){playerCenter(_q);let best=null,bd=r;FX.forEach(f=>{if(f.team!=='e'||f.age>=f.life)return;const d=f.m.position.distanceTo(_q);if(d<bd){bd=d;best=f}});return best}
@@ -4831,7 +4832,7 @@ function hitPlayer(dmg,imp,pos){if(P.down>0)return;if(DBG.inv){spawn(0xc0a8ff,.6
    dmg=left;say('シールド大破：貫通',.6)}}
  // 当たった高さで部位を決める：腰より下＝LEGS、上半身の外側＝ARMS、中央＝CORE。0の部位に当たった分は CORE が受ける
  const h=pos.y-mech.bot.position.y,rt=_q.set(-Math.cos(P.yaw),0,Math.sin(P.yaw)),lat=Math.abs((pos.x-P.pos.x)*rt.x+(pos.z-P.pos.z)*rt.z);
- let zone=h<3.1?'legs':lat>1.15?'arms':'core',left=dmg,take0=zone!=='core'?P.hp[zone]:0;
+ let zone=(h<3.1&&!(RUN&&RUN.chase))?'legs':lat>1.15?'arms':'core',left=dmg,take0=zone!=='core'?P.hp[zone]:0;
  if(zone!=='core'&&P.hp[zone]>0){const take=Math.min(left,P.hp[zone]);P.hp[zone]-=take;left-=take;if(P.hp[zone]<=0)say(zone==='arms'?'ARMS 損壊：手持ち兵装 使用不能':'LEGS 損壊：ダッシュ・急加速・跳躍 不能',1.6)}
  if(left>0)P.hp.core=Math.max(0,P.hp.core-left);pDmgNum(dmg,zone);
  if(P.hp.core>0)SND.play(zone!=='core'&&P.hp[zone]<=0&&take0>0?'broken':'hit',{g:.55});
@@ -6101,7 +6102,7 @@ function reachTick(dt){const d=RUN.def,g=d.reach,dist=Math.hypot(P.pos.x-g.x,P.p
  if(dist<=g.r&&!RUN.ok&&P.down<=0&&!(d.killAll&&misLeft())){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=6.4;comm(d.comm.clear,2.6);setTimeout(()=>{if(RUN&&RUN.ok)comm(d.comm.clear2,3.2)},2800);RUN.hold=performance.now()+3000;banner('MISSION COMPLETE',RUN.def.title)}
  if(RUN.ok){if(finishWait(dt))misFinish(true)}}
 /* ----- 追跡（4-1）。兵装のダメージ均一化：1秒あたりの理論ダメージ（弾切れ・リロードを含む）を CH_DPS に揃える（近接・防御は 1 倍） ----- */
-const CH_DPS=70;
+const CH_DPS=90;
 function wDps(st){if(!st||st.kind!=='射撃')return 0;const r=st.rate||'';let per=0,n=1,m;
  if(m=r.match(/(\d+)点射／([\d.]+)秒/)){n=+m[1];per=+m[2]}
  else if(m=r.match(/(\d+)発／秒/)){n=+m[1];per=1}
@@ -6138,7 +6139,8 @@ function chaseTick(dt){const d=RUN.def,C=RUN.ch;if(!C)return;const B=C.boss,pz=P
   if(o&&pz>o.z-3.6&&pz<o.z+1.6&&mech.bot.position.y<9&&Math.abs(P.pos.x-o.gx)>o.gw-1.6&&C.hitCd<=0){C.hitCd=1.5;hitPlayer(90,'A',new THREE.Vector3(P.pos.x,2,o.z-1.5));if(!DBG.inv)P.stun=Math.max(P.stun,.9);P.pos.z=Math.min(P.pos.z,o.z-5.2);P.vel.z=-6;SND.play('hit',{g:.5});
    if(!C.said.wall){C.said.wall=1;comm(d.comm.wall,2.2)}}}
  // 地雷：親機が落とす。踏むと爆発
- C.mT-=dt;if(B&&B.alive&&C.mT<=0){C.mT=4.2+Math.random()*1.6;const m=CH_MINES.find(q=>!q.visible);if(m){m.position.set(Math.max(-CH_W+2,Math.min(CH_W-2,B.g.position.x+(Math.random()-.5)*5)),0,B.g.position.z-3);m.visible=true;if(!C.said.mine){C.said.mine=1;comm(['t',d.comm.t[2]],2.4)}}}
+ C.mT-=dt;if(B&&B.alive&&C.mT<=0){C.mT=4.2+Math.random()*1.6;const mz=B.g.position.z-3,wo=chNext(mz-16),m=(wo&&wo.z<mz+16)?null:CH_MINES.find(q=>!q.visible);if(m){   // 壁の前後16m には置かない
+  m.position.set(Math.max(-CH_W+2,Math.min(CH_W-2,B.g.position.x+(Math.random()-.5)*5)),0,B.g.position.z-3);m.visible=true;if(!C.said.mine){C.said.mine=1;comm(['t',d.comm.t[2]],2.4)}}}
  CH_MINES.forEach(m=>{if(!m.visible)return;if(m.position.z<pz-12){m.visible=false;return}
   if(P.down<=0&&!RUN.ok&&mech.bot.position.y<2.2&&Math.hypot(P.pos.x-m.position.x,P.pos.z-m.position.z)<2.4){m.visible=false;explode(m.position.clone().setY(1),1.6);hitPlayer(70,'B',m.position.clone().setY(1));if(!DBG.inv)P.stun=Math.max(P.stun,.5)}});
  // 護衛が壊れたら荷が落ちる
