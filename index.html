@@ -1482,7 +1482,7 @@ function shieldSync(){SHRIG.forEach(r=>{let top=r.pv;while(top.parent)top=top.pa
  r.pv.parent.updateWorldMatrix(true,false);r.pv.parent.getWorldQuaternion(_sp);r.pv.parent.getWorldScale(_ss);const sc=_ss.x||1;
  _se.set(ph,psi,0,'YXZ');_sq.setFromEuler(_se);r.pv.quaternion.copy(_sp).invert().multiply(_sq);
  r.pv.updateWorldMatrix(true,false);r.pv.getWorldPosition(_sv);
- const px=r.s*(.15-1.15*e),pz=.1*e,half=r.h*sc/2,idleC=_sv.y+.3*sc,guardC=5.8-half,minC=.05+half*Math.cos(ph)+.1*sc;
+ const px=r.s*(.15-1.15*e),pz=.1*e,half=r.h*sc/2,idleC=_sv.y+.3*sc,guardC=5.8-half+(r.lift||0)*sc,minC=.05+half*Math.cos(ph)+.1*sc;
  const cw=r.free?idleC:Math.max(minC,idleC+(guardC-idleC)*e),py=(cw-_sv.y)/sc;
  r.p.position.set(px,py,pz);r.bar.position.set(-px/2,-py,-pz);r.bar.scale.x=Math.max(.01,Math.abs(px))})}
 const HAND={
@@ -2227,8 +2227,8 @@ Object.assign(EXT,{
 const VX={cy:new THREE.MeshBasicMaterial({color:0x7fe8ff}),gold:psMat(0xd0a840)};
 Object.assign(HAND,{
  // レールライフル：電磁加速の単発狙撃。徹甲ライフルと同じく、ダメージを下げる補正を受けない
- 'RF4':{...HAND.RF3,st:{kind:'射撃',dmg:620,range:110,area:0,rate:'1発／2.2秒',count:1,ammo:8,reload:6,wt:20,imp:'S',spd:140,hom:'なし',note:'電磁加速の1発。シールドや装甲に弾かれず、ダメージが落ちない'},
-  act:{name:'電磁狙撃',dur:2.2,run(c){const s=c.s;
+ 'RF4':{...HAND.RF3,st:{kind:'射撃',dmg:620,range:110,area:0,rate:'1発／1.9秒',count:1,ammo:8,reload:6,wt:20,imp:'S',spd:140,hom:'なし',note:'電磁加速の1発。シールドや装甲に弾かれず、ダメージが落ちない'},
+  act:{name:'電磁狙撃',dur:1.9,run(c){const s=c.s;
    if(c.once('f',.45)&&c.shot(c.w.muzzle,{size:.2,color:0x9fe8ff,len:10,trail:.12})){flash(c.w.muzzle,1,0x9fe8ff);c.st.kick=1;shake=Math.max(shake,.16)}
    const k=c.st.kick=(c.st.kick||0)*.9;
    return {w:env(c.u,.2,.8),arm:{x:AIM.x-k*.3,z:s*.05,e:AIM.e-k*.55},off:brace(s),torsoY:twist(s,.4)+k*twist(s,-.1),torsoX:.08-k*.15,headY:twist(s,-.35),legs:stance(s),crouch:.25+k*.15}}},
@@ -2243,7 +2243,7 @@ Object.assign(HAND,{
    o.muzzle.position.x=-.27;const m2=grp(g,.27,-2.05,0);m2.rotation.x=Math.PI/2;
    box(g,.7,.06,.5,VX.gold,0,-.12,.4);box(g,.5,.04,.05,VX.cy,0,-.3,.6);return {muzzle:o.muzzle,spin:o.spin,spin2,m2}}},
  // 誘導バズーカ：弾が標的へ緩やかに曲がる
- 'BZ4':{...HAND.BZ3,act:{...HAND.BZ.act,dur:2.6},st:{kind:'射撃',dmg:700,range:55,area:5,rate:'1発／2.6秒',count:1,ammo:6,reload:6,wt:32,imp:'S',spd:24,hom:'中',homK:1.6,note:'ロックした敵へ弾が曲がって追う。弾は遅いので、急な動きには外れる'},
+ 'BZ4':{...HAND.BZ3,act:{...HAND.BZ.act,dur:2.2},st:{kind:'射撃',dmg:700,range:55,area:5,rate:'1発／2.2秒',count:1,ammo:6,reload:6,wt:32,imp:'S',spd:24,hom:'中',homK:1.6,note:'ロックした敵へ弾が曲がって追う。弾は遅いので、急な動きには外れる'},
   build(g){const o=HAND.BZ3.build(g);box(g,.36,.08,.36,VX.gold,0,-1.2,.1);box(g,.1,.1,.34,VX.cy,0,-1.55,.34);box(g,.1,.1,.34,VX.cy,0,-1.55,-.14);return o}},
  // 連撃ブレード：1回の操作で3連撃。振り切るまで約1秒。急加速・ガードで途中から打ち切れる
  'BL4':{...HAND.BL3,st:{kind:'近接',dmg:400,range:8,area:0,rate:'3連撃／1秒',count:1,ammo:INF,reload:0,wt:16,imp:'A',spd:0,hom:'－',note:'1回の操作で3連撃（1発 400）。約1秒で振り切る。急加速とガードで打ち切れる'},
@@ -2271,7 +2271,7 @@ Object.assign(HAND,{
   build(g){const o=HAND.BL3.build(g);box(g,.05,1.9,.06,VX.cy,0,-1.64,-.08);box(g,.34,.08,.4,VX.gold,0,-.4,0);box(g,.34,.08,.4,VX.gold,0,-.9,0);return o}},
  // 展開シールド：2枚のパネルを扇形に開く新デザイン。構えを解くと耐久が少しずつ戻る
  'SH4':{...HAND.SH,st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:1200,reload:50,wt:24,imp:'なし',spd:0,hom:'－',front:0,regen:50,grd:{walk:.7,dash:0,qb:0,jump:1,opp:1},note:'前方約±90°を高い耐久で受け止める。構え中の歩きは7割。構えを解くと耐久が少しずつ回復する（毎秒 50）。ダッシュと急加速は不可'},
-  build(g,s){const R=shieldBase(g,s),p=R.p,h=4.4;R.h=h;
+  build(g,s){const R=shieldBase(g,s),p=R.p,h=4.4;R.h=h;R.lift=.6;
    [-1,1].forEach(q=>{const pn=grp(p,q*.62,0,.12);pn.rotation.y=q*.36;
     box(pn,1.0,h,.18,VW.steel,0,0,0);box(pn,.78,h*.86,.08,VW.steel2,0,0,.12);
     [-1,1].forEach(e=>box(pn,.05,h*.98,.12,VX.cy,e*.5,0,.06));
@@ -2290,8 +2290,8 @@ Object.assign(SHOULDER,{
    const cells=[];for(let j=0;j<3;j++)for(let i=0;i<4;i++){const x=-.33+i*.22,y=.2-j*.2;cyl(pod,.075,.075,.04,VW.tip,x,y,.47,Math.PI/2,0,6);const m=grp(pod,x,y,.5);cells.push(m)}
    return {cells}}},
  // 対艦砲：長い砲身に青い加速レール。弾は敵を突き抜ける
- 'GC4':{...SHOULDER.GC3,st:{kind:'射撃',dmg:1400,range:110,area:0,rate:'1発／4秒',count:1,ammo:3,reload:8,wt:36,imp:'S',spd:95,hom:'なし',pierce:true,note:'装甲ごと敵を突き抜けて、後ろの敵にも当たる。しゃがんで撃つ（発射中は移動不可）'},
-  act:{name:'構え撃ち',dur:4,root:true,run(c){
+ 'GC4':{...SHOULDER.GC3,st:{kind:'射撃',dmg:1400,range:110,area:0,rate:'1発／3.4秒',count:1,ammo:3,reload:8,wt:36,imp:'S',spd:95,hom:'なし',pierce:true,note:'装甲ごと敵を突き抜けて、後ろの敵にも当たる。しゃがんで撃つ（発射中は移動不可）'},
+  act:{name:'構え撃ち',dur:3.4,root:true,run(c){
    if(c.once('f',.22)&&c.shot(c.w.muzzle,{size:.4,color:0x9fe8ff,len:3,trail:.3})){flash(c.w.muzzle,1.8,0x9fe8ff);c.w.muzzle.getWorldPosition(_p);smoke(_p,10,.5);shake=.4;c.st.kick=1}
    const k=c.st.kick=(c.st.kick||0)*.93;c.w.gun.position.z=-k*.4;
    const d=kf(c.u,[[0,0],[.12,1],[.88,1],[1,0]]);
@@ -2306,10 +2306,14 @@ Object.assign(EXT,{
  'BT4':{...EXT.BT3,st:{kind:'常時',wt:16,pass:{dash:.25,qb:5,boost:20},note:'ダッシュが速く、急加速が遠くまで届き、ブースト容量も大きく増える'},
   build(g){const o=EXT.BT3.build(g);[-1,1].forEach(q=>{cyl(g,.14,.2,.4,VW.steel,q*.85,-.05,-.4,Math.PI/2,0,8);cyl(g,.12,.12,.02,VW.glow,q*.85,-.05,-.62,Math.PI/2,0,8);o.flames.push(flameAt(g,q*.85,-.05,-.63,.14,.9));box(g,.04,.3,.04,VX.cy,q*.62,.1,-.2)});box(g,1.4,.06,.44,VX.gold,0,.26,-.1);return o}},
  // 全周迎撃装置：撃ち落とした弾が小さく爆発して、近くの敵を傷つける
- 'IC4':{...EXT.IC3,act:{...EXT.IC.act,dur:6},st:{kind:'常時',wt:16,pass:{icInt:.6,icR:22,icBlast:1},note:'広い範囲の敵弾を短い間隔で撃ち落とす。落とした弾が小さく爆発し、近くの敵に少しダメージを与える'},
+ 'IC4':{...EXT.IC3,act:{...EXT.IC.act,dur:6},st:{kind:'常時',wt:16,pass:{icInt:.5,icR:22,icBlast:1},note:'広い範囲の敵弾を短い間隔で撃ち落とす。落とした弾が小さく爆発し、近くの敵に少しダメージを与える'},
   build(g){const o=EXT.IC3.build(g);box(g,1.1,.07,.44,VX.gold,0,.5,-.1);[-1,1].forEach(q=>box(g,.06,.06,.42,VX.cy,q*.52,.4,-.1));const t=grp(g,0,.66,-.1);box(t,.16,.16,.16,VW.steel,0,0,0);box(t,.04,.04,.4,VW.dark,0,0,.22);t.muzzle=grp(t,0,0,.44);o.turrets.push(t);return o}},
 });
 
+/* 第4の型の色：しま模様（黒橙）をやめ、青みのある鋼色の無地に差し替える（作るあいだだけ VW の材質を入れ替える） */
+{const NV={steel:psMat(0xffffff,{map:panel('#8fa4bc','#46586e')}),steel2:psMat(0xffffff,{map:panel('#5c7088','#2c3a4c')}),warn:psMat(0x2b4a78)};
+ const wrapB=(cat,id)=>{const b=cat[id].build;cat[id].build=function(...a){const o={};for(const k in NV){o[k]=VW[k];VW[k]=NV[k]}try{return b.apply(this,a)}finally{for(const k in NV)VW[k]=o[k]}}};
+ ['RF4','MG4','BZ4','BL4','SH4'].forEach(i=>wrapB(HAND,i));['MS4','GC4'].forEach(i=>wrapB(SHOULDER,i));['RD4','BT4','IC4'].forEach(i=>wrapB(EXT,i))}
 // CLASS D で入荷（SHOP に並ぶ等級）
 const ITEM_CLS={'HD-03':'D','CR-03':'D','AR-03':'D','LG-03':'D','RF3':'D','MG3':'D','BL3':'D','MS3':'D','RD3':'D','BZ3':'C','SH3':'C','GC3':'C','BT3':'C','IC3':'C',
  'RF4':'B','MG4':'B','BZ4':'Q','BL4':'B','SH4':'B','MS4':'Q','GC4':'Q','RD4':'Q','BT4':'B','IC4':'Q'};   // 'Q'＝B 大会の準決勝に勝ったあと
@@ -4867,7 +4871,7 @@ function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(mode==='play'&&RUN&&RUN.c
  const pw=Math.max(0,Math.min(1,(dmg-30)/700));e.hit=Math.max(e.hit,.06+.09*pw);e.vib=.12;spawn(0xffffff,.5,pos,{life:.08});
  for(let i=0,n=Math.round(3+7*pw);i<n;i++)spawn(i%2?0xffa040:0xffd070,.1+.06*pw,pos,{vel:new THREE.Vector3((Math.random()-.5)*10,2+Math.random()*6,(Math.random()-.5)*10),grav:16,life:.25+Math.random()*.2});
  if(sOnce('ehit',.05))sAt('ehit',pos,{g:.5});dmgNum(e,dmg);
- const I=e.type==='boss'||e.type==='siege'?null:IMP[imp];if(I&&Math.random()<I.p){e.stun=Math.max(e.stun,I.st);e.kb.copy(e.g.position).sub(P.pos).setY(0).normalize().multiplyScalar(I.kb*3)}
+ const I=e.type==='boss'||e.type==='siege'?null:IMP[imp];if(I&&!(e.stImm>0)&&Math.random()<I.p){e.stun=Math.max(e.stun,I.st);e.stImm=I.st+.6;e.kb.copy(e.g.position).sub(P.pos).setY(0).normalize().multiplyScalar(I.kb*3)}
  if(e.hp<=0){if(RUN&&RUN.kills)RUN.kills[e.type]=(RUN.kills[e.type]||0)+1;e.alive=false;const keepB=e.type==='gear'&&RUN&&((RUN.vs&&e===RUN.vs.e)||e.spec.tier==='boss');e.g.visible=e.type==='boss'||e.type==='siege'||keepB;if(keepB)finDown(e);if(e.type==='siege')siegeDead(e);if(e.type==='boss'){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.head.rotation.x=.08;e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a)}e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN&&!(RUN&&RUN.vs)){const rw=e.type==='gear'?(e.spec.rw||2000):e.type==='drone'?REWARD.drone:e.type==='walker'?1500:e.type==='crawler'?600:e.type==='bomber'?500:e.type==='antenna'?1000:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}if(!keepB)explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
 // 索敵レーダー（RD-3）：壁の向こうでも敵の輪郭が見える（奥行きを無視して描く線）
 const XR_M=new THREE.LineBasicMaterial({color:0xff6a4c,transparent:true,opacity:.55,depthTest:false});
@@ -4887,7 +4891,7 @@ function updateEnemies(dt){
   if(e.type==='boss'){bossTick(e,dt,d,yaw);return}
   if(e.type==='siege'){siegeTick(e,dt,d,yaw);return}
   if(tr&&e.type==='drone'&&e.stun<=0&&d>14){const k=Math.min(1,dt*.5*(e.cargo?1.6:1));e.home.x+=(TOBJ().position.x-e.home.x)*k*.25;e.home.z+=(TOBJ().position.z+(atT?0:6)-e.home.z)*k*.25}
-  e.stun=Math.max(0,e.stun-dt);e.home.addScaledVector(e.kb,dt);e.kb.multiplyScalar(Math.max(0,1-dt*5));
+  e.stun=Math.max(0,e.stun-dt);e.stImm=Math.max(0,(e.stImm||0)-dt);e.home.addScaledVector(e.kb,dt);e.kb.multiplyScalar(Math.max(0,1-dt*5));
   if(e.type==='gear'){e.atT=atT;gearTick(e,dt,d,yaw);return}
   if(e.type==='crawler'){crawlerTick(e,dt);return}
   if(e.type==='bomber'){bomberTick(e,dt);return}
@@ -6714,7 +6718,7 @@ R.setAnimationLoop(()=>{
  let tX=B.tX,tY=B.tY,hY=B.hY,crouch=0,lift=B.lift;
  const armF=B.arms.map(b=>({...b})),legF=B.legs.map(b=>({...b}));
  const mixArm=(f,o,w)=>{f.x=L(f.x,o.x,w);f.z=L(f.z,o.z,w);f.e=L(f.e,o.e,w)};
- for(const key in active){const a=active[key];if(a.def.act.cancel&&mode==='play'&&(P.qb||guarding(-1)||guarding(1))){endOf(a.def)?.(m.weps[key]);delete active[key];continue}   // 連撃は、急加速・ガードで打ち切れる
+ for(const key in active){const a=active[key];if(a.def.act.cancel&&mode==='play'&&(P.qb||GUARD[-1]||GUARD[1])){endOf(a.def)?.(m.weps[key]);delete active[key];continue}   // 連撃は、急加速・ガードで打ち切れる
   sustainTick(key,a);const S0=a.def.st,c={u:(t-a.t0)/a.def.act.dur,sus:!!a.sus,dt,s:a.sl.side,w:m.weps[key],st:a.st,S:S0,
    once:(id,u0)=>c.u>=u0&&!a.fired.has(id)&&(a.fired.add(id),true),
    tgt:fireTgt(key),
