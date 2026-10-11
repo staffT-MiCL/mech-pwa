@@ -4624,9 +4624,11 @@ const GEAR_TIER={mob:{qb:0,jump:0,dk:.18,mk:.25,spread:3.4,cdK:1.6},mid:{qb:1,ju
 const GEAR_MS_MAX=2; // 敵のミサイルは1回の斉射で2発まで
 const GSLOTS=[['rHand',-1,HAND],['lHand',1,HAND],['rShoulder',-1,SHOULDER],['lShoulder',1,SHOULDER]];
 const PTGT={get alive(){return P.hp.core>0&&P.down<=0},center:v=>playerCenter(v)};
+/* 敵のシールド：耐久は素のダメージで減る（軽減はそのまま）。壊れると構えず、SH_REC 秒後に全回復。機体ごとに shHp／shRec で変更できる */
+const ENEMY_SH_HP=3000,ENEMY_SH_REC=20;
 function gearInit(e){const sp=e.spec;e.tier={...GEAR_TIER[sp.tier||'mob'],...(sp.tx||{})};e.ws=[];
  GSLOTS.forEach(([k,s,T])=>{const id=sp.cfg[k];if(!id||id==='none')return;const def=T[id];if(!def||!def.act||!def.st)return;e.ws.push({k,s,id,def,kind:def.st.kind,cd:1+Math.random()*2.5,w:e.model.weps[k]||{}})});
- e.fin=null;e.finDone=false;if(e.model&&e.model.legs&&e.B){e.B.arms.forEach((b,i)=>{b.x=-.28;b.z=i?.12:-.12;b.e=-.82});e.B.legs.forEach(b=>{b.th=0;b.kn=0});e.B.tX=0;e.gd=0;e.gb=null;standJoints(e.model,e.lean||0)}e.hpBar.visible=!(RUN&&RUN.def&&RUN.def.vs!=null);e.act=null;e.y=0;e.vy=0;e.dashT=0;e.dashCd=1+Math.random()*3;e.qb=null;e.qbCd=2+Math.random()*2;e.jCd=3+Math.random()*4;e.guardT=0;e.gCd=0;e.rushT=0;e.fxT=0;e.dSide=1;
+ e.shMax=sp.shHp??ENEMY_SH_HP;e.shHp=e.shMax;e.shBrk=0;e.fin=null;e.finDone=false;if(e.model&&e.model.legs&&e.B){e.B.arms.forEach((b,i)=>{b.x=-.28;b.z=i?.12:-.12;b.e=-.82});e.B.legs.forEach(b=>{b.th=0;b.kn=0});e.B.tX=0;e.gd=0;e.gb=null;standJoints(e.model,e.lean||0)}e.hpBar.visible=!(RUN&&RUN.def&&RUN.def.vs!=null);e.act=null;e.y=0;e.vy=0;e.dashT=0;e.dashCd=1+Math.random()*3;e.qb=null;e.qbCd=2+Math.random()*2;e.jCd=3+Math.random()*4;e.guardT=0;e.gCd=0;e.rushT=0;e.fxT=0;e.dSide=1;
  e.shw=e.ws.find(w=>w.kind==='防御')||null;e.gFront=e.shw?(e.shw.def.st.front??.2):.2;
  e.lean=sp.model?0:CORES[sp.cfg.core]?.lean||0;e.B={arms:[{x:-.28,z:-.12,e:-.82},{x:-.28,z:.12,e:-.82}],legs:[{th:0,kn:0},{th:0,kn:0}],tX:0}}
 function gearAim(e){return e.atT&&RUN&&RUN.tr?new THREE.Vector3(TOBJ().position.x,1.8+Math.random()*1.6,TOBJ().position.z):playerCenter(new THREE.Vector3())}
@@ -4692,8 +4694,9 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
   if(r.length){const w=r.find(x=>x.kind==='近接')||r[Math.floor(Math.random()*r.length)];e.act={def:w.def,id:w.id,s:w.s,w:w.w,t0:t,st:{},fired:new Set()};w.cd=w.def.act.dur+(sp.rate||3)*T.cdK/(RUN&&RUN.vs?VS_FIRE:1)*(.8+Math.random()*.4)*(sp.rage&&e.hp<e.max*.5?.65:1)}}
  // シールド（どの段階でも）：自機が撃っている間、正面に構える
  const shw=e.shw,G=sp.guard;
- if(G){if(shw&&!e.act&&pa&&e.gCd<=0&&e.stun<=0&&e.rushT<=0&&Math.random()<dt*G.p*(d<G.near?.15:1)){e.guardT=G.t[0]+Math.random()*(G.t[1]-G.t[0]);e.gCd=G.cd[0]+Math.random()*(G.cd[1]-G.cd[0])}}
- else if(shw&&!e.act&&pa&&e.gCd<=0&&e.stun<=0&&Math.random()<dt*3){e.guardT=1.1+Math.random()*.6;e.gCd=3+Math.random()*2}
+ if(e.shBrk>0){e.shBrk-=dt;if(e.shBrk<=0)e.shHp=e.shMax}
+ if(G){if(shw&&!(e.shBrk>0)&&!e.act&&pa&&e.gCd<=0&&e.stun<=0&&e.rushT<=0&&Math.random()<dt*G.p*(d<G.near?.15:1)){e.guardT=G.t[0]+Math.random()*(G.t[1]-G.t[0]);e.gCd=G.cd[0]+Math.random()*(G.cd[1]-G.cd[0])}}
+ else if(shw&&!(e.shBrk>0)&&!e.act&&pa&&e.gCd<=0&&e.stun<=0&&Math.random()<dt*3){e.guardT=1.1+Math.random()*.6;e.gCd=3+Math.random()*2}
  // 姿勢（自機と同じ組み方：基本動作 → 兵装の上書き → 書き込み）
  const dash=mvAmt>=2,air=e.y>.3,walk=!dash&&!air&&mvAmt>0,B=e.B,k=Math.min(1,dt*8);
  if(walk)e.ph+=dt*spd*.9;
@@ -4915,7 +4918,8 @@ let HITSRC=null;
 const AP_IDS=new Set(['RF3','RF4']);   // ダメージを下げる補正を無視する兵装
 const apK=m=>m<1&&HITSRC&&AP_IDS.has(cfg[HITSRC])?1:m;
 function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(mode==='play'&&RUN&&RUN.chase)dmg=Math.round(dmg*chaseK(HITSRC));else if(mode==='play'&&SS.dmgOut)dmg=Math.round(dmg*SS.dmgOut);   // 系列特性：与えるダメージの倍率
- if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){dmg*=apK(e.gFront<0?.1:.15);spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4})}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=apK(.25);spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
+ if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){{const kk=apK(e.gFront<0?.1:.15),raw=dmg,take=Math.min(raw,Math.max(0,e.shHp??0)),over=raw-take;e.shHp=Math.max(0,(e.shHp??0)-take);dmg=take*kk+over;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
+  if(e.shHp<=0&&e.shMax>0){e.guardT=0;e.shBrk=e.spec.shRec??ENEMY_SH_REC;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2)}}}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=apK(.25);spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
  // 命中の演出：共通の命中音・威力に応じた光と火花・小さな振動・ダメージの数字（CONFIG で ON のとき）
  const pw=Math.max(0,Math.min(1,(dmg-30)/700));e.hit=Math.max(e.hit,.06+.09*pw);e.vib=.12;spawn(0xffffff,.5,pos,{life:.08});
  for(let i=0,n=Math.round(3+7*pw);i<n;i++)spawn(i%2?0xffa040:0xffd070,.1+.06*pw,pos,{vel:new THREE.Vector3((Math.random()-.5)*10,2+Math.random()*6,(Math.random()-.5)*10),grav:16,life:.25+Math.random()*.2});
