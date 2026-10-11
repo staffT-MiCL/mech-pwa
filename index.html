@@ -2289,6 +2289,30 @@ Object.assign(HAND,{
     scroll:kf(u,[[0,0],[.12,5],[.24,8],[.37,1],[.48,0],[.57,5],[.62,7],[.78,1],[1,0]])}},
    end(w){w.blade.scale.set(1,1,1)}},
   build(g){const o=HAND.BL3.build(g);box(g,.05,1.9,.06,VX.cy,0,-1.64,-.08);box(g,.34,.08,.4,VX.gold,0,-.4,0);box(g,.34,.08,.4,VX.gold,0,-.9,0);return o}},
+ // セレナ専用の三連斬り（敵機用）：0.9秒で3回斬る。1発 550×ボス係数0.273＝約150、全弾で約450
+ 'BLS':{...HAND.BL3,st:{kind:'近接',dmg:550,range:8,area:0,rate:'3連撃／0.9秒',count:1,ammo:INF,reload:0,wt:16,imp:'B',spd:0,hom:'－',note:'セレナの三連斬り（1発 約150）'},
+  act:{name:'三連斬り',dur:.9,run(c){const u=c.u,s=c.s;
+   const slash=(u>.12&&u<.28)||(u>.40&&u<.56)||(u>.68&&u<.84);c.w.blade.scale.set(1,slash?1.7:1,1);
+   if(slash&&(c.st.tt=(c.st.tt||0)+c.dt)>.015){c.st.tt=0;c.w.muzzle.getWorldPosition(_p);spawn(0xff9fb0,.28,_p,{life:.2,grow:-.6})}
+   if(c.once('h1',.22)){shake=.1;c.melee()}
+   if(c.once('h2',.50)){shake=.12;c.melee();SND.play('blade',{g:.45})}
+   if(c.once('h3',.78)){shake=.16;c.melee();SND.play('blade',{g:.5})}
+   return {w:env(u,.05,.85),
+    arm:{x:kf(u,[[0,0],[.08,.7],[.20,-1.6],[.32,-1.0],[.40,.5],[.50,-1.5],[.60,-.9],[.66,.6],[.78,-1.7],[.90,-.4],[1,0]]),
+         z:kf(u,[[0,s*.1],[.08,s*1.0],[.20,-s*.4],[.32,-s*.5],[.40,s*1.0],[.50,-s*.5],[.60,-s*.6],[.66,s*1.0],[.78,-s*.3],[.90,s*.4],[1,s*.1]]),
+         e:kf(u,[[0,-.2],[.08,-1.5],[.20,-.1],[.32,-.5],[.40,-1.3],[.50,-.1],[.60,-.5],[.66,-1.3],[.78,-.1],[.90,-.5],[1,-.2]])},
+    off:{x:kf(u,[[0,0],[.08,-.8],[.20,.6],[.50,-.2],[.66,.5],[.78,.3],[1,0]]),z:-s*.3,e:-1.1},
+    torsoY:kf(u,[[0,0],[.08,twist(s,-.6)],[.20,twist(s,.6)],[.40,twist(s,-.5)],[.50,twist(s,.6)],[.66,twist(s,-.5)],[.78,twist(s,.6)],[1,0]]),
+    torsoX:kf(u,[[0,0],[.20,.25],[.40,0],[.78,.25],[1,0]]),
+    headY:kf(u,[[0,0],[.08,twist(s,.35)],[.20,twist(s,-.4)],[.50,twist(s,.3)],[.78,twist(s,-.3)],[1,0]]),
+    legs:legsFor(s,kf(u,[[0,0],[.08,.35],[.20,-.8],[.32,-.5],[.50,-.7],[.66,.1],[.78,-.7],[.90,-.3],[1,0]]),
+                   kf(u,[[0,0],[.08,.2],[.20,.7],[.32,.3],[.50,.6],[.78,.6],[.90,.2],[1,0]]),
+                   kf(u,[[0,0],[.08,-.3],[.20,.5],[.32,.3],[.50,.4],[.78,.4],[.90,.2],[1,0]]),
+                   kf(u,[[0,0],[.08,.5],[.20,.15],[.50,.2],[.78,.2],[.90,.1],[1,0]])),
+    crouch:kf(u,[[0,0],[.08,.4],[.20,.25],[.32,.3],[.50,.3],[.66,.35],[.78,.25],[.90,.15],[1,0]]),
+    scroll:kf(u,[[0,0],[.10,5],[.20,8],[.30,1],[.40,0],[.45,5],[.50,7],[.60,1],[.66,0],[.72,5],[.78,7],[.90,1],[1,0]])}},
+   end(w){w.blade.scale.set(1,1,1)}},
+  build(g){return HAND.BL3.build(g)}},
  // 展開シールド：2枚のパネルを扇形に開く新デザイン
  'SH4':{...HAND.SH,st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:1200,reload:70,wt:24,imp:'なし',spd:0,hom:'－',front:0,grd:{walk:.7,dash:0,qb:0,jump:1,opp:1},note:'前方約±90°を高い耐久で受け止める。構え中の歩きは7割。ダッシュと急加速は不可'},
   build(g,s){const R=shieldBase(g,s),p=R.p,h=4.4;R.h=h;R.lift=.6;
@@ -4596,7 +4620,7 @@ const GEAR_MOB={
   hp:10000,dmg:0,rate:2.2,rng:60,spd:10,keep:24,bs:32,rw:0,tier:'boss',tx:{dk:.24,spread:1.8,cdK:1.5,gap:.8}},
  vb1:{name:'オズ機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'BZ3',lHand:'SH3',rShoulder:'MS3',lShoulder:'MS3'},tint:{main:0xe8601c,sub:0xf4efe4,warn:0xffc020,joint:0x1c1e22,eye:0xffe060},   // 朱橙×白（目立つ塗り直しの払い下げ機）
   hp:14000,dmg:0,rate:2.4,rng:70,spd:6,keep:26,bs:24,rw:0,tier:'mid',msK:1.8,msSpd:.8,tx:{dk:.30,spread:2,cdK:1.4,gap:.9},guard:{p:5,near:12,t:[1.2,1.8],cd:[1.6,2.6]},msMax:2},
- vs3:{name:'ルージュ・ファンファーレ',model:'serena',vpose:'serena',bladeFx:1,cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'BL3',lHand:'SH',rShoulder:'MS',lShoulder:'MS'},
+ vs3:{name:'ルージュ・ファンファーレ',model:'serena',vpose:'serena',bladeFx:1,cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'BLS',lHand:'SH',rShoulder:'MS',lShoulder:'MS'},
   hp:17000,dmg:0,rate:1.5,rng:70,spd:10,keep:14,bs:32,rw:0,tier:'boss',msK:2,tx:{dk:.24,mk:.273,spread:1.6,cdK:1.3,gap:.6},guard:{p:6,near:0,t:[.8,1.2],cd:[1.5,2.5]},rush:26,msMax:3,rage:1},
  cvBoss:{name:'無人輸送ギア（親機）',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'none',rShoulder:'MS',lShoulder:'none'},tint:'convoy',hp:4500,dmg:34,rate:2.0,rng:70,spd:12,keep:30,bs:30,rw:6000,scale:1.15,tier:'boss'},
  cvEsc:{name:'無人護衛ギア',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'convoyD',hp:1500,dmg:30,rate:3.0,rng:60,spd:12,keep:30,bs:30,rw:2000,tier:'mob'},
