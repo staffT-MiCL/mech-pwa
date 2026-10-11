@@ -1356,7 +1356,10 @@ const AIM={x:-1.45,e:-.1}; // 腕を前に構える角度（どの腕パーツ�
 /* ===== エフェクト・弾・当たり判定 ===== */
 const FX=[],UB=new THREE.BoxGeometry(1,1,1),_p=new THREE.Vector3(),_d=new THREE.Vector3(),_q=new THREE.Vector3();
 let mode='garage',lockT=null;
+/* 敵の弾の強さ（決定：2026-10-11）：弾速 ENEMY_BS 倍、VERSUS の敵はさらに VS_BS 倍の弾速・VS_DMG 倍の威力・撃つ間隔を 1/VS_FIRE。ここを変えるだけで調整できる */
+const ENEMY_BS=1.25,VS_BS=1.2,VS_DMG=1.2,VS_FIRE=1.3;
 function spawn(color,size,pos,o={}){
+ if(o.team==='e'&&o.vel){const k=ENEMY_BS*(RUN&&RUN.vs?VS_BS:1);o={...o,vel:o.vel.clone().multiplyScalar(k)};if(o.life)o.life/=k;if(RUN&&RUN.vs&&o.dmg)o.dmg=Math.round(o.dmg*VS_DMG)}
  const {vel=null,life=.3,grow=0,fade=true,len=1,spin=false,grav=0,trail=0,team=null,dmg=0,splash=0,imp='なし',src=null,hr=0}=o;
  const m=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color,transparent:true}));
  m.scale.set(size,size,size*len);m.position.copy(pos);S.add(m);
@@ -3155,7 +3158,10 @@ function setPreview(slot,id){
  const g=new THREE.Group();
  if(slot==='rHand'||slot==='lHand')g.rotation.z=Math.PI/2;
  SHFREE=true;sl.cat[id].build(g,sl.side||1);SHFREE=false;pvSpin.rotation.set(0,0,0);pvSpin.add(g);shieldSync();g.updateMatrixWorld(true);
- const box=new THREE.Box3().setFromObject(g),c=box.getCenter(new THREE.Vector3()),r=box.getBoundingSphere(new THREE.Sphere()).radius;
+ // 回転軸は縦（Y）。回しても中心が動かないよう、見えている頂点すべてを囲む最小の円（XZ）の中心を軸に合わせる（箱の中心では、片側に長く伸びた形でずれる）。高さは箱の中心。どの装備を足しても自動で合う
+ const pts=[],_v3=new THREE.Vector3();g.traverse(o=>{if(!o.isMesh||!o.geometry)return;for(let q=o;q;q=q.parent)if(q.visible===false)return;const pa=o.geometry.attributes.position;if(!pa)return;o.updateWorldMatrix(true,false);const st=Math.max(1,Math.floor(pa.count/600));for(let i=0;i<pa.count;i+=st){_v3.fromBufferAttribute(pa,i).applyMatrix4(o.matrixWorld);pts.push(_v3.x,_v3.y,_v3.z)}});
+ let cx=0,cz=0,y0=1e9,y1=-1e9;if(pts.length){cx=pts[0];cz=pts[2];for(let k=1;k<=600;k++){let fi=0,fd=-1;for(let i=0;i<pts.length;i+=3){const dd=(pts[i]-cx)**2+(pts[i+2]-cz)**2;if(dd>fd){fd=dd;fi=i}}cx+=(pts[fi]-cx)/(k+1);cz+=(pts[fi+2]-cz)/(k+1)}for(let i=1;i<pts.length;i+=3){y0=Math.min(y0,pts[i]);y1=Math.max(y1,pts[i])}}else{y0=y1=0}
+ const c=new THREE.Vector3(cx,(y0+y1)/2,cz);let r=.5;for(let i=0;i<pts.length;i+=3)r=Math.max(r,Math.hypot(pts[i]-c.x,pts[i+1]-c.y,pts[i+2]-c.z));
  g.position.sub(c);
  const d=r/Math.sin(PC.fov*Math.PI/360)*1.05;PC.position.set(0,d*.35,d);PC.lookAt(0,0,0);pvOn=true;
 }
@@ -4477,7 +4483,7 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
  if(scroll){const ry=e.g.rotation.y;e.home.x+=Math.sin(ry)*scroll*dt;e.home.z+=Math.cos(ry)*scroll*dt}
  pushOut(e.home,1.8,e.y);clampField(e.home);e.g.position.set(e.home.x,e.y,e.home.z);
  e.gapT=(e.gapT||0)-dt;if(!e.act&&free&&armed&&e.guardT<=0&&e.gapT<=0){const r=e.ws.filter(w=>w.cd<=0&&w.kind!=='防御'&&(w.kind==='近接'?d<w.def.st.range+4:d<Math.min(w.def.st.range,sp.rng||w.def.st.range)));
-  if(r.length){const w=r.find(x=>x.kind==='近接')||r[Math.floor(Math.random()*r.length)];e.act={def:w.def,id:w.id,s:w.s,w:w.w,t0:t,st:{},fired:new Set()};w.cd=w.def.act.dur+(sp.rate||3)*T.cdK*(.8+Math.random()*.4)*(sp.rage&&e.hp<e.max*.5?.65:1)}}
+  if(r.length){const w=r.find(x=>x.kind==='近接')||r[Math.floor(Math.random()*r.length)];e.act={def:w.def,id:w.id,s:w.s,w:w.w,t0:t,st:{},fired:new Set()};w.cd=w.def.act.dur+(sp.rate||3)*T.cdK/(RUN&&RUN.vs?VS_FIRE:1)*(.8+Math.random()*.4)*(sp.rage&&e.hp<e.max*.5?.65:1)}}
  // シールド（どの段階でも）：自機が撃っている間、正面に構える
  const shw=e.shw,G=sp.guard;
  if(G){if(shw&&!e.act&&pa&&e.gCd<=0&&e.stun<=0&&e.rushT<=0&&Math.random()<dt*G.p*(d<G.near?.15:1)){e.guardT=G.t[0]+Math.random()*(G.t[1]-G.t[0]);e.gCd=G.cd[0]+Math.random()*(G.cd[1]-G.cd[0])}}
@@ -6195,7 +6201,7 @@ function setMode(m,training=false,mis=null,tt=false){introClear();goWaitClear();
  S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}wxApply(p&&RUN?RUN.def.wx:null);C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
  P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=lockT3=null;LOCKS=[];pinned=null;reveal=0;topYaw=topYawC=Math.PI;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
- if(p&&RUN&&RUN.def.start){P.pos.set(RUN.def.start.x,0,RUN.def.start.z);mech.bot.position.copy(P.pos)}
+ if(p&&RUN&&RUN.def.start){P.pos.set(RUN.def.start.x,0,RUN.def.start.z);mech.bot.position.copy(P.pos);if(RUN.def.siege&&RUN.def.enemies[0]){const b=RUN.def.enemies[0];P.yaw=camYaw=Math.atan2(b.x-P.pos.x,b.z-P.pos.z)}}
  if(p&&RUN&&RUN.def.vs!=null)PART_KEYS.forEach(k=>P.hp[k]=P.hpMax[k]);   // VERSUS：試合前に運営局が整備（損傷は持ち越さない）
  $('dbgInv').hidden=!(p&&DBG.inv);$('modeBadge').textContent=TRT?'TRAINING ／ TUTORIAL':RUN&&RUN.def.vs!=null?'VERSUS ／ '+RUN.def.vsJa:RUN?'MISSION '+RUN.def.id:TRAIN?'TRAINING ／ NO FIRE':'TRAINING ／ LIVE FIRE';$('garage').textContent=RUN&&RUN.def.vs!=null?'棄権':RUN?'撤退':'ガレージ';$('comm').hidden=true;
  if(p){untintDamage();hudCache={};updateHUD();P.kills=0;P.earned=0;
