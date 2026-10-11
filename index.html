@@ -2133,7 +2133,7 @@ const VW={steel:psMat(0xffffff,{map:panel('#a8aeb0','#5e6466')}),steel2:psMat(0x
  warn:psMat(0xffffff,{map:stripes('#15171a','#e07a1e')}),tip:psMat(0xe8e4dc),red:psMat(0xb02a20)};
 Object.assign(HAND,{
  // 徹甲ライフル：上下2本のレールの間を通る四角い銃身、光るコイル3つ、青いレンズのスコープ
- 'RF3':{...HAND.RF,st:{kind:'射撃',dmg:230,range:75,area:0,rate:'3点射／1.3秒',count:1,ammo:21,reload:4,wt:14,imp:'B',spd:95,hom:'なし',note:'徹甲弾：大型砲台の正面装甲でも、ダメージが 1/4 ではなく 1/2'},build(g){box(g,.22,.66,.32,VW.steel2,0,-.35,0);box(g,.12,.36,.26,VW.dark,0,-.25,-.22,.3);
+ 'RF3':{...HAND.RF,st:{kind:'射撃',dmg:230,range:75,area:0,rate:'3点射／1.3秒',count:1,ammo:21,reload:4,wt:14,imp:'B',spd:95,hom:'なし',note:'徹甲弾：敵のシールドを破りダメージを与えられる'},build(g){box(g,.22,.66,.32,VW.steel2,0,-.35,0);box(g,.12,.36,.26,VW.dark,0,-.25,-.22,.3);
    box(g,.1,1.7,.1,VW.dark,0,-1.4,0);[-1,1].forEach(q=>box(g,.05,1.8,.16,VW.steel,0,-1.35,q*.11));
    for(let i=0;i<3;i++){box(g,.18,.06,.26,VW.glow,0,-.95-i*.32,0)}
    box(g,.16,.26,.3,VW.steel,0,-2.3,0);box(g,.2,.06,.34,VW.warn,0,-2.18,0);
@@ -4413,7 +4413,7 @@ function makeBoss(){
  ENEMIES.push(e);g.visible=false;e.off=true;return e}
 // ボスへのダメージ：当たった向きで倍率を変える（正面 1/4・側面 1・背面 1.5）
 function bossDmg(e,dmg,pos){const yw=e.g.rotation.y+e.head.rotation.y,fx=Math.sin(yw),fz=Math.cos(yw),dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z,l=Math.hypot(dx,dz)||1,dot=(dx*fx+dz*fz)/l;
- if(dot>.55){spawn(0xffffff,.9,pos,{life:.1,grow:1.2});spawn(0xd8f0ff,.35,pos,{life:.18,grow:2.2});e.front++;if(RUN&&e.front===6&&RUN.def.comm.front)comm(RUN.def.comm.front,2.4);return dmg*(HITSRC&&cfg[HITSRC]==='RF3'?.5:.25)}
+ if(dot>.55){spawn(0xffffff,.9,pos,{life:.1,grow:1.2});spawn(0xd8f0ff,.35,pos,{life:.18,grow:2.2});e.front++;if(RUN&&e.front===6&&RUN.def.comm.front)comm(RUN.def.comm.front,2.4);return dmg*apK(.25)}
  if(dot<-.5){spawn(0xff6030,1.4,pos,{life:.16,grow:.8});return dmg*1.5}spawn(0xff9040,1,pos,{life:.12});return dmg}
 function bossTick(e,dt,d,yaw){const T=e.head;{const q=.75+.25*Math.sin(t*7)+Math.random()*.08;e.vents[0].color.setRGB(q,q*.45,.1);e.vents[1].color.setRGB(1,.6*q,.2*q)}
  e.mat.emissive.setRGB(e.hit>0?1:0,e.hit>0?.6:0,e.hit>0?.4:0);e.hit-=dt;
@@ -4688,7 +4688,7 @@ function siegeBreak(e,l){l.broken=true;l.hm.color.setHex(0x2a1a14);e.broken++;l.
 function siegeDmg(e,dmg,pos){const ps=e.g.position,c=Math.cos(e.g.rotation.y),s=Math.sin(e.g.rotation.y),dx=pos.x-ps.x,dz=pos.z-ps.z,lx=dx*c-dz*s,lz=dx*s+dz*c,ly=pos.y-ps.y-SG_HY;
  for(const l of e.legs){if(l.broken)continue;if(Math.hypot(lx-l.sx*10.8,ly+2.5,lz-l.hz)<6){l.hp-=dmg;spawn(0xffc040,1.3,pos,{life:.14,grow:1});if(l.hp<=0)siegeBreak(e,l);return dmg*1.2}}
  if(lz<-8&&Math.abs(lx)<12&&ly>-12&&ly<12){spawn(0xff6030,1.6,pos,{life:.16,grow:.8});if(RUN&&!e.rearSaid&&RUN.def.comm.rear){e.rearSaid=true;comm(RUN.def.comm.rear,2.4)}return dmg*2.5}
- spawn(0xffffff,.8,pos,{life:.1,grow:1});return dmg*.3}
+ spawn(0xffffff,.8,pos,{life:.1,grow:1});return dmg*apK(.3)}
 function siegeStomp(e,l){const f=l.foot.getWorldPosition(new THREE.Vector3());f.y=0;if(f.distanceTo(P.pos)>90)return;
  for(let i=0;i<10;i++){const a=i/10*6.28;spawn(0xb8a888,.9,f,{vel:new THREE.Vector3(Math.sin(a)*7,1+Math.random()*2,Math.cos(a)*7),grav:9,life:.5})}
  if(sOnce('sgst',.12))sAt('boom',f,{g:.5,size:1.3});if(f.distanceTo(P.pos)<40)shake=Math.max(shake,.18);
@@ -4760,8 +4760,10 @@ function dmgNumTick(dt){DN.forEach(d=>{if(!d.on)return;d.t+=dt;const u=d.t;if(u>
 function dmgNumClear(){DN.forEach(d=>{d.on=false;d.el.hidden=true})}
 const IMP={S:{st:.8,kb:4,p:1},A:{st:.6,kb:2.5,p:1},B:{st:.45,kb:1.5,p:1},C:{st:.35,kb:.8,p:.5},D:{st:.3,kb:.4,p:.25}};
 let HITSRC=null;
+// 徹甲ライフル（RF3）：ダメージを下げる補正（1より小さい倍率）を無視する。プラスの補正（背面・弱点など）はそのまま
+const apK=m=>m<1&&HITSRC&&cfg[HITSRC]==='RF3'?1:m;
 function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(mode==='play'&&RUN&&RUN.chase)dmg=Math.round(dmg*chaseK(HITSRC));else if(mode==='play'&&SS.dmgOut)dmg=Math.round(dmg*SS.dmgOut);   // 系列特性：与えるダメージの倍率
- if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){dmg*=e.gFront<0?.1:.15;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4})}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=.25;spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
+ if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){dmg*=apK(e.gFront<0?.1:.15);spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4})}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=apK(.25);spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
  // 命中の演出：共通の命中音・威力に応じた光と火花・小さな振動・ダメージの数字（CONFIG で ON のとき）
  const pw=Math.max(0,Math.min(1,(dmg-30)/700));e.hit=Math.max(e.hit,.06+.09*pw);e.vib=.12;spawn(0xffffff,.5,pos,{life:.08});
  for(let i=0,n=Math.round(3+7*pw);i<n;i++)spawn(i%2?0xffa040:0xffd070,.1+.06*pw,pos,{vel:new THREE.Vector3((Math.random()-.5)*10,2+Math.random()*6,(Math.random()-.5)*10),grav:16,life:.25+Math.random()*.2});
