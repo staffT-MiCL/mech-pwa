@@ -757,6 +757,10 @@ body.tut .hcls,body.tut .hch,body.tut .hdt{display:none}
 #mailBox .acts button{height:34px;font-family:var(--disp);font-size:13px}
 #mailBox .go{flex:1;background:var(--cyan);border:0;color:#08201f;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
 body.eqm #mailBox{display:none}
+/* メール・KEY を開いている間は、枠とノーナの吹き出し以外を暗くして押せなくする（暗い所を押すと閉じる）。ヘッダーは #hdr::before で覆う */
+#mailDim{display:none;position:absolute;inset:0;z-index:2;background:rgba(0,0,0,.55);pointer-events:auto;cursor:pointer}#mailDim.on{display:block;animation:mdim .18s ease-out}@keyframes mdim{from{opacity:0}to{opacity:1}}
+body.mailing #hdr::before{content:"";position:absolute;inset:0;z-index:20;background:rgba(0,0,0,.55);pointer-events:auto;cursor:pointer;animation:mdim .18s ease-out}body.eqm #mailDim{display:none}
+body.mailing #side{filter:brightness(.45);pointer-events:none;transition:filter .18s}
 #dbgBox{position:fixed;left:max(8px,calc(50% - 330px));right:max(8px,calc(50% - 330px));top:8px;bottom:8px;z-index:30;pointer-events:auto;box-sizing:border-box;padding:10px 12px;display:flex;flex-direction:column;gap:6px;border:1px solid #8a6ad8;background:rgba(14,10,22,.97);min-height:0;font-family:var(--disp)}
 #dbgBox .dh{display:flex;justify-content:space-between;align-items:center;font-family:var(--mech);font-size:11px;letter-spacing:.2em;color:#c0a8ff}#dbgBox .dh small{font-family:var(--disp);letter-spacing:0;color:#8a7aa8}
 #dbgBox .dl>*{flex-shrink:0}#dbgBox .dl{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:3px;padding-right:4px}
@@ -977,6 +981,7 @@ body.eqm #visit{display:none}
   <div id="tagzone"><div id="tags"></div>
   <div class="tools"><button id="btnPaint">PAINT</button><button id="btnTrain">TRAINING</button><button id="btnView">VIEW</button></div></div>
   <div id="gstats"></div>
+  <div id="mailDim"></div>
   <div id="mailBox" class="mc14" hidden role="dialog" aria-label="メール"></div>
   <div id="dbgBox" class="mc14" hidden role="dialog" aria-label="デバッグ"></div>
   <div id="visit" hidden role="dialog" aria-label="来訪"><div class="vdim"></div><img id="vImg" alt=""><div id="vCh"></div>
@@ -5723,8 +5728,8 @@ function shopNotice(){const ci=CLASSES.indexOf(CLS),out=[];let t=Date.now();if(T
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
  if(['train','continue','mission','shop','ttdone','versus'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(d.afterReg&&!VSS.reg)return;if(d.afterSeen&&!VSS.seen[d.afterSeen])return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;
   MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)});
- MLIST.forEach(d=>{if(d.afterClear&&!MIS[d.id]&&MIS[d.afterClear]&&MIS[d.afterClear].clear&&(!d.afterCls||CLASSES.indexOf(CLS)>=CLASSES.indexOf(d.afterCls))){MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)}});   // 後日談のメール
- MLIST.forEach(d=>{if(d.afterRead&&!MIS[d.id]&&MIS[d.afterRead]&&MIS[d.afterRead].read){MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)}});   // メールを読んだあとの来訪（オットー）
+ MLIST.forEach(d=>{if(d.kind!=='visit'&&d.afterClear&&!MIS[d.id]&&MIS[d.afterClear]&&MIS[d.afterClear].clear&&(!d.afterCls||CLASSES.indexOf(CLS)>=CLASSES.indexOf(d.afterCls))){MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)}});   // 後日談のメール
+ MLIST.forEach(d=>{if(d.kind!=='visit'&&d.afterRead&&!MIS[d.id]&&MIS[d.afterRead]&&MIS[d.afterRead].read){MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)}});   // メールを読んだあとの来訪（オットー）
  out.push(...shopNotice(),...vsNotice());
  let chUp=false;{const mx=Math.max(0,...MLIST.filter(d=>d.ch>0&&d.ready&&MIS[d.id]&&MIS[d.id].got).map(d=>d.ch));if(mx>CH){CH=mx;chUp=true}}   // 届いた依頼のチャプターが、いまのチャプターより先なら追いつく（旧セーブ対策）
  if(out.length||chUp){saveGame();misHeader();if(out.some(d=>d.kind==='mail')){$('mailBtn').classList.add('new');SND.play('mail')}}return out}
@@ -5739,20 +5744,24 @@ function misHeader(){const u=unreadMail().length,got=anyGot();
 const gotMails=()=>(fixDays(),MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got).sort((a,b)=>(MIS[b.id].dy-MIS[a.id].dy)||((MIS[b.id].t||0)-(MIS[a.id].t||0))));
 // メールボックス：受信一覧（新しい順。未読は●と太字、既読は暗く）→ 行を押すと本文
 function mailShow(box,html,dir){const was=!box.hidden&&!box.classList.contains('cls');clearTimeout(box._t);box.classList.remove('cls','pop');
- box.innerHTML=`<div class="mbc${was?' '+dir:''}">${html}</div>`;box.hidden=false;if(!was){void box.offsetWidth;box.classList.add('pop')}}
+ box.innerHTML=`<div class="mbc${was?' '+dir:''}">${html}</div>`;box.hidden=false;box.dataset.kd=/^<div class="mh"><span>KEY/.test(html)?'key':'mail';$('mailDim').classList.add('on');document.body.classList.add('mailing');if(!was){void box.offsetWidth;box.classList.add('pop')}}
 function mailList(){const box=$('mailBox'),L=gotMails(),u=unreadMail().length;
  mailShow(box,`<div class="mh"><span>MAILBOX ／ ${u?'未読 '+u+' 件':'未読なし'}</span><span>${L.length} 通</span></div>
   <div class="mlx">${L.map(d=>{const m=MIS[d.id];return `<button class="mrw${m.read?' rd':''}" data-m="${d.id}"><i>${m.read?'':'●'}</i><span class="dt">${prDate(m.dy).replace('P.R. ','').replace(' ／ ',' ')}</span><span class="fr">${d.from}</span><span class="sj">${d.subj}</span>${m.clear?'<em>CLEARED</em>':''}<b class="rs ${m.read?'r':'u'}">${m.read?'既読':'未読'}</b></button>`}).join('')}</div>
   <div class="acts"><button class="btn-sub" id="mailX" style="margin-left:auto;width:90px">閉じる</button></div>`,'sr');
- nbClose();box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>mailOpen(b.dataset.m));$('mailX').onclick=mailClose;requestAnimationFrame(()=>scrollHints(box,SX_SEL))}
+ nbClose();box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>mailOpen(b.dataset.m));$('mailX').onclick=mailDone;requestAnimationFrame(()=>scrollHints(box,SX_SEL))}
 function mailOpen(id){const d=MDEF[id];if(!d)return;
  const box=$('mailBox');mailShow(box,`<div class="mh"><span>MAIL</span><span>${d.shop?'SHOP':d.vs!=null?'VERSUS':d.notice?'NOTICE':'CH.'+d.ch+' MISSION'}${MIS[d.id].clear?' ／ CLEARED':''}</span></div>
   <div class="mk"><span>DATE</span><span class="dtl">${prDate(MIS[d.id].dy)}　${prTime(d.id)}</span><span>FROM</span><span>${d.fromFull||d.from}</span><span>SUBJ</span><span class="sj">${d.subj}</span></div>
   <div class="mb">${nameIn(d.body)}</div><div class="acts"><button class="btn-sub" id="mailBk" style="width:84px">◀ 一覧</button>${d.notice?'':'<button class="go" id="mailGo">MISSION を開く</button>'}<button class="btn-sub" id="mailX" style="width:80px">閉じる</button></div>`,'sl');
  MIS[d.id].read=true;saveGame();misHeader();$('mailBtn').classList.remove('new');requestAnimationFrame(()=>scrollHints(box,SX_SEL));
- if(!d.notice)$('mailGo').onclick=()=>{mailClose();openBoard(d.id)};$('mailX').onclick=mailClose;$('mailBk').onclick=mailList;
+ if(!d.notice)$('mailGo').onclick=()=>{mailClose();openBoard(d.id)};$('mailX').onclick=mailDone;$('mailBk').onclick=()=>visitGate(mailList);
  nonaSay([[nameIn(d.mailNona)]],{hold:true})}
-function mailClose(){const b=$('mailBox');if(b.hidden||b.classList.contains('cls'))return;b.classList.remove('pop');b.classList.add('cls');nbClose();b._t=setTimeout(()=>{b.hidden=true;b.classList.remove('cls')},180)}
+// 暗い所・［閉じる］：閉じて、来訪の条件がそろっていればそのまま来訪へ（KEY のときは来訪なし）
+function mailDone(){const kd=$('mailBox').dataset.kd;mailClose();if(kd==='mail'&&TUT==='done')visitCheck(()=>{})}
+$('mailDim').addEventListener('click',mailDone);$('hdr').addEventListener('click',e=>{if(document.body.classList.contains('mailing')&&e.target===$('hdr'))mailDone()});
+$('app').addEventListener('click',e=>{if(document.body.classList.contains('mailing')&&e.target===$('app'))mailDone()});   // 右の機体パネル（暗くして押せなくした所）
+function mailClose(){const b=$('mailBox');if(b.hidden||b.classList.contains('cls'))return;b.classList.remove('pop');b.classList.add('cls');nbClose();$('mailDim').classList.remove('on');document.body.classList.remove('mailing');b._t=setTimeout(()=>{b.hidden=true;b.classList.remove('cls')},180)}
 /* ----- KEY（MORTA の断片）：★をクリアすると増える。所持は MIS[mis].clear から決める（保存項目は増やさない）。説明は物語が進むたびに足す ----- */
 const KEYS=[{no:'01',mis:'2-S',from:'★2-S 境界の中継局',info:'中継局の中枢から持ち帰った、暗号化されたデータの断片。指揮型の機体を動かしていた。鍵のような形式だが、これだけでは読めない。触れたとき、ノーナが自分の名前の意味を思い出した。'},{no:'02',mis:'3-S',from:'★3-S 地下の目覚め',info:'要塞の動力部の奥から持ち帰った、暗号化されたデータの断片。KEY 01 と同じ形式で、並べると片方の欠けをもう片方が補っているように見える。触れたとき、ノーナが設計者の声を思い出した。'}];
 let KEYHOLD=false;
@@ -5761,13 +5770,13 @@ function keyList(){const box=$('mailBox'),L=ownKeys();$('keyBtn').classList.remo
  mailShow(box,`<div class="mh"><span>KEY ／ 断片</span><span></span></div>
   <div class="mlx">${L.map(k=>`<button class="mrw" data-k="${k.no}"><i></i><span class="dt">KEY ${k.no}</span><span class="fr">${k.from}</span><span class="sj">データの断片（未解読）</span></button>`).join('')}</div>
   <div class="acts"><button class="btn-sub" id="mailX" style="margin-left:auto;width:90px">閉じる</button></div>`,'sr');
- box.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>keyOpen(b.dataset.k));$('mailX').onclick=mailClose;requestAnimationFrame(()=>scrollHints(box,SX_SEL));
+ box.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>keyOpen(b.dataset.k));$('mailX').onclick=mailDone;requestAnimationFrame(()=>scrollHints(box,SX_SEL));
  nonaSay([['持ち帰った断片です。まだ、読めません。']],{hold:true})}
 function keyOpen(no){const k=KEYS.find(x=>x.no===no);if(!k)return;const m=MIS[k.mis],box=$('mailBox');
  mailShow(box,`<div class="mh"><span>KEY ${k.no}</span><span>UNREADABLE</span></div>
   <div class="mk"><span>NO.</span><span>KEY ${k.no}</span><span>取得</span><span>${k.from}${m&&m.cdy!=null?'　'+prDate(m.cdy):''}</span><span>状態</span><span class="sj">未解読</span></div>
   <div class="mb"><b>分かっていること</b><br>${k.info}</div><div class="acts"><button class="btn-sub" id="mailBk" style="width:84px">◀ 一覧</button><button class="btn-sub" id="mailX" style="width:80px">閉じる</button></div>`,'sl');
- $('mailX').onclick=mailClose;$('mailBk').onclick=keyList;requestAnimationFrame(()=>scrollHints(box,SX_SEL))}
+ $('mailX').onclick=mailDone;$('mailBk').onclick=keyList;requestAnimationFrame(()=>scrollHints(box,SX_SEL))}
 $('keyBtn').onclick=()=>{if(TUT!=='done')return;const mb=$('mailBox');if(!mb.hidden&&!mb.classList.contains('cls')&&mb.querySelector('[data-k]'))mailClose();else keyList()};
 $('mailBtn').onclick=()=>{if(TUT!=='done')return;const mb=$('mailBox');if(!mb.hidden&&!mb.classList.contains('cls'))mailClose();else mailList()};
 
@@ -5811,9 +5820,16 @@ const misEl=$('mis');let misSel=null,bTalk=null;
 function misHead(code,title,sub,back){return `<div class="xhd"><span class="logo"><span class="en">${code}</span></span><span class="sep"></span><span class="t">${title}</span>${sub?`<span class="s">${sub}</span>`:''}<span class="grow"></span>
  <span class="hcls">CLASS ${CLS}</span><span class="hch">CH.${CH}</span><span class="money">${fmtCR(CR_SHOWN)}<small>CR</small></span>${back?`<button class="bk" id="misBack">${back}</button>`:''}</div>`}
 function hideMis(){misEl.hidden=true;misEl.innerHTML='';bTalk&&clearInterval(bTalk.iv);bTalk=null}
-function ottoCheck(then){const d=MLIST.find(x=>x.afterRead&&MIS[x.afterRead]&&MIS[x.afterRead].read&&!(MIS[x.id]&&MIS[x.id].read));if(!d)return false;if(!MIS[d.id])MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};saveGame();
+/* ----- 来訪の汎用の仕組み：MLIST の来訪（kind:'visit'・once:true）に、条件を書くだけで動く -----
+ 条件（書いたものがすべてそろったとき）：afterRead＝そのメールを読んだ／afterClear＝その依頼をクリアした／afterCls＝その CLASS 以上になった（'B' など）。
+ 一度見ると MIS[id].read が真になり、二度と出ない。そろった来訪が複数あれば、MLIST の並びで1つずつ。
+ 呼ぶ場所：メールの［閉じる］・暗い所・［◀ 一覧］・［MISSION を開く］（openBoard）・ガレージへ戻ったとき（garageGreet）。then＝来訪のあとに続ける操作 */
+const visitDue=d=>d.kind==='visit'&&d.once&&!!(d.afterRead||d.afterClear||d.afterCls)&&!(MIS[d.id]&&MIS[d.id].read)
+ &&(!d.afterRead||!!(MIS[d.afterRead]&&MIS[d.afterRead].read))&&(!d.afterClear||!!(MIS[d.afterClear]&&MIS[d.afterClear].clear))&&(!d.afterCls||CLASSES.indexOf(CLS)>=CLASSES.indexOf(d.afterCls));
+function visitCheck(then){if(TUT!=='done')return false;const d=MLIST.find(visitDue);if(!d)return false;if(!MIS[d.id])MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};saveGame();
  nonaSay([['……ハンガーの入口に、来客です。お通ししますね。']],{hold:true});NB.then=()=>{VS.cb=then;visitPlay(d.id)};return true}
-function openBoard(sel){if(vsLock())return;if(ottoCheck(()=>openBoard(sel)))return;fadeTo(()=>{chkSet(null);mailClose();nbClose();CHO={};if(sel&&MDEF[sel]&&MDEF[sel].ch>0)CHO[MDEF[sel].ch]=true;renderBoard(sel)},'MISSION')}
+const visitGate=f=>{if(!visitCheck(f))f()};
+function openBoard(sel){if(vsLock())return;if(visitCheck(()=>openBoard(sel)))return;fadeTo(()=>{chkSet(null);mailClose();nbClose();CHO={};if(sel&&MDEF[sel]&&MDEF[sel].ch>0)CHO[MDEF[sel].ch]=true;renderBoard(sel)},'MISSION')}
 let CHO={}; // CHAPTER の開閉（MISSION を開くたびに初期化。今の CHAPTER だけ開く。画面を開いている間だけ保つ）
 function renderBoard(sel){
  {const mx=Math.max(0,...MLIST.filter(d=>d.ch>0&&d.ready&&MIS[d.id]&&MIS[d.id].got).map(d=>d.ch));if(mx>CH){CH=mx;saveGame();misHeader()}}
@@ -6881,6 +6897,7 @@ function garageGreet(kind,info={}){
   sh.forEach((d,i)=>L.push([i===0?'……通信です。<em>メールが'+nmail.length+'通</em>届いています。まず、'+d.from+'から。'+kd(d):(i===sh.length-1&&nmail.length===sh.length?'それと、':'つづけて、')+d.from+'からも。'+kd(d)]));
   if(nmail.length>sh.length)L.push(['ほかにも'+(nmail.length-sh.length)+'通届いています。']);
   L.push(['ヘッダーの <em>MAIL</em> からお読みください。'])}
+ if(!nvis&&MLIST.some(visitDue)){setTimeout(()=>visitCheck(()=>{}),500);return}
  if(nvis){setTimeout(()=>{nonaSay([['……ハンガーの入口に、来客です。お通ししますね。']],{hold:true});NB.then=()=>visitPlay(nvis.id)},500);return}
  if(L.length)nonaSay(L);
 }
