@@ -297,7 +297,7 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .wbtn.rl button{background:rgba(10,20,28,.8);border-color:#6fc8ff}.wbtn.rl b{color:#6fc8ff;font-size:12px;letter-spacing:1px}
 .wbtn.none{opacity:.35}
 .wbtn button.on{background:rgba(240,160,64,.45);border-color:#f0a040}
-#wL{right:114px}#wR{right:10px}#wS{right:10px;bottom:calc(108px + env(safe-area-inset-bottom,0px))}
+#wL{right:114px}#wR{right:10px}#wS{right:62px;bottom:calc(108px + env(safe-area-inset-bottom,0px))}
 .jbtn{position:absolute;right:214px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:50px;height:58px}
 .jbtn button{position:absolute;inset:0;box-sizing:border-box;margin:0;padding:0;border:0;background:#6fc8ff;clip-path:polygon(50% 0,100% 30%,100% 100%,0 100%,0 30%);touch-action:none}
 .jbtn .ji{position:absolute;inset:2px;background:rgba(10,22,30,.92);clip-path:polygon(50% 0,100% 30%,100% 100%,0 100%,0 30%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:7px;box-sizing:border-box;pointer-events:none;font-family:var(--mech);font-size:8px;font-weight:700;letter-spacing:1.5px;color:#6fc8ff;text-shadow:none}
@@ -4634,7 +4634,7 @@ function gearShot(e,A,obj,vis={}){const S0=A.def.st,T=e.tier;obj.getWorldPositio
  const dir=aim.sub(from).normalize(),n=WSND(A.id);if(n)sAt(n,from,{g:.38});
  const f=spawn(vis.color&&vis.color!==0xffe080?vis.color:0xff8a4a,Math.max(.22,(vis.size||.1)*2.2),from,{vel:dir.multiplyScalar(spd),life:(S0.range||50)*1.1/spd+.4,len:Math.min(3,vis.len||3),trail:vis.trail||0,team:'e',dmg:Math.round(S0.dmg*T.dk),imp:S0.imp,splash:S0.area||0});
  spawn(0xffd090,.8,from,{life:.07});return f}
-const CH_V=40;   // 4-1 追跡：自機の前進速度（m/s。フレーム性能によらない固定値。仮）。親機はこの0.8倍、護衛はその前後（chaseVel）
+const CH_V=34;   // 4-1 追跡：自機の前進速度（m/s。フレーム性能によらない固定値。仮）。親機はこの0.8倍、護衛はその前後（chaseVel）
 const ENEMY_MS=.7;   // 敵ギアのミサイルの威力倍率（兵装の威力×段階の倍率に掛ける。以前は .5）。弾速・VERSUS 倍率は ENEMY_BS／VS_BS／VS_DMG
 function gearMissile(e,A,obj,i){const st=A.def.st,bk=ENEMY_BS*(RUN&&RUN.vs?VS_BS:1),dk=RUN&&RUN.vs?VS_DMG:1;obj.getWorldPosition(_p);obj.getWorldDirection(_d);if(st.vert?!(i|0):(i|0)%2===0)sAt(st.vert?'vmissile':'missile',_p,{g:.38});
  const m=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0xffa080}));m.scale.set(.16,.16,.55);m.position.copy(_p);S.add(m);
@@ -5732,7 +5732,7 @@ const VIAD_R=55,VIAD_ZN=112,VIAD=grp(S);VIAD.visible=false;const VIAD_MAP=[];
 /* ===== 追跡（4-1）の道：まっすぐな旧街道（CH_Z0〜CH_Z1）。自機は走り続け、左右によけて進む =====
  道幅は ±CH_W。障害物は道をふさぐ壁（コンテナの山）で、**隙間**（中心 gx・半幅 gw）が左右交互に出る。隙間を抜けないと止まってダメージ。
  敵の車列も同じ隙間を通る。道・地面・白線は自機について動き、遠くの飾りと壁は距離で表示を切り替える（軽くするため） */
-const CH_W=13,CH_Z0=-30,CH_Z1=3600,CHASE=grp(S),CHSC=grp(S);CHASE.visible=CHSC.visible=false;
+const CH_W=17,CH_Z0=-30,CH_Z1=3600,CHASE=grp(S),CHSC=grp(S);CHASE.visible=CHSC.visible=false;
 const CH_OBS=[],CH_SCN=[],CH_LINES=[],CH_MINES=[];let CH_GND=null,CH_ROAD=null;
 {let sd=0x4f21;const rnd=(a=0,b=1)=>{sd=(sd*1664525+1013904223)>>>0;return a+sd/4294967296*(b-a)};
  const dirt=psMat(0x6a5638),roadM=psMat(0x4a4236),line=psMat(0xcfc08a),rock=psMat(0x5e5040),rock2=psMat(0x74644c),rust=psMat(0x7a4a2c),dark=psMat(0x2a2620),warn=psMat(0xd8a020),
@@ -5745,12 +5745,12 @@ const CH_OBS=[],CH_SCN=[],CH_LINES=[],CH_MINES=[];let CH_GND=null,CH_ROAD=null;
   else{const h=3+rnd(0,8);m=box(CHSC,rnd(4,8),h,rnd(4,8),rnd()<.5?rock:rock2,x,h/2,zz,0,rnd(0,3),0)}
   m.userData.z=zz;CH_SCN.push(m)});
  let z=150,k=0,sg=1;
- while(z<CH_Z1-120){const gx=sg*(3+rnd(0,5)),gw=5.6,h=12,L=-(CH_W+2),Rr=CH_W+2,ms=[];
+ while(z<CH_Z1-120){const gx=sg*(4+rnd(0,6)),gw=7,h=12,L=-(CH_W+2),Rr=CH_W+2,ms=[];
   const wl=gx-gw-L,wr=Rr-(gx+gw);
   ms.push(box(CHASE,wl,h,2.6,cont[k%4],L+wl/2,h/2,z),box(CHASE,wr,h,2.6,cont[(k+1)%4],Rr-wr/2,h/2,z));
   ms.push(box(CHASE,.5,h,2.8,warn,gx-gw-.25,h/2,z),box(CHASE,.5,h,2.8,warn,gx+gw+.25,h/2,z));
   ms.forEach(m=>m.userData.z=z);
-  CH_OBS.push({z,gx,gw,ht:-99,ms});z+=(k<4?64:k<12?54:46)+rnd(-4,4);sg=-sg;k++}
+  CH_OBS.push({z,gx,gw,ht:-99,ms});z+=(k<4?90:k<12?78:66)+rnd(-4,4);sg=-sg;k++}
  for(let i=0;i<12;i++){const g=grp(CHASE,0,0,0);cyl(g,1.2,1.4,.5,psMat(0x3a3028),0,.25,0,0,0,10);const lamp=new THREE.Mesh(new THREE.SphereGeometry(.45,8,6),new THREE.MeshBasicMaterial({color:0xff3020}));lamp.position.y=.7;g.add(lamp);g.visible=false;g.userData.lamp=lamp;CH_MINES.push(g)}
 }
 // いちばん近い（前方の）障害物。敵の車列が、隙間の中心へ向かうのに使う
@@ -6346,7 +6346,7 @@ function chaseTick(dt){const d=RUN.def,C=RUN.ch;if(!C)return;const B=C.boss,pz=P
  // 障害物：壁（隙間の外）に当たると、ダメージと硬直。後ろへ押し戻される
  C.hitCd=(C.hitCd||0)-dt;
  if(P.down<=0&&!RUN.ok){const o=chNext(pz-2);
-  if(o&&pz>o.z-3.6&&pz<o.z+1.6&&mech.bot.position.y<9&&Math.abs(P.pos.x-o.gx)>o.gw-1.6&&C.hitCd<=0){C.hitCd=1.5;hitPlayer(90,'A',new THREE.Vector3(P.pos.x,2,o.z-1.5));if(!DBG.inv)P.stun=Math.max(P.stun,.9);P.pos.z=Math.min(P.pos.z,o.z-5.2);P.vel.z=-6;SND.play('hit',{g:.5});
+  if(o&&pz>o.z-3.6&&pz<o.z+1.6&&mech.bot.position.y<9&&Math.abs(P.pos.x-o.gx)>o.gw-1.6&&C.hitCd<=0){C.hitCd=1.5;hitPlayer(90,'A',new THREE.Vector3(P.pos.x,2,o.z-1.5));if(!DBG.inv)P.stun=Math.max(P.stun,.5);P.pos.z=Math.min(P.pos.z,o.z-4.4);P.vel.z*=.4;SND.play('hit',{g:.5});
    if(!C.said.wall){C.said.wall=1;comm(d.comm.wall,2.2)}}}
  // 地雷：親機が落とす。踏むと爆発
  C.mT-=dt;if(B&&B.alive&&C.mT<=0){C.mT=4.2+Math.random()*1.6;const mz=B.g.position.z-3,wo=chNext(mz-16),m=(wo&&wo.z<mz+16)?null:CH_MINES.find(q=>!q.visible);if(m){   // 壁の前後16m には置かない
