@@ -1625,15 +1625,24 @@ Object.assign(EXT,{
    [-1,1].forEach(s=>{const t=grp(g,s*.32,.66,-.1);cyl(t,.12,.14,.14,Wp.frame,0,0,0,0,0,8);box(t,.05,.05,.45,Wp.metal,.04,0,.24);box(t,.05,.05,.45,Wp.metal,-.04,0,.24);t.muzzle=grp(t,0,0,.5);turrets.push(t)});return {turrets}}},
 });
 /* 基本動作：跳躍（高さは機動力で変わる） */
+let JLIFT=0;
 const JUMP={name:'跳躍',act:{name:'跳躍',dur:2.2,run(c){const u=c.u,h=SS.jump;
  if(c.once('go',.2)){shake=.2;dust(1.2);SND.play('jump',{g:.45})}
  if(c.once('land',.86)){shake=.3;dust(1.6);onLand();SND.play('land',{g:.6})}
  const air=kf(u,[[.18,0],[.26,1],[.78,1],[.86,0]]);
- return {w:1,lift:kf(u,[[0,0],[.2,0],[.45,3.0],[.6,3.2],[.86,0],[1,0]])*h,
+ const lf=kf(u,[[0,0],[.2,0],[.45,3.0],[.6,3.2],[.86,0],[1,0]])*h;JLIFT=lf;
+ return {w:1,lift:lf,
   crouch:kf(u,[[0,0],[.16,.85],[.21,0],[.84,0],[.88,.8],[1,0]]),
   boost:kf(u,[[.18,0],[.22,1.3],[.5,1],[.58,.25],[.72,.6],[.86,0]]),
   legs:{th:[-.35,-.1],kn:[.8,.45],w:air},arms:{x:.35,z:.1,e:-.5,w:air},
   torsoX:kf(u,[[0,0],[.16,.2],[.3,-.08],[.8,.05],[.88,.25],[1,0]])}}}};
+/* 二段ジャンプ（系列特性「諸刃」）：跳躍の空中でもう一度跳ぶ。いまの高さから、さらに高く */
+const JUMP2={name:'二段跳躍',act:{name:'二段跳躍',dur:1.5,run(c){const u=c.u,h=Math.max(SS.jump,.01);
+ if(c.st.l0==null){c.st.l0=JLIFT/h;shake=.2;dust(1.2);SND.play('jump',{g:.5})}
+ if(c.once('land',.88)){shake=.3;dust(1.6);onLand();SND.play('land',{g:.6})}
+ const lf=kf(u,[[0,c.st.l0],[.28,5.8],[.55,5.8],[.88,0],[1,0]])*h;JLIFT=lf;
+ return {w:1,lift:lf,crouch:kf(u,[[0,0],[.84,0],[.9,.8],[1,0]]),boost:kf(u,[[0,1.3],[.4,1],[.6,.5],[.88,0]]),
+  legs:{th:[-.35,-.1],kn:[.8,.45],w:1},arms:{x:.35,z:.1,e:-.5,w:1},torsoX:kf(u,[[0,.1],[.3,-.08],[.9,.05],[1,0]])}}}};
 /* ===== 共通動作：被弾よろけ・急加速 ===== */
 const STAGGER={act:{dur:.55,run(c){const u=c.u,p=kf(u,[[0,0],[.15,1],[1,0]]);
  return {w:1,torsoX:-.45*p,crouch:.4*p,headY:.3*p,arms:{x:.5,z:.25,e:-.8,w:p}}}}};
@@ -1659,26 +1668,28 @@ const WEIGHT_K=.15;
 let SS={};
 function wOf(cat,id){return cat[id].st?cat[id].st.wt:0}
 function statsFor(c){
- const hd=HEADS[c.head],co=eff('core',c.core),ar=eff('arms',c.arms),lg=eff('legs',c.legs);
- const tLR=1+tMul('head',c.head,0),tLD=1+tMul('head',c.head,1);
+ const FT=traitSet(c)||{},tk=FT.tune||1;
+ const hd=HEADS[c.head],co=eff('core',c.core,tk),ar=eff('arms',c.arms,tk),lg=eff('legs',c.legs,tk);
+ const tLR=1+tMul('head',c.head,0)*tk,tLD=1+tMul('head',c.head,1)*tk;
  const weap=wOf(HAND,c.rHand)+wOf(HAND,c.lHand)+wOf(SHOULDER,c.rShoulder)+wOf(SHOULDER,c.lShoulder)+wOf(EXT,c.ext);
  const parts=hd.wt+co.wt+ar.wt+lg.wt,total=parts+weap,pen=total*WEIGHT_K,mob=Math.max(5,lg.mob-pen);
  const ranges=[HAND[c.rHand],HAND[c.lHand],SHOULDER[c.rShoulder],SHOULDER[c.lShoulder]].map(d=>d.st&&d.st.range||0);
  const px=(EXT[c.ext].st&&EXT[c.ext].st.pass)||{};
  return {armor:co.armor+ar.armor+lg.armor,armorCore:co.armor,boost:co.boost+(px.boost||0),load:ar.load,icInt:px.icInt||0,icR:px.icR||0,weap,total,legMob:lg.mob,pen,mob,
-  walk:4+mob*.08,dash:(12+mob*.15)*(1+(px.dash||0)),qb:8+mob*.1+(px.qb||0),jump:(.6+mob*.008)*(LEGS[c.legs].jumpK||1),
+  walk:4+mob*.08,dash:(12+mob*.15)*(1+(px.dash||0))*(FT.dash||1),qb:(8+mob*.1+(px.qb||0))*(FT.qb||1),bcost:FT.bcost||1,dmgIn:FT.dmgIn||1,dmgOut:FT.dmgOut||1,shieldK:FT.shield||1,dj:!!FT.dj,cp:!!FT.cp,trait:FT.name?FT:null,jump:(.6+mob*.008)*(LEGS[c.legs].jumpK||1),
   regenK:CORES[c.core].regenK||1,reloadK:ARMS[c.arms].reloadK||1,landK:LEGS[c.legs].landK||1,lead:hd.ability==='lead'||!!hd.lead,quick:hd.ability==='quick',xray:!!px.xray,
-  lockRange:Math.round((Math.max(40,...ranges)+(px.lockRange||0)+hd.lockAdd)*tLR),lockDeg:Math.round((hd.lockDeg+(px.lockDeg||0))*tLD),cone:Math.round((hd.lockDeg+(px.lockDeg||0))*tLD)*Math.PI/180,multi:hd.ability==='multi'||hd.ability==='triple',nLock:hd.ability==='triple'?3:hd.ability==='multi'?2:1,over:weap>ar.load};
+  lockRange:Math.round((Math.max(40,...ranges)+(px.lockRange||0)+hd.lockAdd)*tLR),lockDeg:Math.round((hd.lockDeg+(px.lockDeg||0))*tLD),cone:Math.round((hd.lockDeg+(px.lockDeg||0))*tLD)*Math.PI/180,multi:hd.ability==='multi'||hd.ability==='triple'||!!FT.triple,nLock:(hd.ability==='triple'||FT.triple)?3:hd.ability==='multi'?2:1,over:weap>ar.load};
 }
 function calcStats(){SS=statsFor(cfg);renderGarage()}
 /* 弾数：兵装ごとに残弾とリロード残り時間を持つ。0になったときだけ自動でリロード */
 const AM={};
 function stOf(key){const sl=WSLOTS.find(s=>s.key===key);return sl.cat[cfg[key]].st}
-function resetAmmo(){WSLOTS.forEach(sl=>{const st=stOf(sl.key);AM[sl.key]={ammo:st?st.ammo:0,rl:0}})}
+const ammoMax=key=>{const st=stOf(key);return st?(st.kind==='防御'&&st.ammo!==INF?Math.round(st.ammo*(SS.shieldK||1)):st.ammo):0};
+function resetAmmo(){WSLOTS.forEach(sl=>{AM[sl.key]={ammo:ammoMax(sl.key),rl:0}})}
 function ammoReady(key){const a=AM[key],st=stOf(key);if(!st)return false;if(mode!=='play')return true;return a.rl<=0&&a.ammo>0}
 function ammoUse(key,n=1){if(mode!=='play')return true;const a=AM[key],st=stOf(key);if(!st)return false;if(a.ammo===INF)return true;
  if(a.rl>0||a.ammo<n)return false;a.ammo-=n;if(a.ammo<=0){a.ammo=0;a.rl=st.reload;SND.play('reload',{g:.4});if(HOLD[key])HOLD[key]=false}return true}
-function tickAmmo(dt){WSLOTS.forEach(sl=>{const a=AM[sl.key];if(a&&a.rl>0){a.rl-=dt/(stOf(sl.key).kind==='防御'?1:(SS.reloadK||1));if(a.rl<=0){a.rl=0;a.ammo=stOf(sl.key).ammo;SND.play('reloaded',{g:.4})}}})}
+function tickAmmo(dt){WSLOTS.forEach(sl=>{const a=AM[sl.key];if(a&&a.rl>0){a.rl-=dt/(stOf(sl.key).kind==='防御'?1:(SS.reloadK||1));if(a.rl<=0){a.rl=0;a.ammo=ammoMax(sl.key);SND.play('reloaded',{g:.4})}}})}
 let mech=null;const active={};
 let builtKey='';
 // 機体の3Dモデルを組む（c＝構成。ガレージでは選択中の装備を仮に組んで見せる）
@@ -1794,10 +1805,12 @@ function tickHold(){
 // 試合の操作を止める時間：試合が始まるまで／決着から受付へ戻るまで（移動・射撃・跳躍・視点）
 function inLock(){return mode==='play'&&!!RUN&&!!RUN.vs&&(!RUN.vs.go||!!RUN.ok||!!RUN.lost)}
 function jump(){
+ if(active.jump&&active.jump.def===JUMP&&SS.dj&&mode==='play'&&JLIFT>.8&&!inLock()&&P.hp.legs>0){   // 二段ジャンプ
+  const bc=20*(SS.bcost||1);if(P.stun>0||P.boost<bc){if(P.boost<bc)say('BOOST 不足',.6);return}P.boost-=bc;P.regen=.8*SS.regenK;run('jump',JUMP2);return}
  if(active.jump||inLock())return;
  if(mode==='play'&&P.hp.legs<=0){say('LEGS 損壊：跳躍不能',.6);return}
  if(mode==='play'&&!guardRes().jump){say('構え中は跳躍できません',.5);return}
- if(mode==='play'){if(P.stun>0||P.boost<20){if(P.boost<20)say('BOOST 不足',.6);return}P.boost-=20;P.regen=.8*SS.regenK}
+ if(mode==='play'){const bc=20*(SS.bcost||1);if(P.stun>0||P.boost<bc){if(P.boost<bc)say('BOOST 不足',.6);return}P.boost-=bc;P.regen=.8*SS.regenK}
  run('jump',JUMP);if(TRT)ttEvt('jump');
 }
 
@@ -1903,7 +1916,7 @@ function renderSide(){
   el.innerHTML=`<div class="shd"><span class="code">UNIT</span><span class="ttl en">HX-07 VESTIGE</span><span class="sub">S/N 0417-A ／ MFG LOT 07</span></div><div class="rule"></div>
   <div class="ovl">${SLOTS.map(sl=>{const d=sl.cat[cfg[sl.key]],w=d.st?d.st.wt:d.wt;return `<button class="orow" data-slot="${sl.key}"><span class="k ${sl.group==='F'?'f':'w'}">${sl.label}</span><span class="v"><span class="fit">${esc(ENM(sl.key,cfg[sl.key]).trim())}<small class="vc">${pn(sl.key,cfg[sl.key])[1]}</small></span>${sl.group==='F'?`<span class="fit vs">${PN[cfg[sl.key]]?PN[cfg[sl.key]][0]:''}</span>`:''}</span><span class="wt"></span></button>`}).join('')}</div>
   <div class="specs"><span><small>ヘッド能力</small><b>${hd.abName}</b></span><span><small>ロック距離</small><b>${SS.lockRange}<i>m</i></b></span><span><small>ロック角度</small><b>±${SS.lockDeg}<i>°</i></b></span><span><small>歩行</small><b>${SS.walk.toFixed(1)}</b></span><span><small>ダッシュ</small><b>${SS.dash.toFixed(1)}</b></span><span><small>急加速</small><b>${SS.qb.toFixed(1)}<i>m</i></b></span></div>
-  <div class="note">${hd.abDesc}${[CORES[cfg.core],ARMS[cfg.arms],LEGS[cfg.legs]].filter(x=>x.trait).map(x=>'<br>'+x.trait).join('')}</div>
+  <div class="note">${hd.abDesc}${[CORES[cfg.core],ARMS[cfg.arms],LEGS[cfg.legs]].filter(x=>x.trait).map(x=>'<br>'+x.trait).join('')}${SS.trait?`<br><b>系列特性「${SS.trait.name}」解放中</b>：${SS.trait.desc}`:''}</div>
   ${SS.over?`<div class="warn-msg">兵装が積載を ${SS.weap-SS.load} 超えています。軽い兵装にするか、積載の大きいアームにしてください。</div>`:''}`;
   el.querySelectorAll('[data-slot]').forEach(b=>b.onclick=()=>openSlot(b.dataset.slot));
  }else if(view==='slot'){
@@ -1978,7 +1991,7 @@ function renderSide(){
     <div class="sec${lr?' lr':''}">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">${secj}</span>${lr?lrBtns(side):''}</div><div class="cmp">${brief}</div>
     ${P2.over&&cand!==cur?`<div class="ovn">積載 +${P2.weap-P2.load} 超過</div>`:''}<div class="acts"><button class="btn-main cut${P2.over&&cand!==cur?' ov':''}" id="equip" ${cand===cur||P2.over?'disabled':''}>${cand===cur?'装備中':P2.over?'積載オーバー':'装備する'}</button><button class="btn-sub" id="more">詳しく見る</button><button class="btn-sub" id="back">戻る</button></div></div></div>`;
   $('more').onclick=()=>openModal(`<div class="shd"><span class="code"><span class="nw">${pn(selSlot,cand)[0]}</span> ／ ${pn(selSlot,cand)[1]}</span><span class="ttl">${esc(ENM(selSlot,cand).trim())}</span></div><div class="rule"></div>
-   <p class="note" style="margin:0">${esc(DESC[cand]||'')}${cd.st&&cd.st.note?'<br>'+esc(cd.st.note):''}${cd.trait?'<br>特性：'+esc(cd.trait):''}</p>
+   <p class="note" style="margin:0">${esc(DESC[cand]||'')}${cd.st&&cd.st.note?'<br>'+esc(cd.st.note):''}${cd.trait?'<br>特性：'+esc(cd.trait):''}${serOf(cand)?'<br>'+esc(traitLine(cand)):''}</p>
    <div class="sec">${sl.group==='F'?'パーツ性能':'兵装性能'}<span class="secj">${secj}</span></div><div class="cmp">${part}</div>
    <div class="sec">機体全体<span class="secj">現在 → 装備後</span></div><div class="cmp">${whole}${cmpRow('歩行速度',+SS.walk.toFixed(1),+P2.walk.toFixed(1))}${cmpRow('ダッシュ速度',+SS.dash.toFixed(1),+P2.dash.toFixed(1))}${cmpRow('急加速距離',+SS.qb.toFixed(1),+P2.qb.toFixed(1))}${cmpRow('ロック距離',SS.lockRange,P2.lockRange,'hi',v=>v+'m')}</div>
    ${P2.over?`<div class="warn-msg">この装備にすると積載を ${P2.weap-P2.load} 超えます（出撃不可）</div>`:''}`);
@@ -2199,7 +2212,7 @@ const ITEM_CLS={'HD-03':'D','CR-03':'D','AR-03':'D','LG-03':'D','RF3':'D','MG3':
 // 'X'＝SHOP に並ばない（00 COUNTER・ラスト・オーダー）
 // 02系（BULWARK 02 と2ndタイプ武器）は最初のトレーニング完了後に入荷
 const is02=id=>/^(HD|CR|AR|LG)-02$/.test(id)||/^(RF|MG|BZ|BL|SH|MS|GC|RD|BT|IC)2$/.test(id);
-const clsOk=id=>(!is02(id)||TTUT>=TT_N)&&(!ITEM_CLS[id]||((ITEM_CLS[id]==='X'?(/-04$/.test(id)&&!!VSS.win[2]):CLASSES.indexOf(CLS)>=CLASSES.indexOf(ITEM_CLS[id]))));
+const clsOk=id=>(!is02(id)||TTUT>=TT_N)&&(!ITEM_CLS[id]||((ITEM_CLS[id]==='N'?false:ITEM_CLS[id]==='X'?(/-04$/.test(id)&&!!VSS.win[2]):CLASSES.indexOf(CLS)>=CLASSES.indexOf(ITEM_CLS[id]))));
 
 /* 名前の体系：CAT＝種類（英語の項目名）、TYPE＝種類の日本語、MODEL＝型番、NAME＝固有名。
    同じ種類の装備が増えたら、同じ CAT で型番と固有名だけ変えて追加する */
@@ -3045,19 +3058,19 @@ function gxPost(c,o){if(!is00Set(c))return;GX.CTR.slim({torso:o.torso,head:o.hea
 const GXF=[
  {n:'04',ser:'GLA',name:'GLADIATOR 04',cls:'X',price:28000,ml:'G',types:['兜型','軽装型','近接型','軽量二脚'],
   head:{wt:9,ability:'quick',abName:'高速ロック',abEn:'QUICK LOCK',lockDeg:25,lockAdd:10,abDesc:'ロックした敵へ視点がすばやく向き、ロックが外れにくい。ロック角度 ±25°、距離＋10m'},
-  core:{armor:820,boost:140,wt:46,trait:'瞬発力が高い（特性の動きは開放時に実装）'},arms:{armor:260,load:100,wt:22},legs:{armor:470,mob:115,wt:48}},
- {n:'05',ser:'CEN',name:'CENTURION 05',cls:'B',price:34000,ml:'C',types:['一文字型','制式型','重ね板型','中重量二脚'],
+  core:{armor:820,boost:140,wt:46},arms:{armor:260,load:100,wt:22},legs:{armor:470,mob:115,wt:48}},
+ {n:'05',ser:'CEN',name:'CENTURION 05',cls:'N',price:34000,ml:'C',types:['一文字型','制式型','重ね板型','中重量二脚'],
   head:{wt:12,ability:'wide',abName:'広角ロック',abEn:'WIDE LOCK',lockDeg:40,lockAdd:10,abDesc:'広い角度でロックする。ロック角度 ±40°、距離＋10m'},
   core:{armor:1000,boost:120,wt:62},arms:{armor:330,load:135,wt:34},legs:{armor:520,mob:90,wt:72}},
  {n:'06',ser:'REV',name:'REVENANT 06',cls:'A',price:38000,ml:'R',types:['一角型','試作型','骨格型','逆関節'],
   head:{wt:8,ability:'omni',abName:'全周ロック',abEn:'OMNI LOCK',lockDeg:180,lockAdd:-20,abDesc:'全方向をロックできる。ロック距離 −20m'},
-  core:{armor:720,boost:190,wt:44,trait:'3部位そろいで武器ダメージ＋20%／熱がたまると性能低下（開放時に実装）'},arms:{armor:220,load:150,wt:24},legs:{armor:420,mob:145,wt:46,trait:'二段ジャンプ（開放時に実装）'}},
+  core:{armor:720,boost:190,wt:44},arms:{armor:220,load:150,wt:24},legs:{armor:420,mob:145,wt:46}},
  {n:'07',ser:'SOV',name:'SOVEREIGN 07',cls:'S',price:48000,ml:'S',types:['十字型','万能型','籠手型','長脚二脚'],
   head:{wt:10,ability:'multi',lead:true,abName:'マルチロック＋偏差',abEn:'MULTI LOCK',lockDeg:30,lockAdd:25,abDesc:'2体を同時にロックし、動く敵の未来位置へ撃つ。±30°、距離＋25m'},
-  core:{armor:1300,boost:160,wt:55,trait:'TUNE の伸び ×1.25（開放時に実装）'},arms:{armor:420,load:140,wt:30},legs:{armor:680,mob:120,wt:62}},
+  core:{armor:1300,boost:160,wt:55},arms:{armor:420,load:140,wt:30},legs:{armor:680,mob:120,wt:62}},
  {n:'00',ser:'CTR',name:'COUNTER 00',cls:'X',price:60000,ml:'X',types:['覚醒型','対抗型','織り手型','黒羊二脚'],
-  head:{wt:9,ability:'multi',lead:true,abName:'COUNTER PROTOCOL',abEn:'COUNTER PROTOCOL',lockDeg:35,lockAdd:25,abDesc:'マルチロック＋偏差 ±35°、距離＋25m。専用ボタンで18秒間、ザコの無人兵器の制御に割り込む（開放時に実装）'},
-  core:{armor:1500,boost:185,wt:52,trait:'4部位セット専用・色は変えられない'},arms:{armor:480,load:160,wt:28},legs:{armor:820,mob:140,wt:56}},
+  head:{wt:9,ability:'multi',lead:true,abName:'COUNTER PROTOCOL',abEn:'COUNTER PROTOCOL',lockDeg:35,lockAdd:25,abDesc:'マルチロック＋偏差 ±35°、距離＋25m。専用ボタンで18秒間、ザコの無人兵器の制御に割り込む（この動きは未実装）'},
+  core:{armor:1500,boost:185,wt:52},arms:{armor:480,load:160,wt:28},legs:{armor:820,mob:140,wt:56}},
  {n:'LO',ser:'ORD',name:'LAST ORDER',cls:'X',price:52000,ml:'O',types:['冠型','旗機型','王者型','重量二脚'],
   head:{wt:14,ability:'multi',abName:'マルチロック',abEn:'MULTI LOCK',lockDeg:30,lockAdd:20,abDesc:'2体を同時にロックする。±30°、距離＋20m（仮）'},
   core:{armor:1400,boost:150,wt:70},arms:{armor:450,load:150,wt:38},legs:{armor:720,mob:105,wt:80}},
@@ -3071,6 +3084,20 @@ GXF.forEach(f=>{const id=k=>k+'-'+f.n,B=f.ser;
   PN[id(k)]=[f.name,f.types[i],'',k[0]+f.ml+'-'+(i===0?f.head.wt*45:i===3?v.mob*4:v.armor)];ITEM_CLS[id(k)]=f.cls;
   EN[id(k)]=f.name.replace(/ \d+$/,'')+' '+['HEAD','CORE','ARMS','LEGS'][i];
   DESC[id(k)]=(f.n==='00'?'設計者がノーナのために作った対抗機の部位。':f.n==='LO'?'JOSHUA 軍の旗機の部位（系列外・購入不可）。':f.name+' 系列の部位。')+'性能は仮の値です。'})});
+
+/* ===== 系列特性（04 以降）=====
+ 同じ系列の頭・胴・腕・脚の4部位をすべて装備すると解放される。効果は statsFor（SS）に入れて、戦闘側は SS の値を読む。
+ dash／qb＝ダッシュ・急加速の倍率、bcost＝ブースト消費の倍率、dmgIn＝受けるダメージの倍率、dmgOut＝与えるダメージの倍率、shield＝シールド耐久の倍率、tune＝TUNE の伸びの倍率、dj＝二段ジャンプ、triple＝3体ロック、cp＝COUNTER PROTOCOL */
+const FTRAIT={
+ '04':{name:'閃駆',en:'FLASH RUN',desc:'ダッシュと急加速が20%速くなり、ブーストの消費が25%減る',dash:1.2,qb:1.2,bcost:.75},
+ '05':{name:'鉄壁',en:'IRON WALL',desc:'敵から受けるダメージが20%減り、シールドの耐久が30%増える',dmgIn:.8,shield:1.3},
+ '06':{name:'諸刃',en:'DOUBLE EDGE',desc:'武器ダメージが20%増え、二段ジャンプができる。ただし敵から受けるダメージが30%増える',dmgOut:1.2,dmgIn:1.3,dj:true},
+ '07':{name:'覇道',en:'DOMINION',desc:'TUNE の伸びが1.25倍になり、ブーストの消費が20%減る。3体を同時にロックできる（トリプルロック）',tune:1.25,bcost:.8,triple:true},
+ '00':{name:'反逆',en:'REBELLION',desc:'COUNTER PROTOCOL が使える（無人兵器の制御に割り込む）。色は変えられない',cp:true}};
+const serOf=id=>{const m=/^(HD|CR|AR|LG)-(\d\d)$/.exec(id||'');return m&&FTRAIT[m[2]]?m[2]:''};
+// 装備中の系列特性（4部位とも同じ系列のときだけ）。なければ null
+function traitSet(c){const a=['head','core','arms','legs'].map(k=>serOf(c[k]));return a[0]&&a.every(x=>x===a[0])?FTRAIT[a[0]]:null}
+const traitLine=id=>{const n=serOf(id);if(!n)return '';const t=FTRAIT[n];return `系列特性「${t.name}」${t.en}：${t.desc}（頭・胴・腕・脚の4部位そろいで解放）`};
 
 /* ===== ギアの呼び出し（spawnGear）=====
  GEARS に機体の設計図を名前で登録しておき、どの場面でも同じ姿で出す。
@@ -3099,7 +3126,7 @@ const SER=id=>isFrameId(id)&&PN[id]?`<span class="nw">${PN[id][0]}</span>`:'';
 // 1行に収める欄（.fit）：はみ出すぶんだけ文字を小さくする（下限 9px）。省略記号では切らない
 function fitText(root=document){if(!root)return;root.querySelectorAll('.fit').forEach(el=>{el.style.fontSize='';if(!el.clientWidth)return;let fs=parseFloat(getComputedStyle(el).fontSize),k=0;while(el.scrollWidth>el.clientWidth+.5&&fs>9&&k<24){fs-=.5;el.style.fontSize=fs+'px';k++}})}
 // 性能の欄に添える行：特性（フレーム trait／ヘッド能力の説明／兵装・EXTRA の note）と、フレームの改造段階（青い5つの目盛り）
-const traitOf=(slot,id)=>{if(!id||id==='none')return '';const d=SLOTOF(slot).cat[id];return d?(d.trait||d.abDesc||(d.st&&d.st.note)||''):''};
+const traitOf=(slot,id)=>{if(!id||id==='none')return '';const d=SLOTOF(slot).cat[id];if(d&&slot!=='head'&&serOf(id))return traitLine(id);return d?(d.trait||d.abDesc||(d.st&&d.st.note)||''):''};
 const tSum=id=>(TUNE[id]||[0,0]).reduce((a,b)=>a+b,0);
 const tPlus=id=>isFrameId(id)&&tSum(id)?`<small class="tplus">+${tSum(id)}</small>`:'';
 function extraRows(slot,id){let h='';if(id&&id!=='none')h+=`<div class="c w trt"><span class="k">特性</span><span class="v">${esc(traitOf(slot,id))||'―'}</span></div>`;
@@ -3256,10 +3283,10 @@ const tCost=(id,lv)=>Math.round((PRICE[id]||TUNE_BASE)*TUNE_COST[lv]/100)*100;
 // 改造を反映したパーツの値（HEAD のロック、LEGS の重量の影響は statsFor で反映）
 // 改造後の装甲は1の位を切り上げて10単位にする（浮動小数の誤差は丸めてから）
 const ARC=v=>Math.ceil(Math.round(v*1000)/10000)*10;
-function eff(slot,id){const b=SLOTOF(slot).cat[id];if(!b)return b;
- if(slot==='core')return {...b,armor:ARC(b.armor*(1+tMul(slot,id,0))),boost:Math.round(b.boost*(1+tMul(slot,id,1)))};
- if(slot==='arms')return {...b,load:Math.round(b.load*(1+tMul(slot,id,0))),armor:ARC(b.armor*(1+tMul(slot,id,1)))};
- if(slot==='legs')return {...b,mob:Math.round(b.mob*(1+tMul(slot,id,0))),armor:ARC(b.armor*(1+tMul(slot,id,1)))};
+function eff(slot,id,k=1){const b=SLOTOF(slot).cat[id];if(!b)return b;
+ if(slot==='core')return {...b,armor:ARC(b.armor*(1+tMul(slot,id,0)*k)),boost:Math.round(b.boost*(1+tMul(slot,id,1)*k))};
+ if(slot==='arms')return {...b,load:Math.round(b.load*(1+tMul(slot,id,0)*k)),armor:ARC(b.armor*(1+tMul(slot,id,1)*k))};
+ if(slot==='legs')return {...b,mob:Math.round(b.mob*(1+tMul(slot,id,0)*k)),armor:ARC(b.armor*(1+tMul(slot,id,1)*k))};
  return b}
 // 比較表用：改造（TUNE）を反映したフレームの値。ロック距離は「そのヘッドが機体全体に足す分」（改造で全体の距離が伸びる分を含む）
 function effPart(slot,id){const b=SLOTOF(slot).cat[id];if(!b||!FRAME_CAT[slot])return b;
@@ -4706,7 +4733,8 @@ function dmgNumTick(dt){DN.forEach(d=>{if(!d.on)return;d.t+=dt;const u=d.t;if(u>
 function dmgNumClear(){DN.forEach(d=>{d.on=false;d.el.hidden=true})}
 const IMP={S:{st:.8,kb:4,p:1},A:{st:.6,kb:2.5,p:1},B:{st:.45,kb:1.5,p:1},C:{st:.35,kb:.8,p:.5},D:{st:.3,kb:.4,p:.25}};
 let HITSRC=null;
-function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){dmg*=e.gFront<0?.1:.15;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4})}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=.25;spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
+function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(mode==='play'&&SS.dmgOut)dmg=Math.round(dmg*SS.dmgOut);   // 系列特性：与えるダメージの倍率
+ if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){dmg*=e.gFront<0?.1:.15;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4})}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=.25;spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
  // 命中の演出：共通の命中音・威力に応じた光と火花・小さな振動・ダメージの数字（CONFIG で ON のとき）
  const pw=Math.max(0,Math.min(1,(dmg-30)/700));e.hit=Math.max(e.hit,.06+.09*pw);e.vib=.12;spawn(0xffffff,.5,pos,{life:.08});
  for(let i=0,n=Math.round(3+7*pw);i<n;i++)spawn(i%2?0xffa040:0xffd070,.1+.06*pw,pos,{vel:new THREE.Vector3((Math.random()-.5)*10,2+Math.random()*6,(Math.random()-.5)*10),grav:16,life:.25+Math.random()*.2});
@@ -4773,6 +4801,7 @@ let bnT=[],bnBusy=false;function banner(txt,sub='',ng=false,dur=3){const B=$('ba
 function bannerClear(){bnT.forEach(clearTimeout);bnT=[];bnBusy=false;$('banner').className=''}
 let msgT=0;function say(s,d=.8){$('msg').textContent=s;msgT=d}
 function hitPlayer(dmg,imp,pos){if(P.down>0)return;if(DBG.inv){spawn(0xc0a8ff,.6,pos,{life:.08});return}
+ dmg=Math.round(dmg*(SS.dmgIn||1));   // 系列特性：受けるダメージの倍率
  // シールド：正面からの弾を防ぐ（衝撃も無効）
  const from=_d.copy(pos).sub(P.pos).setY(0).normalize(),front=from.x*Math.sin(P.yaw)+from.z*Math.cos(P.yaw);
  {const sh=[-1,1].map(sd=>({sd,key:sd<0?'rHand':'lHand'})).filter(o=>guarding(o.sd)&&front>(HAND[cfg[o.key]].st.front??.2)).sort((a,b)=>AM[a.key].ammo-AM[b.key].ammo);
@@ -4807,7 +4836,7 @@ function quickBoost(x,y,mult=1,free=false){
  if(mode==='play'&&!free&&!guardRes().qb)return; // x=右+ / y=前+ （画面基準）
  if(mode!=='play'||P.stun>0||(P.qb&&!free)||inLock())return;
  if(P.hp.legs<=0){if(!free)say('LEGS 損壊：急加速不能',.6);return}
- if(!free){if(P.boost<30){say('BOOST 不足',.6);return}P.boost-=30;P.regen=.8*SS.regenK}
+ if(!free){const bc=30*(SS.bcost||1);if(P.boost<bc){say('BOOST 不足',.6);return}P.boost-=bc;P.regen=.8*SS.regenK}
  const top=CAMMODE==='top',f=top?topF():new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw)),r=top?topR():new THREE.Vector3(-Math.cos(P.yaw),0,Math.sin(P.yaw));
  const dir=f.multiplyScalar(y).add(r.multiplyScalar(x));if(dir.lengthSq()<.01)dir.set(Math.sin(P.yaw),0,Math.cos(P.yaw));
  P.qb={dir:dir.normalize(),u:0,dist:SS.qb*mult};run('qb',QBA);SND.play('qboost',{g:.45});shake=Math.max(shake,.12);if(TRT)ttEvt('qb');
@@ -6313,7 +6342,7 @@ R.setAnimationLoop(()=>{
   const f=top?topF():new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw)),r=top?topR():new THREE.Vector3(-Math.cos(P.yaw),0,Math.sin(P.yaw));
   const mag=Math.hypot(inp.x,inp.y);
   const dashing=can&&GR.dash&&inp.dash&&mag>.1&&P.boost>0&&P.hp.legs>0;
-  if(dashing){P.boost=Math.max(0,P.boost-12*dt);P.regen=.6*SS.regenK;if(P.boost<=0)say('BOOST 切れ',.6)}
+  if(dashing){P.boost=Math.max(0,P.boost-12*(SS.bcost||1)*dt);P.regen=.6*SS.regenK;if(P.boost<=0)say('BOOST 切れ',.6)}
   const heavyFire=Object.values(active).some(a=>a.def===HAND.MG3);
   const sp=(dashing?SS.dash:SS.walk*(air?.9:1))*GR.walk*(RUN&&RUN.carry?.7:1);
   const want=can?f.multiplyScalar(inp.y*sp).add(r.multiplyScalar(inp.x*sp)):new THREE.Vector3();
