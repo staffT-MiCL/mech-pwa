@@ -19,7 +19,8 @@
    方向性：SF計器盤×ミリタリー（ステンシル文字、オリーブ、警告帯、製造番号）×初代PS風の低解像度 */
 :root{
  --bg:#07090a; --panel:#0e1211; --panel2:#121816; --line:#2c3833; --fg:#d9e0dc; --dim:#7f8c86; --faint:#4a5550;
- --accent:#8cf06e; --fire:#f0a040; --cyan:#6fd3e0; --alert:#ff5a3c; --olive:#5b6b3a; --khaki:#b8a878;
+ --accent:#8cf06e; --fire:#f0a040; --cyan:#6fd3e0; --alert:#ff5a3c; --olive:#5b6b3a;
+ --c-nona:#6fd3e0; --c-doll:#8cf06e; --c-client:#d8a35a; --c-bell:#f0a040; --c-jonah:#6fa0f0; --c-otto:#e0c060; --c-serena:#c8435c; --c-erich:#8a5a34; --c-viktor:#8a4aa8;  /* キャラクターごとの色（枠線・名前札）。ここだけで管理する */ --khaki:#b8a878;
  --disp:"DotGothic16","MS Gothic",monospace; --mech:"Chakra Petch","DotGothic16",monospace; --sten:"Stardos Stencil","Chakra Petch",monospace;
  --body:"M PLUS 1p","Hiragino Sans",sans-serif;
  color-scheme:dark;
@@ -591,9 +592,9 @@ body.eqm #btnTrain{display:none}
 /* ===== ノーナのセリフ欄（ガレージ：左下のステータスに重ねる） ===== */
 html{-webkit-tap-highlight-color:transparent}
 #op,#nonaBox,#tbox,#ttext,#tchoice,#opTalk,#opSub{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
-#nonaBox{position:absolute;left:8px;right:8px;bottom:8px;height:calc(var(--gsh,120px) - 4px);min-height:74px;z-index:3;pointer-events:auto;box-sizing:border-box;padding:16px 14px 10px;background:#0a0e0d;border:1px solid #34403a;border-top:2px solid var(--olive);cursor:pointer}
-#nonaBox.vo{border-top-color:#c9a24a}#nonaBox.vo .nm{background:#c9a24a;color:#1a1206}#nonaBox.vo #nbText{color:#f4e6c0}
-#nonaBox .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:var(--olive);color:#e8ecd8;font-family:var(--mech);font-size:10px;letter-spacing:2px;display:flex;align-items:center}
+#nonaBox{position:absolute;left:8px;right:8px;bottom:8px;height:calc(var(--gsh,120px) - 4px);min-height:74px;z-index:3;pointer-events:auto;box-sizing:border-box;padding:16px 14px 10px;background:#0a0e0d;border:1px solid #34403a;border-top:2px solid var(--c-nona);cursor:pointer}
+#nonaBox.vo{border-top-color:var(--c-client)}#nonaBox.vo .nm{background:var(--c-client);color:#0b0e0d}#nonaBox.vo #nbText{color:#f4e6c0}
+#nonaBox .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:var(--c-nona);color:#0b0e0d;font-weight:700;font-family:var(--mech);font-size:10px;letter-spacing:2px;display:flex;align-items:center}
 #nbText{font-family:var(--disp);font-size:13.5px;line-height:1.65;color:#e6ebe7;overflow:auto;height:100%}
 #nbText em{font-style:normal;color:var(--fire)}#nbText strong{font-weight:400;color:var(--accent)}
 #nbNext{position:absolute;right:12px;bottom:6px;color:var(--fire);font-size:10px;animation:kblink .8s steps(2) infinite}
@@ -848,8 +849,8 @@ input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:d
 .bobj .h{font-size:10px;color:var(--fire);letter-spacing:.2em;border-bottom:1px solid var(--line);padding-bottom:3px}
 .bobj .o{font-family:var(--disp);font-size:15px;color:#eef2ef}
 .bobj .nt{margin-top:auto;font-size:10px;color:#56625c;font-family:var(--body)}
-.btalk{grid-column:1/2;position:relative;height:96px;box-sizing:border-box;padding:16px 14px 10px;background:#0a0e0d;border:1px solid #34403a;border-top:2px solid #2d6068;cursor:pointer}
-.btalk .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:#2d6068;color:#e8f6f8;font-family:var(--mech);font-size:10px;letter-spacing:2px;display:flex;align-items:center}
+.btalk{grid-column:1/2;position:relative;height:96px;box-sizing:border-box;padding:16px 14px 10px;background:#0a0e0d;border:1px solid #34403a;border-top:2px solid var(--c-nona);cursor:pointer}
+.btalk .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:var(--c-nona);color:#0b0e0d;font-weight:700;font-family:var(--mech);font-size:10px;letter-spacing:2px;display:flex;align-items:center}
 .btalk .tx{font-family:var(--disp);font-size:15px;line-height:1.6;color:#e6ebe7}
 .btalk .nx{position:absolute;right:10px;bottom:6px;color:var(--cyan);font-size:10px;animation:kblink .8s steps(2) infinite}
 .bact{display:flex;flex-direction:column;gap:8px;justify-content:flex-start}
@@ -879,7 +880,7 @@ input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:d
 .rprog{position:relative;height:42px;flex-shrink:0;padding:0 14px;display:flex;align-items:center;gap:14px;border:1px solid var(--line)}
 .rprog b{font-size:11px;color:var(--fire);letter-spacing:.2em}.rprog span{font-family:var(--disp);font-size:13px}
 .rbot{position:relative;display:flex;gap:12px;margin-top:auto;margin-bottom:12px}
-.rbot .btalk{flex:1;height:64px;padding:12px 12px 6px;border-top-color:#2d6068}.rbot .btalk .tx{font-size:14px}
+.rbot .btalk{flex:1;height:64px;padding:12px 12px 6px}.rbot .btalk .tx{font-size:14px}
 .rbot .btn-main{flex:0 0 190px;height:64px;font-size:14px;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
 @media (max-height:400px){.rhd b{font-size:38px}#mis .mres{gap:8px}.rbot .btalk,.rbot .btn-main{height:56px}}
 /* 出撃中のノーナの通信 */
@@ -889,14 +890,14 @@ input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:d
 .detail .acts .btn-main{flex:1 1 0;padding:0 6px;letter-spacing:.12em}
 #equip.ov{background:transparent;border:1px dashed var(--alert);color:var(--alert);opacity:1;letter-spacing:.06em;font-size:12px}
 .ovn{font-family:var(--body);font-size:11px;color:var(--alert);text-align:right;flex-shrink:0;margin-bottom:-3px}
-#comm{position:absolute;left:50%;top:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:min(380px,calc(100% - 604px));min-width:180px;display:flex;align-items:center;gap:7px;height:22px;padding:0 10px 0 0;background:rgba(8,30,34,.42);border:1px solid rgba(111,211,224,.35);pointer-events:none;z-index:3;text-shadow:0 1px 2px #000}
-#comm b{align-self:stretch;display:flex;align-items:center;padding:0 6px;background:rgba(45,96,104,.6);color:#d8f6fa;font-family:var(--mech);font-size:9px;letter-spacing:.14em;white-space:nowrap}
-#comm em{font-style:normal;align-self:stretch;display:flex;align-items:center;padding-left:8px;border-left:1px solid rgba(111,211,224,.3);font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:#9fe6ee;white-space:nowrap}
+#comm{position:absolute;left:50%;top:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:min(380px,calc(100% - 604px));min-width:180px;display:flex;align-items:center;gap:7px;height:22px;padding:0 10px 0 0;--cc:var(--c-nona);--cf:#0b0e0d;background:rgba(8,30,34,.42);border:1px solid var(--cc);pointer-events:none;z-index:3;text-shadow:0 1px 2px #000}
+#comm b{align-self:stretch;display:flex;align-items:center;padding:0 6px;background:var(--cc);color:var(--cf);font-weight:700;font-family:var(--mech);font-size:9px;letter-spacing:.14em;white-space:nowrap}
+#comm em{font-style:normal;align-self:stretch;display:flex;align-items:center;padding-left:8px;border-left:1px solid var(--cc);font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:var(--cc);white-space:nowrap}
 #comm.tt{height:auto;min-height:22px;max-width:min(380px,calc(100% - 604px))}
 @media (pointer:fine){#comm{bottom:calc(120px + env(safe-area-inset-bottom,0px))}}#comm.tt span{white-space:normal;padding:3px 0}
 #comm.ok b{background:rgba(140,240,110,.55);color:#0b1408}
 /* VERSUS：対戦相手の通信は赤い帯と名札（ノーナはシアンのまま） */
-#comm.opp{background:rgba(42,12,14,.5);border-color:rgba(255,112,96,.5)}#comm.opp b{background:rgba(160,44,40,.72);color:#ffe4dc}#comm.opp span{color:#ffe6e0}
+#comm.opp{--cc:#ff7060;background:rgba(42,12,14,.5)}#comm.opp b{background:rgba(160,44,40,.9);color:#ffe4dc}#comm.opp span{color:#ffe6e0}
 .tth{animation:tthl .7s ease-in-out infinite alternate}@keyframes tthl{from{filter:none}to{filter:drop-shadow(0 0 6px #6fd3e0) brightness(1.5)}}
 #comm span{font-family:var(--disp);font-size:13px;color:#cfeff4;line-height:1.35;white-space:normal;padding:3px 0;overflow:visible}
 #comm{height:auto!important;min-height:22px}
@@ -4179,8 +4180,9 @@ const VS3=(()=>{
 /* ===== VERSUS：受付の会話と画面 =====
  会話の行は [話し手, 文, ベルの姿勢]。話し手：b＝ベル／n＝ノーナ（携帯端末）／VCH のキー（セレナなど：受付の絵を暗くしてイラストを左に重ねる）。
  文の中は <em>強調</em> と <strong>良い知らせ</strong>、<ruby> だけ。○○ は操縦者名 */
-const VSP={b:{nm:'BELL-01 ベル',c:'#c9d4d8',f:'#0a0c0b',v:'bell'},n:{nm:'N-07 ノーナ（端末）',c:'#6fd3e0',f:'#06161a',v:'nona'},j:{nm:'JONAH（無線）',c:'#8fb8c8',f:'#06161a',v:'adultF'}};
-const VCH={serena:{nm:'セレナ・ヴァルデス',c:'#c8435c',f:'#fff',v:'youthF',img:'img/rivals/rival-david-serena.png'},erich:{nm:'エーリヒ・ブラント',c:'#8a5a34',f:'#fff',v:'adultM',img:'img/rivals/rival-deborah-erich.png'},viktor:{nm:'ヴィクトル・ザイン',c:'#8a4aa8',f:'#fff',v:'youthM',img:'img/rivals/rival-nimrod-viktor.png'}};
+const cc=k=>getComputedStyle(document.documentElement).getPropertyValue('--c-'+k).trim();   // キャラ色は CSS の --c-xxx が唯一の定義
+const VSP={b:{nm:'BELL-01 ベル',c:cc('bell'),f:'#0a0c0b',v:'bell'},n:{nm:'N-07 ノーナ（端末）',c:cc('nona'),f:'#06161a',v:'nona'},j:{nm:'JONAH（無線）',c:cc('jonah'),f:'#06161a',v:'adultF'}};
+const VCH={serena:{nm:'セレナ・ヴァルデス',c:cc('serena'),f:'#fff',v:'youthF',img:'img/rivals/rival-david-serena.png'},erich:{nm:'エーリヒ・ブラント',c:cc('erich'),f:'#fff',v:'adultM',img:'img/rivals/rival-deborah-erich.png'},viktor:{nm:'ヴィクトル・ザイン',c:cc('viktor'),f:'#fff',v:'youthM',img:'img/rivals/rival-nimrod-viktor.png'}};
 /* 場面に応じて一度だけ出る会話（VSS.seen に記録）。ok が真になった受付の訪問で、ベルの案内のあとに流れる。セリフは仮 */
 const VSEV=[
  {id:'c-semi-erich',ok:()=>!!VSS.win[0],lines:[   // 1回戦に勝った直後の受付：エーリヒ（現在の審判官のトップ）の初登場。このあと 3-2 のメールが届く
@@ -5699,7 +5701,9 @@ const chNormals=c=>MLIST.filter(d=>d.ch===c&&!d.story);
 const chCleared=c=>chNormals(c).filter(d=>MIS[d.id]&&MIS[d.id].clear).length;
 // ★が届く条件：その CHAPTER の「出撃できる」通常依頼をすべてクリア（1-3 が未実装の間は 1-1・1-2 で届く）
 const chReadyAll=c=>{const n=chNormals(c).filter(d=>d.ready);return n.length>0&&n.every(d=>MIS[d.id]&&MIS[d.id].clear)};
-const anyGot=()=>MLIST.some(d=>MIS[d.id]&&MIS[d.id].got);
+// 依頼一覧に出すのは「届いていて、メールなら読んだもの」だけ
+const misListed=d=>!!(MIS[d.id]&&MIS[d.id].got&&(d.kind!=='mail'||MIS[d.id].read));
+const anyGot=()=>MLIST.some(d=>d.ch>0&&misListed(d));
 const unreadMail=()=>MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.id].got&&!MIS[d.id].read);
 // ガレージに入ったときに新しい依頼を届ける。1-1：チュートリアル後、TRAINING から戻ったとき（または CONTINUE で再開したとき）
 /* 依頼の届く条件（データだけで決まる。依頼を増やすときは MLIST に need を書くだけ）
@@ -5728,7 +5732,7 @@ function misHeader(){const u=unreadMail().length,got=anyGot();
  $('hCls').textContent='CLASS '+CLS;$('hCh').textContent='CH.'+CH;fixDays();$('hDt').textContent=prDate(DAY);
  $('keyBtn').hidden=TUT!=='done'||KEYHOLD||!ownKeys().length;
  const mb=$('mailBtn');mb.hidden=TUT!=='done'||!gotMails().length;$('mailN').textContent=u;$('mailN').hidden=!u;if(!u)mb.classList.remove('new');
- const fc=vsForce();['mTrain','mMission','mShop'].forEach(i=>$(i).classList.toggle('vlk',fc));$('mTrain').classList.toggle('big',!fc);$('mVersus').classList.toggle('big',fc);$('mTrain').disabled=fc;$('mShop').disabled=fc;$('mMission').disabled=!got||fc;$('mMisSub').textContent=fc?'まず闘技場の受付へ':got?'依頼を受けて戦う':'依頼が届くと選べます';
+ const fc=vsForce();['mTrain','mMission','mShop'].forEach(i=>$(i).classList.toggle('vlk',fc));$('mTrain').classList.toggle('big',!fc);$('mVersus').classList.toggle('big',fc);$('mTrain').disabled=fc;$('mShop').disabled=fc;$('mMission').disabled=!got||fc;$('mMisSub').textContent=fc?'まず闘技場の受付へ':got?'依頼を受けて戦う':unreadMail().some(d=>d.ch>0)?'メールを読むと選べます':'依頼が届くと選べます';
  $('mVersus').disabled=!vsOk();$('mVsSub').textContent=vsOk()?(fc?'まず、こちらから ▶':'闘技場の受付へ'):'招待が届くと選べます'}
 
 /* ----- メール（機体エリアに重ねる。下にノーナの補足）----- */
@@ -5770,7 +5774,7 @@ $('mailBtn').onclick=()=>{if(TUT!=='done')return;const mb=$('mailBox');if(!mb.hi
 /* ----- 来訪（VISIT）：依頼人がハンガーを訪ねてくる。def.talk＝[['c'|'n'|'d', 文], ...]（c＝依頼人、n＝ノーナ、d＝ドールの通信）
  最後に［依頼を受ける］（依頼一覧を開く）／［考えておく］。どちらでも依頼は一覧に残り、一覧から［会話を見返す］で見直せる ----- */
 const VS={q:[],iv:null,done:null,d:null};
-const V_SP={c:d=>[d.client||d.from,'#d8a35a',false],n:()=>['N-07 ノーナ','#6fd3e0',true],d:()=>['D-06 ドール（通信）','#8cf06e',true]};
+const V_SP={c:d=>[d.client||d.from,cc('client'),false],n:()=>['N-07 ノーナ',cc('nona'),true],d:()=>['D-06 ドール（通信）',cc('doll'),true]};
 function visitPlay(id,replay){const d=MDEF[id];if(!d||!d.talk)return;mailClose();nbClose();VS.d=d;clearTimeout(VS.t);
  const img=$('vImg');img.style.visibility='hidden';img.onload=()=>{img.style.visibility=''};img.removeAttribute('src');img.src=d.img;if(img.complete&&img.naturalWidth)img.style.visibility='';img.style.filter=d.imgF||'';img.alt=d.from;img.classList.remove('dim');
  const v=$('visit');$('vCh').innerHTML='';$('vTx').textContent='';$('vNm').textContent='';$('vCi').hidden=true;$('vNx').hidden=true;$('vSkip').hidden=!replay;VS.replay=!!replay;
@@ -5813,15 +5817,15 @@ function openBoard(sel){if(vsLock())return;if(ottoCheck(()=>openBoard(sel)))retu
 let CHO={}; // CHAPTER の開閉（MISSION を開くたびに初期化。今の CHAPTER だけ開く。画面を開いている間だけ保つ）
 function renderBoard(sel){
  {const mx=Math.max(0,...MLIST.filter(d=>d.ch>0&&d.ready&&MIS[d.id]&&MIS[d.id].got).map(d=>d.ch));if(mx>CH){CH=mx;saveGame();misHeader()}}
- const list=MLIST.filter(d=>d.ch===CH&&!d.story&&MIS[d.id]&&MIS[d.id].got),allGot=MLIST.filter(d=>d.ch>0&&MIS[d.id]&&MIS[d.id].got),story=MLIST.find(d=>d.ch===CH&&d.story),norm=chNormals(CH),cl=chCleared(CH);
- misSel=sel&&MIS[sel]&&MIS[sel].got?sel:(misSel&&MDEF[misSel]&&MDEF[misSel].ch>0&&MIS[misSel]&&MIS[misSel].got?misSel:(list[0]||allGot[0]||{}).id);
+ const list=MLIST.filter(d=>d.ch===CH&&!d.story&&misListed(d)),allGot=MLIST.filter(d=>d.ch>0&&misListed(d)),story=MLIST.find(d=>d.ch===CH&&d.story),norm=chNormals(CH),cl=chCleared(CH);
+ misSel=sel&&MDEF[sel]&&misListed(MDEF[sel])?sel:(misSel&&MDEF[misSel]&&MDEF[misSel].ch>0&&misListed(MDEF[misSel])?misSel:(list[0]||allGot[0]||{}).id);
  const row=d=>{const m=MIS[d.id],st=!m.clear?(!m.read?'<small class="nw">NEW</small>':'<small>未達成</small>'):'<small class="cl">CLEARED</small>';
   return `<button class="mrow${d.story?' st':''}${d.id===misSel?' sel':''}" data-id="${d.id}"><span class="mtag ${d.story?'story':d.kind}">${d.story?'STORY':d.kind==='mail'?'MAIL':'VISIT'}</span><span class="nm"><b>${d.title}</b><small>${d.from}</small></span><span class="rw">${st}${fmtCR(d.reward)} CR</span></button>`};
- const stOpen=story&&story.ready&&MIS[story.id]&&MIS[story.id].got;
+ const stOpen=story&&story.ready&&misListed(story);
  const sRow=stOpen?row(story):'';
  // CHAPTER ごとに折りたたみ（CHAPTER 1 から順。最初は今の CHAPTER だけ開く。開閉は CHO に保存）
  const chOpen=c=>CHO[c]??(c===CH),chs=Object.keys(CHAPTERS).map(Number).filter(c=>c<=CH&&MLIST.some(d=>d.ch===c&&d.ready)).sort((a,b)=>a-b);   // 出撃できる依頼がまだ無い CHAPTER は出さない（CH4 の準備中の間）
- const chBlock=c=>{const op=chOpen(c),old=c<CH,rows=old?MLIST.filter(d=>d.ch===c&&MIS[d.id]&&MIS[d.id].got).sort((a,b)=>(a.story?1:0)-(b.story?1:0)).map(row).join(''):list.map(row).join('')+sRow+(none?none:'');
+ const chBlock=c=>{const op=chOpen(c),old=c<CH,rows=old?MLIST.filter(d=>d.ch===c&&misListed(d)).sort((a,b)=>(a.story?1:0)-(b.story?1:0)).map(row).join(''):list.map(row).join('')+sRow+(none?none:'');
   return `<button class="chh${old?' old':''}" data-ch="${c}"><i>${op?'▼':'▶'}</i><b>CHAPTER ${c}</b><span>${CHAPTERS[c]||''}</span>${old?'<small>CLEAR ・ 再挑戦可</small>':''}</button>`+(op?rows:'')};
  const none=!list.length&&!sRow?`<div class="mnone">── 依頼はまだ届いていません</div>`:'';
  const d=MDEF[misSel];
@@ -5950,12 +5954,20 @@ function renderBrief(id){const d=MDEF[id];misSel=id;
   <div class="btalk" id="bTalk"><span class="nm">N-07 ノーナ</span><div class="tx" id="bTx"></div><span class="nx" id="bNx" hidden>▼</span></div>
   <div class="bact"><button class="btn-main" id="bGo" ${blocked?'disabled':''}>SORTIE ▶ 出撃</button><div class="row"><button class="btn-sub" id="bChk">機体を確認</button><button class="btn-sub" id="bNo">やめる</button></div></div></div>`;
  misEl.hidden=false;
- bTalk={q:d.brief.map(nameIn),iv:null};const tx=$('bTx');
+ const tx=$('bTx');
+ // 長い台詞は「。」ごとに区切り、枠に収まる分だけを1ページにして ▼ で送る（枠の高さを実測する）
+ const pg=arr=>{const lim=$('bTalk').clientHeight-26,out=[];tx.style.visibility='hidden';
+  const fit=t=>{tx.textContent=t;return tx.offsetHeight<=lim};
+  arr.forEach(line=>{let units=line.match(/[^。]+。?/g)||[line],u2=[];
+   units.forEach(u=>{if(fit(u))u2.push(u);else{(u.match(/[^、]+、?/g)||[u]).forEach(w=>{if(fit(w))u2.push(w);else{let c='';for(const ch of w){if(!fit(c+ch)){u2.push(c);c=''}c+=ch}if(c)u2.push(c)}})}});
+   let cur='';u2.forEach(u=>{if(!cur||fit(cur+u))cur+=u;else{out.push(cur);cur=u}});if(cur)out.push(cur)});
+  tx.textContent='';tx.style.visibility='';return out};
+ bTalk={q:pg(d.brief.map(nameIn)),iv:null};
  const next=()=>{clearInterval(bTalk.iv);if(!bTalk.q.length)return;const t=bTalk.q.shift();let n=0;$('bNx').hidden=true;
   bTalk.done=()=>{clearInterval(bTalk.iv);bTalk.iv=null;tx.textContent=t;$('bNx').hidden=!bTalk.q.length};
   bTalk.iv=setInterval(()=>{tx.textContent=t.slice(0,++n);SND.blip('nona',n);if(n>=t.length)bTalk.done()},TXT_SPD)};
  $('bTalk').onclick=()=>{if(!bTalk)return;if(bTalk.iv)bTalk.done();else next()};next();
- $('bGo').onclick=()=>{if(blocked)return;if(noMail){bTalk.q=['まだ、この依頼のメールを読んでいません。ヘッダーの MAIL を開いて、内容を確認してください。'];next();return}saveGame();fadeTo(()=>{hideMis();setMode('play',false,{def:d})},'MISSION '+d.id)};
+ $('bGo').onclick=()=>{if(blocked)return;if(noMail){bTalk.q=pg(['まだ、この依頼のメールを読んでいません。ヘッダーの MAIL を開いて、内容を確認してください。']);next();return}saveGame();fadeTo(()=>{hideMis();setMode('play',false,{def:d})},'MISSION '+d.id)};
  $('bChk').onclick=()=>fadeTo(()=>{hideMis();chkSet(id);garageGreet('check')},'GARAGE');
  $('bNo').onclick=()=>renderBoard(id);
 }
@@ -5969,7 +5981,7 @@ function comm(txt,dur=0.001){if(dur===0){COMM.q=[];commShow(txt,0);return}COMM.q
 function commNext(){const it=COMM.q.shift();if(it)commShow(it[0],it[1])}
 function commShow(txt,dur){clearInterval(COMM.iv);const el=$('commTx');$('comm').hidden=false;
  let who='n';if(Array.isArray(txt)){who=txt[0];txt=txt[1]}COMM.radio=who!=='n';if(COMM.radio)SND.play('radio',{g:.9});else SND.play('comm',{g:.3});txt=String(txt).replace(/○○/g,PILOT||'操縦者');const OP=who==='o'&&RUN&&RUN.vs?RUN.vs.r.opp:null;
- const CW={b:['BELL-01','bell'],s:['SERENA','youthF'],j:['JONAH','adultF'],t:['OTTO','youthM']}[who];$('comm').classList.toggle('opp',!!OP);$('comm').querySelector('b').textContent=OP?OP.en.split(' ')[0]:CW?CW[0]:'N-07';const vc=OP?OP.v||'adultM':CW?CW[1]:'nona';let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
+ const CW={b:['BELL-01','bell'],s:['SERENA','youthF'],j:['JONAH','adultF'],t:['OTTO','youthM']}[who],CK={b:['bell',0],s:['serena',1],j:['jonah',0],t:['otto',0]}[who]||['nona',0];if(!OP){$('comm').style.setProperty('--cc','var(--c-'+CK[0]+')');$('comm').style.setProperty('--cf',CK[1]?'#fff':'#0b0e0d')}else{$('comm').style.removeProperty('--cc');$('comm').style.removeProperty('--cf')}$('comm').classList.toggle('opp',!!OP);$('comm').querySelector('b').textContent=OP?OP.en.split(' ')[0]:CW?CW[0]:'N-07';const vc=OP?OP.v||'adultM':CW?CW[1]:'nona';let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
  COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip(vc,n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;COMM.end=performance.now();
   if(dur===0){COMM.busy=false;COMM.t=0}else COMM.t=Math.max(1.5,1+txt.length*.12,dur)}},TXT_SPD)}
 function commEnd(){if(COMM.radio){COMM.radio=false;SND.play('radioEnd',{g:.7})}}   // 通信が切れるとき（ノーナ以外だけ）
