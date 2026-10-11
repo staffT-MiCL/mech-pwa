@@ -4435,9 +4435,10 @@ function gearShot(e,A,obj,vis={}){const S0=A.def.st,T=e.tier;obj.getWorldPositio
  const dir=aim.sub(from).normalize(),n=WSND(A.id);if(n)sAt(n,from,{g:.38});
  const f=spawn(vis.color&&vis.color!==0xffe080?vis.color:0xff8a4a,Math.max(.22,(vis.size||.1)*2.2),from,{vel:dir.multiplyScalar(spd),life:(S0.range||50)*1.1/spd+.4,len:Math.min(3,vis.len||3),trail:vis.trail||0,team:'e',dmg:Math.round(S0.dmg*T.dk),imp:S0.imp,splash:S0.area||0});
  spawn(0xffd090,.8,from,{life:.07});return f}
-function gearMissile(e,A,obj,i){const st=A.def.st;obj.getWorldPosition(_p);obj.getWorldDirection(_d);if(st.vert?!(i|0):(i|0)%2===0)sAt(st.vert?'vmissile':'missile',_p,{g:.38});
+const ENEMY_MS=.7;   // 敵ギアのミサイルの威力倍率（兵装の威力×段階の倍率に掛ける。以前は .5）。弾速・VERSUS 倍率は ENEMY_BS／VS_BS／VS_DMG
+function gearMissile(e,A,obj,i){const st=A.def.st,bk=ENEMY_BS*(RUN&&RUN.vs?VS_BS:1),dk=RUN&&RUN.vs?VS_DMG:1;obj.getWorldPosition(_p);obj.getWorldDirection(_d);if(st.vert?!(i|0):(i|0)%2===0)sAt(st.vert?'vmissile':'missile',_p,{g:.38});
  const m=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0xffa080}));m.scale.set(.16,.16,.55);m.position.copy(_p);S.add(m);
- FX.push({m,homeT:st.vert?.7:.45,homeK:st.vert?3:1.4,arc:!!st.arc,vel:st.vert?_d.clone().multiplyScalar(20):_d.clone().multiplyScalar(7).add(new THREE.Vector3(0,st.arc?8:5,0)),life:st.range/st.spd+1.6,age:0,missile:true,base:.16,tt:0,team:'e',vmax:26,dmg:Math.round(st.dmg*e.tier.dk*.5*(e.spec.msK||1)),splash:st.area||0,imp:st.imp,home:e.atT?null:PTGT})}
+ FX.push({m,homeT:st.vert?.7:.45,homeK:st.vert?3:1.4,arc:!!st.arc,vel:st.vert?_d.clone().multiplyScalar(20*bk):_d.clone().multiplyScalar(7).add(new THREE.Vector3(0,st.arc?8:5,0)),life:st.range/st.spd+1.6,age:0,missile:true,base:.16,tt:0,team:'e',vmax:26*bk,dmg:Math.round(st.dmg*e.tier.dk*ENEMY_MS*dk*(e.spec.msK||1)),splash:st.area||0,imp:st.imp,home:e.atT?null:PTGT})}
 function gearMelee(e,A){const S0=A.def.st,ry=e.g.rotation.y,fx=Math.sin(ry),fz=Math.cos(ry),dmg=Math.round(S0.dmg*e.tier.mk);
  const tg=e.atT&&RUN&&RUN.tr?TOBJ().position:P.pos,dx=tg.x-e.g.position.x,dz=tg.z-e.g.position.z,d=Math.hypot(dx,dz)||1;
  if(d<S0.range+3.2&&(dx*fx+dz*fz)/d>.3){if(e.atT)truckHit(dmg,new THREE.Vector3(tg.x,2,tg.z));else if(Math.abs(mech.bot.position.y-e.y)<5)hitPlayer(dmg,S0.imp,playerCenter(new THREE.Vector3()))}}
