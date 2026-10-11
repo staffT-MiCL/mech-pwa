@@ -4919,7 +4919,7 @@ const AP_IDS=new Set(['RF3','RF4']);   // ダメージを下げる補正を無�
 const apK=m=>m<1&&HITSRC&&AP_IDS.has(cfg[HITSRC])?1:m;
 function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(mode==='play'&&RUN&&RUN.chase)dmg=Math.round(dmg*chaseK(HITSRC));else if(mode==='play'&&SS.dmgOut)dmg=Math.round(dmg*SS.dmgOut);   // 系列特性：与えるダメージの倍率
  if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){{const kk=apK(e.gFront<0?.1:.15),raw=dmg,take=Math.min(raw,Math.max(0,e.shHp??0)),over=raw-take;e.shHp=Math.max(0,(e.shHp??0)-take);dmg=take*kk+over;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
-  if(e.shHp<=0&&e.shMax>0){e.guardT=0;e.shBrk=e.spec.shRec??ENEMY_SH_REC;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2)}}}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=apK(.25);spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
+  if(e.shHp<=0&&e.shMax>0){e.guardT=0;e.shBrk=e.spec.shRec??ENEMY_SH_REC;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2);shBreakComm(e)}}}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=apK(.25);spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
  // 命中の演出：共通の命中音・威力に応じた光と火花・小さな振動・ダメージの数字（CONFIG で ON のとき）
  const pw=Math.max(0,Math.min(1,(dmg-30)/700));e.hit=Math.max(e.hit,.06+.09*pw);e.vib=.12;spawn(0xffffff,.5,pos,{life:.08});
  for(let i=0,n=Math.round(3+7*pw);i<n;i++)spawn(i%2?0xffa040:0xffd070,.1+.06*pw,pos,{vel:new THREE.Vector3((Math.random()-.5)*10,2+Math.random()*6,(Math.random()-.5)*10),grav:16,life:.25+Math.random()*.2});
@@ -6482,7 +6482,12 @@ function vsSayNext(){const V=RUN.vs,tm=RUN.time||0;V.pend=V.pend.filter(p=>tm-p.
 function vsHitE(){const V=RUN.vs;if(!V.go)return;if(!V.first){V.first='p';vsEv('firstP')}const st=HITSRC&&stOf(HITSRC);if(st&&st.kind==='近接')vsEv('melee')}
 function vsHitP(){const V=RUN.vs;if(!V.go)return;if(!V.first){V.first='e';vsEv('firstE')}}
 // 自機の部位破壊：待たずに入る（相手→ノーナ）
-function vsBreak(z){const V=RUN.vs;if(!V||V.rem||RUN.ok||RUN.lost)return;COMM.q=[];if(V.riv&&V.riv[z])comm(['o',V.riv[z][0]],2);comm(['n',VSN[z]],2);V.last=RUN.time||0}
+// 敵のシールド破壊をノーナが通信（闘技場は再戦でも出す。間隔は8秒以上空ける）
+const SHB_TXT=['敵シールド破壊。いまが攻め時です。','また一枚、敵のシールドを破壊しました。','敵シールド、再び破壊。'];
+function shBreakComm(e){if(!RUN||RUN.ok||RUN.lost)return;const tm=RUN.time||0;if(RUN.shbT!=null&&tm-RUN.shbT<8)return;
+ const V=RUN.vs;if(V&&e!==V.e)return;RUN.shbT=tm;const txt=SHB_TXT[(RUN.shbN=(RUN.shbN||0)+1)-1<1?0:1+(RUN.shbN-2)%2];
+ if(V){if(!V.go)return;COMM.q=[];comm(['n',txt],2);V.last=tm}else comm(txt,2.4)}
+function vsBreak(z){const V=RUN.vs;if(!V||RUN.ok||RUN.lost)return;COMM.q=[];if(V.riv&&V.riv[z])comm(['o',V.riv[z][0]],2);comm(['n',VSN[z]],2);V.last=RUN.time||0}
 // 柱の陰：自機と相手を結ぶ線が柱（半径 2.2m）をさえぎる
 function vsCovered(){const a=P.pos,b=RUN.vs.e.g.position,dx=b.x-a.x,dz=b.z-a.z,L2=dx*dx+dz*dz||1;
  return COLO_PP.some(([x,z])=>{const u=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/L2));return Math.hypot(a.x+dx*u-x,a.z+dz*u-z)<2.2})}
