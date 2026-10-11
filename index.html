@@ -961,7 +961,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v198</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v199</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1039,7 +1039,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v198</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v199</span></div>
  </div>
 </div>
 
@@ -1105,7 +1105,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v198</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v199</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -1530,7 +1530,7 @@ const HAND={
  'BL':{name:'ブレード',st:{kind:'近接',dmg:700,range:7,area:0,rate:'1回／1.3秒',count:1,ammo:INF,reload:0,wt:8,imp:'A',spd:0,hom:'－'},
   build(g){box(g,.28,.55,.34,Wp.body,0,-.3,0);box(g,.3,.1,.36,Wp.warn,0,-.08,0);const blade=box(g,.06,1.1,.14,Wp.glow,0,-1.1,0);
    const muzzle=grp(g,0,-1.6,0);muzzle.rotation.x=Math.PI/2;return {muzzle,blade}},
-  act:{name:'踏込み斬り',dur:1.3,run(c){const u=c.u,s=c.s;   // 三連斬りの①（頭上から斜めに斬り下ろす）だけを使う。左右は s で対称
+  act:{name:'踏込み斬り',dur:1.5,run(c){const u=c.u,s=c.s;   // 三連斬りの①（頭上から斜めに斬り下ろす）だけを使う。左右は s で対称
    const slash=u>.34&&u<.52;c.w.blade.scale.set(1,slash?1.7:1,1);
    if(slash&&(c.st.tt=(c.st.tt||0)+c.dt)>.015){c.st.tt=0;c.w.muzzle.getWorldPosition(_p);spawn(0xffc070,.28,_p,{life:.2,grow:-.6})}
    if(c.once('step',.3))shake=.1;if(c.once('hit',.45)){shake=.15;c.melee()}
@@ -1884,7 +1884,7 @@ const DESC={
  'BL3':'推進器付きのブレード。遠くから一気に間合いを詰める。','MS3':'真上に打ち上げる誘導弾。物陰の敵の頭上から落ちる。',
  'BZ3':'大口径の炸裂弾を撃つ。爆発で群れをまとめて吹き飛ばす。','SH3':'3枚重ねの大型の盾。真横近くまで守り、とても硬い。構え中は動けない。','GC3':'電磁加速の長砲身。弾が敵を突き抜けて並んだ敵を貫く。',
  'BT3':'2基の大型噴射口を持つ推進器。速さと距離をまとめて伸ばす。','IC3':'3基の小砲塔で広い範囲の敵弾を落とす迎撃装置。',
- 'RF4':'レールで電磁加速した弾を撃つ。シールドや装甲の上からでも威力が落ちず、並んだ敵を貫く。','MG4':'回る銃身を2組並べた重火器。撃ちながら歩ける。','BZ4':'追尾する炸裂弾を撃つ。逃げる敵にも食らいつく。','BL4':'1回の操作で3連の斬撃を繰り出す。頭上から斜めに斬り下ろし、下から返し、最後は突く。振り切るまで約1秒。','SH4':'2枚のパネルを扇形に開く展開式の盾。広く高い耐久で正面を守る。',
+ 'RF4':'レールで電磁加速した弾を撃つ。シールドや装甲の上からでも威力が落ちず、並んだ敵を貫く。','MG4':'回る銃身を2組並べた重火器。撃ちながら歩ける。','BZ4':'追尾する炸裂弾を撃つ。逃げる敵にも食らいつく。','BL4':'1回の操作で2連の斬撃を繰り出す。頭上から斜めに斬り下ろし、すぐ下から返す。','SH4':'2枚のパネルを扇形に開く展開式の盾。広く高い耐久で正面を守る。',
  'MS4':'小さな誘導弾を12発まとめて放つ。','GC4':'装甲ごと貫く大口径の砲。後ろの敵も撃ち抜く。','RD4':'全周を見渡す広域レーダー。壁の向こうの敵も輪郭で見える。','BT4':'4基の噴射口を持つ高出力の推進器。','IC4':'全周の敵弾を撃ち落とす迎撃装置。落とした弾が小さく爆発して、近くの敵を傷つける。',
  'RD3':'回転リングの索敵装置。壁の向こうの敵まで捉える。'};
 const EN={'HD-01':'SENSOR HEAD','HD-02':'MONO-EYE HEAD','HD-03':'COMPOUND HEAD','CR-03':'HIGH OUTPUT CORE','AR-03':'PRECISION ARMS','LG-03':'HIGH MOBILITY BIPED','RF3':'AP RIFLE','MG3':'GATLING','BL3':'RUSH BLADE','MS3':'VERTICAL MISSILE','RD3':'SEARCH RADAR','BZ3':'BURST BAZOOKA','SH3':'TOWER SHIELD','GC3':'PIERCING CANNON','BT3':'HIGH OUTPUT BOOSTER','IC3':'WIDE INTERCEPTOR','RF4':'RAIL RIFLE','MG4':'TWIN GATLING','BZ4':'SEEKER BAZOOKA','BL4':'COMBO BLADE','SH4':'DEPLOY SHIELD','MS4':'MICRO MISSILE','GC4':'ANTI-ARMOR CANNON','RD4':'ALL-ROUND RADAR','BT4':'HEAVY BOOSTER','IC4':'ALL-ROUND INTERCEPTOR','CR-01':'STANDARD CORE','CR-02':'HEAVY CORE','AR-01':'STANDARD ARMS','AR-02':'HEAVY ARMS',
@@ -2159,27 +2159,41 @@ Object.assign(LEGS,{
 const VW={steel:psMat(0xffffff,{map:panel('#a8aeb0','#5e6466')}),steel2:psMat(0xffffff,{map:panel('#7c8386','#3e4446')}),
  dark:psMat(0x15171a),glow:new THREE.MeshBasicMaterial({color:0xff8a2a}),lens:new THREE.MeshBasicMaterial({color:0x6fd8ff}),
  warn:psMat(0xffffff,{map:stripes('#15171a','#e07a1e')}),tip:psMat(0xe8e4dc),red:psMat(0xb02a20)};
-/* ブレードの三連斬り（共通部品）：①頭上から斜めに斬り下ろす → ②下から返す刀 → ③突き。右手・左手は s で左右対称。1.05秒。BL4 とセレナの BLS が使う */
-const BL_TRI={name:'三連斬り',dur:1.05,cancel:true,run(c){const u=c.u,s=c.s;
-   const slash=(u>.16&&u<.27)||(u>.44&&u<.55)||(u>.76&&u<.88);c.w.blade.scale.set(1,slash?1.7:1,1);
-   if(slash&&(c.st.tt=(c.st.tt||0)+c.dt)>.015){c.st.tt=0;c.w.muzzle.getWorldPosition(_p);spawn(0xff9fb0,.28,_p,{life:.2,grow:-.6})}
+/* ブレードの連斬り（共通部品）：①頭上から斜めに斬り下ろす → ②下から返す刀 → ③突き。右手・左手は s で左右対称。動作はすべて1.5秒。
+   BL_TRI＝三連（セレナの BLS。今後の新兵装でも使う）／BL_DUO＝①→②の二連（BL4）。動きの元データは TRI_K、DUO は①②の部分を切り出して短縮したもの */
+const TRI_K=s=>({ax:[[0,0],[.10,-2.5],[.22,-.5],[.32,.1],[.40,.35],[.50,-2.0],[.58,-2.4],[.66,-.9],[.82,-1.55],[.94,-1.3],[1,0]],
+ az:[[0,s*.1],[.10,s*.35],[.22,-s*.7],[.32,-s*.9],[.40,-s*1.0],[.50,s*.5],[.58,s*.6],[.66,s*.15],[.82,s*.1],[.94,s*.2],[1,s*.1]],
+ ae:[[0,-.2],[.10,-1.7],[.22,-.2],[.32,-.3],[.40,-.5],[.50,-.4],[.58,-.8],[.66,-2.0],[.82,-.05],[.94,-.3],[1,-.2]],
+ ox:[[0,0],[.10,-.9],[.22,.4],[.40,.2],[.50,-.6],[.66,-.5],[.82,.8],[1,0]],
+ ty:[[0,0],[.10,twist(s,-.5)],[.22,twist(s,.8)],[.32,twist(s,.7)],[.40,twist(s,.7)],[.50,twist(s,-.6)],[.66,twist(s,-.85)],[.82,twist(s,.5)],[.94,twist(s,.3)],[1,0]],
+ tx:[[0,0],[.10,-.15],[.22,.35],[.40,.2],[.50,-.1],[.66,.15],[.82,.45],[.94,.3],[1,0]],
+ hy:[[0,0],[.10,twist(s,.3)],[.22,twist(s,-.4)],[.50,twist(s,.3)],[.66,twist(s,.5)],[.82,twist(s,-.3)],[1,0]],
+ l1:[[0,0],[.10,.35],[.22,-.8],[.34,-.5],[.42,.1],[.50,-.5],[.62,.3],[.70,.4],[.82,-.9],[.94,-.6],[1,0]],
+ l2:[[0,0],[.10,.2],[.22,.7],[.34,.3],[.50,.4],[.70,.3],[.82,.8],[1,0]],
+ l3:[[0,0],[.10,-.3],[.22,.5],[.50,.3],[.70,-.5],[.82,.7],[.94,.4],[1,0]],
+ l4:[[0,0],[.10,.5],[.22,.15],[.50,.2],[.70,.6],[.82,.2],[1,0]],
+ cr:[[0,0],[.10,.15],[.22,.3],[.34,.35],[.40,.45],[.50,.25],[.62,.3],[.70,.4],[.82,.5],[.94,.3],[1,0]],
+ sc:[[0,0],[.10,2],[.16,8],[.22,9],[.30,1],[.40,0],[.44,5],[.50,7],[.58,1],[.66,0],[.72,5],[.78,10],[.84,13],[.94,2],[1,0]]});
+// ①②だけを切り出す：元の0〜.58を0〜.78へ引き伸ばし、最後は元の終わりの姿勢へ戻す
+const BL_CUT=(K,tc,tn)=>{const o={};for(const k in K){const a=K[k];o[k]=[...a.filter(p=>p[0]<=tc).map(p=>[p[0]/tc*tn,p[1]]),[1,a[a.length-1][1]]]}return o};
+const blPose=(u,s,K)=>({w:env(u,.05,.86),
+ arm:{x:kf(u,K.ax),z:kf(u,K.az),e:kf(u,K.ae)},off:{x:kf(u,K.ox),z:-s*.3,e:-1.1},
+ torsoY:kf(u,K.ty),torsoX:kf(u,K.tx),headY:kf(u,K.hy),
+ legs:legsFor(s,kf(u,K.l1),kf(u,K.l2),kf(u,K.l3),kf(u,K.l4)),crouch:kf(u,K.cr),scroll:kf(u,K.sc)});
+const blFx=(c,wins)=>{const u=c.u;const slash=wins.some(([a,b])=>u>a&&u<b);c.w.blade.scale.set(1,slash?1.7:1,1);
+ if(slash&&(c.st.tt=(c.st.tt||0)+c.dt)>.015){c.st.tt=0;c.w.muzzle.getWorldPosition(_p);spawn(0xff9fb0,.28,_p,{life:.2,grow:-.6})}};
+const BL_TRI={name:'三連斬り',dur:1.5,cancel:true,run(c){
+   blFx(c,[[.16,.27],[.44,.55],[.76,.88]]);
    if(c.once('h1',.22)){shake=.12;c.melee()}
    if(c.once('h2',.50)){shake=.12;c.melee();SND.play('blade',{g:.45})}
    if(c.once('h3',.82)){shake=.22;c.melee();SND.play('rush',{g:.5})}
-   return {w:env(u,.05,.86),
-    arm:{x:kf(u,[[0,0],[.10,-2.5],[.22,-.5],[.32,.1],[.40,.35],[.50,-2.0],[.58,-2.4],[.66,-.9],[.82,-1.55],[.94,-1.3],[1,0]]),
-         z:kf(u,[[0,s*.1],[.10,s*.35],[.22,-s*.7],[.32,-s*.9],[.40,-s*1.0],[.50,s*.5],[.58,s*.6],[.66,s*.15],[.82,s*.1],[.94,s*.2],[1,s*.1]]),
-         e:kf(u,[[0,-.2],[.10,-1.7],[.22,-.2],[.32,-.3],[.40,-.5],[.50,-.4],[.58,-.8],[.66,-2.0],[.82,-.05],[.94,-.3],[1,-.2]])},
-    off:{x:kf(u,[[0,0],[.10,-.9],[.22,.4],[.40,.2],[.50,-.6],[.66,-.5],[.82,.8],[1,0]]),z:-s*.3,e:-1.1},
-    torsoY:kf(u,[[0,0],[.10,twist(s,-.5)],[.22,twist(s,.8)],[.32,twist(s,.7)],[.40,twist(s,.7)],[.50,twist(s,-.6)],[.66,twist(s,-.85)],[.82,twist(s,.5)],[.94,twist(s,.3)],[1,0]]),
-    torsoX:kf(u,[[0,0],[.10,-.15],[.22,.35],[.40,.2],[.50,-.1],[.66,.15],[.82,.45],[.94,.3],[1,0]]),
-    headY:kf(u,[[0,0],[.10,twist(s,.3)],[.22,twist(s,-.4)],[.50,twist(s,.3)],[.66,twist(s,.5)],[.82,twist(s,-.3)],[1,0]]),
-    legs:legsFor(s,kf(u,[[0,0],[.10,.35],[.22,-.8],[.34,-.5],[.42,.1],[.50,-.5],[.62,.3],[.70,.4],[.82,-.9],[.94,-.6],[1,0]]),
-                   kf(u,[[0,0],[.10,.2],[.22,.7],[.34,.3],[.50,.4],[.70,.3],[.82,.8],[1,0]]),
-                   kf(u,[[0,0],[.10,-.3],[.22,.5],[.50,.3],[.70,-.5],[.82,.7],[.94,.4],[1,0]]),
-                   kf(u,[[0,0],[.10,.5],[.22,.15],[.50,.2],[.70,.6],[.82,.2],[1,0]])),
-    crouch:kf(u,[[0,0],[.10,.15],[.22,.3],[.34,.35],[.40,.45],[.50,.25],[.62,.3],[.70,.4],[.82,.5],[.94,.3],[1,0]]),
-    scroll:kf(u,[[0,0],[.10,2],[.16,8],[.22,9],[.30,1],[.40,0],[.44,5],[.50,7],[.58,1],[.66,0],[.72,5],[.78,10],[.84,13],[.94,2],[1,0]])}},
+   return blPose(c.u,c.s,TRI_K(c.s))},
+   end(w){w.blade.scale.set(1,1,1)}};
+const BL_DUO={name:'二連斬り',dur:1.5,cancel:true,run(c){
+   blFx(c,[[.215,.363],[.59,.74]]);
+   if(c.once('h1',.296)){shake=.12;c.melee()}
+   if(c.once('h2',.672)){shake=.14;c.melee();SND.play('blade',{g:.45})}
+   return blPose(c.u,c.s,BL_CUT(TRI_K(c.s),.58,.78))},
    end(w){w.blade.scale.set(1,1,1)}};
 Object.assign(HAND,{
  // 徹甲ライフル：上下2本のレールの間を通る四角い銃身、光るコイル3つ、青いレンズのスコープ
@@ -2289,12 +2303,12 @@ Object.assign(HAND,{
  // 誘導バズーカ：弾が標的へ緩やかに曲がる
  'BZ4':{...HAND.BZ3,act:{...HAND.BZ.act,dur:2.2},st:{kind:'射撃',dmg:1300,range:55,area:9,rate:'1発／2.2秒',count:1,ammo:6,reload:8,wt:36,imp:'S',spd:24,hom:'中',homK:1.6,note:'ロックした敵へ弾が曲がって追う。弾は遅いので、急な動きには外れる'},
   build(g){const o=HAND.BZ3.build(g);box(g,.36,.08,.36,VX.gold,0,-1.2,.1);box(g,.1,.1,.34,VX.cy,0,-1.55,.34);box(g,.1,.1,.34,VX.cy,0,-1.55,-.14);return o}},
- // 連撃ブレード：1回の操作で3連撃。振り切るまで約1秒。急加速・ガードで途中から打ち切れる
- 'BL4':{...HAND.BL3,st:{kind:'近接',dmg:370,range:8,area:0,rate:'3連撃／1.05秒',count:1,ammo:INF,reload:0,wt:20,imp:'A',spd:0,hom:'－',note:'1回の操作で3連撃（1発 370。頭上から斜め→下から返す→突き）。約1秒で振り切る。急加速とガードで打ち切れる'},
-  act:BL_TRI,
+ // 連撃ブレード：1回の操作で2連撃（BL_DUO）。急加速・ガードで途中から打ち切れる
+ 'BL4':{...HAND.BL3,st:{kind:'近接',dmg:550,range:8,area:0,rate:'2連撃',count:1,ammo:INF,reload:0,wt:20,imp:'A',spd:0,hom:'－',note:'1回の操作で2連撃（1発 550。頭上から斜め→下から返す）。急加速とガードで打ち切れる'},
+  act:BL_DUO,
   build(g){const o=HAND.BL3.build(g);box(g,.05,1.9,.06,VX.cy,0,-1.64,-.08);box(g,.34,.08,.4,VX.gold,0,-.4,0);box(g,.34,.08,.4,VX.gold,0,-.9,0);return o}},
- // セレナ専用の三連斬り（敵機用）：0.9秒で3回斬る。1発 550×ボス係数0.273＝約150、全弾で約450
- 'BLS':{...HAND.BL3,st:{kind:'近接',dmg:550,range:8,area:0,rate:'3連撃／0.9秒',count:1,ammo:INF,reload:0,wt:16,imp:'B',spd:0,hom:'－',note:'セレナの三連斬り（1発 約150）'},
+ // セレナ専用の三連斬り（敵機用）：1発 550×ボス係数0.273＝約150、全弾で約450
+ 'BLS':{...HAND.BL3,st:{kind:'近接',dmg:550,range:8,area:0,rate:'3連撃',count:1,ammo:INF,reload:0,wt:16,imp:'B',spd:0,hom:'－',note:'セレナの三連斬り（1発 約150）'},
   act:BL_TRI,
   build(g){return HAND.BL3.build(g)}},
  // 展開シールド：2枚のパネルを扇形に開く新デザイン
