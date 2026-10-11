@@ -4626,7 +4626,7 @@ const GSLOTS=[['rHand',-1,HAND],['lHand',1,HAND],['rShoulder',-1,SHOULDER],['lSh
 const PTGT={get alive(){return P.hp.core>0&&P.down<=0},center:v=>playerCenter(v)};
 function gearInit(e){const sp=e.spec;e.tier={...GEAR_TIER[sp.tier||'mob'],...(sp.tx||{})};e.ws=[];
  GSLOTS.forEach(([k,s,T])=>{const id=sp.cfg[k];if(!id||id==='none')return;const def=T[id];if(!def||!def.act||!def.st)return;e.ws.push({k,s,id,def,kind:def.st.kind,cd:1+Math.random()*2.5,w:e.model.weps[k]||{}})});
- e.fin=null;e.finDone=false;e.hpBar.visible=!(RUN&&RUN.def&&RUN.def.vs!=null);e.act=null;e.y=0;e.vy=0;e.dashT=0;e.dashCd=1+Math.random()*3;e.qb=null;e.qbCd=2+Math.random()*2;e.jCd=3+Math.random()*4;e.guardT=0;e.gCd=0;e.rushT=0;e.fxT=0;e.dSide=1;
+ e.fin=null;e.finDone=false;if(e.model&&e.model.legs&&e.B){e.B.arms.forEach((b,i)=>{b.x=-.28;b.z=i?.12:-.12;b.e=-.82});e.B.legs.forEach(b=>{b.th=0;b.kn=0});e.B.tX=0;e.gd=0;e.gb=null;standJoints(e.model,e.lean||0)}e.hpBar.visible=!(RUN&&RUN.def&&RUN.def.vs!=null);e.act=null;e.y=0;e.vy=0;e.dashT=0;e.dashCd=1+Math.random()*3;e.qb=null;e.qbCd=2+Math.random()*2;e.jCd=3+Math.random()*4;e.guardT=0;e.gCd=0;e.rushT=0;e.fxT=0;e.dSide=1;
  e.shw=e.ws.find(w=>w.kind==='防御')||null;e.gFront=e.shw?(e.shw.def.st.front??.2):.2;
  e.lean=sp.model?0:CORES[sp.cfg.core]?.lean||0;e.B={arms:[{x:-.28,z:-.12,e:-.82},{x:-.28,z:.12,e:-.82}],legs:[{th:0,kn:0},{th:0,kn:0}],tX:0}}
 function gearAim(e){return e.atT&&RUN&&RUN.tr?new THREE.Vector3(TOBJ().position.x,1.8+Math.random()*1.6,TOBJ().position.z):playerCenter(new THREE.Vector3())}
@@ -6687,10 +6687,12 @@ addEventListener('resize',()=>{resize();fitSoon(document)});resize();
  3) 関節に書き込み、足裏の接地補正、カメラ */
 const B={tX:0,tY:0,hY:0,lift:0,arms:[{x:0,z:0,e:0},{x:0,z:0,e:0}],legs:[{th:0,kn:0,tz:0},{th:0,kn:0,tz:0}]};
 /* ポーズの引き継ぎ防止：自機・敵機の補間用の姿勢を立ちポーズへ戻す（モード切替・出撃・試合の開始時） */
+function standJoints(m,lean){m.head.rotation.set(-(lean||0)*.8,0,0);m.torso.rotation.set(lean||0,0,0);m.arms.forEach(a=>{a.sh.rotation.set(0,0,0);a.el.rotation.x=0});
+ m.legs.forEach(l=>{if(l.dg){digiPose(l,0,0,0);return}l.th.rotation.set(0,0,l.sz||0);l.kn.rotation.x=0;l.ft.rotation.set(0,0,-(l.sz||0))})}
 function resetPoses(){B.tX=B.tY=B.hY=B.lift=0;B.arms.forEach(b=>{b.x=-.28;b.z=0;b.e=-.82});B.legs.forEach(b=>{b.th=0;b.kn=0;b.tz=0});
- if(mech){mech.gd=[0,0];mech.gb=[1,1];mech.armLift=[0,0];mech.hw=0;mech.hd=0;mech.lean=0}if(typeof FIN!=='undefined'&&FIN.me)FIN.me=null;
+ if(mech){mech.gd=[0,0];mech.gb=[1,1];mech.armLift=[0,0];mech.hw=0;mech.hd=0;mech.lean=0}if(typeof FIN!=='undefined'&&FIN.me)FIN.me=null;if(mech&&mech.legs)standJoints(mech,(CORES[mech.cfgUsed?.core||cfg.core]||{}).lean||0);
  for(const k in active)delete active[k];
- ENEMIES.forEach(e=>{if(e.B){e.B.arms.forEach((b,i)=>{b.x=-.28;b.z=i?.12:-.12;b.e=-.82});e.B.legs.forEach(b=>{b.th=0;b.kn=0});e.B.tX=0;e.gd=0;e.gb=null;e.guardT=0}})}
+ ENEMIES.forEach(e=>{if(e.B){e.B.arms.forEach((b,i)=>{b.x=-.28;b.z=i?.12:-.12;b.e=-.82});e.B.legs.forEach(b=>{b.th=0;b.kn=0});e.B.tX=0;e.gd=0;e.gb=null;e.guardT=0;e.fin=null;if(e.model&&e.model.legs)standJoints(e.model,e.lean||0)}})}
 // 腕・手の武器が地面に刺さらないように：腕（肩から先）のいちばん低い点が地面＋0.25m より下なら、肩を前へ少しずつ持ち上げる。余裕ができたらゆっくり戻す
 const _ab=new THREE.Box3();
 function armGroundFix(m,dt){m.bot.updateMatrixWorld(true);m.arms.forEach((a,i)=>{SHRIG.forEach(r=>r.pv.scale.setScalar(.0001));_ab.setFromObject(a.sh);SHRIG.forEach(r=>r.pv.scale.setScalar(1));const lim=SOLE+.25,lo=_ab.min.y;
