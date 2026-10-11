@@ -622,9 +622,9 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 #vsScene .opcard .r{color:var(--cyan)}
 /* 場面に応じたキャラクター：受付の絵を暗くして、左寄りにイラストを重ねる */
 #vsDim{position:absolute;inset:0;z-index:1;background:rgba(5,8,9,.74);opacity:0;transition:opacity .3s;pointer-events:none}
-#vsImg{position:absolute;left:50%;bottom:0;height:96%;width:auto;max-width:60%;object-fit:contain;object-position:bottom center;z-index:2;opacity:0;transform:translate(-50%,14px);transition:opacity .35s ease,transform .35s ease-out,filter .2s;pointer-events:none}
-#versus.chr #vsDim{opacity:1}#versus.chr #vsImg{opacity:1;transform:translate(-50%,0)}#versus.chr .opcard{opacity:0}
-#vsImg.dim{filter:brightness(.42) saturate(.7)}
+#vsImg,#vsImg2{position:absolute;left:50%;bottom:0;height:96%;width:auto;max-width:60%;object-fit:contain;object-position:bottom center;z-index:2;opacity:0;transform:translate(-50%,14px);transition:opacity var(--pms,.4s) ease,transform var(--pms,.4s) ease-out,filter .2s;pointer-events:none}
+#versus.chr #vsDim{opacity:1}#versus.chr #vsImg.on,#versus.chr #vsImg2.on{opacity:1;transform:translate(-50%,0)}#versus.chr .opcard{opacity:0}
+#vsImg.dim,#vsImg2.dim{filter:brightness(.42) saturate(.7)}
 #vtbox{position:relative;overflow:visible;margin:8px 10px 10px;min-height:0;padding:14px 14px 10px;background:rgba(12,16,15,.95);border:1px solid var(--line);display:flex;gap:12px}
 #vtbox .nm{position:absolute;left:12px;top:-1px;height:16px;padding:0 8px;background:var(--vc,#c9d4d8);color:var(--vf,#0a0c0b);font-size:10px;font-weight:700;letter-spacing:2px;display:flex;align-items:center;white-space:nowrap}
 #vtText{flex:1;min-width:0;overflow:auto;font-family:var(--disp);font-size:13.5px;line-height:1.65;color:#e6ebe7;padding-top:3px;cursor:pointer}
@@ -1072,7 +1072,7 @@ body.eqm #visit{display:none}
  </div>
  <div id="vsL">
   <div id="vsScene">
-   <div id="vsGL"></div><div id="vsDim"></div><img id="vsImg" alt="">
+   <div id="vsGL"></div><div id="vsDim"></div><img id="vsImg" alt=""><img id="vsImg2" alt="">
    <div class="opcard"><span class="r">RECEPTION</span><span class="n">BELL-01 ベル</span><span class="d">闘技場 受付案内ロボ</span><span class="st" id="vState">応答中</span></div>
   </div>
   <div id="vtbox"><span class="nm" id="vtNm">BELL-01 ベル</span><div id="vtText" aria-live="polite"></div><div id="vtChoice"></div><span id="vtNext" hidden>▼</span></div>
@@ -4215,12 +4215,22 @@ const VSEV=[
   ['b','第3区画を治める統治AIは、<ruby class="mc">DAVID<rt>ダビデ</rt></ruby>。この闘技場の運営も、<ruby class="mc">DAVID<rt>ダビデ</rt></ruby>の管轄です。'],
   ['n','……また、エース級の方が。しかも王座戦に出た方が、なぜ C 大会に。'],
   ['n','少し、引っかかります。○○、気をつけましょう。']]}];
-const VT={q:[],iv:null,done:null,ch:null,img:''};
+const VT={q:[],iv:null,done:null,ch:null};
 let vTab='card',vLeaving=false;
 function vtSay(lines,choices=null){VT.q=lines.slice();VT.ch=choices;vtNext()}
-function vtChar(k){const v=$('versus'),img=$('vsImg');
- if(!k){v.classList.remove('chr');img.classList.remove('dim');return}
- const c=VCH[k];if(VT.img!==c.img){VT.img=c.img;img.style.visibility='hidden';img.onload=()=>{if(VT.img===c.img)img.style.visibility=''};img.removeAttribute('src');img.src=c.img;img.alt=c.nm;if(img.complete&&img.naturalWidth)img.style.visibility=''}img.classList.remove('dim');v.classList.add('chr')}
+// 立ち絵の入れ替え（共通）：絵が切り替わる場面は必ずこの関数を使う。2枚の層を重ね、前の絵は沈みながら消え、新しい絵は読み込み後に浮かびながら出る（クロスフェード）。
+// 層の見た目は CSS（.on で表示）。時間は PORT_MS だけで変える。st＝{a:層1,b:層2,cur:表示中の層,src:今の絵,tk:通し番号}
+const PORT_MS=400;document.documentElement.style.setProperty('--pms',PORT_MS+'ms');
+function swapPortrait(st,src,alt){
+ if(!src||st.src===src)return;st.src=src;const tk=++st.tk,old=st.cur,nx=old===st.a?st.b:st.a;
+ nx.style.transition='none';nx.classList.remove('on');void nx.offsetWidth;nx.style.transition='';   // 消えかけの層を再利用するときは、一度その場で消す
+ const show=()=>{if(tk!==st.tk)return;nx.onload=null;nx.alt=alt||'';nx.classList.add('on');if(old&&old!==nx)old.classList.remove('on');st.cur=nx};
+ nx.onload=show;nx.src=src;if(nx.complete&&nx.naturalWidth)show()}
+const VPORT={a:$('vsImg'),b:$('vsImg2'),cur:null,src:'',tk:0};
+function vtDim(on){VPORT.a.classList.toggle('dim',on);VPORT.b.classList.toggle('dim',on)}
+function vtChar(k){const v=$('versus');
+ if(!k){v.classList.remove('chr');vtDim(false);return}
+ const c=VCH[k];swapPortrait(VPORT,c.img,c.nm);vtDim(false);v.classList.add('chr')}
 Object.values(VCH).forEach(c=>{const i=new Image();i.src=c.img});
 const VT_DEF=['おかえりなさいませ、○○様。ご用件をお選びください。','お疲れさまでした、○○様。次のご案内をいたします。','受付です。対戦カードか対戦表をご確認ください。'];   // 話すことがなく、テキスト欄が空になるときの一言
 function vtNext(){const ch=$('vtChoice');ch.innerHTML='';clearInterval(VT.iv);VT.iv=null;
@@ -4228,7 +4238,7 @@ function vtNext(){const ch=$('vtChoice');ch.innerHTML='';clearInterval(VT.iv);VT
  if(!VT.q.length){$('vtNext').hidden=true;VS3.talk(false);$('vState').textContent='待機中';vtChar(null);vtChoices();return}
  const [sp,raw,mood]=VT.q.shift(),S=VSP[sp]||VCH[sp],txt=raw.replace(/○○/g,esc(PILOT||'操縦者'));
  const box=$('vtbox');box.style.setProperty('--vc',S.c);box.style.setProperty('--vf',S.f);$('vtNm').textContent=S.nm;
- if(VCH[sp])vtChar(sp);else $('vsImg').classList.add('dim');
+ if(VCH[sp])vtChar(sp);else vtDim(true);
  if(mood)VS3.mood(mood);VS3.talk(sp==='b');$('vState').textContent=sp==='b'?'応答中':'待機中';
  const parts=txt.split(/(<ruby[^>]*>.*?<\/ruby>|<\/?(?:em|strong)>)/).filter(Boolean),total=parts.reduce((a,p)=>a+(p.startsWith('<ruby')?1:p[0]==='<'?0:p.length),0);
  const el=$('vtText');let n=0;$('vtNext').hidden=true;
