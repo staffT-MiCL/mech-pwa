@@ -1698,7 +1698,7 @@ function buildMech(c){
  builtKey=JSON.stringify(c);
  Object.keys(active).forEach(k=>delete active[k]);
  if(mech){S.remove(mech.bot);mech.bot.traverse(o=>o.geometry&&o.geometry!==UB&&o.geometry.dispose());}
- const bot=grp(S),hip=grp(bot,0,3.24,0);
+ const bot=grp(S),hip=grp(bot,0,3.24,0);if(is05Set(c))bot.scale.setScalar(CEN_SC);
  const legs=LEGS[c.legs].build(hip);
  const torso=grp(hip,0,.25,0);torso.scale.setScalar(UPPER);
  const so=CORES[c.core].build(torso);
@@ -2339,6 +2339,7 @@ const GLA={
 
 /* ===== 05 CENTURION ===== */
 const CEN={
+ scale:1.1,
  legs(hip,K){
   box(hip,1.0,.45,.75,K.frame,0,0,0);
   for(let i=0;i<3;i++)box(hip,.74-i*.04,.18,.12,K.main,0,-.2-i*.2,.42);
@@ -3053,6 +3054,8 @@ function gxLegs(ser,hip){const B=GX[ser],K=gxK(ser),legs=B.legs(hip,K);legs.forE
 const C00=['HD-00','CR-00','AR-00','LG-00'];
 const is00=id=>C00.includes(id);
 const is00Set=c=>c.head==='HD-00'&&c.core==='CR-00'&&c.arms==='AR-00'&&c.legs==='LG-00';
+// 05 CENTURION：4部位そろいのときだけ全体を少し大きくする（ライバル機・一式プレビューは CEN.scale）
+const CEN_SC=1.1,is05Set=c=>['head','core','arms','legs'].every(k=>/^(HD|CR|AR|LG)-05$/.test(c[k]||''));
 function gxPost(c,o){if(!is00Set(c))return;GX.CTR.slim({torso:o.torso,head:o.head,hip:o.hip,legs:o.legs,arms:o.arms.map(a=>({s:a.s,up:a.el.parent}))},gxK('CTR'))}
 /* 系列ごとの性能（仮）。フレーム系列メモの「なだらか案」。00 は入手時に TUNE が全 MAX になる元の値 */
 const GXF=[
@@ -6744,7 +6747,7 @@ function opSize(){const w=innerWidth,h=innerHeight;const rh=RES[res]?RES[res][1]
 addEventListener('resize',()=>{if(OP.on)opSize()});
 // 3Dのギア（兵装つき）を組む。tint で色を差し替え（闘技場の相手機など）
 function gearModel(parent,c,tint){
- const bot=grp(parent),hip=grp(bot,0,3.24,0);const legs=LEGS[c.legs].build(hip);
+ const bot=grp(parent),hip=grp(bot,0,3.24,0);if(is05Set(c))bot.scale.setScalar(CEN_SC);const legs=LEGS[c.legs].build(hip);
  const torso=grp(hip,0,.25,0);torso.scale.setScalar(UPPER);const so=CORES[c.core].build(torso);
  const head=grp(torso,...so.neck);HEADS[c.head].build(head);const arms=[],weps={};
  [-1,1].forEach(s=>{const sh=grp(torso,s*so.arm[0],so.arm[1],so.arm[2]);const a=ARMS[c.arms].build(sh,s);
