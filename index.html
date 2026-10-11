@@ -758,7 +758,7 @@ body.tut .hcls,body.tut .hch,body.tut .hdt{display:none}
 body.eqm #mailBox{display:none}
 #dbgBox{position:fixed;left:max(8px,calc(50% - 330px));right:max(8px,calc(50% - 330px));top:8px;bottom:8px;z-index:30;pointer-events:auto;box-sizing:border-box;padding:10px 12px;display:flex;flex-direction:column;gap:6px;border:1px solid #8a6ad8;background:rgba(14,10,22,.97);min-height:0;font-family:var(--disp)}
 #dbgBox .dh{display:flex;justify-content:space-between;align-items:center;font-family:var(--mech);font-size:11px;letter-spacing:.2em;color:#c0a8ff}#dbgBox .dh small{font-family:var(--disp);letter-spacing:0;color:#8a7aa8}
-#dbgBox .dl{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:3px;padding-right:4px}
+#dbgBox .dl>*{flex-shrink:0}#dbgBox .dl{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:3px;padding-right:4px}
 #dbgBox .dc{font-family:var(--mech);font-size:10px;letter-spacing:.16em;color:#c0a8ff;border-bottom:1px solid #4a3a70;padding:4px 0 2px;margin-top:4px}
 #dbgBox .dr{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;min-height:30px;padding:0 6px;background:rgba(40,30,60,.5);font-size:12px;color:#e8e0ff}
 #dbgBox .dr b{font-family:var(--mech);font-size:10px;color:#a090c8;margin-right:6px}#dbgBox .dr.st{background:rgba(90,60,20,.45)}#dbgBox .dr.na{opacity:.45}
@@ -5197,7 +5197,7 @@ const MLIST=[
   subj:'あのときは、ありがとう',body:'○○へ<br>地下の要塞、運営局の調査が入ったわ。結局、起動した理由は「不明」のまま。……あたしは納得してないけどね。<br>補修班は総出で復旧中。観客席の手すりまで、あんたの話題で持ちきりよ。<br>落ち着いたら、機体の整備に寄りなさい。<br><span class="end">── ペトラ</span>',
   mailNona:'ペトラさんからです。……心配してくださっているようですね。'},
  {id:'n-c4-mira',ch:0,kind:'mail',notice:true,afterClear:'3-S',afterCls:'B',ready:false,title:'境界監視所より',from:'境界監視員 ミラ',fromFull:'第7境界監視所 ミラ',reward:0,
-  subj:'境界監視所より（近況）',body:'あんたへ<br>優勝の中継は見た。所長が一番うるさかった。<br>こっちは変わりない。……と言いたいが、最近、北の壁のほうから雑音が入る。気のせいならいい。<br>それだけだ。<br><span class="end">── ミラ</span>',
+  subj:'境界監視所より（近況）',body:'○○<br>優勝の中継は見た。所長が一番うるさかった。<br>こっちは変わりない。……と言いたいが、最近、北の壁のほうから雑音が入る。気のせいならいい。<br>それだけだ。<br><span class="end">── ミラ</span>',
   mailNona:'ミラさんからです。……壁のほうの雑音、というのが少し気になります。'},
  {id:'n-c4-otto',ch:0,kind:'mail',notice:true,afterClear:'3-S',afterCls:'B',ready:false,title:'行商の道すがら',from:'行商人 オットー',fromFull:'行商人 オットー',reward:0,
   subj:'行商の道すがら',body:'○○さん、ご無沙汰です！ オットーです。<br>闘技場の優勝、聞きましたよ。うちの荷車の自慢話になりました。<br>いまは北の砂原あたりを回っています。道は荒れていますが、近道ならお任せを。荷運びの用があれば、いつでも声をかけてください。<br><span class="end">── オットー</span>',
