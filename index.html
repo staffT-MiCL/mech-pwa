@@ -5197,7 +5197,7 @@ const MLIST=[
   subj:'あのときは、ありがとう',body:'○○へ<br>地下の要塞、運営局の調査が入ったわ。結局、起動した理由は「不明」のまま。……あたしは納得してないけどね。<br>補修班は総出で復旧中。観客席の手すりまで、あんたの話題で持ちきりよ。<br>落ち着いたら、機体の整備に寄りなさい。<br><span class="end">── ペトラ</span>',
   mailNona:'ペトラさんからです。……心配してくださっているようですね。'},
  {id:'n-c4-mira',ch:0,kind:'mail',notice:true,afterClear:'3-S',afterCls:'B',ready:false,title:'境界監視所より',from:'境界監視員 ミラ',fromFull:'第7境界監視所 ミラ',reward:0,
-  subj:'境界監視所より（近況）',body:'○○さんへ<br>優勝の中継、監視所のみんなで見ました。所長が一番、声を出してました。<br>こちらは変わりなし……と言いたいところですが、最近、北の壁のほうから変な雑音が入ります。気のせいだといいのですが。<br>お体に気をつけて。<br><span class="end">── ミラ</span>',
+  subj:'境界監視所より（近況）',body:'あんたへ<br>優勝の中継は見た。所長が一番うるさかった。<br>こっちは変わりない。……と言いたいが、最近、北の壁のほうから雑音が入る。気のせいならいい。<br>それだけだ。<br><span class="end">── ミラ</span>',
   mailNona:'ミラさんからです。……壁のほうの雑音、というのが少し気になります。'},
  {id:'n-c4-otto',ch:0,kind:'mail',notice:true,afterClear:'3-S',afterCls:'B',ready:false,title:'行商の道すがら',from:'行商人 オットー',fromFull:'行商人 オットー',reward:0,
   subj:'行商の道すがら',body:'○○さん、ご無沙汰です！ オットーです。<br>闘技場の優勝、聞きましたよ。うちの荷車の自慢話になりました。<br>いまは北の砂原あたりを回っています。道は荒れていますが、近道ならお任せを。荷運びの用があれば、いつでも声をかけてください。<br><span class="end">── オットー</span>',
@@ -6665,7 +6665,7 @@ function dbgVsSet(i,v,b=false){const st=b?DW.vs.sb:DW.vs.st,T=b?VSC_B:VSC_C,key=
  // 試合の条件の依頼（1回戦＝3-1／B 大会は 4-1 …）のクリアと、勝利に頼る依頼（3-2 など）の未着をそろえる
  if(v>=1)for(let j=0;j<=i;j++){const n=T.rounds[j].need;if(n&&MDEF[n]&&MDEF[n].ready&&DW.m[n]!==2)dbgSet(n,2)}
  for(let j=0;j<st.length;j++)if(st[j]!==2)dependents(key+j).forEach(x=>{if(DW.m[x.id])dbgSet(x.id,0)})}
-function dbgVs(){const v=DW.vs,rows=(T,st,b)=>T.rounds.map((r,i)=>`<div class="dr${r.ready===false?' na':''}"><span><b>${r.label}</b>${r.ja}（${r.opp.name.startsWith('（')?r.opp.name.slice(1,-1):r.opp.name}）${r.ready===false?'（準備中）':''}</span><span class="sg">${['未開放','開放（メール）','勝利'].map((l,k)=>`<button data-${b?'vb':'vs'}="${i}" data-v="${k}" class="${st[i]===k?'on':''}">${l}</button>`).join('')}${r.ready===false?'':`<button data-vgo="${i}" data-vt="${T.cls}">試合</button>`}</span></div>`).join('');
+function dbgVs(){const v=DW.vs,rows=(T,st,b)=>T.rounds.map((r,i)=>`<div class="dr"><span><b>${r.label}</b>${r.ja}（${r.opp.name.startsWith('（')?r.opp.name.slice(1,-1):r.opp.name}）${r.ready===false?'（準備中）':''}</span><span class="sg">${['未開放','開放（メール）','勝利'].map((l,k)=>`<button data-${b?'vb':'vs'}="${i}" data-v="${k}" class="${st[i]===k?'on':''}">${l}</button>`).join('')}${r.ready===false?'<button disabled>試合：準備中</button>':`<button data-vgo="${i}" data-vt="${T.cls}">試合</button>`}</span></div>`).join('');
  return `<div class="dc">VERSUS（${VSC_C.name}）　受付は CLASS C（★2-S クリア）で開く</div>
   <div class="dt"><span>受付の初回（歩いて近づく演出）。「未」にすると一度だけの場面も見直せる</span><span class="sg"><button data-vr="0" class="${v.reg?'':'on'}">未</button><button data-vr="1" class="${v.reg?'on':''}">済</button></span></div>
   ${rows(VSC_C,v.st,false)}
