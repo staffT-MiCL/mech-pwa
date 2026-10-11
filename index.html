@@ -667,6 +667,7 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 .vacts .btn-main:disabled{background:#1a2427;color:#4f6266;opacity:1}
 #versus.walk #vtbox,#versus.walk #vsR,#versus.walk #vExit,#versus.walk .opcard{visibility:hidden}
 #versus.greet #vsR,#versus.greet #vExit{opacity:.25;pointer-events:none}
+#versus.evt #vsR,#versus.evt .shdr{opacity:.25;pointer-events:none;transition:opacity .2s}   /* 差し込みイベントの会話中：左（受付と会話）以外を暗くして押せなくする */
 #unlock{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:2;min-width:min(400px,calc(100% - 20px));max-width:calc(100% - 20px);padding:10px 16px 12px;background:rgba(10,14,13,.65);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);text-shadow:0 1px 2px #000;border:1px solid var(--accent);display:flex;flex-direction:column;gap:5px;animation:ulin .4s ease}
 #unlock b{font-family:var(--mech);font-size:12px;letter-spacing:.3em;color:var(--accent)}
 #unlock span{font-family:var(--body);font-size:12px;color:#d9e0dc}
@@ -1382,6 +1383,7 @@ function smoke(pos,n,size){const o=pos.clone();for(let i=0;i<n;i++)spawn(0x6a6a6
 // aimDir：弾は自機の速度を引き継ぐので、そのぶんを差し引いて狙う
 function aimDir(from,obj,tgt,speed=0){if(mode==='play'&&tgt&&tgt.alive){const c=tgt.center(new THREE.Vector3());if((SS.lead||(RUN&&RUN.chase))&&speed&&tgt.vel){c.addScaledVector(tgt.vel,c.distanceTo(from)/speed)}if(speed)c.addScaledVector(P.vel,-c.distanceTo(from)/speed);return c.sub(from).normalize()}if(mode==='play')return new THREE.Vector3(Math.sin(P.yaw),0,Math.cos(P.yaw));return obj.getWorldDirection(new THREE.Vector3())}
 function shoot(obj,{size=.1,speed=40,color=0xffe080,life=.8,len=5,trail=0,dmg=0,splash=0,range=0,imp='なし',tgt=null,src=null,pierce=false,homK=0}={}){
+ if(mode==='play'&&RUN&&RUN.chase)speed*=CH_BS;   // 4-1：弾を速くする（射程は同じなので飛ぶ時間は短くなる）
  obj.getWorldPosition(_p);const dir=aimDir(_p,obj,tgt,speed);
  if(mode==='play'){dir.multiplyScalar(speed);dir.x+=P.vel.x;dir.z+=P.vel.z}else dir.multiplyScalar(speed);   // 慣性：自機の移動速度を弾に足す（全兵装）
  const f=spawn(color,size,_p,{vel:dir,life:range?range/speed:life,len,trail,team:'p',dmg,splash,imp,src});if(pierce)f.pierce=new Set();if(homK&&tgt&&mode==='play'){f.hom=tgt;f.homK=homK}   // 誘導弾（BZ4）：緩やかに標的へ曲がる
@@ -1394,7 +1396,7 @@ function missile(obj,st,tgt,src=null){
  obj.getWorldPosition(_p);obj.getWorldDirection(_d);
  const m=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0xdcdcdc}));m.scale.set(.12,.12,.45);m.position.copy(_p);S.add(m);
  FX.push({m,homeT:st&&st.vert?.7:.35,arc:!!(st&&st.arc),vel:st&&st.vert?_d.clone().multiplyScalar(20):_d.clone().multiplyScalar(7).add(new THREE.Vector3(0,st&&st.arc?8:5,0)),life:st?st.range/st.spd+1:3,age:0,missile:true,base:.12,tt:0,team:'p',dmg:st?st.dmg:0,splash:st?st.area:0,imp:st?st.imp:'なし',home:mode==='play'?tgt:null,src});
- if(mode==='play'){const v=FX[FX.length-1].vel;v.x+=P.vel.x;v.z+=P.vel.z}   // 慣性：自機の移動速度を足す（全兵装共通）
+ if(mode==='play'){const v=FX[FX.length-1].vel;if(RUN&&RUN.chase)v.multiplyScalar(CH_BS);v.x+=P.vel.x;v.z+=P.vel.z}   // 慣性：自機の移動速度を足す（全兵装共通）
 }
 // 迎撃装置用：自機に近い敵弾を1つ探す
 // 迎撃で落とした弾：IC4 は小さく爆発して近くの敵を傷つける
@@ -1417,7 +1419,7 @@ function splashAt(pos,r,dmg,imp,skip){explode(pos,r/3);ENEMIES.forEach(e=>{if(e.
 function updateFX(dt){
  for(let i=FX.length-1;i>=0;i--){const f=FX[i];f.age+=dt;const k=f.age/f.life;
   if(f.missile){
-   if(f.home&&f.home.alive&&f.age>(f.homeT||.35)){const want=f.home.center(_q).sub(f.m.position).normalize().multiplyScalar(f.vel.length()+dt*20);f.vel.lerp(want,Math.min(1,dt*(f.homeK||4)))}
+   if(f.home&&f.home.alive&&f.age>(f.homeT||.35)){const want=f.home.center(_q).sub(f.m.position).normalize().multiplyScalar(f.vel.length()+dt*20*(f.team==='p'&&mode==='play'&&RUN&&RUN.chase?CH_BS:1));f.vel.lerp(want,Math.min(1,dt*(f.homeK||4)))}
    // 誘導弾は前方の障害物を上へ越える
    if(mode==='play'&&f.age>.15){_cp.copy(f.vel).setY(0);const sp=_cp.length();if(sp>.1){_cp.multiplyScalar(Math.min(9,sp*.45)/sp).add(f.m.position);{const ob=f.arc&&hitCol(_cp,.8);if(ob&&ob.top<=4.2){f.vel.y=Math.max(f.vel.y,10+sp*.4);f.climb=.25}}}if(f.climb>0){f.climb-=dt;f.vel.y=Math.max(f.vel.y,6)}}
    else{f.vel.z+=dt*26*(mode==='play'?0:1);f.vel.y-=dt*4}
@@ -4388,8 +4390,8 @@ Object.values(VCH).forEach(c=>{const i=new Image();i.src=c.img});
 const VT_DEF=['おかえりなさいませ、○○様。ご用件をお選びください。','お疲れさまでした、○○様。次のご案内をいたします。','受付です。対戦カードか対戦表をご確認ください。'];   // 話すことがなく、テキスト欄が空になるときの一言
 function vtNext(){const ch=$('vtChoice');ch.innerHTML='';clearInterval(VT.iv);VT.iv=null;
  if(!VT.q.length&&!$('vtText').textContent.trim()){VT.q=[['b',pick(VT_DEF),'normal']]}
- if(!VT.q.length){$('vtNext').hidden=true;VS3.talk(false);$('vState').textContent='待機中';vtChar(null);vtChoices();return}
- const [sp,raw,mood]=VT.q.shift(),S=VSP[sp]||VCH[sp],txt=raw.replace(/○○/g,esc(PILOT||'操縦者'));
+ if(!VT.q.length){$('versus').classList.remove('evt');$('vtNext').hidden=true;VS3.talk(false);$('vState').textContent='待機中';vtChar(null);vtChoices();return}
+ const [sp,raw,mood,ev]=VT.q.shift(),S=VSP[sp]||VCH[sp],txt=raw.replace(/○○/g,esc(PILOT||'操縦者'));$('versus').classList.toggle('evt',!!ev);
  const box=$('vtbox');box.style.setProperty('--vc',S.c);box.style.setProperty('--vf',S.f);$('vtNm').textContent=S.nm;
  if(VCH[sp])vtChar(sp);else vtDim(true);
  if(mood)VS3.mood(mood);VS3.talk(sp==='b');$('vState').textContent=sp==='b'?'応答中':'待機中';
@@ -4411,7 +4413,8 @@ function vsStatus(card){const i=vsCur();
  const L=i===0?[['b','1回戦の日程は、ただいま調整中です。','normal']]:[['b','前の試合の勝利を確認しました。次の'+r.ja+'の日程は、ただいま調整中です。','normal']];
  L.push(['b','決まり次第、運営局から<em>メール</em>でご連絡いたします。もうしばらくお待ちください。','bow']);
  if(!card)L.push(['n','……待つ間に、届いている依頼をこなしておきましょう、○○。']);return L}
-function vsEvents(){const L=[];VSEV.forEach(e=>{if(!VSS.seen[e.id]&&e.ok()){VSS.seen[e.id]=true;L.push(...e.lines)}});if(L.length)saveGame();return L}
+function vsEvents(){const L=[];VSEV.forEach(e=>{if(!VSS.seen[e.id]&&e.ok()){VSS.seen[e.id]=true;L.push(...e.lines.map(l=>[l[0],l[1],l[2],1]))}})   // 4つめ＝1：イベントの行（表示中は右とヘッダーを暗くする）
+;;if(L.length)saveGame();return L}
 function vsRules(){vtSay([['b','試合は<em>1対1</em>です。相手の機体を大破させれば、勝利となります。'],
  ['b','試合の前に、運営局が機体を整備いたします。試合での損傷は、ガレージには持ち帰りません。'],
  ['b','敗れた場合も、すぐに再挑戦できます。賞金は、勝利したときだけお支払いします。'],
@@ -4470,7 +4473,7 @@ function firstVersus(){const v=$('versus');v.classList.add('walk');$('vtChoice')
 function leaveVersus(){if(vLeaving)return;vLeaving=true;$('vtChoice').innerHTML='';
  vtSay([[ 'b',pick(['ご来場ありがとうございました、○○様。','お気をつけて。次のご来場をお待ちしております。','またのお越しを。試合の知らせは、メールでお届けします。']),'bow']],
   ()=>setTimeout(()=>fadeTo(closeVersus,'GARAGE'),800))}
-function closeVersus(toMatch=false){VS3.stop();if(!toMatch)SND.bgm('garage');clearInterval(VT.iv);VT.iv=null;VT.q=[];vtChar(null);$('versus').hidden=true;$('versus').classList.remove('walk','greet');vLeaving=false;
+function closeVersus(toMatch=false){VS3.stop();if(!toMatch)SND.bgm('garage');clearInterval(VT.iv);VT.iv=null;VT.q=[];vtChar(null);$('versus').hidden=true;$('versus').classList.remove('walk','greet','evt');vLeaving=false;
  view='overview';selSlot=null;renderGarage();if(!toMatch)garageGreet('versus')}   // 試合へ向かうときはガレージのあいさつを出さない（暗転中に文字の音が鳴るため）
 $('vEq').onclick=vsEquip;
 $('mVersus').onclick=()=>{if(tutBlock())return;if(!vsOk())return;openMenu(false);fadeTo(openVersus,'VERSUS')};$('vExit').onclick=leaveVersus;
@@ -4634,7 +4637,8 @@ function gearShot(e,A,obj,vis={}){const S0=A.def.st,T=e.tier;obj.getWorldPositio
  const dir=aim.sub(from).normalize(),n=WSND(A.id);if(n)sAt(n,from,{g:.38});
  const f=spawn(vis.color&&vis.color!==0xffe080?vis.color:0xff8a4a,Math.max(.22,(vis.size||.1)*2.2),from,{vel:dir.multiplyScalar(spd),life:(S0.range||50)*1.1/spd+.4,len:Math.min(3,vis.len||3),trail:vis.trail||0,team:'e',dmg:Math.round(S0.dmg*T.dk),imp:S0.imp,splash:S0.area||0});
  spawn(0xffd090,.8,from,{life:.07});return f}
-const CH_V=34;   // 4-1 追跡：自機の前進速度（m/s。フレーム性能によらない固定値。仮）。親機はこの0.8倍、護衛はその前後（chaseVel）
+const CH_V=30;   // v188：34 → v189：30
+const CH_BS=1.5;   // 4-1 のあいだだけ、自機の弾速（射撃・ミサイル）に掛ける倍率。射程は変えない   // 4-1 追跡：自機の前進速度（m/s。フレーム性能によらない固定値。仮）。親機はこの0.8倍、護衛はその前後（chaseVel）
 const ENEMY_MS=.7;   // 敵ギアのミサイルの威力倍率（兵装の威力×段階の倍率に掛ける。以前は .5）。弾速・VERSUS 倍率は ENEMY_BS／VS_BS／VS_DMG
 function gearMissile(e,A,obj,i){const st=A.def.st,bk=ENEMY_BS*(RUN&&RUN.vs?VS_BS:1),dk=RUN&&RUN.vs?VS_DMG:1;obj.getWorldPosition(_p);obj.getWorldDirection(_d);if(st.vert?!(i|0):(i|0)%2===0)sAt(st.vert?'vmissile':'missile',_p,{g:.38});
  const m=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0xffa080}));m.scale.set(.16,.16,.55);m.position.copy(_p);S.add(m);
@@ -6854,6 +6858,8 @@ R.setAnimationLoop(()=>{
   }
  }else{C.position.set(Math.sin(az)*dist*Math.cos(el2),camTY+Math.sin(el2)*dist,Math.cos(az)*dist*Math.cos(el2));C.lookAt(0,camTY,0)}
  if(mode==='play'&&VSCAM.on&&RUN&&RUN.vs){VSCAM.t+=dt;const p=RUN.vs.e.g.position,a=-.5+VSCAM.t*.1,dd=13-VSCAM.t*.5;C.position.set(p.x+Math.sin(a)*dd,3.4+VSCAM.t*.2,p.z-Math.cos(a)*dd);C.lookAt(p.x,4.6,p.z)}
+ if(mode==='play'&&RUN&&RUN.chase&&RUN.ok&&RUN.ch&&RUN.ch.boss){const p=RUN.ch.boss.g.position,k=RUN.cc=(RUN.cc||0)+dt,a=Math.PI+.75-Math.min(k,5)*.12,dd=Math.max(8,13.5-k*1.6),tx=p.x+Math.sin(a)*dd,tz=p.z+Math.cos(a)*dd,ty=4.4+Math.min(k,3)*.35;   // 4-1 クリア：親機の残骸に寄り、散らばった荷を見せる（ゆっくり回り込みながら近づく）
+  const cp=RUN.cp||(RUN.cp=C.position.clone()),kk=Math.min(1,dt*2.2);cp.x+=(tx-cp.x)*kk;cp.y+=(ty-cp.y)*kk;cp.z+=(tz-cp.z)*kk;C.position.copy(cp);C.lookAt(p.x,.9,p.z)}   // 自機追従の補間と干渉しないよう、専用の位置 RUN.cp を持つ
  if(mode==='play'&&VSEND.k&&RUN&&RUN.vs){const E=RUN.vs.e.g,sc=RUN.vs.e.spec?1:1;let p,y,fd,rd,hy,ly,ff,rr;
   if(VSEND.k==='me'){p=P.pos;const yw=P.yaw;fd=7.6;rd=2.4;y=5;ly=4.8;C.position.set(p.x+Math.sin(yw)*fd-Math.cos(yw)*rd,y,p.z+Math.cos(yw)*fd+Math.sin(yw)*rd)}
   else{p=E.position;const ry=E.rotation.y;if(VSEND.k==='opp'){fd=7.2;rd=2.2;y=5.2;ly=5}else{fd=8;rd=3;y=4.2;ly=3.4}C.position.set(p.x+Math.sin(ry)*fd-Math.cos(ry)*rd,y,p.z+Math.cos(ry)*fd+Math.sin(ry)*rd)}
