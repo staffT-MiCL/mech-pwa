@@ -4188,15 +4188,15 @@ const VS3=(()=>{
  for(let z=-5;z<=6;z+=3.6)box(root,24,.08,.24,T.glowW,0,10.4,z);                 // 天井の照明
  [-2.6,8.4].forEach(x=>box(root,.1,.02,16,T.glowC,x,.012,1));                  // 床のライン
  // 奥の壁：大型スクリーン（トーナメント表）
- const scr=sign(128,72,(g,w,h)=>{g.fillStyle='#04121a';g.fillRect(0,0,w,h);g.strokeStyle='#6fd3e0';g.lineWidth=1;g.strokeRect(.5,.5,w-1,h-1);
-  g.fillStyle='#6fd3e0';g.font='bold 9px monospace';g.textAlign='center';g.fillText('C-CLASS TOURNAMENT',w/2,12);
+ let ttl='C';const drawScr=(g,w,h)=>{g.fillStyle='#04121a';g.fillRect(0,0,w,h);g.strokeStyle='#6fd3e0';g.lineWidth=1;g.strokeRect(.5,.5,w-1,h-1);
+  g.fillStyle='#6fd3e0';g.font='bold 9px monospace';g.textAlign='center';g.fillText(ttl+'-CLASS TOURNAMENT',w/2,12);
   g.strokeStyle='#2d6068';for(let i=0;i<8;i++){const y=20+i*6.2;g.beginPath();g.moveTo(8,y);g.lineTo(24,y);g.stroke()}
   for(let i=0;i<4;i++){const y=20+i*12.4;g.beginPath();g.moveTo(24,y);g.lineTo(24,y+6.2);g.moveTo(24,y+3.1);g.lineTo(40,y+3.1);g.stroke()}
   for(let i=0;i<2;i++){const y=23+i*24.8;g.beginPath();g.moveTo(40,y);g.lineTo(40,y+12.4);g.moveTo(40,y+6.2);g.lineTo(56,y+6.2);g.stroke()}
   g.beginPath();g.moveTo(56,29);g.lineTo(56,54);g.moveTo(56,41.5);g.lineTo(70,41.5);g.stroke();
   for(let i=0;i<8;i++){const y=20+i*6.2;g.beginPath();g.moveTo(w-8,y);g.lineTo(w-24,y);g.stroke()}
   g.fillStyle='#f0a040';g.fillRect(8,49.6,10,3);                               // 第7区画の枠
-  g.fillStyle='#e6fbff';g.fillRect(68,38,10,7);g.fillStyle='#7f8c86';g.font='7px monospace';g.fillText('ARENA 07 / LIVE',w/2,h-4)});
+  g.fillStyle='#e6fbff';g.fillRect(68,38,10,7);g.fillStyle='#7f8c86';g.font='7px monospace';g.fillText('ARENA 07 / LIVE',w/2,h-4)};const scr=sign(128,72,drawScr);
  const screen=new THREE.Mesh(new THREE.PlaneGeometry(6.4,3.6),new THREE.MeshBasicMaterial({map:scr.t}));screen.position.set(.4,6.2,-6.76);root.add(screen);
  box(root,6.8,4,.14,T.dark,.4,6.2,-6.86);
  // 観客席への通路（右奥）：明るい出入口と、奥にうっすら観客席の段
@@ -4289,7 +4289,7 @@ const VS3=(()=>{
  addEventListener('resize',()=>{if(on)size()});
  setHolo('ROUND 1','???','SCHEDULING',true);
  return {start(){if(on)return;on=true;last=performance.now();size();requestAnimationFrame(()=>{size();loop()})},stop(){on=false;walk=null},
-  mood(m){mood=m||'normal';moodT=0},talk(v){talking=!!v},walk(d,cb){walk={t:0,d,cb}},holo:setHolo,get on(){return on}};
+  mood(m){mood=m||'normal';moodT=0},talk(v){talking=!!v},walk(d,cb){walk={t:0,d,cb}},cls(c){if(c===ttl)return;ttl=c;drawScr(scr.g,128,72);scr.t.needsUpdate=true},holo:setHolo,get on(){return on}};
 })();
 
 /* ===== VERSUS：受付の会話と画面 =====
@@ -4326,6 +4326,21 @@ const VSEV=[
  {id:'c-final-jonah',ok:()=>!!VSS.win[2],lines:[   // 同じ訪問の最後：JONAH の声だけの無線（CH3）
   ['j','勝ったか。……闘技場の観客は、勝った者の名前しか覚えない。それだけは、覚えておくといい。'],
   ['n','……JONAH。やはり、見ていたのですね。']]},
+ {id:'b-erich-reg',ok:()=>vsOkB(),lines:[   // CLASS B になって初めて受付へ入った訪問：エーリヒの選手登録。セリフは仮
+  ['b','……失礼いたします、○○様。B 大会の出場名簿に、<em>確認が必要な記載</em>がございます。'],
+  ['b','審判官長の<em>エーリヒ・ブラント様</em>が、選手として登録されています。……規定に、前例がありません。'],
+  ['erich','お手数をおかけします、ベル。私の登録に、間違いはありません。'],
+  ['erich','第7区画の代表、○○殿。本日付で、私も選手として出場いたします。規定を確認しましたが、審判官長の出場を禁ずる条文は、ございません。'],
+  ['erich','審判の席は、副官に預けます。公正を欠くことは、ありません。……上の指示でもありますので。'],
+  ['b','……<ruby class="mc">DEBORAH<rt>デボラ</rt></ruby>様の管轄の方が、<ruby class="mc">DAVID<rt>ダビデ</rt></ruby>様の闘技場で戦う。規定上は問題ありませんが、記録にない事態です。'],
+  ['erich','決勝で、お会いしましょう。……そこまで勝ち上がれたなら、ですが。'],
+  ['n','……判定する側が、戦う側に回るなんて。'],
+  ['n','「上の指示」と言いました。デボラ、でしょうか。……○○、気をつけましょう。']]},
+ {id:'b-r1-news',ok:()=>!!VSS.winB[0],lines:[   // B 大会の1回戦に勝った直後：闘技場速報（ノーナが読む）。ヴィクトル失格（準決勝）への伏線
+  ['n','闘技場の速報が、端末に届きました。B 大会、1回戦の全試合が終了です。'],
+  ['n','……エーリヒ・ブラントも、<em>初戦を突破</em>。試合は、ほぼ一方的だったそうです。'],
+  ['b','審判官長が選手として勝ち進むのは、闘技場の歴史でも初めてです。'],
+  ['n','それに、対戦表の組み合わせ。決勝まで、あの方と当たらない並びになっています。……偶然でしょうか。']]},
  {id:'c-final-serena',ok:()=>VSC===VSC_C&&vsCur()===2&&vsState(2)==='open',lines:[
   ['serena','あら。あなたが噂の、第7区画の代表さん？'],
   ['serena','聞いたことのない名前ね。……<em>名無しさん</em>でいいかしら。'],
@@ -4387,7 +4402,7 @@ function setVTab(t){vTab=t;renderVs()}
 document.querySelectorAll('#vTabs [data-t]').forEach(b=>b.onclick=()=>setVTab(b.dataset.t));
 // 右の画面：対戦カード（いまの試合）／対戦表（1回戦と、勝ち進んだ試合だけ）
 const vsDay=m=>prDate(m&&typeof m.dy==='number'?m.dy:DAY);
-function renderVs(){$('vMoney').textContent=fmtCR(CREDIT);$('vTitle').textContent=VSC.name;$('vSub').textContent=vTab==='card'?'対戦カード':'対戦表';
+function renderVs(){VS3.cls(VSC.cls);$('vMoney').textContent=fmtCR(CREDIT);$('vTitle').textContent=VSC.name;$('vSub').textContent=vTab==='card'?'対戦カード':'対戦表';
  document.querySelectorAll('#vTabs [data-t]').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===vTab));
  const i=vsCur(),N=esc(PILOT||'操縦者'),R=VSC.rounds,shown=R.map((_,k)=>k).filter(vsShown);
  // 自分の異名：CH3 の決勝に勝つまでは空欄（決勝のあと観客が呼び始める）
@@ -4558,6 +4573,8 @@ const GEAR_MOB={
   hp:10000,dmg:0,rate:2.6,rng:70,spd:5,keep:30,bs:22,rw:0,tier:'mid',msK:2,tx:{dk:.33,spread:2.2,cdK:1.6,gap:1},guard:{p:4,near:14,t:[1.2,1.8],cd:[1.8,2.8]},msMax:3},
  vs2:{name:'ザラ機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'MG',rShoulder:'none',lShoulder:'none'},tint:{main:0x40c8f0,sub:0xf0f4f8,warn:0x2050d0,joint:0x1c1e22,eye:0xffffff},
   hp:10000,dmg:0,rate:2.2,rng:60,spd:10,keep:24,bs:32,rw:0,tier:'boss',tx:{dk:.24,spread:1.8,cdK:1.5,gap:.8}},
+ vb1:{name:'オズ機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'BZ3',lHand:'SH3',rShoulder:'MS3',lShoulder:'MS3'},tint:{main:0x7a6a48,sub:0xc8c0a8,warn:0xd08030,joint:0x1c1e22,eye:0xffb050},
+  hp:14000,dmg:0,rate:2.4,rng:70,spd:6,keep:26,bs:24,rw:0,tier:'mid',msK:2,tx:{dk:.34,spread:2,cdK:1.4,gap:.9},guard:{p:5,near:12,t:[1.2,1.8],cd:[1.6,2.6]},msMax:3},
  vs3:{name:'ルージュ・ファンファーレ',model:'serena',vpose:'serena',bladeFx:1,cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'BL3',lHand:'SH',rShoulder:'MS',lShoulder:'MS'},
   hp:17000,dmg:0,rate:1.5,rng:70,spd:10,keep:14,bs:32,rw:0,tier:'boss',msK:2,tx:{dk:.24,mk:.273,spread:1.6,cdK:1.3,gap:.6},guard:{p:6,near:0,t:[.8,1.2],cd:[1.5,2.5]},rush:26,msMax:3,rage:1},
  cvBoss:{name:'無人輸送ギア（親機）',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'none',rShoulder:'MS',lShoulder:'none'},tint:'convoy',hp:4500,dmg:34,rate:2.0,rng:70,spd:12,keep:30,bs:30,rw:6000,scale:1.15,tier:'boss'},
@@ -5332,6 +5349,17 @@ const MLIST=[
    ['c','それと、砂嵐の日は視界が悪い。……よし、決めた。当日は無線で案内してやる。周波数は、このあいだと同じでいい。'],
    ['n','ありがとうございます、オットーさん。心強いです。'],
    ['c','なに、護衛をしてもらった借りがあるからな。無理するなよ、○○。……じゃ、俺は先に北で待ってる！']]},
+ {id:'v-b1-petra',ch:0,kind:'visit',notice:true,once:true,ready:true,afterVb:0,title:'ペトラの報告',from:'整備主任 ペトラ',client:'ペトラ',voice:'adultF',img:'img/clients/client-mechanic-petra.png',imgF:'',   // B 大会の1回戦に勝ったあとの来訪（報告）。セリフは仮
+  talk:[['c','おつかれ！ 1回戦、見てたわよ。盾ごと吹き飛ばすなんて、整備班みんなで声が出たわ。'],
+   ['n','ペトラさん。わざわざ、ハンガーまで。'],
+   ['c','勝利祝い……と言いたいところなんだけど、報告があって来たの。気になることが、3つあってね。'],
+   ['c','ひとつ。エーリヒの機体、「リブラ」。あれが運び込まれた夜、格納庫の9番が審判部の封印で閉じられたの。整備班は誰も入れてもらえない。闘技場の機体なのに、よ。'],
+   ['n','審判官長の機体が、闘技場の整備を通っていない。……公平な試合なのでしょうか。'],
+   ['c','ふたつ。B 大会の対戦表、登録の順番が、前日の夜に書き換えられてる。誰がやったかは、ログが消えてて分からない。'],
+   ['c','みっつ。このところ、闘技場の通信がときどき乱れるの。北の壁際の方角から、妨害の電波が来てるみたい。'],
+   ['n','壁際の、妨害電波。……偶然とは、思えませんね。'],
+   ['c','でしょ。壁の近くで無線を直してる「ハンス」って人が、そういうのに詳しいって聞いたわ。顔を出してみる価値はあるかも。'],
+   ['c','あたしは整備班として、封印の件をもう少し探ってみる。……あんたは試合に集中しなさい。まずは勝ち続けること！']]},
  {id:'4-2',ch:4,kind:'visit',ready:false,need:['vb0'],title:'壁際の妨害塔',from:'ハンス',reward:20000},
  {id:'4-3',ch:4,kind:'visit',ready:false,need:['vb1'],title:'壁の外周調査',from:'ティモ',reward:22000},
  {id:'4-S',ch:4,kind:'visit',story:true,ready:false,need:['vb2'],title:'壁の中の研究所',from:'ティモ（NOAH）',reward:36000,cls:'A'},
@@ -5379,8 +5407,8 @@ const MLIST=[
   mailNona:'決勝の相手は、セレナ・ヴァルデス。闘技場の花形、だそうです。'},
  // B 大会の対戦カード（CH4。vs は使わず、受付が VSC_B の need で届ける。文面は仮）
  {id:'v-b1',ch:0,kind:'mail',notice:true,ready:false,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
-  subj:'対戦カード決定 ── 1回戦（B 大会）',body:'第7区画 代表 ○○ 殿<br>CLASS B 大会、<b>1回戦</b>の対戦カードが決まりました。<br>お相手：第○区画 代表 <b>（未定）</b><br>会場：闘技場 中央アリーナ<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
-  mailNona:'B 大会、1回戦の知らせです。（文面は仮）'},
+  subj:'対戦カード決定 ── 1回戦（B 大会）',body:'第7区画 代表 ○○ 殿<br>CLASS B 大会、<b>1回戦</b>の対戦カードが決まりました。<br>お相手：第2区画 代表 <b>ベルナルド・オズ</b><br>会場：闘技場 中央アリーナ<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
+  mailNona:'B 大会、1回戦の知らせです。お相手は第2区画の元民兵、ベルナルド・オズさん。盾を使う重装機のようです。'},
  {id:'v-b2',ch:0,kind:'mail',notice:true,ready:false,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
   subj:'対戦カード決定 ── 準決勝（B 大会）',body:'第7区画 代表 ○○ 殿<br>CLASS B 大会、<b>準決勝</b>の対戦カードが決まりました。<br>お相手：第4区画 代表 <b>ティモ・アルケン</b><br>会場：闘技場 中央アリーナ<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
   mailNona:'B 大会、準決勝の知らせです。（文面は仮）'},
@@ -5403,7 +5431,8 @@ const VSC_C={cls:'C',ch:3,name:'CLASS C 大会',rounds:[
 /* CLASS B 大会（CH4）。C 大会と同じ形：1回戦 → 準決勝 → 決勝。ready:false の試合は、受付に枠だけ出て［試合へ］は押せない（CH4 の実装が進むごとに true にする）。
  need＝4-1／4-2／4-3 のクリア。相手・賞金は仮（1回戦の相手は未定）。決勝のエーリヒ（05 CENTURION＝リブラ）に勝つと CLASS A の ★4-S へ */
 const VSC_B={cls:'B',ch:4,name:'CLASS B 大会',rounds:[
- {label:'ROUND 1',ja:'1回戦',ready:false,need:'4-1',mail:'v-b1',prize:25000,opp:{name:'（未定）',en:'TBD',reg:'（未定）',pastor:'---',mech:'---',note:'',gear:'vb1',v:'adultM',talk:{start:[],win:[],lose:[]}}},
+ {label:'ROUND 1',ja:'1回戦',need:'4-1',mail:'v-b1',prize:25000,opp:{name:'ベルナルド・オズ',en:'BERNARD OZ',reg:'第2区画',pastor:'SOLOMON',mech:'重装の払い下げ改修機（3型級）',note:'第2区画の元民兵。大型の盾を前に構え、バズーカとミサイルで押してくる。腕のいい古参の重装乗り。',gear:'vb1',v:'adultM',
+   talk:{start:['第7区画の代表か。……民兵あがりの意地、見せてやる。'],win:['……やるな。盾ごと、持っていかれたか。'],lose:['まだまだ甘いな。出直してこい。']}}},
  {label:'SEMIFINAL',ja:'準決勝',ready:false,need:'4-2',mail:'v-b2',prize:35000,opp:{name:'ティモ・アルケン',en:'TIMO ARKEN',reg:'第4区画',pastor:'NOAH',mech:'（未定）',note:'第4区画の使者。壁の外の砂原を知り尽くした、穏やかな若者。',gear:'vb2',v:'youthM',riv:'timo',talk:{start:[],win:[],lose:[]}}},
  {label:'FINAL',ja:'決勝',ready:false,need:'4-3',mail:'v-b3',prize:50000,opp:{name:'エーリヒ・ブラント',en:'ERICH BRANDT',reg:'第5区画',pastor:'DEBORAH',mech:'リブラ（05 CENTURION）',note:'第5区画の審判官のトップ。丁寧な口調の63歳。盾とライフルで反撃する。',gear:'vb3',v:'adultM',riv:'erich',talk:{start:[],win:[],lose:[]}}}]};
 const VST=[VSC_C,VSC_B];let VSC=VSC_C;   // いま受付で見ている大会
@@ -5943,7 +5972,7 @@ function hideMis(){misEl.hidden=true;misEl.innerHTML='';bTalk&&clearInterval(bTa
  条件（書いたものがすべてそろったとき）：afterRead＝そのメールを読んだ／afterClear＝その依頼をクリアした／afterCls＝その CLASS 以上になった（'B' など）。
  一度見ると MIS[id].read が真になり、二度と出ない。そろった来訪が複数あれば、MLIST の並びで1つずつ。
  呼ぶ場所：メールの［閉じる］・暗い所・［◀ 一覧］・［MISSION を開く］（openBoard）・ガレージへ戻ったとき（garageGreet）。then＝来訪のあとに続ける操作 */
-const visitDue=d=>d.kind==='visit'&&d.once&&!!(d.afterRead||d.afterClear||d.afterCls)&&!(MIS[d.id]&&MIS[d.id].read)
+const visitDue=d=>d.kind==='visit'&&d.once&&!!(d.afterRead||d.afterClear||d.afterCls||d.afterVb!=null)&&(d.afterVb==null||!!VSS.winB[d.afterVb])&&!(MIS[d.id]&&MIS[d.id].read)
  &&(!d.afterRead||!!(MIS[d.afterRead]&&MIS[d.afterRead].read))&&(!d.afterClear||!!(MIS[d.afterClear]&&MIS[d.afterClear].clear))&&(!d.afterCls||CLASSES.indexOf(CLS)>=CLASSES.indexOf(d.afterCls));
 function visitCheck(then){if(TUT!=='done')return false;const d=MLIST.find(visitDue);if(!d)return false;if(!MIS[d.id])MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};saveGame();
  nonaSay([['……ハンガーの入口に、来客です。お通ししますね。']],{hold:true});NB.then=()=>{VS.cb=then;visitPlay(d.id)};return true}
@@ -6971,7 +7000,7 @@ function dbgApply(){const now=Date.now();
   const nm=m||{got:true,read:false,clear:false,n:0,t:now};nm.got=true;nm.clear=v===2;if(v===2){nm.read=true;nm.n=Math.max(1,nm.n)}else nm.n=0;MIS[d.id]=nm});
  const dv=dbgDerive();CLS=dv.cls;CH=dv.ch;
  // 来訪（once）：条件の依頼が「未着／届いた」なら、見た記録を消す（条件を満たしたら、また来訪する）。afterCls は CLASS が条件より低いとき
- MLIST.filter(d=>d.kind==='visit'&&d.once).forEach(d=>{const lo=k=>k in DW.m&&DW.m[k]<2;if((d.afterRead&&lo(d.afterRead))||(d.afterClear&&lo(d.afterClear))||(d.afterCls&&CLASSES.indexOf(CLS)<CLASSES.indexOf(d.afterCls)))delete MIS[d.id]});
+ MLIST.filter(d=>d.kind==='visit'&&d.once).forEach(d=>{const lo=k=>k in DW.m&&DW.m[k]<2;if((d.afterRead&&lo(d.afterRead))||(d.afterClear&&lo(d.afterClear))||(d.afterVb!=null&&DW.vs.sb[d.afterVb]<2)||(d.afterCls&&CLASSES.indexOf(CLS)<CLASSES.indexOf(d.afterCls)))delete MIS[d.id]});
  // 等級の通知メール：クリア済みの★の分だけ届いている状態にそろえる
  MLIST.filter(d=>d.story&&d.cls).forEach(d=>{const nid='n-cls-'+d.cls.toLowerCase();if(!MDEF[nid])return;if(DW.m[d.id]===2){if(!MIS[nid])MIS[nid]={got:true,read:true,clear:false,n:0,t:now}}else delete MIS[nid]});
  // VERSUS：受付の初回・各試合の勝利と対戦カードのメール
