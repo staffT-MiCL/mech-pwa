@@ -985,7 +985,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v219</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v220</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1063,7 +1063,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v219</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v220</span></div>
  </div>
 </div>
 
@@ -1129,7 +1129,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v219</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v220</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -1931,7 +1931,7 @@ function syncPreviewMech(){
 }
 function renderHeader(){
  if(!CRA.on)$('hCr').textContent=fmtCR(CR_SHOWN);
- const dead=partNow('core')<=0;$('mTrain').disabled=SS.over;misHeader();$('mWarn').textContent=SS.over?'積載オーバーのため出撃できません。兵装を見直してください':dead?'CORE が大破しています。修理するまで、攻撃ありの TRAINING はできません':'';applyTut();
+ const dead=partNow('core')<=0;$('mTrain').disabled=!SS.over&&!hasWeap();misHeader();$('mWarn').textContent=SS.over?'積載オーバーです。TRAINING を押すと、兵装を自動で外します':!hasWeap()?'兵装がありません。兵装を装備するまで出撃できません':dead?'CORE が大破しています。修理するまで、攻撃ありの TRAINING はできません':'';applyTut();
 }
 // 比較表の1行（better='hi'：大きいほど良い、'lo'：小さいほど良い）
 const KEN={'能力':'ABILITY','装甲':'ARMOR','ブースト容量':'BOOST CAP','積載':'LOAD','基本機動力':'BASE MOB.','機動力':'MOBILITY','重量':'WEIGHT','総重量':'TOTAL WT','種類':'TYPE','耐久':'DURABILITY','使用回数':'USES','効果時間':'DURATION','リロード':'RELOAD','威力':'POWER','射程':'RANGE','範囲':'BLAST','同時発射':'SALVO','弾数':'AMMO','衝撃':'IMPACT','弾速':'VELOCITY','誘導':'HOMING','連射':'RATE','歩行速度':'WALK','ダッシュ速度':'DASH','急加速距離':'QUICK BOOST','ロック距離':'LOCK RANGE'};
@@ -3426,12 +3426,12 @@ $('modalClose').onclick=closeModal;$('modal').addEventListener('click',e=>{if(e.
 addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});$('menuClose').onclick=()=>openMenu(false);
 menu.addEventListener('click',e=>{if(e.target===menu)openMenu(false)});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden)openMenu(false)});
-$('mTrain').onclick=()=>{if(tutBlock()||vsLock())return;if(!SS.over){openMenu(false);openTrainPrep()}};
+$('mTrain').onclick=()=>{if(tutBlock()||vsLock())return;const ng=sortieNg();openMenu(false);if(ng)nonaSay(ng.map(s=>[s]),{hold:true});else openTrainPrep()};
 $('mMission').onclick=()=>{if(tutBlock()||vsLock())return;openMenu(false);openBoard()};
 $('mExit').onclick=()=>{if(tutBlock())return;saveGame();openMenu(false);fadeTo(()=>showTitle(),'SAVING...')};
 $('mConfig').onclick=()=>{if(tutBlock())return;openMenu(false);view='config';renderGarage()};
 $('btnPaint').onclick=()=>{if(TUT!=='done')return;view='paint';renderGarage()};
-$('btnTrain').onclick=()=>{if(TUT!=='done'||vsLock())return;if(SS.over){view='overview';renderGarage()}else openTrainPrep()};
+$('btnTrain').onclick=()=>{if(TUT!=='done'||vsLock())return;const ng=sortieNg();if(ng)nonaSay(ng.map(s=>[s]),{hold:true});else openTrainPrep()};
 $('btnView').onclick=()=>{if(TUT!=='done')return;az=.35;el2=.16;camAuto=true;fitGarageCam()};
 applyColors();
 
@@ -4198,6 +4198,25 @@ function withPart(sl,id,c=cfg){const n={...c,[sl]:id};const F=['head','core','ar
  if(F.some(k=>is00(c[k])))F.forEach(k=>{if(k!==sl&&is00(n[k]))n[k]=DEFAULT_CFG[k]});
  return n}
 function setPart(sl,id){Object.assign(cfg,withPart(sl,id))}
+/* 出撃できない状態：①積載オーバー（出撃系のボタンを押すと、兵装を自動で外す。外しただけでは出撃しない）②兵装が1つもない（どのモードも出撃不可） */
+const WEAP_KEYS=['rHand','lHand','rShoulder','lShoulder'];   // 兵装（EXTRA は数えない）
+function hasWeap(){return WEAP_KEYS.some(k=>cfg[k]&&cfg[k]!=='none')}
+const slotW=k=>wOf(k==='ext'?EXT:/Shoulder$/.test(k)?SHOULDER:HAND,cfg[k]);
+// 必要最小限だけ外す：超過分をまかなえる兵装のうち最も軽い1つ。なければ最も重い1つを外して繰り返す。手持ち・肩で足りないときだけ EXTRA も
+function autoShed(){const names=[];
+ for(const keys of [WEAP_KEYS,[...WEAP_KEYS,'ext']]){
+  while(statsFor(cfg).over){const st=statsFor(cfg),need=st.weap-st.load,c=keys.filter(k=>cfg[k]&&cfg[k]!=='none'&&slotW(k)>0);if(!c.length)break;
+   const fit=c.filter(k=>slotW(k)>=need).sort((a,b)=>slotW(a)-slotW(b))[0],pick=fit||c.sort((a,b)=>slotW(b)-slotW(a))[0];
+   names.push(ENM(pick,cfg[pick]).trim());cfg[pick]='none'}
+  if(!statsFor(cfg).over)break}
+ if(names.length){if(typeof cand!=='undefined'&&view==='slot'&&selSlot)cand=cfg[selSlot];assemble();saveGame();calcStats()}
+ return names}
+// 出撃系のボタンを押したとき。出撃できない状態なら（必要なら兵装を外して）案内の文を返す。出撃してよければ null
+function sortieNg(who='nona'){const ov=SS.over,nw=!hasWeap();if(!ov&&!nw)return null;const b=who==='bell';
+ if(!ov)return [b?'兵装が1つもございません。ガレージで整備してから、お越しください。':'兵装がありません。ガレージで兵装を装備してください。'];
+ const names=autoShed(),nm='<em>'+names.join('と')+'</em>',none=!hasWeap();
+ return [b?`機体の積載が上限を超えておりましたので、${nm}を外させていただきました。`:`積載オーバーのため、${nm}を外しました。`,
+  none?(b?'兵装が1つもございません。ガレージで整備してから、お越しください。':'兵装が1つも残っていません。軽い兵装か、積載の大きいアームに替えてから出撃しましょう。'):(b?'もう一度、お声がけください。':'出撃するには、もう一度ボタンを押してください。')]}
 function closeConfirm(){$('sconf').hidden=true}
 $('sconf').addEventListener('click',e=>{if(e.target.id==='sconf')closeConfirm()});
 function buy(id,equip){
@@ -4551,14 +4570,14 @@ function renderVs(){VS3.cls(VSC.cls);$('vMoney').textContent=fmtCR(CREDIT);$('vT
    <div class="vnote">${i>=R.length?'すべての試合に勝利しました。':'勝ち進むと、次の試合が表に加わります。勝った試合は［再戦］できます（賞金は初回のみ）。'}</div>`;
   if(vsOkB())html=`<div class="vtt">${VST.map(T=>`<button data-vt="${T.cls}" class="${T===VSC?'on':''}">${T.name}</button>`).join('')}</div>`+html}
  $('vBody').innerHTML=html;$('vBody').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>vsRematch(+b.dataset.rm));$('vBody').querySelectorAll('[data-vt]').forEach(b=>b.onclick=()=>{if(vLeaving)return;VSC=VST.find(T=>T.cls===b.dataset.vt);renderVs();vtSay(vsStatus(true))});$('vBody').scrollTop=0;$('vGo').disabled=!(i<R.length&&vsState(i)==='open'&&R[i].ready!==false);requestAnimationFrame(()=>scrollHints($('vsR'),'#vBody'))}
-function vsRematch(k){if(vLeaving||!vsW()[k]||VSC.rounds[k].ready===false)return;const r=VSC.rounds[k];   // 勝った試合の再戦：確認のあと、セリフなし・記録と賞金は変えない
+function vsRematch(k){if(vLeaving||!vsW()[k]||VSC.rounds[k].ready===false)return;{const ng=sortieNg('bell');if(ng){vtSay(ng.map(s=>['b',s]));return}}const r=VSC.rounds[k];   // 勝った試合の再戦：確認のあと、セリフなし・記録と賞金は変えない
  $('sconfBox').innerHTML=`<div class="shd"><span class="code">REMATCH</span><span class="ttl">再戦しますか？</span></div><div class="rule"></div>
   <div class="tpn on">${r.ja}（${r.opp.name}）</div>
   <div class="acts"><button class="btn-main cut" id="cfEq">再戦する</button><button class="btn-sub" id="cfNo" style="width:90px">やめる</button></div>`;
  $('cfNo').onclick=closeConfirm;
  $('cfEq').onclick=()=>{closeConfirm();if(vLeaving)return;vLeaving=true;$('vtChoice').innerHTML='';fadeTo(()=>{closeVersus(true);setMode('play',false,{def:vsDef(k,true)})},'VERSUS')};
  $('sconf').hidden=false;$('cfNo').focus()}
-$('vGo').onclick=()=>{const i=vsCur();if(vLeaving||i>=VSC.rounds.length||vsState(i)!=='open'||VSC.rounds[i].ready===false)return;const r=VSC.rounds[i];vLeaving=true;$('vtChoice').innerHTML='';
+$('vGo').onclick=()=>{const i=vsCur();if(vLeaving||i>=VSC.rounds.length||vsState(i)!=='open'||VSC.rounds[i].ready===false)return;const ng=sortieNg('bell');if(ng){vtSay(ng.map(s=>['b',s]));return}const r=VSC.rounds[i];vLeaving=true;$('vtChoice').innerHTML='';
  vtSay([['b',r.ja+'、'+r.opp.name+'様との試合ですね。機体の整備は完了しています。','point'],['b','会場へご案内します。ご武運を、○○様。','bow']],()=>{setTimeout(()=>fadeTo(()=>{closeVersus(true);setMode('play',false,{def:vsDef(i)})},'VERSUS'),600)})};
 function openVersus(res=null){openMenu(false);closeModal();mailClose();nbClose();$('versus').hidden=false;VS3.start();SND.bgm('arena');vTab='card';vLeaving=false;VSC=vsOkB()?VSC_B:VSC_C;   // CLASS B になったら B 大会が既定（対戦表で C 大会に切り替えられる）
  VS3.mood('normal');vtChar(null);renderVs();
@@ -6493,13 +6512,13 @@ function briefMap(d){if(d.field==='chase')return briefMapChase(d);if(d.field==='
  s.push(`<path d="M0 -4l3 6h-6z" fill="#8cf06e"/><text x="0" y="8" fill="#8cf06e" font-size="3.6" text-anchor="middle" font-family="Chakra Petch,monospace" letter-spacing=".4">START</text>`);
  return `<svg viewBox="-64 -64 128 128" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
 const hasRanged=()=>['rHand','lHand','rShoulder','lShoulder'].some(k=>cfg[k]&&cfg[k]!=='none'&&stOf(k).kind==='射撃');
-function renderBrief(id){const d=MDEF[id];misSel=id;
- const dead=partNow('core')<=0,noRng=!!d.chase&&!hasRanged(),blocked=SS.over||dead||!d.ready||noRng,noMail=d.kind==='mail'&&MIS[d.id]&&!MIS[d.id].read;
+function renderBrief(id,note){const d=MDEF[id];misSel=id;
+ const dead=partNow('core')<=0,noRng=!!d.chase&&!hasRanged(),noW=!hasWeap(),blocked=dead||!d.ready||noRng||noW,noMail=d.kind==='mail'&&MIS[d.id]&&!MIS[d.id].read;
  misEl.innerHTML=misHead('BRIEFING',d.title,`CH.${d.ch} ／ ${d.from}`,'')+`<div class="mbr">
   <div class="bmap"><span class="lb">FIELD ／ ${d.fieldJa}</span>${d.ready?briefMap(d):'<div class="bmp">地形データ 準備中</div>'}</div>
   <div class="bobj mc14"><span class="h">OBJECTIVE</span><span class="o">${d.obj}</span>
    <div class="kvg"><span>失敗条件</span><span class="ng">${d.fail}</span><span>地形</span><span>${d.fieldJa}${d.wx?'（'+WXJA[d.wx]+'）':''}</span><span>予想される敵</span><span>${d.enemyJa}</span><span>報酬</span><span class="cr">${fmtCR(d.reward)} CR</span></div>
-   ${blocked?`<div class="warn-msg">${!d.ready?'この依頼の出撃は準備中です（地形を作成中）。':noRng?'この依頼は、逃げる敵を撃ちながら追います。遠距離で撃てる兵装（ライフル・マシンガン・ミサイルなど）を1つ以上装備してください。近接武器とシールドだけでは出撃できません。':SS.over?'積載オーバーのため出撃できません。':'CORE が大破しています。SHOP の REPAIR で修理してください。'}</div>`:''}
+   ${blocked||SS.over?`<div class="warn-msg">${!d.ready?'この依頼の出撃は準備中です（地形を作成中）。':noW?'兵装がありません。ガレージで兵装を装備するまで出撃できません。':noRng?'この依頼は、逃げる敵を撃ちながら追います。遠距離で撃てる兵装（ライフル・マシンガン・ミサイルなど）を1つ以上装備してください。近接武器とシールドだけでは出撃できません。':SS.over&&!dead?'積載オーバーです。SORTIE を押すと、兵装を自動で外します（外しただけでは出撃しません）。':'CORE が大破しています。SHOP の REPAIR で修理してください。'}</div>`:''}
    <span class="nt">損傷は持ち帰ります（修理は SHOP）。撃破でも CR が入ります。</span></div>
   <div class="btalk" id="bTalk"><span class="nm">N-07 ノーナ</span><div class="tx" id="bTx"></div><span class="nx" id="bNx" hidden>▼</span></div>
   <div class="bact"><button class="btn-main" id="bGo" ${blocked?'disabled':''}>SORTIE ▶ 出撃</button><div class="row"><button class="btn-sub" id="bChk">機体を確認</button><button class="btn-sub" id="bNo">やめる</button></div></div></div>`;
@@ -6512,12 +6531,12 @@ function renderBrief(id){const d=MDEF[id];misSel=id;
    units.forEach(u=>{if(fit(u))u2.push(u);else{(u.match(/[^、]+、?/g)||[u]).forEach(w=>{if(fit(w))u2.push(w);else{let c='';for(const ch of w){if(!fit(c+ch)){u2.push(c);c=''}c+=ch}if(c)u2.push(c)}})}});
    let cur='';u2.forEach(u=>{if(!cur||fit(cur+u))cur+=u;else{out.push(cur);cur=u}});if(cur)out.push(cur)});
   tx.textContent='';tx.style.visibility='';return out};
- bTalk={q:pg(d.brief.map(nameIn)),iv:null};
+ bTalk={q:pg(note?note:d.brief.map(nameIn)),iv:null};
  const next=()=>{clearInterval(bTalk.iv);if(!bTalk.q.length)return;const t=bTalk.q.shift();let n=0;$('bNx').hidden=true;
   bTalk.done=()=>{clearInterval(bTalk.iv);bTalk.iv=null;tx.textContent=t;$('bNx').hidden=!bTalk.q.length};
   bTalk.iv=setInterval(()=>{tx.textContent=t.slice(0,++n);SND.blip('nona',n);if(n>=t.length)bTalk.done()},TXT_SPD)};
  $('bTalk').onclick=()=>{if(!bTalk)return;if(bTalk.iv)bTalk.done();else next()};next();
- $('bGo').onclick=()=>{if(blocked)return;if(noMail){bTalk.q=pg(['まだ、この依頼のメールを読んでいません。ヘッダーの MAIL を開いて、内容を確認してください。']);next();return}saveGame();fadeTo(()=>{hideMis();setMode('play',false,{def:d})},'MISSION '+d.id)};
+ $('bGo').onclick=()=>{if(blocked)return;if(SS.over){renderBrief(id,sortieNg().map(s=>s.replace(/<[^>]*>/g,'')));return}if(noMail){bTalk.q=pg(['まだ、この依頼のメールを読んでいません。ヘッダーの MAIL を開いて、内容を確認してください。']);next();return}saveGame();fadeTo(()=>{hideMis();setMode('play',false,{def:d})},'MISSION '+d.id)};
  $('bChk').onclick=()=>fadeTo(()=>{hideMis();chkSet(id);garageGreet('check')},'GARAGE');
  $('bNo').onclick=()=>renderBoard(id);
 }
@@ -7480,7 +7499,7 @@ function garageGreet(kind,info={}){
    if(hurt.length)L.push([hurt.map(k=>PARTJ[k]).join('と')+'の装甲が大きく減っています。SHOP での修理をおすすめします。'])}
  }else if(kind==='board'||kind==='check')L=kind==='check'?[[CHK?'機体の確認ですね。準備ができたら、右上の <em>BRIEFING</em> から戻れます。':'機体の確認ですね。準備ができたら、MENU の <em>MISSION</em> から出撃できます。']]:[];
  else{const dmg=PART_KEYS.some(k=>partNow(k)<partMax(k));L=[[dmg?'おかえりなさい、'+N+'。前回の損傷が残っています。修理は SHOP でどうぞ。':'おかえりなさい、'+N+'。本機に異常はありません。']]}
- if(SS.over)L.push(['積載が上限を超えています。このままでは出撃できません。']);
+ if(SS.over)L.push(['積載が上限を超えています。このままでは出撃できません。出撃のボタンを押すと、兵装を自動で外します。']);else if(!hasWeap())L.push(['兵装が1つも付いていません。このままでは出撃できません。']);
  const nm=misDeliver(kind),nmail=nm.filter(d=>d.kind==='mail'),nvis=nm.find(d=>d.kind==='visit');
  if(nmail.length===1)L.push(['……通信です。'+nmail[0].from+'から、メールが届いています。ヘッダーの <em>MAIL</em> からお読みください。']);
  else if(nmail.length>1){const kd=d=>d.vs!=null?'対戦カードの知らせです。':d.notice?'入荷のお知らせのようです。':'依頼のメールです。',sh=nmail.slice(0,3);  // 2通以上：1通ずつ別の文で伝える
@@ -7498,8 +7517,8 @@ function garageGreet(kind,info={}){
 const TRAIN_TARGETS=[{id:'std',name:'STANDARD',ja:'ドローン＋砲台',ready:true},{id:'heavy',name:'HEAVY',ja:'重装の標的機',ready:false},{id:'gear',name:'GEAR',ja:'ギアの標的機（3機）',ready:true}];
 const TRAIN_FIELDS=[{id:'range',name:'RANGE',ja:'演習場',ready:true},{id:'ruins',name:'RUINS',ja:'廃墟',ready:false},{id:'city',name:'CITY',ja:'市街地',ready:false}];
 function openTrainPrep(){
- if(TTUT<TT_N&&!SS.over){saveGame();fadeTo(()=>setMode('play',true,null,true),'TRAINING');return}
- if(SS.over)return;
+ if(TTUT<TT_N&&!SS.over&&hasWeap()){saveGame();fadeTo(()=>setMode('play',true,null,true),'TRAINING');return}
+ if(SS.over||!hasWeap())return;
  if(!TRAIN_TARGETS.some(o=>o.ready&&o.id===TSEL.target))TSEL.target='std';if(!TRAIN_FIELDS.some(o=>o.ready&&o.id===TSEL.field))TSEL.field='range';
  const draw=()=>{const dead=partNow('core')<=0,fire=FIRE&&!dead;
   const row=(k,j,list,cur,attr)=>`<div class="tp"><div class="tpk">${k}<small>${j}</small></div><div class="seg">${list.map(o=>`<button data-${attr}="${o.id}" aria-pressed="${o.id===cur}" ${o.ready?'':'disabled'}>${o.name}<small>${o.ready?o.ja:'準備中'}</small></button>`).join('')}</div></div>`;
