@@ -541,9 +541,9 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .sempty{padding:14px 10px;border:1px dashed var(--line);color:var(--faint);font-size:11px;font-family:var(--disp)}
 .scmp{flex:1;min-height:0;overflow:auto;padding:6px 10px;background:var(--panel2);border:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
 .scmp .sec{margin:0}.scmp .cmp{gap:2px;grid-template-columns:minmax(0,1fr)!important;display:grid}
-.sbuy{display:flex;align-items:center;gap:8px;height:34px;flex:0 0 auto}
+.sbuy{display:flex;align-items:center;gap:6px 8px;min-height:34px;flex:0 0 auto;flex-wrap:wrap}
 .sbuy small{font-size:10px;color:var(--dim)}.sbuy .pr{font-size:18px;font-weight:700;color:#eef2ef;font-variant-numeric:tabular-nums}.sbuy .pr i{font-style:normal;font-size:10px;color:var(--khaki);margin-left:3px}
-.sbuy .btn-main{flex:0 0 100px;height:34px}
+.sbuy .btn-main{flex:0 0 auto;height:34px;padding:0 12px;letter-spacing:1px;white-space:nowrap}.sbuy .btn-sub{flex:0 0 auto}.sbuy .pr{white-space:nowrap}.sbuy .grow{min-width:0}
 .sbuy .lack{flex:0 1 auto;min-width:0;height:34px;padding:0 10px;display:flex;align-items:center;justify-content:center;border:1px solid #5a2014;color:#ff6a4c;font-size:11px;letter-spacing:0;white-space:nowrap;overflow:hidden}
 #sconf{position:fixed;inset:0;z-index:16;background:rgba(3,5,4,.72);display:flex;align-items:center;justify-content:center;padding:12px}
 #sconf .box{width:min(460px,100%);padding:16px 18px;background:var(--panel);border:1px solid var(--fire);display:flex;flex-direction:column;gap:10px;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%)}
@@ -961,7 +961,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v209</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v210</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1039,7 +1039,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v209</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v210</span></div>
  </div>
 </div>
 
@@ -1105,7 +1105,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v209</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v210</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
