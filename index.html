@@ -217,6 +217,13 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 .cells i.gu{outline:1px dashed var(--accent);outline-offset:-1px}.cells i.gd{opacity:.35}
 .gf{font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:var(--faint)}
 .gs .h,.gs .bar{display:none}
+/* 系列特性（積載の行の右半分。欄の高さは変えない） */
+#gstats .gtr{cursor:pointer;min-width:0;overflow:hidden}
+#gstats .gtr .gv{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}#gstats .gtr .gv small{font-size:9px;letter-spacing:.06em;margin-left:5px}#gstats .gtr .gv.dim{color:#7f8c86;font-weight:500}
+#gstats .gtr .gl{min-width:0;flex:none;margin-right:2px}
+#gstats .gtd{margin-top:-2px;font-family:var(--body);font-size:10px;line-height:9px;height:9px;color:#9fe6ee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#gstats .gtr.more .gtd::after{content:" ▼";color:var(--fire)}
+#gstats .gtp{position:absolute;left:8px;right:8px;bottom:calc(100% + 6px);z-index:6;padding:8px 10px;font-family:var(--body);font-size:12.5px;line-height:1.6;color:#eef2ef;background:#0b100e;border:1px solid var(--fire);box-shadow:0 6px 18px rgba(0,0,0,.6)}
 #gstats .gf{display:none}#gstats .gv{font-size:15px}#gstats .gh{gap:6px}#gstats .cells{height:7px}
 .garm{grid-column:1/-1}.garm .gh{margin-bottom:1px}
 .aC{grid-column:1/-1;height:7px;margin-top:2px}
@@ -978,7 +985,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v218</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v219</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1056,7 +1063,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v218</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v219</span></div>
  </div>
 </div>
 
@@ -1122,7 +1129,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v218</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v219</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -1961,7 +1968,8 @@ function renderGStats(){
     return `<div class="aP${nw<=0?' dead':r<=.5?' hurt':''}"><span class="aL">${PART_LABEL[k]}</span><span class="aV">${nw}<small>/${mx}</small></span><div class="cells aC" style="grid-template-columns:repeat(20,minmax(0,1fr))">${Array.from({length:20},(_,i)=>`<i class="${i<Math.round(r*20)?(nw<=0?'':r<=.5?'c-warn':'c-core'):''}"></i>`).join('')}</div></div>`}).join('')}</div></div>`+
   row('機動力',Math.round(SS.mob),'',dl(SS.mob,P2?.mob),cells(100,[[SS.mob,'c-mob'],[SS.pen,'c-pen']],P2?.mob),`レッグ +${SS.legMob} − 重量 ${Math.round(SS.pen)}（赤枠＝重さで失った分）`)+
   row('ブースト容量',SS.boost,'',dl(SS.boost,P2?.boost),cells(130,[[SS.boost,'c-mob']],P2?.boost),'ダッシュ・跳躍・急加速で使う量')+
-  row('積載',S2.weap,'/'+S2.load,P2&&(P2.weap!==SS.weap||P2.load!==SS.load)?`<span class="dchip ${P2.over?'dn':'up'}">${P2.weap-SS.weap>=0?'+':''}${P2.weap-SS.weap}</span>`:'',cells(S2.load,[[Math.min(S2.weap,S2.load),lc]]),lr>1?'積載オーバー：出撃できません':`兵装の重さ ${S2.weap} ／ 上限 ${S2.load}（${Math.round(lr*100)}%）`);
+  row('積載',S2.weap,'/'+S2.load,P2&&(P2.weap!==SS.weap||P2.load!==SS.load)?`<span class="dchip ${P2.over?'dn':'up'}">${P2.weap-SS.weap>=0?'+':''}${P2.weap-SS.weap}</span>`:'',cells(S2.load,[[Math.min(S2.weap,S2.load),lc]]),lr>1?'積載オーバー：出撃できません':`兵装の重さ ${S2.weap} ／ 上限 ${S2.load}（${Math.round(lr*100)}%）`)+traitCell(P2?withPart(selSlot,cand):cfg);
+ gTraitBind()
 }
 function renderSide(){
  const el=$('side');
@@ -3278,6 +3286,21 @@ const FTRAIT={
 const serOf=id=>{const m=/^(HD|CR|AR|LG)-(\d\d)$/.exec(id||'');return m&&FTRAIT[m[2]]?m[2]:''};
 // 装備中の系列特性（4部位とも同じ系列のときだけ）。なければ null
 function traitSet(c){const a=['head','core','arms','legs'].map(k=>serOf(c[k]));return a[0]&&a.every(x=>x===a[0])?FTRAIT[a[0]]:null}
+// 左下のステータス欄の系列特性（積載の行の右半分）：名称＋性能を1行で。収まらない分は「…」で、タップで全文
+const TRSHORT={'04':'ダッシュ・急加速 +20% ／ 消費 −25%','05':'被ダメ −20% ／ シールド +30%','06':'与ダメ +20% ／ 被ダメ +30% ／ 二段跳','07':'TUNE ×1.25 ／ 消費 −20% ／ 3体ロック','00':'COUNTER PROTOCOL が使える'};
+function traitState(c){const cnt={};['head','core','arms','legs'].forEach(k=>{const s=serOf(c[k]);if(s)cnt[s]=(cnt[s]||0)+1});const ks=Object.keys(cnt).sort((x,y)=>cnt[y]-cnt[x]||x.localeCompare(y));
+ if(!ks.length)return {k:'none'};const n=ks[0];return cnt[n]===4?{k:'on',n}:{k:'part',n,have:cnt[n]}}
+function traitCell(c){const s=traitState(c);let h,d,full;
+ if(s.k==='none'){h=`<span class="gv dim">無し</span>`;d='';full='03 までの機体には系列特性がありません。04 以降の系列のパーツを、頭・胴・腕・脚の4部位そろえると解放されます。'}
+ else{const T=FTRAIT[s.n],on=s.k==='on',nm=`${T.name}<small>${T.en}</small>`;
+  h=`<span class="gv${on?'':' dim'}">${nm}</span>`;d=on?TRSHORT[s.n]:`未解放（あと ${4-s.have} 部位）`;
+  full=`系列特性「${T.name}」${T.en}：${T.desc}。${on?'（解放中）':`（頭・胴・腕・脚の4部位そろいで解放。あと ${4-s.have} 部位）`}`}
+ return `<div class="gs gtr" role="button" tabindex="0" data-full="${full.replace(/"/g,'&quot;')}"><div class="gh"><span class="gl">系列特性</span>${h}</div><div class="gtd">${d}</div></div>`}
+function gTraitBind(){const g=$('gstats'),el=g.querySelector('.gtr');if(!el)return;
+ const open=()=>{const was=g.querySelector('.gtp');if(was){was.remove();return}const p=document.createElement('div');p.className='gtp';p.textContent=el.dataset.full;g.appendChild(p)};
+ el.onclick=e=>{e.stopPropagation();open()};el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}};
+ requestAnimationFrame(()=>{const gtd=el.querySelector('.gtd'),gv=el.querySelector('.gv');if((gtd&&gtd.scrollWidth>gtd.clientWidth)||(gv&&gv.scrollWidth>gv.clientWidth))el.classList.add('more')})}
+document.addEventListener('click',e=>{const p=$('gstats')&&$('gstats').querySelector('.gtp');if(p&&!e.target.closest('.gtr'))p.remove()});
 const traitLine=id=>{const n=serOf(id);if(!n)return '';const t=FTRAIT[n];return `系列特性「${t.name}」${t.en}：${t.desc}（頭・胴・腕・脚の4部位そろいで解放）`};
 
 /* ===== ギアの呼び出し（spawnGear）=====
