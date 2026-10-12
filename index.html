@@ -932,11 +932,25 @@ body.eqm #visit{display:none}
 .bmp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:14px;color:#3f6f74;letter-spacing:.2em}
 /* メールボックス */
 #mailBox .mlx{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:4px}
-.mrw{display:grid;grid-template-columns:12px auto minmax(0,9em) minmax(0,1fr) auto auto;gap:8px;align-items:center;height:36px;padding:0 10px;background:rgba(14,30,32,.9);border:1px solid #2d6068;color:#eef2ef;text-align:left;font-family:var(--disp);font-size:13px}
-.mrw i{font-style:normal;color:var(--fire);font-size:10px}.mrw .dt{font-family:var(--mech);font-size:10px;letter-spacing:.06em;color:#7fb0b4;white-space:nowrap}.mrw.rd .dt{color:#58767a}.mrw .fr{color:#9fe6ee;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mrw .sj{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mrw em{font-style:normal;font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:var(--accent)}
-.mrw em{grid-column:5;justify-self:end}.mrw .rs{grid-column:6;justify-self:end;font-family:var(--body);font-size:9px;font-weight:400;padding:0 5px;line-height:15px;border:1px solid currentColor}.mrw .rs.u{color:var(--fire)}.mrw .rs.r{color:#6a7a76}
-.mrw.rd{background:rgba(10,16,16,.85);border-color:#1f3a3e;color:#8a9a96}.mrw.rd .sj{font-weight:400}.mrw.rd .fr{color:#5f8a8e}
+#mailBox .mbd{flex:1;min-height:0;display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px}
+#mailBox .msd{display:flex;flex-direction:column;gap:3px;border-right:1px solid #1f3a3e;padding-right:7px;min-height:0;overflow:auto;scrollbar-width:none}#mailBox .msd::-webkit-scrollbar{display:none}
+#mailBox .msd .gp{font-family:var(--mech);font-size:9px;letter-spacing:.2em;color:#4a6a6e;margin:5px 0 1px 6px;white-space:nowrap}
+#mailBox .msd button{flex:none;display:flex;align-items:center;justify-content:space-between;gap:4px;height:32px;padding:0 6px;font-family:var(--disp);font-size:12px;color:#9fe6ee;background:none;border:0;border-left:2px solid transparent;text-align:left;white-space:nowrap;min-width:0}
+#mailBox .msd button span{overflow:hidden;text-overflow:ellipsis}#mailBox .msd button small{font-family:var(--mech);font-size:10px;color:#5f9aa0;flex:none}
+#mailBox .msd button.on{background:rgba(111,211,224,.16);border-left-color:var(--cyan);color:#eef2ef}#mailBox .msd button.on small{color:var(--cyan)}
+#mailBox .msd button.nw{font-weight:700;color:#eef2ef}#mailBox .msd button.nw small{background:var(--fire);color:#1a1006;padding:0 5px;font-weight:700}
+#mailBox .mmn{display:flex;flex-direction:column;gap:5px;min-width:0;min-height:0}
+#mailBox .mtl{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--disp);font-size:13px;font-weight:700;color:#eef2ef;padding-bottom:4px;border-bottom:1px solid #1f3a3e;white-space:nowrap}#mailBox .mtl small{font-family:var(--mech);font-size:10px;font-weight:400;color:#5f9aa0}
+#mailBox .mem{font-family:var(--body);font-size:12px;line-height:1.6;color:#5f8a8e;padding:10px 2px}
+.mrw{flex:none;display:grid;grid-template-columns:12px minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;column-gap:7px;row-gap:1px;height:44px;padding:0 9px;background:rgba(14,30,32,.9);border:1px solid #2d6068;color:#eef2ef;text-align:left;font-family:var(--disp);font-size:13px;min-width:0}
+.mrw i{grid-row:1/3;font-style:normal;color:var(--fire);font-size:10px}
+.mrw .sj{grid-column:2;grid-row:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrw em{grid-column:3;grid-row:1;font-style:normal;font-family:var(--mech);font-size:9px;letter-spacing:.12em;color:var(--accent);white-space:nowrap}
+.mrw .dt{grid-column:2/4;grid-row:2;font-family:var(--mech);font-size:10px;letter-spacing:.04em;color:#7fb0b4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mailBox .mh .mr{display:flex;align-items:center;gap:8px;white-space:nowrap}#mailBox .mcx{height:22px;width:26px;padding:0;font-size:12px;line-height:1;color:#9fe6ee;background:rgba(111,211,224,.1);border:1px solid #2d6068}
+#mailBox .mk .fs{display:none}@media (max-height:420px){#mailBox .mk .ff{display:none}#mailBox .mk .fs{display:inline}#mailBox .mk{gap:1px 8px;padding-bottom:4px}}
+#mailBox .go .lg{white-space:nowrap}@media (max-width:700px){#mailBox .acts .tx{display:none}#mailBox .acts{gap:5px}#mailBox .acts button{padding:0 7px;font-size:12px}}@media (max-width:700px){#mailBox .go .lg{display:none}}
+#mailBox .acts{flex-wrap:nowrap}#mailBox .acts button{flex:none;white-space:nowrap;padding:0 10px;height:32px;font-size:12.5px}#mailBox .acts .gr{flex:1;min-width:0}#mailBox .acts .go{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}#mailBox .acts button:disabled{opacity:.3}
 /* ポーズ（出撃中・TRAINING／MISSION 共通） */
 #topC{position:absolute;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);display:flex;align-items:center;gap:8px;z-index:3}
 #topC #modeBadge{position:static;transform:none}
@@ -964,7 +978,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v217</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v218</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1042,7 +1056,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v217</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v218</span></div>
  </div>
 </div>
 
@@ -1108,7 +1122,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v217</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v218</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -3302,7 +3316,7 @@ function extraRows(slot,id){let h='';if(id&&id!=='none')h+=`<div class="c w trt"
 document.addEventListener('contextmenu',e=>{if(!e.target.closest('input,textarea'))e.preventDefault()});
 document.addEventListener('selectstart',e=>{if(!e.target.closest||!e.target.closest('input,textarea'))e.preventDefault()});
 // 続きがある欄（スクロールできる性能表）は下端をぼかす
-const SX_SEL='#mailBox .mlx,#mailBox .mb,#mis .mlist,.mdbox .ds';
+const SX_SEL='#mailBox .mlx,#mailBox .msd,#mailBox .mb,#mis .mlist,.mdbox .ds';
 function scrollHints(root,sel='.detail .cmp,.scmp'){if(!root)return;root.querySelectorAll(sel).forEach(el=>{
  let mk=el._mk;if(!mk||!mk.isConnected){mk=el._mk=document.createElement('span');mk.className='smore';mk.textContent='▼';el.after(mk)}
  const f=()=>{const more=el.scrollHeight-el.clientHeight-el.scrollTop>4;el.classList.toggle('more',more);mk.hidden=!more;
@@ -3486,7 +3500,8 @@ function loadGame(){
 }
 // MIS_X：いまの版が知らない依頼の記録（古い版・新しい版のどちらで起動しても消さずに残す）
 const MIS_X={};
-function saveGame(){try{fixDays();DAY_SAVED=true;localStorage.setItem(SAVE_KEY,JSON.stringify({day:DAY,own:[...OWN],cr:CREDIT,cfg,visits:shopVisits,dmg:DMG,tune:TUNE,pilot:PILOT,tut:TUT,fire:FIRE,tsel:TSEL,ttut:TTUT,cls:CLS,ch:CH,mis:{...MIS_X,...MIS},col:COL,shopcls:SHOPCLS,vs:VSS}))}catch(e){}}
+const crSaved=()=>{try{return DBG.cr?DBG.crBak+Math.max(0,CREDIT-CR_INF):CREDIT}catch(e){return CREDIT}};
+function saveGame(){try{fixDays();DAY_SAVED=true;localStorage.setItem(SAVE_KEY,JSON.stringify({day:DAY,own:[...OWN],cr:crSaved(),cfg,visits:shopVisits,dmg:DMG,tune:TUNE,pilot:PILOT,tut:TUT,fire:FIRE,tsel:TSEL,ttut:TTUT,cls:CLS,ch:CH,mis:{...MIS_X,...MIS},col:COL,shopcls:SHOPCLS,vs:VSS}))}catch(e){}}
 // CONFIG（画質・頂点のゆれ・視点）は本体のセーブとは別に保存（NEW GAME でも消えない）
 const CFG_KEY='mech-pwa-config';
 // 音量（BGM・SE は 0〜10）とミュート。CONFIG と同じキーに保存
@@ -3712,7 +3727,8 @@ function saveCfg(){try{localStorage.setItem(CFG_KEY,JSON.stringify({res,jit:jitO
 function loadCfg(){try{const d=JSON.parse(localStorage.getItem(CFG_KEY)||'null');if(!d)return;if([0,1,2].includes(d.res))res=d.res;if(d.jit===0||d.jit===1)jitOn.value=d.jit;if(d.cam==='top'||d.cam==='tps')setCam(d.cam);if(d.bgm>=0&&d.bgm<=10)SNDV.bgm=d.bgm;if(d.se>=0&&d.se<=10)SNDV.se=d.se;SNDV.mute=!!d.mute;DMGNUM=d.dnum===true;PDMGNUM=d.pdnum!==false}catch(e){}}
 
 /* ===== SHOP ===== */
-const fmtCR=n=>Math.round(n).toLocaleString('ja-JP');
+const CR_INF=1e9;const crInf=()=>{try{return !!DBG.cr}catch(e){return false}};   // デバッグ：クレジット無限（DBG は後で宣言されるので try）
+const fmtCR=n=>crInf()&&n>=CR_INF/2?'∞':Math.round(n).toLocaleString('ja-JP');
 // 装備品がどの部位に付くか（手・肩は右を基準に比べる）
 function slotOfItem(id){return HEADS[id]?'head':CORES[id]?'core':ARMS[id]?'arms':LEGS[id]?'legs':HAND[id]?'rHand':SHOULDER[id]?'rShoulder':'ext'}
 const FRAME_CAT={head:'HEAD',core:'CORE',arms:'ARMS',legs:'LEGS'};
@@ -4391,16 +4407,16 @@ const VSEV=[
  {id:'b-semi-timo',ok:()=>VSC===VSC_B&&vsCur()===1&&vsState(1)==='open',lines:[   // B 準決勝が開いて最初の受付：ティモ（試合前）。主人公は「あんた」。セリフは仮
   ['timo','……あんたが、第7区画の代表か。'],
   ['timo','ティモ。荷物を運ぶのが、仕事だ。戦うのは、本職じゃない。'],
-  ['timo','負けられない理由が、ある。それだけ。……手加減は、しない。'],
+  ['timo','負けられない理由がある。それだけだ。……手加減はしない。'],
   ['_',700],
   ['b','……ティモ・アルケン様。<em>第4区画のエースパイロットに準ずる方</em>で、「砂原の使者」と呼ばれています。'],
   ['b','第4区画を治める統治AIは、<ruby class="mc">NOAH<rt>ノア</rt></ruby>。壁に囲まれた地域から、大会に出られるのは異例です。'],
   ['n','……口数は少ないのに、目だけは真っすぐです。悪い方では、なさそうです。ですが、エース級に準ずる方であることに変わりはありません。○○、気をつけましょう。']]},
  {id:'b-semi-timo-after',ok:()=>!!VSS.winB[1],lines:[   // 準決勝に勝った直後：ティモ（試合後）。首の布＝亡き父の形見。セリフは仮
-  ['timo','……負けた。'],
-  ['timo','強いな、あんた。……風が、変わったのかと思った。'],
-  ['timo','妹に、見せたかったな。あんたの戦い方。……いや、なんでもない。'],
-  ['timo','頼みがある。壁の外の、調査だ。おれ一人じゃ、足りない。……詳しいことは、あとで連絡する。'],
+  ['timo','……おれの負けだ。'],
+  ['timo','強いな、あんたは。……風が変わったのかと思った。'],
+  ['timo','妹に見せたかった。あんたの戦い方をだ。……いや、なんでもない。'],
+  ['timo','頼みがある。壁の外の調査だ。おれ一人では足りない。……詳しいことは、あとで連絡する。'],
   ['timo','……ありがとう。いい試合だった。'],
   ['b','……ティモ・アルケン様の敗退を確認しました。'],
   ['n','……あの方、話しながら首の布を握っていました。大切なものなのでしょうか。'],
@@ -5704,7 +5720,7 @@ const MLIST=[
   mailNona:'B 大会、1回戦の知らせです。お相手は第2区画の元民兵、ベルナルド・オズさん。盾を使う重装機のようです。'},
  {id:'v-b2',ch:0,kind:'mail',notice:true,ready:false,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
   subj:'対戦カード決定 ── 準決勝（B 大会）',body:'第7区画 代表 ○○ 殿<br>CLASS B 大会、<b>準決勝</b>の対戦カードが決まりました。<br>お相手：第4区画 代表 <b>ティモ・アルケン</b>（機体名：キャリア）<br>会場：闘技場 中央アリーナ<br>勝者は決勝に進出します。試合前に、受付で参加の最終確認を行ってください。<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
-  mailNona:'B 大会、準決勝の知らせです。お相手は第4区画のティモ・アルケンさん。壁の外の砂原から来た選手で、機体名は「キャリア」。受付で、本人に会えるかもしれません。'},
+  mailNona:'B 大会、準決勝の知らせです。お相手は第4区画のティモ・アルケンさん。壁の外の砂原から来た選手で、機体名は「キャリア」です。'},
  {id:'v-b3',ch:0,kind:'mail',notice:true,ready:false,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
   subj:'対戦カード決定 ── 決勝（B 大会）',body:'第7区画 代表 ○○ 殿<br>CLASS B 大会、<b>決勝</b>の対戦カードが決まりました。<br>お相手：第5区画 代表 <b>エーリヒ・ブラント</b><br>会場：闘技場 中央アリーナ<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
   mailNona:'B 大会、決勝の知らせです。（文面は仮）'}];
@@ -5727,7 +5743,7 @@ const VSC_B={cls:'B',ch:4,name:'CLASS B 大会',rounds:[
  {label:'ROUND 1',ja:'1回戦',need:'4-1',mail:'v-b1',prize:25000,opp:{name:'ベルナルド・オズ',en:'BERNARD OZ',reg:'第2区画',pastor:'SOLOMON',mech:'重装の払い下げ改修機（3型級）',note:'第2区画の元民兵。大型の盾を前に構え、バズーカとミサイルで押してくる。腕のいい古参の重装乗り。',gear:'vb1',v:'adultM',
    talk:{start:['第7区画の代表か。……民兵あがりの意地、見せてやる。'],win:['……やるな。盾ごと、持っていかれたか。'],lose:['まだまだ甘いな。出直してこい。']}}},
  {label:'SEMIFINAL',ja:'準決勝',need:'4-2',mail:'v-b2',prize:35000,opp:{name:'ティモ・アルケン',en:'TIMO ARKEN',ali:'砂原の使者',reg:'第4区画',pastor:'NOAH',mech:'キャリア（MILITIA 01 カスタム）',note:'第4区画の使者。壁の外の砂原を知り尽くした、寡黙で優しい少年。旧型を手入れし尽くした機体で、ライフル・マシンガン・ミサイルを距離に応じて使い分ける万能型。',gear:'vb2',v:'youthM',riv:'timo',
-   talk:{start:['……始めよう。負けられない。'],win:['……負けた。強いな、あんた。'],lose:['……悪いな。でも、いい試合だった。']}}},
+   talk:{start:['……始めよう。負けるわけにはいかない。'],win:['……おれの負けだ。強いな、あんた。'],lose:['……悪いな。だが、いい試合だった。']}}},
  {label:'FINAL',ja:'決勝',ready:false,need:'4-3',mail:'v-b3',prize:50000,opp:{name:'エーリヒ・ブラント',en:'ERICH BRANDT',reg:'第5区画',pastor:'DEBORAH',mech:'リブラ（05 CENTURION）',note:'第5区画の審判官のトップ。丁寧な口調の63歳。盾とライフルで反撃する。',gear:'vb3',v:'adultM',riv:'erich',talk:{start:[],win:[],lose:[]}}}]};
 const VST=[VSC_C,VSC_B];let VSC=VSC_C;   // いま受付で見ている大会
 const vsW=(T=VSC)=>T===VSC_B?VSS.winB:VSS.win;
@@ -6217,17 +6233,29 @@ const gotMails=()=>(fixDays(),MLIST.filter(d=>d.kind==='mail'&&MIS[d.id]&&MIS[d.
 // メールボックス：受信一覧（新しい順。未読は●と太字、既読は暗く）→ 行を押すと本文
 function mailShow(box,html,dir){const was=!box.hidden&&!box.classList.contains('cls');clearTimeout(box._t);box.classList.remove('cls','pop');
  box.innerHTML=`<div class="mbc${was?' '+dir:''}">${html}</div>`;box.hidden=false;box.dataset.kd=/^<div class="mh"><span>KEY/.test(html)?'key':'mail';$('mailDim').classList.add('on');document.body.classList.add('mailing');if(!was){void box.offsetWidth;box.classList.add('pop')}}
-function mailList(){const box=$('mailBox'),L=gotMails(),u=unreadMail().length;
- mailShow(box,`<div class="mh"><span>MAILBOX ／ ${u?'未読 '+u+' 件':'未読なし'}</span><span>${L.length} 通</span></div>
-  <div class="mlx">${L.map(d=>{const m=MIS[d.id];return `<button class="mrw${m.read?' rd':''}" data-m="${d.id}"><i>${m.read?'':'●'}</i><span class="dt">${prDate(m.dy).replace('P.R. ','').replace(' ／ ',' ')}</span><span class="fr">${d.from}</span><span class="sj">${d.subj}</span>${m.clear?'<em>CLEARED</em>':''}<b class="rs ${m.read?'r':'u'}">${m.read?'既読':'未読'}</b></button>`}).join('')}</div>
-  <div class="acts"><button class="btn-sub" id="mailX" style="margin-left:auto;width:90px">閉じる</button></div>`,'sr');
- nbClose();box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>mailOpen(b.dataset.m));$('mailX').onclick=mailDone;requestAnimationFrame(()=>scrollHints(box,SX_SEL))}
+const MFD={req:'依頼',arena:'闘技場',admin:'管理局',shop:'ショップ',contact:'連絡'};
+const mailFd=d=>!d.notice?'req':d.shop?'shop':(d.vs!=null||/闘技場/.test(d.from))?'arena':/管理局/.test(d.from)?'admin':'contact';   // 既読メールの振り分け先
+let MV='inbox',MSNAP=[];   // 開いている一覧（inbox＝未読／フォルダの鍵）、メールを開いた時点の並び（前へ・次へはこの中を移る）
+const mailRead=()=>gotMails().filter(d=>MIS[d.id].read);
+const mailFolders=()=>Object.keys(MFD).filter(k=>mailRead().some(d=>mailFd(d)===k));
+const mailView=v=>v==='inbox'?gotMails().filter(d=>!MIS[d.id].read):mailRead().filter(d=>mailFd(d)===v);   // gotMails は新しい順（上が新しい）
+const mailDate=d=>prDate(MIS[d.id].dy).replace('P.R. ','').replace(' ／ ',' ');
+// メールボックス：左にフォルダ（受信＝未読、既読は種類別に自動で入る）、右にその一覧。行を押すと本文
+function mailList(v){if(typeof v==='string')MV=v;const box=$('mailBox'),u=unreadMail().length,fds=mailFolders();if(MV!=='inbox'&&!fds.includes(MV))MV='inbox';
+ const L=mailView(MV),nm=MV==='inbox'?'受信':MFD[MV];
+ mailShow(box,`<div class="mh"><span>MAILBOX ／ ${u?'未読 '+u+' 件':'未読なし'}</span><span class="mr">${gotMails().length} 通<button class="mcx" id="mailX" aria-label="閉じる">✕</button></span></div>
+  <div class="mbd"><nav class="msd"><button data-f="inbox" class="${MV==='inbox'?'on':''}${u?' nw':''}"><span>受信</span><small>${u}</small></button>${fds.length?'<div class="gp">FOLDERS</div>':''}${fds.map(k=>`<button data-f="${k}" class="${MV===k?'on':''}"><span>${MFD[k]}</span><small>${mailRead().filter(d=>mailFd(d)===k).length}</small></button>`).join('')}</nav>
+  <div class="mmn"><div class="mtl"><span>${nm}</span><small>${L.length} 通</small></div><div class="mlx">${L.length?L.map(d=>{const m=MIS[d.id];return `<button class="mrw" data-m="${d.id}"><i>${m.read?'':'●'}</i><span class="sj">${d.subj}</span>${m.clear?'<em>CLEARED</em>':'<em></em>'}<span class="dt">${mailDate(d)}　${d.from}</span></button>`}).join(''):`<div class="mem">${MV==='inbox'?'未読のメールはありません。読んだメールは、左のフォルダに入っています。':'このフォルダは空です。'}</div>`}</div></div></div>`,'sr');
+ nbClose();box.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>mailList(b.dataset.f));box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{MSNAP=L.map(d=>d.id);mailOpen(b.dataset.m)});$('mailX').onclick=mailDone;requestAnimationFrame(()=>scrollHints(box,SX_SEL))}
 function mailOpen(id){const d=MDEF[id];if(!d)return;
- const box=$('mailBox');mailShow(box,`<div class="mh"><span>MAIL</span><span>${d.shop?'SHOP':d.vs!=null?'VERSUS':d.notice?'NOTICE':'CH.'+d.ch+' MISSION'}${MIS[d.id].clear?' ／ CLEARED':''}</span></div>
-  <div class="mk"><span>DATE</span><span class="dtl">${prDate(MIS[d.id].dy)}　${prTime(d.id)}</span><span>FROM</span><span>${d.fromFull||d.from}</span><span>SUBJ</span><span class="sj">${d.subj}</span></div>
-  <div class="mb">${nameIn(d.body)}</div><div class="acts"><button class="btn-sub" id="mailBk" style="width:84px">◀ 一覧</button>${d.notice?'':'<button class="go" id="mailGo">MISSION を開く</button>'}<button class="btn-sub" id="mailX" style="width:80px">閉じる</button></div>`,'sl');
+ if(!MSNAP.includes(id)){MV=MIS[id].read?mailFd(d):'inbox';MSNAP=mailView(MV).map(x=>x.id);if(!MSNAP.includes(id))MSNAP=[id]}   // 一覧を通らずに開いたとき（来訪など）は、そのメールが入っている一覧の並び
+ const pos=MSNAP.indexOf(id),last=MSNAP.length-1;
+ const box=$('mailBox');mailShow(box,`<div class="mh"><span>MAIL ／ ${pos+1} / ${MSNAP.length}</span><span class="mr">${d.shop?'SHOP':d.vs!=null?'VERSUS':d.notice?'NOTICE':'CH.'+d.ch+' MISSION'}${MIS[d.id].clear?' ／ CLEARED':''}<button class="mcx" id="mailX" aria-label="閉じる">✕</button></span></div>
+  <div class="mk"><span>DATE</span><span class="dtl">${prDate(MIS[d.id].dy)}　${prTime(d.id)}</span><span>FROM</span><span><span class="ff">${d.fromFull||d.from}</span><span class="fs">${d.from}</span></span><span>SUBJ</span><span class="sj">${d.subj}</span></div>
+  <div class="mb">${nameIn(d.body)}</div><div class="acts mnv"><button class="btn-sub" id="mailBk">一覧</button><span class="gr"></span><button class="btn-sub" id="mailPv" ${pos<=0?'disabled':''}>◀<span class="tx"> 前へ</span></button><button class="btn-sub" id="mailNx" ${pos>=last?'disabled':''}><span class="tx">次へ </span>▶</button>${d.notice?'':'<button class="go" id="mailGo">MISSION<span class="lg"> を開く</span></button>'}</div>`,'sl');
  MIS[d.id].read=true;saveGame();misHeader();$('mailBtn').classList.remove('new');requestAnimationFrame(()=>scrollHints(box,SX_SEL));
- if(!d.notice)$('mailGo').onclick=()=>{mailClose();openBoard(d.id)};$('mailX').onclick=mailDone;$('mailBk').onclick=()=>visitGate(mailList);
+ if(!d.notice)$('mailGo').onclick=()=>{mailClose();openBoard(d.id)};$('mailX').onclick=mailDone;$('mailBk').onclick=()=>visitGate(()=>mailList(MV));
+ $('mailPv').onclick=()=>pos>0&&mailOpen(MSNAP[pos-1]);$('mailNx').onclick=()=>pos<last&&mailOpen(MSNAP[pos+1]);
  nonaSay([[nameIn(d.mailNona)]],{hold:true})}
 // 暗い所・［閉じる］：閉じて、来訪の条件がそろっていればそのまま来訪へ（KEY のときは来訪なし）
 function mailDone(){const kd=$('mailBox').dataset.kd;mailClose();if(kd==='mail'&&TUT==='done')visitCheck(()=>{})}
@@ -6791,7 +6819,7 @@ const VSN={start:[['盾持ちの重装機です。正面は固い。側面に回
  arms:'腕部、損傷限界。手持ちの兵装が使えません。',legs:'脚部、損傷限界。機動が落ちます。'};
 /* ライバルの試合中の通信。once＝1試合に1回／rep＝何度でも（30秒以上あけ、順に使う）。pri が大きいほど優先 */
 const VSEV_K={stand:{pri:1},firstE:{pri:1},firstP:{pri:1},cover:{pri:1,rep:1},melee:{pri:1},eHalf:{pri:2},pHalf:{pri:2},eLow:{pri:2},pLow:{pri:2},idle:{pri:1,rep:1}};
-const VRIV={timo:{stand:['……風が、止んでる。'],firstE:['まず、一つ。……悪い。'],firstP:['……当てられた。やるな。'],cover:['隠れても、風の音で分かる。','……そこ。動くな。'],melee:['近い……！'],eHalf:['……強い。でも、まだ倒れられない。'],pHalf:['……まだ、立てるか。'],eLow:['もう少し。……もう少しだけ、持て。'],pLow:['……悪いな。決める。'],idle:['……どうした。','見てるだけじゃ、砂は晴れない。'],arms:['腕が……動かないのか。'],legs:['脚が……動かないのか。']},
+const VRIV={timo:{stand:['……風が止んでいる。'],firstE:['まず、一つだ。……悪いな。'],firstP:['……当てられたか。やるな。'],cover:['隠れても、風の音で分かる。','……そこだ。動くな。'],melee:['近いな……！'],eHalf:['……強いな。だが、まだ倒れるわけにはいかない。'],pHalf:['……まだ立てるのか。'],eLow:['もう少しだ。……もう少しだけ、持ってくれ。'],pLow:['……悪いな。決めさせてもらう。'],idle:['……どうした。','見ているだけでは、砂は晴れない。'],arms:['腕が……動かないのか。'],legs:['脚が……動かないのか。']},
  serena:{stand:['様子見？　退屈させないで。'],firstE:['まずは一つ。'],firstP:['へえ……当ててくるのね。'],cover:['隠れても無駄よ。','柱の陰が好きなのね。','観客が退屈しているわ。出てきなさい。'],
  melee:['その距離で来る？　いいわ。'],eHalf:['……やるじゃない。'],pHalf:['まだ立っていられる？'],eLow:['ここからが本番よ。'],pLow:['終わりにしましょう。'],idle:['どうしたの、手が止まってる。','撃たないの？　つまらないわ。','見とれている場合じゃないわよ。'],
  arms:['腕はもう使えないわね。'],legs:['脚が止まったわ。どう逃げるの？']}};
@@ -7291,9 +7319,12 @@ function classUpSeq(d){if(d.cu)return classUpSeq2(d);const N=esc(PILOT||'操縦�
  依頼の状態（未着／届いた／クリア）を選べる。進行の矛盾は misDeps から自動でそろえる：
  「届いた・クリア」にする→条件の依頼をさかのぼってクリアに／「クリア」から外す→それを条件にしている依頼を未着に。
  等級と CHAPTER はクリア済みの★（cls）から決める。無敵＝自機（と護衛対象）がダメージを受けない。設定は別キーに保存 */
-const DBG_KEY='mech-pwa-debug',DBG={on:false,inv:false};
+const DBG_KEY='mech-pwa-debug',DBG={on:false,inv:false,cr:false,crBak:0};
 try{Object.assign(DBG,JSON.parse(localStorage.getItem(DBG_KEY)||'{}'))}catch(e){}
 const dbgSave=()=>{try{localStorage.setItem(DBG_KEY,JSON.stringify(DBG))}catch(e){}};
+// クレジット無限：ON の間は CREDIT を巨大な値にして減らない（表示は ∞）。OFF で元の額（＋ON の間に増えた分）に戻す
+function dbgCr(on){on=!!on;if(on===!!DBG.cr)return;if(on){DBG.crBak=CREDIT;CREDIT=CR_INF;DBG.cr=true}else{CREDIT=DBG.crBak+Math.max(0,CREDIT-CR_INF);DBG.cr=false;DBG.crBak=0}dbgSave();crSync()}
+if(DBG.cr){DBG.crBak=CREDIT;CREDIT=CR_INF;crSync()}   // 起動時：保存されているのは元の額なので、無限に切り替える
 function dbgMenu(){$('mDebug').hidden=!DBG.on}
 {let n=0,tm=null;const lg=document.querySelector('#title .tname');lg.style.cursor='default';
  lg.addEventListener('click',()=>{n++;clearTimeout(tm);tm=setTimeout(()=>n=0,1500);if(n<5)return;n=0;dbgTitleBox()})}
@@ -7301,7 +7332,7 @@ function dbgMenu(){$('mDebug').hidden=!DBG.on}
 function dbgTitleBox(){let w=$('dbgT');if(!w){w=document.createElement('div');w.id='dbgT';$('title').appendChild(w)}
  w.innerHTML=`<div class="bx"><b>DEBUG MODE</b><small>ON にすると MENU に DEBUG が出ます</small><div class="sg"><button data-v="1" class="${DBG.on?'on':''}">ON</button><button data-v="0" class="${DBG.on?'':'on'}">OFF</button></div></div>`;w.hidden=false;
  w.onclick=e=>{if(e.target===w)w.hidden=true};
- w.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{DBG.on=b.dataset.v==='1';if(!DBG.on)DBG.inv=false;dbgSave();dbgMenu();w.hidden=true})}
+ w.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{DBG.on=b.dataset.v==='1';if(!DBG.on){DBG.inv=false;dbgCr(false)}dbgSave();dbgMenu();w.hidden=true})}
 let DW=null;
 const dependents=id=>MLIST.filter(d=>isMis(d)&&misDeps(d).includes(id));
 const vsKey=i=>'vs'+i;
@@ -7309,7 +7340,7 @@ function dbgSet(id,v){if(id==='tut'){DW.tut=v;if(!v)dependents('tut').forEach(d=
  const d=MDEF[id];if(!d.ready)v=0;DW.m[id]=v;
  if(v>=1)misDeps(d).forEach(k=>{if(k==='tut')DW.tut=true;else if(/^vs\d$/.test(k)){if(DW.vs.st[+k[2]]!==2)dbgVsSet(+k[2],2)}else if(/^vb\d$/.test(k)){if(DW.vs.sb[+k[2]]!==2)dbgVsSet(+k[2],2,true)}else if(DW.m[k]!==2)dbgSet(k,2)});
  if(v<2)dependents(id).forEach(x=>{if(DW.m[x.id])dbgSet(x.id,0)})}
-function dbgOpen(){mailClose();nbClose();DW={tut:tutOk(),inv:DBG.inv,m:{},own:new Set(OWN),vs:{reg:VSS.reg,st:VSC_C.rounds.map((r,i)=>VSS.win[i]?2:(MIS[r.mail]&&MIS[r.mail].got)?1:0),sb:VSC_B.rounds.map((r,i)=>VSS.winB[i]?2:(MIS[r.mail]&&MIS[r.mail].got)?1:0)}};MLIST.filter(isMis).forEach(d=>{const m=MIS[d.id];DW.m[d.id]=!m||!m.got?0:m.clear?2:1});dbgRender()}
+function dbgOpen(){mailClose();nbClose();DW={tut:tutOk(),inv:DBG.inv,cr:!!DBG.cr,m:{},own:new Set(OWN),vs:{reg:VSS.reg,st:VSC_C.rounds.map((r,i)=>VSS.win[i]?2:(MIS[r.mail]&&MIS[r.mail].got)?1:0),sb:VSC_B.rounds.map((r,i)=>VSS.winB[i]?2:(MIS[r.mail]&&MIS[r.mail].got)?1:0)}};MLIST.filter(isMis).forEach(d=>{const m=MIS[d.id];DW.m[d.id]=!m||!m.got?0:m.clear?2:1});dbgRender()}
 function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).map(d=>d.ch))].sort((a,b)=>a-b);
  const seg=(id,v,dis)=>`<span class="sg">${['未着','届いた','クリア'].map((l,i)=>`<button data-id="${id}" data-v="${i}" class="${v===i?'on':''}" ${dis?'disabled':''}>${l}</button>`).join('')}</span>`;
  box.innerHTML=`<div class="dh"><span>DEBUG ／ 進行状況</span><small>選ぶと、矛盾しないように関係する依頼も自動でそろいます</small></div>
@@ -7318,13 +7349,15 @@ function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).m
   ${dbgVs()}
   ${dbgParts()}
   ${dbgChars()}
-  <div class="dc">PLAY</div><div class="dt"><span>無敵モード（自機・護衛対象がダメージを受けない）</span><span class="sg"><button data-i="0" class="${DW.inv?'':'on'}">OFF</button><button data-i="1" class="${DW.inv?'on':''}">ON</button></span></div></div>
+  <div class="dc">PLAY</div><div class="dt"><span>無敵モード（自機・護衛対象がダメージを受けない）</span><span class="sg"><button data-i="0" class="${DW.inv?'':'on'}">OFF</button><button data-i="1" class="${DW.inv?'on':''}">ON</button></span></div>
+  <div class="dt"><span>クレジット無限（表示は ∞。OFF で元の額に戻る）</span><span class="sg"><button data-c="0" class="${DW.cr?'':'on'}">OFF</button><button data-c="1" class="${DW.cr?'on':''}">ON</button></span></div></div>
   <div class="note">いまの状態：CLASS ${CLS} ／ CH.${CH}　→　適用後：CLASS ${dbgDerive().cls} ／ CH.${dbgDerive().ch}</div>
   <div class="ft"><button class="go" id="dbgGo">適用して保存</button><button class="btn-sub" id="dbgOff">デバッグを終了</button><button class="btn-sub x" id="dbgX">閉じる</button></div>`;
  box.hidden=false;
  box.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{dbgSet(b.dataset.id,+b.dataset.v);dbgRender()});
  box.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{dbgSet('tut',b.dataset.t==='1');dbgRender()});
  box.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{DW.inv=b.dataset.i==='1';dbgRender()});
+ box.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{DW.cr=b.dataset.c==='1';dbgRender()});
  box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const ids=b.dataset.p.split(','),on=!ids.every(i=>DW.own.has(i));ids.forEach(i=>on?DW.own.add(i):DW.own.delete(i));const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
  box.querySelectorAll('[data-pall]').forEach(b=>b.onclick=()=>{if(b.dataset.pall==='1')dbgAllParts().forEach(i=>DW.own.add(i));else{DW.own=new Set(START_OWN)}const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
  box.querySelectorAll('[data-vb]').forEach(b=>b.onclick=()=>{dbgVsSet(+b.dataset.vb,+b.dataset.v,true);const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
@@ -7333,7 +7366,7 @@ function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).m
  box.querySelectorAll('[data-vr]').forEach(b=>b.onclick=()=>{DW.vs.reg=b.dataset.vr==='1';const sc=box.querySelector('.dl').scrollTop;dbgRender();box.querySelector('.dl').scrollTop=sc});
  box.querySelectorAll('[data-cv]').forEach(b=>b.onclick=()=>{dbgClose();charView(+b.dataset.cv)});
  $('dbgX').onclick=dbgClose;$('dbgGo').onclick=dbgApply;
- $('dbgOff').onclick=()=>{DBG.on=false;DBG.inv=false;dbgSave();dbgMenu();dbgClose();nonaSay([['デバッグモードを終了しました。']])}}
+ $('dbgOff').onclick=()=>{DBG.on=false;DBG.inv=false;dbgCr(false);dbgSave();dbgMenu();dbgClose();nonaSay([['デバッグモードを終了しました。']])}}
 /* パーツ取得：フレーム・兵装を問わず、好きな品を所持品にする（開放前の系列・00 COUNTER・ラスト・オーダーも可）。最初から持っている品は外せない */
 /* キャラクターのイラスト確認（DEBUG の CHARACTERS）：来訪と同じ表示で1人ずつ見る。◀ ▶ で順送り。
    イラストは頭のてっぺん〜あごの長さをそろえた 600×803 の背景透過 PNG（手順は claude/キャラクターイラスト処理手順.md） */
@@ -7393,8 +7426,8 @@ function dbgApply(){const now=Date.now();
  SLOTS.forEach(sl=>{const v=cfg[sl.key];if(v!=='none'&&!OWN.has(v))cfg[sl.key]=DEFAULT_CFG[sl.key]});
  if(['head','core','arms','legs'].some(k=>is00(cfg[k]))&&!is00Set(cfg))['head','core','arms','legs'].forEach(k=>{if(is00(cfg[k]))cfg[k]=DEFAULT_CFG[k]});
  assemble();
- DBG.inv=DW.inv;dbgSave();saveGame();crSync();misHeader();renderGarage();dbgClose();
- const dl=[['（DEBUG）進行状況を変更しました。CLASS '+CLS+' ／ CH.'+CH+(DBG.inv?' ／ 無敵 ON':'')+'。']];
+ DBG.inv=DW.inv;dbgCr(DW.cr);dbgSave();saveGame();crSync();misHeader();renderGarage();dbgClose();
+ const dl=[['（DEBUG）進行状況を変更しました。CLASS '+CLS+' ／ CH.'+CH+(DBG.inv?' ／ 無敵 ON':'')+(DBG.cr?' ／ クレジット無限 ON':'')+'。']];
  if(vsNew.length){$('mailBtn').classList.add('new');SND.play('mail');dl.push(['……通信です。闘技場運営局から、メールが届いています。'+vsNew.map(r=>r.ja).join('・')+'の対戦カードの知らせです。ヘッダーの <em>MAIL</em> からお読みください。'])}
  nonaSay(dl)}
 $('mDebug').onclick=()=>{openMenu(false);dbgOpen()};
@@ -7799,7 +7832,7 @@ const hasSave=()=>{try{return !!localStorage.getItem(SAVE_KEY)}catch(e){return f
 function showTitle(){const t=$('title');view='overview';selSlot=null;wcat=null;hlOff=false;highlight(null);setPreview(null);if(mech&&builtKey!==JSON.stringify(cfg))buildMech(cfg);closeModal();t.hidden=false;SND.bgm('title');TT.on=true;titleSize();titleLoop();
  const sv=hasSave();$('tCon').disabled=!sv;$('tConSub').textContent=sv?fmtCR(CREDIT)+' CR':'NO DATA';$('tNew').focus()}
 function resetGame(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}
- OWN.clear();START_OWN.forEach(id=>OWN.add(id));CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();TTUT=0;CLS='E';CH=1;SHOPCLS=0;vsReset();DAY=0;DAY_SAVED=true;Object.keys(MIS_X).forEach(k=>delete MIS_X[k]);Object.assign(COL,PRESETS['STANDARD']);applyColors();Object.keys(MIS).forEach(k=>delete MIS[k]);mailClose();
+ OWN.clear();START_OWN.forEach(id=>OWN.add(id));DBG.cr=false;DBG.crBak=0;dbgSave();CREDIT=START_CREDIT;shopVisits=0;PILOT='';TUT='intro';FIRE=true;TSEL.target='std';TSEL.field='range';nbClose();TTUT=0;CLS='E';CH=1;SHOPCLS=0;vsReset();DAY=0;DAY_SAVED=true;Object.keys(MIS_X).forEach(k=>delete MIS_X[k]);Object.assign(COL,PRESETS['STANDARD']);applyColors();Object.keys(MIS).forEach(k=>delete MIS[k]);mailClose();
  Object.keys(DMG).forEach(k=>delete DMG[k]);Object.keys(TUNE).forEach(k=>delete TUNE[k]);Object.assign(cfg,DEFAULT_CFG);assemble();crSync()}
 function hideTitle(){TT.on=false;SND.bgm('garage');$('title').hidden=true;$('title').querySelectorAll('.tmodal').forEach(m=>m.remove());view='overview';selSlot=null;renderGarage();resize()}
 addEventListener('resize',()=>{if(TT.on)titleSize()});
