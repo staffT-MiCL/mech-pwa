@@ -20,7 +20,7 @@
 :root{
  --bg:#07090a; --panel:#0e1211; --panel2:#121816; --line:#2c3833; --fg:#d9e0dc; --dim:#7f8c86; --faint:#4a5550;
  --accent:#8cf06e; --fire:#f0a040; --cyan:#6fd3e0; --alert:#ff5a3c; --olive:#5b6b3a;
- --c-nona:#6fd3e0; --c-doll:#8cf06e; --c-client:#d8a35a; --c-bell:#f0a040; --c-jonah:#6fa0f0; --c-otto:#e0c060; --c-serena:#c8435c; --c-erich:#8a5a34; --c-viktor:#8a4aa8;  /* キャラクターごとの色（枠線・名前札）。ここだけで管理する */ --khaki:#b8a878;
+ --c-nona:#6fd3e0; --c-doll:#8cf06e; --c-client:#d8a35a; --c-bell:#f0a040; --c-jonah:#6fa0f0; --c-otto:#e0c060; --c-serena:#c8435c; --c-erich:#8a5a34; --c-viktor:#8a4aa8; --c-hans:#b0a0d8; --c-mira:#e8808a;  /* キャラクターごとの色（枠線・名前札）。ここだけで管理する */ --khaki:#b8a878;
  --disp:"DotGothic16","MS Gothic",monospace; --mech:"Chakra Petch","DotGothic16",monospace; --sten:"Stardos Stencil","Chakra Petch",monospace;
  --body:"M PLUS 1p","Hiragino Sans",sans-serif;
  color-scheme:dark;
@@ -961,7 +961,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v199</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v200</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1039,7 +1039,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v199</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v200</span></div>
  </div>
 </div>
 
@@ -1105,7 +1105,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v199</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v200</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -5050,11 +5050,17 @@ function quickBoost(x,y,mult=1,free=false){
  const dir=f.multiplyScalar(y).add(r.multiplyScalar(x));if(dir.lengthSq()<.01)dir.set(Math.sin(P.yaw),0,Math.cos(P.yaw));
  P.qb={dir:dir.normalize(),u:0,dist:SS.qb*mult};run('qb',QBA);SND.play('qboost',{g:.45});shake=Math.max(shake,.12);if(TRT)ttEvt('qb');
 }
+const JAM_LK=.5,JAM_MIN=24;   // 妨害下：ロック距離はふだんの半分（最低24m）
 let lockT2=null,lockT3=null,reveal=0;
 let pinned=null,lockCands=[];
 // ロック候補：追従視点＝照準の中心に近い順、俯瞰＝近い順。ターゲット変更で選んだ敵（pinned）は候補にいる間は優先
 /* マップ：追従＝自機中心・上が自機の向き／俯瞰＝カメラ中心・上が画面の奥、画面に映る範囲を台形で表示 */
 const MAPC=document.getElementById('map'),MG=MAPC.getContext('2d'),_rc=new THREE.Raycaster(),_gp=new THREE.Plane(new THREE.Vector3(0,1,0),0),_hit=new THREE.Vector3();
+// 妨害下のマップ：砂嵐のノイズと走査線。敵も地形も見えない（自機の矢印だけ）
+function mapNoise(W,H){const tt=performance.now()/1000;MG.fillStyle='rgba(26,36,32,.92)';MG.fillRect(0,0,W,H);
+ for(let i=0;i<280;i++){const v=Math.random()*190|0;MG.fillStyle=`rgba(${v},${v+14},${v+4},${.25+Math.random()*.45})`;MG.fillRect(Math.random()*W,Math.random()*H,1+Math.random()*5,1+Math.random()*2)}
+ for(let i=0;i<3;i++){const y=((tt*(40+i*23)+i*37)%(H+20))-10;MG.fillStyle='rgba(180,200,190,.18)';MG.fillRect(0,y,W,2+i)}
+ if(Math.floor(tt*3)%2){MG.fillStyle='rgba(255,90,60,.95)';MG.font='bold 9px monospace';MG.textAlign='center';MG.fillText('JAMMING',W/2,H/2-12);MG.textAlign='left'}}
 function drawMap(){
  const W0=MAPC.width,H0=MAPC.height,cx=W0/2,cy=H0/2,top=CAMMODE==='top',R=top?46:64,sc=(W0/2-6)/R;
  const TF=topF(),ox=top?camC.x+TF.x*6:P.pos.x,oz=top?camC.z+TF.z*6:P.pos.z;
@@ -5064,6 +5070,7 @@ function drawMap(){
  MG.clearRect(0,0,W0,H0);
  MG.fillStyle='rgba(8,12,10,.78)';MG.beginPath();MG.moveTo(10,0);MG.lineTo(W0,0);MG.lineTo(W0,H0-10);MG.lineTo(W0-10,H0);MG.lineTo(0,H0);MG.lineTo(0,10);MG.closePath();MG.fill();
  MG.save();MG.clip();
+ if(RUN&&RUN.jam)mapNoise(W0,H0);else{
  // 目盛り
  MG.strokeStyle='rgba(91,107,58,.55)';MG.lineWidth=1;
  for(let i=1;i<4;i++){MG.beginPath();MG.arc(cx,cy,(W0/2-6)*i/3,0,Math.PI*2);MG.stroke()}
@@ -5087,6 +5094,7 @@ function drawMap(){
  if(RUN&&RUN.tr){const [x,y]=toM(TOBJ().position.x,TOBJ().position.z),inR=Math.hypot(x-cx,y-cy)<W0/2-4,dd=Math.hypot(x-cx,y-cy)||1,X=inR?x:cx+(x-cx)/dd*(W0/2-5),Y=inR?y:cy+(y-cy)/dd*(W0/2-5);MG.fillStyle=inR?'#6fd3e0':'rgba(111,211,224,.55)';MG.fillRect(X-3,Y-4.5,6,9)}
  // 積み荷（金の四角）と回収地点（シアンの輪）
  if(RUN&&RUN.cr){RUN.cr.forEach(k=>{if(k.st!==0)return;const [x,y]=toM(k.g.position.x,k.g.position.z);if(Math.hypot(x-cx,y-cy)>W0/2-4)return;MG.fillStyle='#e8c25a';MG.fillRect(x-3,y-3,6,6)});{const [x,y]=toM(DROPM.position.x,DROPM.position.z);MG.strokeStyle='#6fd3e0';MG.beginPath();MG.arc(x,y,4,0,Math.PI*2);MG.stroke()}}
+ }
  // 自機（向きつきの三角）
  {const [x,y]=toM(P.pos.x,P.pos.z),hx=Math.sin(P.yaw),hz=Math.cos(P.yaw),a=Math.atan2(hx*rx+hz*rz,hx*fx+hz*fz);
   MG.save();MG.translate(x,y);MG.rotate(a);MG.fillStyle='#8cf06e';MG.beginPath();MG.moveTo(0,-6);MG.lineTo(4.5,5);MG.lineTo(0,2.5);MG.lineTo(-4.5,5);MG.closePath();MG.fill();MG.restore()}
@@ -5100,7 +5108,7 @@ function switchTarget(){
  const b=$('bTgt');b.classList.add('on');setTimeout(()=>b.classList.remove('on'),150);
 }
 function updateLock(){
- const cone=SS.cone,range=SS.lockRange,c=[];playerCenter(_p);
+ const cone=SS.cone,range=RUN&&RUN.jam?Math.max(JAM_MIN,Math.round(SS.lockRange*JAM_LK)):SS.lockRange,c=[];playerCenter(_p);
  ENEMIES.forEach(e=>{if(!e.alive)return;e.center(_q).sub(_p);const d=_q.length();if(d>range)return;
   let a=Math.atan2(_q.x,_q.z)-camYaw;a=Math.atan2(Math.sin(a),Math.cos(a));const lim=(e===lockT||e===pinned)?cone*(SS.quick?2.2:1.6):cone;
   if(Math.abs(a)<lim)c.push([Math.abs(a),e])});
@@ -5411,7 +5419,35 @@ const MLIST=[
    ['n','壁際の、妨害電波。……偶然とは、思えませんね。'],
    ['c','でしょ。壁の近くで無線を直してる「ハンス」って人が、そういうのに詳しいって聞いたわ。顔を出してみる価値はあるかも。'],
    ['c','あたしは整備班として、封印の件をもう少し探ってみる。……あんたは試合に集中しなさい。まずは勝ち続けること！']]},
- {id:'4-2',ch:4,kind:'visit',ready:false,need:['vb0'],title:'壁際の妨害塔',from:'ハンス',reward:20000},
+ {id:'4-2',wx:'night',ch:4,kind:'visit',ready:true,need:['vb0'],afterVisit:'v-b1-petra',jam:true,goal:'antenna',title:'壁際の妨害塔',from:'通信技師 ハンス',client:'ハンス',voice:'adultM',img:'img/clients/client-radio-hans.png',imgF:'',reward:20000,field:'wall',fieldJa:'壁の外周',   // 妨害下：ロックは近距離のみ・マップはノイズ。ハンスが旧軍の周波数で塔の方位を知らせる。セリフは仮
+  obj:'妨害塔4本の破壊',fail:'CORE 大破',enemyJa:'妨害塔（旧軍の施設）＋ 多脚砲台 ＋ 砲台 ＋ ドローン',
+  desc:'壁の外周で、旧軍の妨害塔が勝手に動き出し、通信を乱している。塔を4本とも壊すこと。妨害の中ではロックは近くにしか効かず、マップも使えない。依頼人は、壁の近くで無線を直している通信技師。',
+  brief:['目標は、壁の外周に立つ妨害塔4本の破壊です。旧軍の施設が勝手に動き出したもので、通信を乱しています。塔は、高さのあるアンテナです。','妨害の中では、マップにノイズが走って使えません。ロックオンは、近くの敵にしかかかりません（ふだんの約半分の距離）。','ハンスさんが、妨害を受けない旧軍の周波数で、塔の方位を声で教えてくれます。「○時の方向」は、自機の正面を12時として読みます。塔が落ちるたび、警備の機械が動くようです。'],
+  comm:{start:'壁の外周に入りました。通信にノイズが乗っています。マップは使えません。ロックは、近くの敵にしか効きません。',
+   h1:'こちらハンス。この周波数は旧軍の規格でな、塔の信号とは位相の取り方が違う。理由はまず、変調方式の──',
+   m:'こちら境界監視所、ミラ。ハンスさん、要点を言って。',
+   h2:'……要点か。塔は四本。方位は私が声で伝える。以上だ。',
+   n:'ありがとうございます。……とても分かりやすいです。',
+   brg:'最寄りの塔は、{h}時の方向。約{m}メートルだ。',near:'近いぞ。{h}時の方向、約{m}メートル。ロックが効くはずだ。',
+   down:'ひとつ落ちたな。残りは{n}本だ。',down1:'……聞こえる。塔の信号が薄くなっている。残りは{n}本だ。',last:'最後の一本だ。方位を伝える。',reinf:'塔が落ちて、警備の機械が動いた。ドローンが来るぞ。',
+   clear:'妨害塔、全機能停止。……通信が戻ります。',clearM:'こちら境界監視所、ミラ。……つながった。全部の回線が戻ったわ。ありがとう。',clearH:'うむ。旧軍の施設が勝手に動いていたとは。……詳しい話は、また今度にしよう。長くなるのでね。'},
+  res:{ok:'ハンスさんから、長い返信が届いています。……要約すると「通信が戻った。ありがとう」です。',ng:'撤退します。……妨害は、まだ続いています。もう一度、塔を探しに行く必要があります。'},
+  start:{x:0,z:-44},
+  enemies:[{type:'antenna',x:-34,z:12},{type:'antenna',x:30,z:20},{type:'antenna',x:-12,z:44},{type:'antenna',x:40,z:-14},{type:'walker',x:-8,z:18,rng:60},{type:'walker',x:16,z:2,rng:60},{type:'turret',x:24,z:34},{type:'turret',x:-30,z:-6},{type:'drone',x:-20,z:10},{type:'drone',x:20,z:26},{type:'drone',x:0,z:38}],
+  reinf:[[{type:'drone',x:-22,z:6},{type:'drone',x:22,z:18}],[{type:'drone',x:-14,z:30},{type:'drone',x:16,z:34},{type:'arc',x:0,z:20}]],
+  after:{ok:'では、周波数を合わせておこう。塔の位置は、私が全部、声で伝える。……長くなるかもしれんがね。',later:'ああ、構わんよ。電波は、待ってくれるものだ。……塔のほうは、待ってくれんが。'},
+  talk:[['c','やあ、突然すまない。ハンスだ。ほら、以前、長い手紙を送った無線屋の。覚えているかね。'],
+   ['n','ハンスさん。「少し長くなります」と始まって、本当に長かった、あのメールの方ですね。'],
+   ['c','おお、覚えていてくれたか。うれしいね。さて、今日来たのは、壁際の妨害電波の件でな。ペトラ嬢から聞いたそうだが、あれは自然現象ではない。まず、電波というものは、大きく分けて三つの性質を持っていて──'],
+   ['n','ハンスさん。結論からお願いします。'],
+   ['c','む。……結論か。では順序を変えよう。壁の外周に、旧軍の妨害塔が四本、勝手に動き出している。戦役のころ、壁の向こうから漏れる信号を消すために建てられたものだ。'],
+   ['c','ところで、この塔の周波数の割り当てというのが実に面白くてな。当時の規格では──'],
+   ['n','ハンスさん。塔を止める方法は。'],
+   ['c','おっと、そうだった。塔は壊すしかない。ただし妨害の中では、地図の電波が乱れて使えんし、ロックオンも近くの敵にしか効かなくなる。'],
+   ['c','そこでだ。旧軍の周波数だけは、塔の妨害を受けない。私が無線で、塔の方位を声で教える。「何時の方向、何メートル」とね。'],
+   ['d','ハ、ハンス様！ お話が長くて、ドールのお茶が冷めてしまいました……！'],
+   ['c','おや、それは失礼。……報酬は、配給所の皆から集めた分で、20,000。無線屋の意地だ。'],
+   ['n','……お受けしましょう、○○。']]},
  {id:'4-3',ch:4,kind:'visit',ready:false,need:['vb1'],title:'壁の外周調査',from:'ティモ',reward:22000},
  {id:'4-S',ch:4,kind:'visit',story:true,ready:false,need:['vb2'],title:'壁の中の研究所',from:'ティモ（NOAH）',reward:36000,cls:'A'},
  // CHAPTER 4 の始まりに届く後日談のメール（依頼ではない）。afterClear＝その依頼をクリア済みなら届く（既存のセーブにも1回ずつ）
@@ -5500,7 +5536,7 @@ const vsCur=()=>{const i=vsW().findIndex(w=>!w);return i<0?VSC.rounds.length:i};
 // 対戦カードのメール：条件（前の試合に勝利＋need の依頼をクリア）がそろった試合の分を届ける
 function vsNotice(){const out=[];if(!vsOk())return out;let t=Date.now();const keep=VSC;   // vsShown は「いま見ている大会」で決まるので、大会ごとに VSC を切り替えて調べる
  VST.forEach(T=>{if(T===VSC_B&&!vsOkB())return;VSC=T;T.rounds.forEach((r,i)=>{if(r.ready===false||MIS[r.mail]||!vsShown(i))return;if(r.need&&!(MIS[r.need]&&MIS[r.need].clear))return;MIS[r.mail]={got:true,read:false,clear:false,n:0,t:t++};out.push(MDEF[r.mail])})});VSC=keep;return out}
-const FIELD_BG={chase:0x6a5438,under:0x2a1214,power:0x1c2330,hangar:0x1a1f22,viaduct:0x363a3e,colo:0x0e1619,canyon:0x2a2622,relay:0x22262a,border:0x2e2a22,city:0x26241f,road:0x2b2721,ruins:0x2a2e2a,factory:0x23261f};
+const FIELD_BG={chase:0x6a5438,under:0x2a1214,power:0x1c2330,hangar:0x1a1f22,viaduct:0x363a3e,colo:0x0e1619,canyon:0x2a2622,relay:0x22262a,wall:0x16181c,border:0x2e2a22,city:0x26241f,road:0x2b2721,ruins:0x2a2e2a,factory:0x23261f};
 const nameIn=s=>s.replace(/○○/g,esc(PILOT||'操縦者'));
 
 /* ----- 地形：配給都市の外れ（乱数はシード固定。配置は毎回同じ）-----
@@ -5805,6 +5841,28 @@ const RELAY_R=56,RELAY=grp(S);RELAY.visible=false;const RELAY_MAP=[];
  // 外周：崩れたフェンスと遠くの塔
  for(let i=0;i<40;i++){if(i%5===2)continue;const a=i/40*Math.PI*2,r=RELAY_R+2;box(RELAY,.2,2.6,.2,dk,Math.sin(a)*r,1.3,Math.cos(a)*r);box(RELAY,9,.1,.1,dk,Math.sin(a)*r,2,Math.cos(a)*r,0,a+Math.PI/2,(i%3-1)*.1)}
  for(let i=0;i<6;i++){const a=i/6*Math.PI*2+.3,r=rnd(70,80),h=rnd(18,30);box(RELAY,1.2,h,1.2,dk,Math.sin(a)*r,h/2,Math.cos(a)*r);box(RELAY,.5,.5,.5,new THREE.MeshBasicMaterial({color:0xff3020}),Math.sin(a)*r,h+.3,Math.cos(a)*r)}}
+/* ----- 地形：壁の外周（4-2 妨害下）。円形の演習場の北に、NOAH との境の巨大な壁。旧軍の遮蔽物と、妨害塔（アンテナ）を置く -----
+ 赤い灯りは妨害塔だけのもの（壁の灯りは水色）。マップは妨害でノイズになるので、塔の位置は方位の通信と、遠くの赤い点滅で探す */
+const WALL_R=58,WALL=grp(S);WALL.visible=false;const WALL_MAP=[];
+{let sd=0x0412;const rnd=(a=0,b=1)=>{sd=(sd*1664525+1013904223)>>>0;return a+sd/4294967296*(b-a)};
+ const T=(c,l)=>psMat(0xffffff,{map:panel(c,l)}),sand=T('#4a4234','#322c22'),conc=T('#5a5b57','#34352f'),wm=T('#4a4d52','#26292e'),rust=T('#5a3e2a','#33221a'),dk=psMat(0x1c1e1a),hz=psMat(0xffffff,{map:stripes('#d8b020','#1a1a14')}),rock=T('#4c4a42','#2a2824'),lamp=new THREE.MeshBasicMaterial({color:0x6fd3e0});
+ const gp=new THREE.Mesh(new THREE.CircleGeometry(100,24),sand);gp.rotation.x=-Math.PI/2;gp.position.y=.01;WALL.add(gp);
+ // 巨大な壁（北。高さ約46m、継ぎ目と控え壁つき）
+ for(let x=-133,i=0;x<=133;x+=14,i++){const hh=46+(i%3)*2;box(WALL,14.4,hh,6,wm,x,hh/2,66);box(WALL,14.8,1.2,6.6,conc,x,hh+.1,66);box(WALL,.3,hh,.2,dk,x+7.2,hh/2,62.9)}
+ for(let x=-126;x<=126;x+=28){box(WALL,5,38,4,conc,x,19,61);box(WALL,.5,.5,.2,lamp,x,40,58.9)}
+ // 壁の根元の暗い溝（見た目だけ）
+ box(WALL,270,.3,5,dk,0,.15,58.5);
+ // 旧軍の防壁（低いコンクリートの遮蔽。黄黒のしま）
+ [[-16,-20,.2,7],[18,-26,-.3,7],[-30,-4,1.3,6],[32,6,-1.2,6],[0,10,.1,6],[-20,26,-.4,6],[22,30,.5,6],[-6,48,0,8],[34,44,.2,6],[-40,42,-.5,6]].forEach(([x,z,ry,w])=>{box(WALL,w,1.8,1.2,conc,x,.9,z,0,ry,0);box(WALL,w,.14,1.25,hz,x,1.85,z,0,ry,0);WALL_MAP.push({x,z,w,d:1.2,ry,k:'b'})});
+ // コンテナと、倒れた旧軍のギアの残骸
+ [[-44,18,.4],[44,-10,-.3],[-8,-46,.9]].forEach(([x,z,ry],i)=>{box(WALL,6,2.6,2.6,i%2?rust:conc,x,1.3,z,0,ry,0);WALL_MAP.push({x,z,w:6,d:2.6,ry,k:'b'})});
+ [[-26,38,.5],[26,-34,-.7]].forEach(([x,z,ry])=>{box(WALL,2.4,1.4,2.8,rust,x,.7,z,0,ry,.3);box(WALL,.9,.9,3.6,dk,x+1.6,.45,z+1.2,0,ry+.6,0);WALL_MAP.push({x,z,w:2.4,d:2.8,ry,k:'b'})});
+ // 崩れた旧軍の掩蔽壕
+ box(WALL,12,3.4,8,conc,-24,1.7,40);box(WALL,12.4,.5,8.4,dk,-24,3.5,40);box(WALL,4,2.4,.2,dk,-24,1.2,35.9);WALL_MAP.push({x:-24,z:40,w:12,d:8,ry:0,k:'w'});
+ // 岩と砂の盛り
+ for(let i=0;i<14;i++){const a=rnd(0,6.3),r=rnd(40,56),x=Math.sin(a)*r,z=Math.cos(a)*r,hh=rnd(1.4,4);box(WALL,rnd(3,6),hh,rnd(3,5),rock,x,hh/2-.3,z,0,rnd(0,3),0)}
+ // 外周：南側の崩れたフェンス（北は壁がふさぐ）
+ for(let i=0;i<36;i++){const a=i/36*Math.PI*2;if(Math.cos(a)>.5)continue;const r=WALL_R+2;box(WALL,.2,2.6,.2,dk,Math.sin(a)*r,1.3,Math.cos(a)*r);box(WALL,9,.1,.1,dk,Math.sin(a)*r,2,Math.cos(a)*r,0,a+Math.PI/2,(i%3-1)*.1)}}
 /* ----- 地形：涸れ谷（2-3 到達）。廃墟の奥から +Z へ延びる、細く曲がりくねった谷。両側は高い崖、ところどころに広い溜まり（敵の待ち場所）-----
  谷の中心 x＝canX(z)、半幅＝canW(z)。自機は中心から ±canW まで動ける */
 const CANYON=grp(S);CANYON.visible=false;const CAN_MAP=[];
@@ -5872,8 +5930,8 @@ function buildColo(g,R){
  return g}
 const COLO_R=45,COLO=grp(S);COLO.visible=false;buildColo(COLO,COLO_R);
 const isRoad=()=>RUN&&RUN.def.field==='road',isCanyon=()=>RUN&&RUN.def.field==='canyon';
-const fieldR=()=>RUN&&RUN.def.field==='chase'?400:RUN&&RUN.def.field==='under'?UND_R:RUN&&RUN.def.field==='power'?PWR_R:RUN&&RUN.def.field==='hangar'?HANG_R:RUN&&RUN.def.field==='viaduct'?VIAD_R:RUN&&RUN.def.field==='colo'?COLO_R:RUN&&RUN.def.field==='relay'?RELAY_R:RUN&&RUN.def.field==='border'?BORDER_R:RUN&&RUN.def.field==='city'?CITY_R:RUN&&RUN.def.field==='ruins'?RUINS_R:RUN&&RUN.def.field==='factory'?FAC_R:ARENA;
-const fieldG=()=>isCanyon()?CANYON:RUN&&RUN.def.field==='chase'?CHASE:RUN&&RUN.def.field==='under'?UND:RUN&&RUN.def.field==='power'?PWR:RUN&&RUN.def.field==='hangar'?HANG:RUN&&RUN.def.field==='viaduct'?VIAD:RUN&&RUN.def.field==='colo'?COLO:RUN&&RUN.def.field==='relay'?RELAY:RUN&&RUN.def.field==='border'?BORDER:RUN&&RUN.def.field==='city'?CITY:isRoad()?ROAD:RUN&&RUN.def.field==='ruins'?RUINS:RUN&&RUN.def.field==='factory'?FAC:world;
+const fieldR=()=>RUN&&RUN.def.field==='chase'?400:RUN&&RUN.def.field==='under'?UND_R:RUN&&RUN.def.field==='power'?PWR_R:RUN&&RUN.def.field==='hangar'?HANG_R:RUN&&RUN.def.field==='viaduct'?VIAD_R:RUN&&RUN.def.field==='colo'?COLO_R:RUN&&RUN.def.field==='relay'?RELAY_R:RUN&&RUN.def.field==='border'?BORDER_R:RUN&&RUN.def.field==='city'?CITY_R:RUN&&RUN.def.field==='ruins'?RUINS_R:RUN&&RUN.def.field==='factory'?FAC_R:RUN&&RUN.def.field==='wall'?WALL_R:ARENA;
+const fieldG=()=>isCanyon()?CANYON:RUN&&RUN.def.field==='chase'?CHASE:RUN&&RUN.def.field==='under'?UND:RUN&&RUN.def.field==='power'?PWR:RUN&&RUN.def.field==='hangar'?HANG:RUN&&RUN.def.field==='viaduct'?VIAD:RUN&&RUN.def.field==='colo'?COLO:RUN&&RUN.def.field==='relay'?RELAY:RUN&&RUN.def.field==='border'?BORDER:RUN&&RUN.def.field==='city'?CITY:isRoad()?ROAD:RUN&&RUN.def.field==='ruins'?RUINS:RUN&&RUN.def.field==='factory'?FAC:RUN&&RUN.def.field==='wall'?WALL:world;
 /* ===== 障害物の当たり判定 =====
  各ステージのグループ（演習場 world／CITY／ROAD／RUINS）から、地面に立っている箱（高さ1.5m以上・ほぼ水平）を
  向きつきの箱 {x,z,c,s,hw,hd,top} として自動で集める（最初に使うときに1回）。新しいステージも同じ作り方なら自動で入る */
@@ -5925,7 +5983,7 @@ function shopNotice(){const ci=CLASSES.indexOf(CLS),out=[];let t=Date.now();if(T
 
  MLIST.filter(d=>d.shop&&!MIS[d.id]&&(d.shop==='G'?!!VSS.win[2]:d.shop==='Q'?!!VSS.winB[1]:CLASSES.indexOf(d.shop)<=ci)).forEach(d=>{MIS[d.id]={got:true,read:false,clear:false,n:0,t:t++};out.push(d)});return out}
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
- if(['train','continue','mission','shop','ttdone','versus'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(d.afterReg&&!VSS.reg)return;if(d.afterSeen&&!VSS.seen[d.afterSeen])return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;
+ if(['train','continue','mission','shop','ttdone','versus'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(d.afterReg&&!VSS.reg)return;if(d.afterSeen&&!VSS.seen[d.afterSeen])return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;if(d.afterVisit&&!(MIS[d.afterVisit]&&MIS[d.afterVisit].read))return;
   MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)});
  MLIST.forEach(d=>{if(d.kind!=='visit'&&d.afterClear&&!MIS[d.id]&&MIS[d.afterClear]&&MIS[d.afterClear].clear&&(!d.afterCls||CLASSES.indexOf(CLS)>=CLASSES.indexOf(d.afterCls))){MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)}});   // 後日談のメール
  MLIST.forEach(d=>{if(d.kind!=='visit'&&d.afterRead&&!MIS[d.id]&&MIS[d.afterRead]&&MIS[d.afterRead].read){MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)}});   // メールを読んだあとの来訪（オットー）
@@ -6028,6 +6086,8 @@ const visitDue=d=>d.kind==='visit'&&d.once&&!!(d.afterRead||d.afterClear||d.afte
 function visitCheck(then){if(TUT!=='done')return false;const d=MLIST.find(visitDue);if(!d)return false;if(!MIS[d.id])MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};saveGame();
  nonaSay([['……ハンガーの入口に、来客です。お通ししますね。']],{hold:true});NB.then=()=>{VS.cb=then;visitPlay(d.id)};return true}
 const visitGate=f=>{if(!visitCheck(f))f()};
+// 来訪（ペトラの報告）が終わったあと、それを条件にした来訪の依頼（4-2 ハンス）がそろっていれば、続けて来客を通す
+function visitDeliver(){const nv=misDeliver('versus').find(d=>d.kind==='visit');if(nv)setTimeout(()=>{nonaSay([['……ハンガーの入口に、また来客です。お通ししますね。']],{hold:true});NB.then=()=>visitPlay(nv.id)},300)}
 function openBoard(sel){if(vsLock())return;if(visitCheck(()=>openBoard(sel)))return;fadeTo(()=>{chkSet(null);mailClose();nbClose();CHO={};if(sel&&MDEF[sel]&&MDEF[sel].ch>0)CHO[MDEF[sel].ch]=true;renderBoard(sel)},'MISSION')}
 let CHO={}; // CHAPTER の開閉（MISSION を開くたびに初期化。今の CHAPTER だけ開く。画面を開いている間だけ保つ）
 function renderBoard(sel){
@@ -6135,6 +6195,15 @@ function briefMapRelay(d){const s=[];
  s.push(`<text x="-60" y="58" fill="#ff6a4c" font-size="3.6" font-family="DotGothic16,monospace">○ アンテナ ×3（先に倒す）</text>`);
  const st=d.start;s.push(`<path d="M${st.x} ${-st.z-4}l3 6h-6z" fill="#8cf06e"/><text x="${st.x}" y="${-st.z+8}" fill="#8cf06e" font-size="3.6" text-anchor="middle" font-family="Chakra Petch,monospace">START</text>`);
  return `<svg viewBox="-64 -64 128 128" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
+function briefMapWall(d){const s=[];let sd=0x5a11;const rnd=()=>{sd=(sd*1664525+1013904223)>>>0;return sd/4294967296};
+ for(let i=-60;i<=60;i+=20)s.push(`<path d="M-62 ${i}H62M${i} -62V62" stroke="#173236" stroke-width=".4"/>`);
+ s.push(`<circle r="${WALL_R}" fill="none" stroke="#2f7e86" stroke-width=".6" stroke-dasharray="3 2"/>`);
+ s.push(`<rect x="-62" y="-64" width="124" height="7" fill="rgba(111,211,224,.16)" stroke="#2f7e86" stroke-width=".7"/><text x="0" y="-59" fill="#6fd3e0" font-size="4.4" text-anchor="middle" font-family="DotGothic16,monospace">壁（NOAH との境）</text>`);
+ WALL_MAP.forEach(o=>s.push(`<rect x="${-o.w/2}" y="${-o.d/2}" width="${o.w}" height="${o.d}" transform="translate(${o.x.toFixed(1)} ${(-o.z).toFixed(1)}) rotate(${(o.ry*180/Math.PI).toFixed(1)})" fill="${o.k==='w'?'rgba(111,211,224,.2)':'none'}" stroke="#2f7e86" stroke-width="${o.k==='w'?.9:.5}"/>`));
+ for(let i=0;i<46;i++){const x=-60+rnd()*112,y=-52+rnd()*108,w=2+rnd()*14;s.push(`<path d="M${x.toFixed(1)} ${y.toFixed(1)}h${w.toFixed(1)}" stroke="#8aa0a0" stroke-width=".5" opacity="${(.15+rnd()*.35).toFixed(2)}"/>`)}
+ s.push(`<text x="-60" y="58" fill="#ff6a4c" font-size="3.6" font-family="DotGothic16,monospace">▲ 妨害のため、塔の位置は不明（4本）</text>`);
+ const st=d.start;s.push(`<path d="M${st.x} ${-st.z-4}l3 6h-6z" fill="#8cf06e"/><text x="${st.x}" y="${-st.z+8}" fill="#8cf06e" font-size="3.6" text-anchor="middle" font-family="Chakra Petch,monospace">START</text>`);
+ return `<svg viewBox="-64 -64 128 128" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
 function briefMapCanyon(d){const s=[],P2=(x,z)=>`${z.toFixed(1)} ${x.toFixed(1)}`,line=sg=>{let a='';for(let z=CAN_Z0;z<=CAN_Z1;z+=4)a+=(a?'L':'M')+P2(canX(z)+sg*canW(z),z);return a};
  {let a='';for(let z=CAN_Z0;z<=CAN_Z1;z+=4)a+=(a?'L':'M')+P2(canX(z)-canW(z),z);for(let z=CAN_Z1;z>=CAN_Z0;z-=4)a+='L'+P2(canX(z)+canW(z),z);s.push(`<path d="${a}Z" fill="#26393a"/>`)}
  s.push(`<path d="${line(-1)}${line(1)}" fill="none" stroke="#2f7e86" stroke-width=".7"/>`);
@@ -6149,7 +6218,7 @@ function briefMapChase(d){const s=[];
  s.push(`<path d="M12 0H690" stroke="#6fd3e0" stroke-width=".8" stroke-dasharray="4 3"/><path d="M690 0l-6 -4v8z" fill="#6fd3e0"/>`);
  s.push(`<path d="M0 -4l6 4l-6 4z" fill="#8cf06e"/><text x="0" y="-17" fill="#8cf06e" font-size="7" font-family="Chakra Petch,monospace">START</text><text x="150" y="-17" fill="#ff6a4c" font-size="7" font-family="DotGothic16,monospace">逃げる輸送ギア ▶ ▶ ▶（北へ一本道）</text><text x="350" y="26" fill="#d8a020" font-size="6" font-family="DotGothic16,monospace">赤茶の壁は、黄色い柱の間の隙間を抜ける</text>`);
  return `<svg viewBox="-12 -28 724 56" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
-function briefMap(d){if(d.field==='chase')return briefMapChase(d);if(d.field==='under')return briefMapUnder(d);if(d.field==='power')return briefMapPower(d);if(d.field==='hangar')return briefMapHangar(d);if(d.field==='viaduct')return briefMapViaduct(d);if(d.field==='canyon')return briefMapCanyon(d);if(d.field==='relay')return briefMapRelay(d);if(d.field==='border')return briefMapBorder(d);if(d.field==='road')return briefMapRoad(d);if(d.field==='ruins')return briefMapRuins(d);const s=[],FAC1=d.field==='factory',MAP=FAC1?FAC_MAP:CITY_MAP;
+function briefMap(d){if(d.field==='chase')return briefMapChase(d);if(d.field==='under')return briefMapUnder(d);if(d.field==='power')return briefMapPower(d);if(d.field==='hangar')return briefMapHangar(d);if(d.field==='viaduct')return briefMapViaduct(d);if(d.field==='canyon')return briefMapCanyon(d);if(d.field==='relay')return briefMapRelay(d);if(d.field==='wall')return briefMapWall(d);if(d.field==='border')return briefMapBorder(d);if(d.field==='road')return briefMapRoad(d);if(d.field==='ruins')return briefMapRuins(d);const s=[],FAC1=d.field==='factory',MAP=FAC1?FAC_MAP:CITY_MAP;
  for(let i=-60;i<=60;i+=20)s.push(`<path d="M-62 ${i}H62M${i} -62V62" stroke="#173236" stroke-width=".4"/>`);
  s.push(`<circle r="${FAC1?FAC_R:CITY_R}" fill="none" stroke="#2f7e86" stroke-width=".6" stroke-dasharray="3 2"/>`);
  MAP.forEach(o=>s.push(`<rect x="${-o.w/2}" y="${-o.d/2}" width="${o.w}" height="${o.d}" transform="translate(${o.x.toFixed(1)} ${(-o.z).toFixed(1)}) rotate(${(o.ry*180/Math.PI).toFixed(1)})" fill="${o.k==='w'?'rgba(111,211,224,.18)':'none'}" stroke="${o.k==='f'?'#24585e':'#2f7e86'}" stroke-width="${o.k==='w'?.8:.5}"/>`));
@@ -6196,7 +6265,7 @@ function comm(txt,dur=0.001){if(dur===0){COMM.q=[];commShow(txt,0);return}COMM.q
 function commNext(){const it=COMM.q.shift();if(it)commShow(it[0],it[1])}
 function commShow(txt,dur){clearInterval(COMM.iv);const el=$('commTx');$('comm').hidden=false;
  let who='n';if(Array.isArray(txt)){who=txt[0];txt=txt[1]}COMM.radio=who!=='n';if(COMM.radio)SND.play('radio',{g:.9});else SND.play('comm',{g:.3});txt=String(txt).replace(/○○/g,PILOT||'操縦者');const OP=who==='o'&&RUN&&RUN.vs?RUN.vs.r.opp:null;
- const CW={b:['BELL-01','bell'],s:['SERENA','youthF'],j:['JONAH','adultF'],t:['OTTO','youthM']}[who],CK={b:['bell',0],s:['serena',1],j:['jonah',0],t:['otto',0]}[who]||['nona',0];if(!OP){$('comm').style.setProperty('--cc','var(--c-'+CK[0]+')');$('comm').style.setProperty('--cf',CK[1]?'#fff':'#0b0e0d')}else{$('comm').style.removeProperty('--cc');$('comm').style.removeProperty('--cf')}$('comm').classList.toggle('opp',!!OP);$('comm').querySelector('b').textContent=OP?OP.en.split(' ')[0]:CW?CW[0]:'N-07';const vc=OP?OP.v||'adultM':CW?CW[1]:'nona';let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
+ const CW={b:['BELL-01','bell'],s:['SERENA','youthF'],j:['JONAH','adultF'],t:['OTTO','youthM'],h:['HANS','adultM'],m:['MIRA','youthF']}[who],CK={b:['bell',0],s:['serena',1],j:['jonah',0],t:['otto',0],h:['hans',0],m:['mira',0]}[who]||['nona',0];if(!OP){$('comm').style.setProperty('--cc','var(--c-'+CK[0]+')');$('comm').style.setProperty('--cf',CK[1]?'#fff':'#0b0e0d')}else{$('comm').style.removeProperty('--cc');$('comm').style.removeProperty('--cf')}$('comm').classList.toggle('opp',!!OP);$('comm').querySelector('b').textContent=OP?OP.en.split(' ')[0]:CW?CW[0]:'N-07';const vc=OP?OP.v||'adultM':CW?CW[1]:'nona';let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
  COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip(vc,n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;COMM.end=performance.now();
   if(dur===0){COMM.busy=false;COMM.t=0}else COMM.t=Math.max(1.5,1+txt.length*.12,dur)}},TXT_SPD)}
 function commEnd(){if(COMM.radio){COMM.radio=false;SND.play('radioEnd',{g:.7})}}   // 通信が切れるとき（ノーナ以外だけ）
@@ -6211,7 +6280,7 @@ function chaseInit(){const B=ENEMIES.find(e=>e.type==='gear'&&e.gk==='cvBoss'&&!
  $('esc').hidden=false;$('escL').textContent='TIME '+fmtT(RUN.def.limit);$('escS').textContent='親機まで';$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo');$('escL').classList.remove('lo')}
 function misStartEnemies(){
  ENEMIES.forEach(e=>{e.off=true;e.alive=false;e.g.visible=false;e.cargo=false});
- ENEMIES.forEach(e=>{e.chase=null});RUN.chase=!!RUN.def.chase;RUN.ch=null;CH_MINES.forEach(m=>m.visible=false);
+ ENEMIES.forEach(e=>{e.chase=null});RUN.chase=!!RUN.def.chase;RUN.ch=null;RUN.jam=!!RUN.def.jam;CH_MINES.forEach(m=>m.visible=false);
  RUN.def.enemies.forEach(misSpawn);
  RUN.total=RUN.left=RUN.def.goal?RUN.def.enemies.filter(e=>e.type===RUN.def.goal).length:RUN.def.enemies.length;RUN.hits=[];RUN.hotT=-99;RUN.ok=false;RUN.leaving=false;RUN.fa=0;RUN.fw=null;RUN.hold=0;RUN.tr=null;RUN.wave=0;RUN.time=0;RUN.kills={};commClear();
  const es=RUN.def.escort,rc=RUN.def.reach,df=RUN.def.defend;$('esc').hidden=!es&&!RUN.def.boss&&!rc&&!df&&!RUN.def.siege;RUN.boss=null;RUN.rf=0;RUN.chgSaid=false;RUN.reachD0=0;RUN.halfSaid=false;RUN.nearSaid=false;RUN.wkSaid=false;RUN.lastSaid=false;RUN.arcSaid=false;RUN.lost=false;
@@ -6220,6 +6289,7 @@ function misStartEnemies(){
  if(RUN.def.siege){RUN.sg=ENEMIES.find(e=>e.type==='siege'&&!e.off);$('esc').hidden=false;$('escL').textContent='SIEGE';$('escS').textContent='出口まで';$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo');RUN.bellSaid=0;RUN.serSaid=false;RUN.nearSaid=false}
  if(es){RUN.tr={hp:es.hp,max:es.hp,z:es.z0,stop:false,wait:false,hurt:false,near:false};truckPlace();TRUCK.visible=true;RUN.total=RUN.def.waves.reduce((a,w)=>a+w.en.length,0)}else TRUCK.visible=false;
  if(RUN.def.chase)chaseInit();
+ if(RUN.def.jam)jamInit();
  if(RUN.def.relay){RUN.cmd=ENEMIES.find(e=>e.type==='gear'&&e.gk==='commander'&&!e.off);RUN.ants=ENEMIES.filter(e=>e.type==='antenna'&&!e.off);RUN.cmd.shielded=()=>RUN&&RUN.ants&&RUN.ants.some(a=>a.alive);RUN.antLeft=RUN.ants.length;RUN.rfT=22;RUN.rfN=0;RUN.shSaid=false;RUN.halfSaid=false;RUN.memDone=false;
   $('esc').hidden=false;$('escL').textContent='TARGET';$('escS').textContent='指揮型ギア ／ アンテナ '+RUN.antLeft;$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo')}
  if(RUN.def.collect){const c=RUN.def.collect;RUN.carry=null;RUN.got=0;RUN.picks=0;RUN.cr=c.items.map((it,i)=>{const g=CRATES[i],x=roadX(it.z)+it.o;g.position.set(x,0,it.z);g.scale.setScalar(1);g.rotation.set(0,i*.7,0);g.visible=true;g.userData.bc.visible=true;return {g,st:0}});
@@ -6314,6 +6384,21 @@ function relayTick(dt){const d=RUN.def,B=RUN.cmd,k=Math.max(0,B.hp/B.max),al=RUN
   ENEMIES.forEach(e=>{if(e!==B&&!e.off&&e.alive){e.alive=false;e.g.visible=false;if(e.type!=='antenna')explode(e.center(new THREE.Vector3()),1.4)}});
   comm(d.comm.clear,2.6);setTimeout(()=>{if(!RUN||!RUN.ok)return;const m=$('memFx');m.classList.remove('on');void m.offsetWidth;m.classList.add('on');SND.play('holo',{g:.5});SND.play('online',{g:.4});comm(d.comm.clear2,3.6)},2800);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},6400);RUN.hold=performance.now()+6600}
  if(RUN.ok){if(finishWait(dt)){$('memFx').classList.remove('on');misFinish(true)}}}
+/* 妨害下（4-2）：塔（アンテナ）を全部壊すと成功。ロックは近距離だけ（updateLock）・マップはノイズ（drawMap）。
+ ハンスが旧軍の周波数で、最寄りの塔の方位（自機の正面＝12時）と距離を一定の間隔で知らせる。塔が落ちるたびに警備のドローン（reinf）が出る */
+function jamInit(){const A=ENEMIES.filter(e=>e.type==='antenna'&&!e.off),J=RUN.jm={al:A.length,n:A.length,t:4,intro:0,rf:0,say:0};
+ $('esc').hidden=false;$('escL').textContent='JAMMER';$('escL').classList.remove('lo');$('escS').textContent='妨害塔 残り '+J.n;$('escD').textContent='0 / '+J.n;$('escHp').style.width='100%';$('escHp').classList.remove('lo')}
+function jamClock(x,z){const dx=x-P.pos.x,dz=z-P.pos.z,fw=dx*Math.sin(camYaw)+dz*Math.cos(camYaw),rt=-dx*Math.cos(camYaw)+dz*Math.sin(camYaw),a=Math.atan2(rt,fw),h=((Math.round(a/(Math.PI/6))%12)+12)%12;return h||12}
+function jamTick(dt){const d=RUN.def,J=RUN.jm,c=d.comm,A=ENEMIES.filter(e=>e.type==='antenna'&&!e.off),al=A.filter(a=>a.alive).length;
+ if(RUN.ok){if(finishWait(dt))misFinish(true);return}
+ $('escS').textContent='妨害塔 残り '+al;$('escD').textContent=(J.n-al)+' / '+J.n;$('escHp').style.width=(100*al/J.n)+'%';$('escHp').classList.toggle('lo',al===1);$('escL').classList.toggle('lo',al===1);
+ if(al!==J.al){const dn=al<J.al;J.al=al;
+  if(dn&&al>0){const sp=COMM.q.length<2;if(sp)comm(['h',al===1?c.last:(J.rf%2?c.down1:c.down).replace('{n}',al)],2.6);const rf=d.reinf&&d.reinf[J.rf++];if(rf){rf.forEach(misSpawn);SND.play('reinf',{g:.4});if(sp)comm(['h',c.reinf],2.4)}J.t=10}}
+ if(!J.intro&&RUN.time>3&&al>0){J.intro=1;comm(['h',c.h1],3);comm(['m',c.m],2.4);comm(['h',c.h2],2.4);comm(c.n,2.4);J.t=2}
+ if(J.intro){J.t-=dt;
+  if(J.t<=0&&!COMM.busy&&!COMM.q.length&&al>0&&!RUN.ok&&P.down<=0){let b=null,bd=1e9;A.forEach(a=>{if(!a.alive)return;const q=Math.hypot(a.g.position.x-P.pos.x,a.g.position.z-P.pos.z);if(q<bd){bd=q;b=a}});
+   if(b){const lr=Math.max(JAM_MIN,Math.round(SS.lockRange*JAM_LK)),txt=(bd<=lr?c.near:c.brg).replace('{h}',jamClock(b.g.position.x,b.g.position.z)).replace('{m}',Math.max(5,Math.round(bd/5)*5));comm(['h',txt],2.6);J.say++}J.t=15}}
+ if(al===0&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=7;COMM.q=[];comm(c.clear,2.8);comm(['m',c.clearM],3);comm(['h',c.clearH],3.2);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},1600)}}
 // 回収：積み荷に近づくと拾う（1つずつ。持つと遅くなる）→ 回収地点の輪に入ると下ろす。拾うたびに伏兵（ambush）。全部で成功
 function collectTick(dt){const d=RUN.def,c=d.collect,dr=DROPM.position;
  RUN.cr.forEach((k,i)=>{if(k.st===0){k.g.rotation.y+=dt*.6;k.g.userData.bc.material.opacity=.25+Math.sin(t*4+i)*.12;
@@ -6410,7 +6495,7 @@ const misLeft=()=>ENEMIES.filter(e=>!e.off&&e.alive&&(!RUN||!RUN.def.goal||e.typ
 function misTick(dt){ENEMIES.forEach(e=>{if(e.bolt&&e.bolt.visible&&(!e.alive||e.off))e.bolt.visible=false});
  if(COMM.t>0){COMM.t-=dt;if(COMM.t<=0){COMM.busy=false;if(COMM.q.length)commNext();else{$('comm').hidden=true;commEnd()}}}
  if(RUN&&!RUN.leaving&&!RUN.ok)RUN.time=(RUN.time||0)+dt;
- if(!RUN||RUN.leaving)return;if(RUN.vs){vsTick(dt);return}if(RUN.def.chase){chaseTick(dt);return}if(RUN.tr){if(RUN.def.defend)defendTick(dt);else escortTick(dt);return}if(RUN.boss){bossMisTick(dt);return}if(RUN.def.siege){siegeMisTick(dt);return}if(RUN.def.reach){reachTick(dt);return}if(RUN.def.collect){collectTick(dt);return}if(RUN.def.relay){relayTick(dt);return}const n=misLeft();
+ if(!RUN||RUN.leaving)return;if(RUN.vs){vsTick(dt);return}if(RUN.def.chase){chaseTick(dt);return}if(RUN.tr){if(RUN.def.defend)defendTick(dt);else escortTick(dt);return}if(RUN.boss){bossMisTick(dt);return}if(RUN.def.siege){siegeMisTick(dt);return}if(RUN.def.reach){reachTick(dt);return}if(RUN.def.collect){collectTick(dt);return}if(RUN.def.relay){relayTick(dt);return}if(RUN.def.jam){jamTick(dt);return}const n=misLeft();
  if(n!==RUN.left){const dn=n<RUN.left;RUN.left=n;if(dn&&n>0&&RUN.def.comm.left)comm(RUN.def.comm.left.replace('{n}',n));else if(n===1&&RUN.total>1&&RUN.def.comm.last)comm(RUN.def.comm.last,2.4)}
  if(n===0&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=3.4;comm(RUN.def.comm.clear,3);banner('MISSION COMPLETE',RUN.def.title)}
  if(RUN.ok){if(finishWait(dt))misFinish(true)}}
@@ -6559,7 +6644,7 @@ const fmtT=t=>{t=Math.max(0,Math.round(t));return String(Math.floor(t/60)).padSt
 function renderResult(r){const d=r.def;SND.bgm(r.ok?'win':'lose');
  const dm=PART_KEYS.map(k=>{const mx=partMax(k),nw=partNow(k),v=nw/mx,c=nw<=0?'':v<=.2?'c-over':v<=.5?'c-warn':'c-core';
   return `<div class="rd${nw<=0?' dead':''}"><span class="aL">${PART_LABEL[k]}</span><span class="aV">${nw}<small>/${mx}</small></span><div class="cells" style="grid-template-columns:repeat(20,minmax(0,1fr))">${Array.from({length:20},(_,i)=>`<i class="${i<Math.round(v*20)?c:''}"></i>`).join('')}</div></div>`}).join('');
- const kl=Object.entries(r.kills||{}).filter(([,n])=>n>0).map(([k,n])=>`${KILL_JA[k]||k} ×${n}`).join(' ／ ')||'なし';
+ const kl=Object.entries(r.kills||{}).filter(([,n])=>n>0).map(([k,n])=>`${d.jam&&k==='antenna'?'妨害塔':KILL_JA[k]||k} ×${n}`).join(' ／ ')||'なし';
  const best=r.ok?(r.rec||r.first?r.time:r.best):r.best;
  misEl.innerHTML=misHead('DEBRIEF',d.title,'CH.'+d.ch,'')+`<div class="mres" style="--band:${r.ok?'#14261a':'#2a1410'};--acc:${r.ok?'var(--accent)':'#ff6a4c'}">
   <div class="rhd"><b>${r.ok?'SUCCESS':'FAILED'}</b><span>${r.ok?'依頼を達成しました':(r.reason==='撤退'?'作戦を中断し、撤退しました':r.reason==='荷車の破壊'?'荷車を守りきれませんでした':r.reason==='監視所の破壊'?'監視所を守りきれませんでした':'機体が大破し、回収されました')}</span>
@@ -6651,7 +6736,7 @@ function setMode(m,training=false,mis=null,tt=false){introClear();resetPoses();g
  if(p){selSlot=null;view='overview';highlight(null)}
  if(p&&builtKey!==JSON.stringify(cfg))buildMech(cfg);
  if(p)SND.bgm(RUN&&RUN.def.bgm||(RUN&&RUN.def.boss?'boss':'sortie'));else if(!wasMis)SND.bgm('garage');
- $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';FAC.visible=p&&!!RUN&&RUN.def.field==='factory';BORDER.visible=p&&!!RUN&&RUN.def.field==='border';VIAD.visible=p&&!!RUN&&RUN.def.field==='viaduct';HANG.visible=p&&!!RUN&&RUN.def.field==='hangar';PWR.visible=p&&!!RUN&&RUN.def.field==='power';UND.visible=p&&!!RUN&&RUN.def.field==='under';RELAY.visible=p&&!!RUN&&RUN.def.field==='relay';CANYON.visible=p&&!!RUN&&RUN.def.field==='canyon';COLO.visible=p&&!!RUN&&RUN.def.field==='colo';CHASE.visible=CHSC.visible=p&&!!RUN&&RUN.def.field==='chase';gnd.visible=!COLO.visible&&!CHASE.visible&&!CANYON.visible&&!ROAD.visible&&!RUINS.visible&&!FAC.visible&&!BORDER.visible&&!VIAD.visible&&!HANG.visible&&!PWR.visible&&!UND.visible&&!RELAY.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}GOALM.visible=p&&!!RUN&&!!RUN.def.reach;{const cl=p&&!!RUN&&!!RUN.def.collect;DROPM.visible=WRECKG.visible=cl;CRATES.forEach(c=>c.visible=cl)}if(GOALM.visible)GOALM.position.set(RUN.def.reach.x,0,RUN.def.reach.z);dock.visible=!p;
+ $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';FAC.visible=p&&!!RUN&&RUN.def.field==='factory';BORDER.visible=p&&!!RUN&&RUN.def.field==='border';VIAD.visible=p&&!!RUN&&RUN.def.field==='viaduct';HANG.visible=p&&!!RUN&&RUN.def.field==='hangar';PWR.visible=p&&!!RUN&&RUN.def.field==='power';UND.visible=p&&!!RUN&&RUN.def.field==='under';RELAY.visible=p&&!!RUN&&RUN.def.field==='relay';WALL.visible=p&&!!RUN&&RUN.def.field==='wall';CANYON.visible=p&&!!RUN&&RUN.def.field==='canyon';COLO.visible=p&&!!RUN&&RUN.def.field==='colo';CHASE.visible=CHSC.visible=p&&!!RUN&&RUN.def.field==='chase';gnd.visible=!COLO.visible&&!CHASE.visible&&!CANYON.visible&&!ROAD.visible&&!RUINS.visible&&!FAC.visible&&!BORDER.visible&&!VIAD.visible&&!HANG.visible&&!PWR.visible&&!UND.visible&&!RELAY.visible&&!WALL.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}GOALM.visible=p&&!!RUN&&!!RUN.def.reach;{const cl=p&&!!RUN&&!!RUN.def.collect;DROPM.visible=WRECKG.visible=cl;CRATES.forEach(c=>c.visible=cl)}if(GOALM.visible)GOALM.position.set(RUN.def.reach.x,0,RUN.def.reach.z);dock.visible=!p;
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
  S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}wxApply(p&&RUN?RUN.def.wx:null);C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
@@ -6915,7 +7000,7 @@ R.setAnimationLoop(()=>{
    [['hpA','arms'],['hpL','legs']].forEach(([id,k])=>{const el=$(id),r=P.hp[k]/P.hpMax[k];el.querySelector('b').textContent=Math.round(P.hp[k]);
     setCells(el.querySelector('.hcells'),Math.ceil(r*10),'');el.classList.toggle('dmg',r<=.5&&r>.25);el.classList.toggle('crit',r<=.25&&r>0);el.classList.toggle('dead',r<=0)});
    setCells($('bsCells'),Math.ceil(P.boost/SS.boost*25),'');$('bsNum').textContent=Math.round(P.boost);$('hudp').classList.toggle('low',P.boost<30)}
-  $('score').textContent=RUN?(RUN.tr||RUN.boss||RUN.def.siege||RUN.def.collect||RUN.def.relay?`撃破 ${P.kills}`:`残り ${misLeft()}`):`撃破 ${P.kills}`;if(!INTRO.on&&!GOW)misTick(dt);
+  $('score').textContent=RUN?(RUN.tr||RUN.boss||RUN.def.siege||RUN.def.collect||RUN.def.relay||RUN.def.jam?`撃破 ${P.kills}`:`残り ${misLeft()}`):`撃破 ${P.kills}`;if(!INTRO.on&&!GOW)misTick(dt);
   drawMap();
   setWeaponBtn('wR','cR',['rHand']);setWeaponBtn('wL','cL',['lHand']);setShoulderBtn();
   $('guardMsg').textContent=(guarding(-1)||guarding(1))?'防御中':'';
@@ -7027,6 +7112,7 @@ const CHARS=[
  {g:'依頼人',name:'ヴァルター',sub:'元整備兵 ／ ★1-S・★2-S の依頼人',img:'img/clients/client-veteran-walter.png',voice:'adultM'},
  {g:'依頼人',name:'ペトラ・ホルン',sub:'闘技場の整備主任 ／ 3-1・★3-S の依頼人',img:'img/clients/client-mechanic-petra.png',voice:'adultF'},
  {g:'依頼人',name:'ミラ',sub:'境界監視員 ／ 2-1 の依頼人',img:'img/clients/client-border-mira.png',voice:'youthF'},
+ {g:'依頼人',name:'ハンス',sub:'通信技師 ／ 2-3・4-2 の依頼人',img:'img/clients/client-radio-hans.png',voice:'adultM'},
  {g:'ライバル',name:'ガイウス・ハーラン',sub:'01 JOSHUA ／ 無敗の皇帝',img:'img/rivals/rival-joshua-gaius.png',voice:'adultM'},
  {g:'ライバル',name:'レナード・クロウ',sub:'02 SOLOMON ／ 黒金の商人（2-2 の依頼人）',img:'img/rivals/rival-solomon-leonard.png',voice:'adultM'},
  {g:'ライバル',name:'セレナ・ヴァルデス',sub:'03 DAVID ／ 緋色の喝采',img:'img/rivals/rival-david-serena.png',voice:'youthF'},
@@ -7115,7 +7201,7 @@ function garageGreet(kind,info={}){
   sh.forEach((d,i)=>L.push([i===0?'……通信です。<em>メールが'+nmail.length+'通</em>届いています。まず、'+d.from+'から。'+kd(d):(i===sh.length-1&&nmail.length===sh.length?'それと、':'つづけて、')+d.from+'からも。'+kd(d)]));
   if(nmail.length>sh.length)L.push(['ほかにも'+(nmail.length-sh.length)+'通届いています。']);
   L.push(['ヘッダーの <em>MAIL</em> からお読みください。'])}
- if(!nvis&&MLIST.some(visitDue)){setTimeout(()=>visitCheck(()=>{}),500);return}
+ if(!nvis&&MLIST.some(visitDue)){setTimeout(()=>visitCheck(visitDeliver),500);return}
  if(nvis){setTimeout(()=>{nonaSay([['……ハンガーの入口に、来客です。お通ししますね。']],{hold:true});NB.then=()=>visitPlay(nvis.id)},500);return}
  if(L.length)nonaSay(L);
 }
