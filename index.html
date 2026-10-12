@@ -961,7 +961,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v207</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v208</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1039,7 +1039,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v207</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v208</span></div>
  </div>
 </div>
 
@@ -1105,7 +1105,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v207</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v208</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4861,6 +4861,9 @@ function makeSiege(){
  const mzA=grp(tur,-2.4,1.8,17),mzB=grp(tur,2.4,1.8,17);[-2.4,2.4].forEach(x=>{cyl(tur,.95,1.2,13,dk,x,1.8,10.5,Math.PI/2,0,8);cyl(tur,1.5,1.5,1.6,pipe,x,1.8,5,Math.PI/2,0,8);cyl(tur,1.2,1.2,.8,steel,x,1.8,17,Math.PI/2,0,8)});
  const mkGlow=(par,sz)=>{const q=new THREE.Mesh(new THREE.SphereGeometry(sz,8,6),new THREE.MeshBasicMaterial({color:0xff6030,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}));q.visible=false;par.add(q);return q};
  const gtp=[mzA,mzB].map(m=>mkGlow(m,1.1)),gfr=mkGlow(fmz,2.2);
+ // レーザーのビーム（芯＝白・外＝赤）。砲口から bdir の向きへ伸びる。g の子なので、出撃を終えれば一緒に消える
+ const bgm=new THREE.BoxGeometry(1,1,1);bgm.translate(0,0,.5);
+ const bmC=new THREE.Mesh(bgm,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.95,depthWrite:false})),bmO=new THREE.Mesh(bgm,new THREE.MeshBasicMaterial({color:0xff3020,transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false})),bm=new THREE.Group();bmC.frustumCulled=bmO.frustumCulled=false;bm.add(bmO,bmC);bm.visible=false;g.add(bm);
  // --- 背面：動力部（弱点）・排熱格子・両脇に主砲ポッド2基。装甲が薄いので最も苛烈
  const vents=[ventM,ventB];
  box(h,13,9.4,.6,pipe,0,.2,-13.2);box(h,11,7.4,.5,ventB,0,.2,-13.55);for(let i=0;i<7;i++)box(h,11.6,.25,.7,dk,0,-3+i*1,-13.8);
@@ -4892,7 +4895,7 @@ function makeSiege(){
   legs.push({root,kn,foot,hm,hp:2400,max:2400,broken:false,up:false,sx,hz:hz2,ph:((sx>0?1:0)+r)%2?Math.PI:0})}));
  const e={type:'siege',g,mat,alive:false,hp:0,max:26000,stun:0,kb:new THREE.Vector3(),r:15,cd:5,ang:0,home:new THREE.Vector3(),hit:0,respawn:0,head:h,tur,mzA,mzB,glows:[...gtp,gfr,...grr],gtp,gfr,grr,fmz,rzs,rifles,mgs,rear,vents,legs,
   chg:0,cq:0,ct:0,mt:2.5,rt:3,bq:0,bt:0,gt:0,broken:0,cl:0,rearSaid:false,legSaid:false,
-  fch:0,fcd:4,rch:0,rcq:0,rct:0,rcd:3,rit:2,ri:0,ph:0,heat:0,oh:0,ohCd:0,sm:0,
+  bm,bmC,bmO,bdir:new THREE.Vector3(0,0,1),fbt:0,fhT:0,fch:0,fcd:4,rch:0,rcq:0,rct:0,rcd:3,rit:2,ri:0,ph:0,heat:0,oh:0,ohCd:0,sm:0,
   center(v){return v.copy(g.position).add(new THREE.Vector3(0,SG_HY,0))}};
  e.hpBar=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0xff6a4c}));e.hpBar.visible=false;g.add(e.hpBar);
  ENEMIES.push(e);g.visible=false;e.off=true;return e}
@@ -4900,12 +4903,12 @@ function makeSiege(){
 function sgTip(key,txt){const e=RUN&&RUN.sg;if(!e||!e.alive||RUN.ok||!RUN.tp||RUN.tp[key]||COMM.busy||COMM.q.length)return;RUN.tp[key]=1;comm(txt,2.4)}
 function siegeGunsDown(e){e.rifles.concat(e.mgs).forEach(o=>o.gg.rotation.set(Math.PI/2,0,0))}
 function siegeReset(e){e.legs.forEach(l=>{l.hp=l.max;l.broken=false;l.up=false;l.hm.color.setHex(0xff7a20);l.root.rotation.set(0,0,0);l.kn.rotation.set(0,0,0);l.kn.scale.setScalar(1)});e.broken=0;e.cd=5;e.chg=0;e.cq=0;e.mt=2.5;e.rt=3;e.bq=0;e.gt=0;e.cl=0;e.rearSaid=false;e.legSaid=false;
- e.fch=0;e.fcd=4;e.rch=0;e.rcq=0;e.rct=0;e.rcd=3;e.rit=2;e.ri=0;e.ph=0;e.heat=0;e.oh=0;e.ohCd=0;e.sm=0;siegeGunsDown(e);
+ e.fch=0;e.fbt=0;e.bm.visible=false;e.fcd=4;e.rch=0;e.rcq=0;e.rct=0;e.rcd=3;e.rit=2;e.ri=0;e.ph=0;e.heat=0;e.oh=0;e.ohCd=0;e.sm=0;siegeGunsDown(e);
  e.g.rotation.set(0,0,0);e.g.position.y=0;e.head.rotation.set(0,0,0);e.head.position.y=SG_HY;e.tur.rotation.y=0;e.mat.color.setHex(0xffffff);e.mat.emissive.setRGB(0,0,0);e.glows.forEach(q=>q.visible=false)}
 function siegeBreak(e,l){l.broken=true;l.hm.color.setHex(0x2a1a14);e.broken++;l.root.rotation.x=0;l.root.rotation.z=0;l.kn.rotation.z=-l.sx*.9;
  const p=l.foot.getWorldPosition(new THREE.Vector3());p.y+=10;explode(p,3);SND.play('reinf',{g:.4});sgTip('leg',RUN.def.comm.leg)}
 // 過熱：弱点に当てた量が SG_HEAT に達すると、SG_OH 秒のあいだ全武装が止まる（そのあとしばらくは溜まらない）
-function siegeHeat(e,v){if(!e.alive||e.oh>0||e.ohCd>0)return;e.heat+=v;if(e.heat>=SG_HEAT){e.heat=0;e.oh=SG_OH;e.ohCd=SG_OH+9;e.chg=e.cq=e.fch=e.rch=e.rcq=e.bq=0;e.glows.forEach(o=>o.visible=false);siegeGunsDown(e);
+function siegeHeat(e,v){if(!e.alive||e.oh>0||e.ohCd>0)return;e.heat+=v;if(e.heat>=SG_HEAT){e.heat=0;e.oh=SG_OH;e.ohCd=SG_OH+9;e.chg=e.cq=e.fch=e.rch=e.rcq=e.bq=e.fbt=0;e.bm.visible=false;e.glows.forEach(o=>o.visible=false);siegeGunsDown(e);
  sAt('boom',e.g.position,{g:.6,size:1.3});shake=Math.max(shake,.4);say('OVERHEAT',1.8);if(RUN)sgTip('oh',RUN.def.comm.oh)}}
 // 要塞へのダメージ：当たった位置で倍率を変える（背面の動力部 2.5・脚の付け根 1.2（脚の耐久も削る）・腹部 0.5・ほかの装甲 0.3）。弱点に当てると過熱が溜まる
 function siegeDmg(e,dmg,pos){const ps=e.g.position,c=Math.cos(e.g.rotation.y),s=Math.sin(e.g.rotation.y),dx=pos.x-ps.x,dz=pos.z-ps.z,lx=dx*c-dz*s,lz=dx*s+dz*c,ly=pos.y-ps.y-SG_HY;
@@ -4920,7 +4923,7 @@ function siegeStomp(e,l){const f=l.foot.getWorldPosition(new THREE.Vector3());f.
 function siegeTick(e,dt,d,yaw){
  const sp=SG_SP*(1-.14*e.broken);e.home.z+=sp*dt;e.g.position.set(e.home.x,0,e.home.z);e.gt+=dt*(sp/SG_SP)*2.4;
  const wp=m=>m.getWorldPosition(new THREE.Vector3()),k=e.hp/e.max,
-  inR=(Rx,Rz)=>{const a=P.pos.x-e.g.position.x,b=P.pos.z-e.g.position.z,c=Math.cos(e.g.rotation.y),s=Math.sin(e.g.rotation.y),x=a*c-b*s,z=a*s+b*c;return (x/(10+Rx))**2+(z/(13+Rz))**2<1};   // 胴体（幅20×長さ26）の縁から、横 Rx m・前後 Rz m の楕円の中か
+  inR=(Rx,Rz)=>{const a=P.pos.x-e.g.position.x,b=P.pos.z-e.g.position.z,c=Math.cos(e.g.rotation.y),s=Math.sin(e.g.rotation.y),x=a*c-b*s,z=a*s+b*c;return Math.abs(x)<10+Rx&&Math.abs(z)<13+Rz};   // 胴体（幅20×長さ26）の縁から、横 Rx m・前後 Rz m の長方形の中か（側面はどこでも・腹の下も入る）
  e.ph=k<=1/3?2:k<=2/3?1:0;
  e.head.position.y=SG_HY+Math.sin(e.gt*2)*.15;
  e.legs.forEach(l=>{if(l.broken)return;const ph=e.gt+l.ph,c=Math.cos(ph),lift=Math.max(0,c);l.root.rotation.x=Math.sin(ph)*.12;l.root.rotation.z=l.sx*lift*.2;const up=lift>.02;if(l.up&&!up)siegeStomp(e,l);l.up=up});
@@ -4935,15 +4938,23 @@ function siegeTick(e,dt,d,yaw){
  {const act=2+e.ph,live=e.oh<=0&&!TRAIN&&P.hp.core>0&&P.down<=0;
   e.rifles.forEach((o,i)=>{if(live&&i<act&&inR(24,14))o.gg.lookAt(P.pos.x,P.pos.y+1.2,P.pos.z);else o.gg.rotation.set(Math.PI/2,0,0)});
   e.mgs.forEach((o,i)=>{if(live&&i<act&&inR(18,10))o.gg.lookAt(P.pos.x,P.pos.y+1.2,P.pos.z);else o.gg.rotation.set(Math.PI/2,0,0)})}
- if(TRAIN||P.hp.core<=0||P.down>0)return;
- if(e.oh>0){e.chg=e.cq=e.fch=e.rch=e.rcq=e.bq=0;e.glows.forEach(o=>o.visible=false);return}
+ if(TRAIN||P.hp.core<=0||P.down>0){e.bm.visible=false;e.fbt=e.fch=0;return}
+ if(e.oh>0){e.chg=e.cq=e.fch=e.rch=e.rcq=e.bq=e.fbt=0;e.bm.visible=false;e.glows.forEach(o=>o.visible=false);return}
  const aim=sp2=>playerCenter(new THREE.Vector3()).add(new THREE.Vector3((Math.random()-.5)*sp2,Math.random()*sp2-sp2*.5,(Math.random()-.5)*sp2)),
   dx=P.pos.x-e.g.position.x,dz=P.pos.z-e.g.position.z,cs=Math.cos(e.g.rotation.y),sn=Math.sin(e.g.rotation.y),lx=dx*cs-dz*sn,lz=dx*sn+dz*cs;
- // 正面主砲（固定・1門）：充填2.2秒＋弾が遅いので避けやすい。威力は大きい
- if(e.fch>0){e.fch-=dt;const q=1-e.fch/2.2;e.gfr.visible=true;e.gfr.scale.setScalar(.8+q*1.6);
-  if(e.fch<=0){e.gfr.visible=false;const from=wp(e.fmz),dir=aim(1.2).sub(from).normalize();sAt('mainGun',e.g.position,{g:.9,dk:.3});
-   spawn(0xff3020,2.2,from,{vel:dir.multiplyScalar(26),life:5,len:6,team:'e',dmg:120,imp:'A',hr:4.4});spawn(0xffc080,5,from,{life:.2,grow:.8});shake=Math.max(shake,.45);e.fcd=(e.ph?5.4:7)+Math.random()}}
- else{e.fcd-=dt;if(e.fcd<=0&&lz>4&&Math.abs(lx)<lz*1.2&&d<130){e.fch=2.2;sAt('charge',e.g.position,{g:.8,dk:.2});if(RUN)sgTip('charge',RUN.def.comm.charge)}}
+ // 正面主砲＝レーザー砲（固定・1門）：充填2.2秒（細い赤い照準線がプレイヤーをゆっくり追う）→ 約2.5秒ビームが出続ける（追尾は遅く、動けば避けられる）。触れている間 0.25秒ごとに15
+ {const from=wp(e.fmz),pc=playerCenter(new THREE.Vector3());
+  const track=()=>{const tg=pc.clone().sub(from).normalize(),ang=Math.acos(Math.max(-1,Math.min(1,e.bdir.dot(tg))));if(ang>1e-4){const ax=new THREE.Vector3().crossVectors(e.bdir,tg);if(ax.lengthSq()>1e-8)e.bdir.applyAxisAngle(ax.normalize(),Math.min(ang,.4*dt))}};
+  const place=(w,op)=>{let len=140;if(e.bdir.y<-.01)len=Math.min(len,from.y/-e.bdir.y);e.bm.position.copy(from).sub(e.g.position);e.bm.lookAt(from.clone().add(e.bdir));e.bmC.scale.set(w*.4,w*.4,len);e.bmO.scale.set(w,w,len);e.bmO.material.opacity=op;e.bm.visible=true;return len};
+  if(e.fch>0){e.fch-=dt;const q=1-e.fch/2.2;e.gfr.visible=true;e.gfr.scale.setScalar(.8+q*1.6);track();e.bmC.visible=false;place(.14,.3+.35*Math.abs(Math.sin(t*18)));
+   if(e.fch<=0){e.gfr.visible=false;e.fbt=2.5;e.fhT=0;sAt('mainGun',e.g.position,{g:.9,dk:.3});shake=Math.max(shake,.4)}}
+  else if(e.fbt>0){e.fbt-=dt;track();e.bmC.visible=true;const len=place(2.6,.55);e.fhT-=dt;
+   const tt=Math.max(0,Math.min(len,pc.clone().sub(from).dot(e.bdir))),pt=from.clone().addScaledVector(e.bdir,tt);
+   if(e.fhT<=0&&pc.distanceTo(pt)<3.2){e.fhT=.25;hitPlayer(15,'C',pt)}
+   shake=Math.max(shake,.18);if(sOnce('sgbm',.45))sAt('mainGun',e.g.position,{g:.4,dk:.3});
+   if(e.bdir.y<-.01&&sOnce('sgbs',.06)){const gp=from.clone().addScaledVector(e.bdir,len);spawn(0xffe0a0,2.8,gp,{life:.12,grow:1});spawn(0xff6030,1.6,gp.clone().add(new THREE.Vector3((Math.random()-.5)*3,1+Math.random()*2,(Math.random()-.5)*3)),{life:.3,grow:.6})}
+   if(e.fbt<=0){e.bm.visible=false;e.fcd=(e.ph?5.4:7)+Math.random()}}
+  else{e.bm.visible=false;e.fcd-=dt;if(e.fcd<=0&&lz>4&&Math.abs(lx)<lz*1.2&&d<130){e.fch=2.2;e.bdir.copy(pc).sub(from).normalize();sAt('charge',e.g.position,{g:.8,dk:.2});if(RUN)sgTip('charge',RUN.def.comm.charge)}}}
  // 背面主砲（2門）：充填1.3秒→2連射。装甲が薄い背面ほど苛烈（威力150・弾も速い）
  if(e.rch>0){e.rch-=dt;const q=1-e.rch/1.3;e.grr.forEach(o=>{o.visible=true;o.scale.setScalar(.5+q*.9)});if(e.rch<=0){e.grr.forEach(o=>o.visible=false);e.rcq=2;e.rct=0}}
  else if(e.rcq<=0){e.rcd-=dt;if(e.rcd<=0&&lz<-3&&d<100&&Math.abs(lx)<-lz*1.6+20){e.rch=1.3;sAt('charge',e.g.position,{g:.8,dk:.2})}}
@@ -4975,7 +4986,7 @@ function siegeDeadAnim(e,dt){const t0=e.cl;e.cl+=dt;const c=e.cl,ez=x=>{x=Math.m
  e.g.position.y=-Math.max(0,Math.min(9.5,m));   // いちばん低い足が地面に着くように胴体を下ろす（足は埋めない）
  if(c<3.4)shake=Math.max(shake,.15);
  if(c>2.4&&sOnce('sgsm',.35)){const q=e.head.getWorldPosition(new THREE.Vector3());q.x+=(Math.random()-.5)*14;q.y+=4;q.z+=(Math.random()-.5)*16;smoke(q,3,2.4)}}
-function siegeDead(e){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.legs.forEach(l=>l.hm.color.setHex(0x2a1a14));e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a);e.glows.forEach(o=>o.visible=false);siegeGunsDown(e)}
+function siegeDead(e){e.bm.visible=false;e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.legs.forEach(l=>l.hm.color.setHex(0x2a1a14));e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a);e.glows.forEach(o=>o.visible=false);siegeGunsDown(e)}
 /* 中継アンテナ（★2-S）：骨組みの塔に皿と赤いランプ、足元の制御箱。撃ってこない。全部倒すと指揮型ギアの守り（被ダメージ 1/4）が消える */
 function makeAntenna(){const g=grp(S),mat=psMat(0xffffff,{map:panel('#5a5e58','#2a2e2a')}),dk=psMat(0x1a1c18),hz=psMat(0xffffff,{map:stripes('#d8b020','#1a1a14')}),lamp=new THREE.MeshBasicMaterial({color:0xff3020});
  box(g,3,2.4,3,mat,0,1.2,0);box(g,3.1,.3,3.1,hz,0,2.5,0);const gl=box(g,1.6,.4,.1,new THREE.MeshBasicMaterial({color:0x6fd3e0}),0,1.6,1.52);
@@ -5486,10 +5497,10 @@ const MLIST=[
   enemies:[{type:'arc',x:-9,z:-18},{type:'arc',x:11,z:-14},{type:'crawler',x:-4,z:-4},{type:'crawler',x:5,z:0},{type:'walker',x:-17,z:10,rng:60},{type:'arc',x:6,z:14},{type:'arc',x:-8,z:20},{type:'walker',x:17,z:24,rng:60},{type:'crawler',x:-3,z:32},{type:'crawler',x:4,z:36},{type:'arc',x:0,z:38}]}, {id:'3-S',wx:'emergency',ch:3,kind:'visit',story:true,ready:true,need:['vs2'],cls:'B',title:'地下の目覚め',from:'整備主任 ペトラ',client:'ペトラ',voice:'adultF',img:'img/clients/client-mechanic-petra.png',imgF:'',reward:28000,field:'under',fieldJa:'闘技場の地下（搬入ゲート）',
   obj:'大型多脚要塞の撃破（避難の時間稼ぎ）',fail:'要塞の出口到達 ／ CORE 大破',enemyJa:'大型多脚要塞 SIEGE WALKER',
   desc:'決勝のあと、闘技場の地下で大型の多脚要塞が動き出した。観客の避難路である出口のゲートへ向かっている。避難が終わるまで、およそ150秒。依頼人は、闘技場の整備主任。',
-  brief:['目標は、地下の搬入ゲートを南から歩いてくる、大型の多脚要塞です。出口のゲートに着かれると、観客の避難路が塞がれます。足止めの目安は約150秒。','正面と上面の装甲は、ほとんど通りません。弱点は、脚の付け根と、背面の動力部です。脚の付け根を壊すと、歩みが遅くなります。弱点を撃ち続けると、要塞は過熱して、しばらく武装が止まります。','装甲の厚い正面ほど攻撃は穏やかで、薄い背面ほど苛烈です。主砲は正面に1門、背面に2門。砲口が光ってから撃ってきます。腹部の小銃は、足元に入ると狙われます。足を踏み下ろす衝撃にも注意してください。'],
+  brief:['目標は、地下の搬入ゲートを南から歩いてくる、大型の多脚要塞です。出口のゲートに着かれると、観客の避難路が塞がれます。足止めの目安は約150秒。','正面と上面の装甲は、ほとんど通りません。弱点は、脚の付け根と、背面の動力部です。脚の付け根を壊すと、歩みが遅くなります。弱点を撃ち続けると、要塞は過熱して、しばらく武装が止まります。','装甲の厚い正面ほど攻撃は穏やかで、薄い背面ほど苛烈です。正面の主砲はレーザー砲です。細い赤い線が出たあと、ビームがしばらく出続けます。背面には主砲が2門あります。腹部の小銃は、足元に入ると狙われます。足を踏み下ろす衝撃にも注意してください。'],
   comm:{start:'非常灯が点いています。要塞が動き出しました。出口まで、約150秒。',charge:'主砲の充填を確認。射線から外れてください。',rear:'背面の動力部です。効いています。',leg:'脚の付け根を破壊。歩みが遅くなりました。',half:'出口まで、半分を切りました。',add:'要塞の腹部の銃座が、増えて動き出しました。',belly:'腹部に銃座を確認。足元に入ると狙われます。',oh:'動力部が過熱！ 要塞の武装が止まっています。今です。',bell1:'観客の避難を誘導中です。出口へ。お急ぎください。',bell2:'避難、あと少しです。……お願いいたします、○○様。',serena:'わたしの観客に、手を出さないでちょうだい。……ここは任せるわ、名無しさん。',fail:'要塞が、出口に到達しました。……',clear:'要塞、沈黙。観客の避難は完了しました。',clear2:'……動力部の奥に、何かあります。接続します。'},
   res:{ok:'ペトラさんから通信です。「全員無事！ ……あんた、本当に何者なの」と。',ng:'撤退します。……要塞は、出口に。もう一度、止めに行かなければなりません。'},
-  start:{x:0,z:-28},siege:true,memFx:['VOICE','── 断つな、と声は言った'],
+  start:{x:0,z:-28},siege:true,bgm:'boss',memFx:['VOICE','── 断つな、と声は言った'],
   enemies:[{type:'siege',x:0,z:-66}],
   talk:[['c','ちょっと、大変！ 優勝おめでとう……って言いたいのに、それどころじゃないの！'],
    ['c','地下の搬入ゲートの奥で、大きな多脚の要塞が動き出した。運営局の記録には「廃棄済み」ってあるのに、勝手に起動してるのよ。'],
@@ -6418,7 +6429,7 @@ function misStartEnemies(){
  const es=RUN.def.escort,rc=RUN.def.reach,df=RUN.def.defend;$('esc').hidden=!es&&!RUN.def.boss&&!rc&&!df&&!RUN.def.siege;RUN.boss=null;RUN.rf=0;RUN.chgSaid=false;RUN.reachD0=0;RUN.halfSaid=false;RUN.nearSaid=false;RUN.wkSaid=false;RUN.lastSaid=false;RUN.arcSaid=false;RUN.lost=false;
  $('escL').classList.remove('lo');$('escL').textContent=es?'CARGO':rc?(RUN.def.limit?'TIME '+fmtT(RUN.def.limit):'POINT'):df?(df.kill?'BRIDGE':'BASE'):'TARGET';$('escS').textContent=es?'配給所まで':rc?(rc.lab||'中継アンテナまで'):df?(df.kill?'高架 ／ 敵の波':'防衛 残り'):'大型無人砲台';$('escHp').classList.remove('lo');$('escHp').style.width='100%';
  if(RUN.def.boss){RUN.boss=ENEMIES.find(e=>e.type==='boss'&&!e.off);const B=RUN.boss;B.mat.color.setHex(0xffffff);B.head.rotation.x=0;B.g.rotation.y=Math.PI;B.head.rotation.y=0;B.mc=9;B.chg=0;B.bq=0;B.front=0;B.cd=4;B.line.visible=B.glow.visible=false;$('escD').textContent='100%'}
- if(RUN.def.siege){RUN.sg=ENEMIES.find(e=>e.type==='siege'&&!e.off);$('esc').hidden=false;$('escL').textContent='SIEGE';$('escS').textContent='出口まで';$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo');RUN.bellSaid=0;RUN.serSaid=false;RUN.nearSaid=false;RUN.ph=0;RUN.tp={};RUN.sgT=0}
+ if(RUN.def.siege){RUN.sg=ENEMIES.find(e=>e.type==='siege'&&!e.off);$('esc').hidden=false;$('escL').textContent='SIEGE';$('escS').textContent='出口まで';$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo');RUN.bellSaid=0;RUN.serSaid=false;RUN.nearSaid=false;RUN.ph=0;RUN.tp={};RUN.sgT=0;RUN.bgI=false}
  if(es){RUN.tr={hp:es.hp,max:es.hp,z:es.z0,stop:false,wait:false,hurt:false,near:false};truckPlace();TRUCK.visible=true;RUN.total=RUN.def.waves.reduce((a,w)=>a+w.en.length,0)}else TRUCK.visible=false;
  if(RUN.def.chase)chaseInit();
  if(RUN.def.jam)jamInit();
@@ -6464,7 +6475,8 @@ function siegeMisTick(dt){const B=RUN.sg,d=RUN.def,k=Math.max(0,B.hp/B.max);
  const dist=SG_GATE-(B.g.position.z+13.5);
  $('escHp').style.width=(100*k)+'%';$('escHp').classList.toggle('lo',k<.35);$('escD').textContent=Math.ceil(k*100)+'%';$('escS').textContent='出口まで '+Math.max(0,Math.round(dist))+' m';
  if(B.alive){
-  RUN.sgT+=dt;if(RUN.ph<B.ph&&!COMM.busy&&!COMM.q.length){RUN.ph++;SND.play('reinf',{g:.4});comm(d.comm.add,2.2)}
+  RUN.sgT+=dt;if(!RUN.bgI&&B.ph>=2){RUN.bgI=true;SND.bgmI(1)}
+  if(RUN.ph<B.ph&&!COMM.busy&&!COMM.q.length){RUN.ph++;SND.play('reinf',{g:.4});comm(d.comm.add,2.2)}
   if(RUN.bellSaid<2&&dist<(RUN.bellSaid?40:85)){RUN.bellSaid++;comm(['b',RUN.bellSaid===1?d.comm.bell1:d.comm.bell2],2.6)}
   if(!RUN.serSaid&&RUN.sgT>=12){RUN.serSaid=true;comm(['s',d.comm.serena],3)}
   if(!RUN.halfSaid&&dist<64){RUN.halfSaid=true;comm(d.comm.half,2.2)}
@@ -6474,7 +6486,7 @@ function siegeMisTick(dt){const B=RUN.sg,d=RUN.def,k=Math.max(0,B.hp/B.max);
   ENEMIES.forEach(e=>{if(e!==B&&!e.off&&e.alive){e.alive=false;e.g.visible=false;if(e.shadow)e.shadow.visible=false;explode(e.center(new THREE.Vector3()),1.4)}});
   for(let i=0;i<13;i++)setTimeout(()=>{if(RUN){const q=B.head.getWorldPosition(new THREE.Vector3());q.add(new THREE.Vector3((Math.random()-.5)*22,Math.random()*9-2,(Math.random()-.5)*26));explode(q,i%3?2.4:3.4);shake=Math.max(shake,.3)}},i*280);
   commClear();comm(d.comm.clear,2.6);   // 戦闘中の通信は消す。「接続します」を打ち終えてから青い画面 → 帯
-  comm(d.comm.clear2,3.6,()=>{if(!RUN||!RUN.ok)return;memFxShow(d);RUN.hold=performance.now()+3800;setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},3300)});RUN.hold=performance.now()+60000}
+  comm(d.comm.clear2,3.6,()=>{if(!RUN||!RUN.ok)return;RUN.hold=performance.now()+4800;setTimeout(()=>{if(!RUN||!RUN.ok)return;memFxShow(d);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},3300)},1000)});RUN.hold=performance.now()+60000}
  if(RUN.ok){if(finishWait(dt)){$('memFx').classList.remove('on');misFinish(true)}}}
 // 護衛：荷車を進める・波を出す・到着／破壊を判定
 function escortTick(dt){const T=RUN.tr,d=RUN.def,es=d.escort;if(!T)return;
@@ -6517,7 +6529,7 @@ function relayTick(dt){const d=RUN.def,B=RUN.cmd,k=Math.max(0,B.hp/B.max),al=RUN
  if(!RUN.halfSaid&&k<=.5&&B.alive){RUN.halfSaid=true;comm(d.comm.half,2.2)}
  if(!B.alive&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=8.4;
   ENEMIES.forEach(e=>{if(e!==B&&!e.off&&e.alive){e.alive=false;e.g.visible=false;if(e.type!=='antenna')explode(e.center(new THREE.Vector3()),1.4)}});
-  comm(d.comm.clear,2.6);comm(d.comm.clear2,3.6,()=>{if(!RUN||!RUN.ok)return;memFxShow(d);RUN.hold=performance.now()+3800;setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},3300)});RUN.hold=performance.now()+60000}
+  comm(d.comm.clear,2.6);comm(d.comm.clear2,3.6,()=>{if(!RUN||!RUN.ok)return;RUN.hold=performance.now()+4800;setTimeout(()=>{if(!RUN||!RUN.ok)return;memFxShow(d);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},3300)},1000)});RUN.hold=performance.now()+60000}
  if(RUN.ok){if(finishWait(dt)){$('memFx').classList.remove('on');misFinish(true)}}}
 /* 妨害下（4-2）：塔（アンテナ）を全部壊すと成功。ロックは近距離だけ（updateLock）・マップはノイズ（drawMap）。
  ハンスが旧軍の周波数で、最寄りの塔の方位（自機の正面＝12時）と距離を一定の間隔で知らせる。塔が落ちるたびに警備のドローン（reinf）が出る */
