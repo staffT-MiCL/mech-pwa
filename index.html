@@ -964,7 +964,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v215</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v216</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1042,7 +1042,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v215</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v216</span></div>
  </div>
 </div>
 
@@ -1108,7 +1108,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v215</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v216</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -2841,8 +2841,9 @@ const SERIES=[
     box(t,1.2,.2,.75,K.cloth,0,1.66,.12);box(t,.26,.07,1.4,K.cloth,.32,1.6,-.95,-.32,.08,0);box(t,.22,.07,1.1,K.cloth,.06,1.55,-.85,-.42,-.06,0);
     [-1,1].forEach(q=>cyl(P.head,.08,.08,.08,K.eye,q*.13,.36,.38,Math.PI/2,0,8));box(P.head,.03,1.1,.03,K.metal,-.24,.8,-.2,-.15);
    },
-   wep:{r(g,K){box(g,.22,.6,.28,K.frame,0,-.35,0);box(g,.08,.6,.08,K.metal,0,-.9,0);box(g,.22,.2,.3,K.cloth,0,-.4,.25)},
-        l(g,K){box(g,.16,.3,.2,K.frame,0,-.2,0);box(g,.05,.55,.14,K.metal,0,-.6,0)}},
+   wep:{r(g,K){HAND.RFT.build(g)},   // 試合で見える武器はモデル側の定義（ティモ専用兵装 TMW。ゲーム側の HAND.RFT／MGT／SHOULDER.MST と同じ作り）
+        l(g,K){HAND.MGT.build(g)}},
+   sh:{r(g,K){SHOULDER.MST.build(g)}},
    back(g,K){box(g,.9,.5,.3,K.sub,0,0,-.1);cyl(g,.34,.34,1.5,K.main,0,.45,-.42,0,0,8);[0,1].forEach(i=>cyl(g,.36,.36,.08,K.cloth,0,-.05+i*1.0,-.42,0,0,8));cyl(g,.26,.3,.14,K.frame,0,1.25,-.42,0,0,8)}},
   shop:{name:'HX-07 VESTIGE',jp:'ヴェスティージ（主人公機・初期装備）',deco:['初期装備の主人公機そのもの。装飾なし','右肩のミサイル、右手のライフル、左手のブレード']}},
 
