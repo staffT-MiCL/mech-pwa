@@ -961,7 +961,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v208</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v209</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1039,7 +1039,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v208</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v209</span></div>
  </div>
 </div>
 
@@ -1105,7 +1105,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v208</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v209</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4893,7 +4893,7 @@ function makeSiege(){
   const foot=box(kn,5,1,5,dk,sx*4.8,-16.5,0);box(kn,5.2,.3,5.2,hz,sx*4.8,-16,0);[-1.8,0,1.8].forEach(o=>box(kn,2.4,.8,.9,steel,sx*8,-16.6,o));
   const hm=new THREE.MeshBasicMaterial({color:0xff7a20});box(h,4,4,4,hm,sx*10.8,-2.5,hz2);
   legs.push({root,kn,foot,hm,hp:2400,max:2400,broken:false,up:false,sx,hz:hz2,ph:((sx>0?1:0)+r)%2?Math.PI:0})}));
- const e={type:'siege',g,mat,alive:false,hp:0,max:26000,stun:0,kb:new THREE.Vector3(),r:15,cd:5,ang:0,home:new THREE.Vector3(),hit:0,respawn:0,head:h,tur,mzA,mzB,glows:[...gtp,gfr,...grr],gtp,gfr,grr,fmz,rzs,rifles,mgs,rear,vents,legs,
+ const e={type:'siege',g,mat,alive:false,hp:0,max:30000,stun:0,kb:new THREE.Vector3(),r:15,cd:5,ang:0,home:new THREE.Vector3(),hit:0,respawn:0,head:h,tur,mzA,mzB,glows:[...gtp,gfr,...grr],gtp,gfr,grr,fmz,rzs,rifles,mgs,rear,vents,legs,
   chg:0,cq:0,ct:0,mt:2.5,rt:3,bq:0,bt:0,gt:0,broken:0,cl:0,rearSaid:false,legSaid:false,
   bm,bmC,bmO,bdir:new THREE.Vector3(0,0,1),fbt:0,fhT:0,fch:0,fcd:4,rch:0,rcq:0,rct:0,rcd:3,rit:2,ri:0,ph:0,heat:0,oh:0,ohCd:0,sm:0,
   center(v){return v.copy(g.position).add(new THREE.Vector3(0,SG_HY,0))}};
@@ -4919,7 +4919,7 @@ function siegeDmg(e,dmg,pos){const ps=e.g.position,c=Math.cos(e.g.rotation.y),s=
 function siegeStomp(e,l){const f=l.foot.getWorldPosition(new THREE.Vector3());f.y=0;if(f.distanceTo(P.pos)>90)return;
  for(let i=0;i<10;i++){const a=i/10*6.28;spawn(0xb8a888,.9,f,{vel:new THREE.Vector3(Math.sin(a)*7,1+Math.random()*2,Math.cos(a)*7),grav:9,life:.5})}
  if(sOnce('sgst',.12))sAt('boom',f,{g:.5,size:1.3});if(f.distanceTo(P.pos)<40)shake=Math.max(shake,.18);
- if(e.oh<=0&&Math.hypot(f.x-P.pos.x,f.z-P.pos.z)<9&&P.pos.y<3&&P.hp.core>0&&P.down<=0){hitPlayer(110,'A',f);if(!DBG.inv)P.stun=Math.max(P.stun,.6)}}
+ if(e.oh<=0&&Math.hypot(f.x-P.pos.x,f.z-P.pos.z)<9&&P.pos.y<3&&P.hp.core>0&&P.down<=0){hitPlayer(165,'A',f);if(!DBG.inv)P.stun=Math.max(P.stun,.6)}}
 function siegeTick(e,dt,d,yaw){
  const sp=SG_SP*(1-.14*e.broken);e.home.z+=sp*dt;e.g.position.set(e.home.x,0,e.home.z);e.gt+=dt*(sp/SG_SP)*2.4;
  const wp=m=>m.getWorldPosition(new THREE.Vector3()),k=e.hp/e.max,
@@ -4942,7 +4942,7 @@ function siegeTick(e,dt,d,yaw){
  if(e.oh>0){e.chg=e.cq=e.fch=e.rch=e.rcq=e.bq=e.fbt=0;e.bm.visible=false;e.glows.forEach(o=>o.visible=false);return}
  const aim=sp2=>playerCenter(new THREE.Vector3()).add(new THREE.Vector3((Math.random()-.5)*sp2,Math.random()*sp2-sp2*.5,(Math.random()-.5)*sp2)),
   dx=P.pos.x-e.g.position.x,dz=P.pos.z-e.g.position.z,cs=Math.cos(e.g.rotation.y),sn=Math.sin(e.g.rotation.y),lx=dx*cs-dz*sn,lz=dx*sn+dz*cs;
- // 正面主砲＝レーザー砲（固定・1門）：充填2.2秒（細い赤い照準線がプレイヤーをゆっくり追う）→ 約2.5秒ビームが出続ける（追尾は遅く、動けば避けられる）。触れている間 0.25秒ごとに15
+ // 正面主砲＝レーザー砲（固定・1門）：充填2.2秒（細い赤い照準線がプレイヤーをゆっくり追う）→ 約2.5秒ビームが出続ける（追尾は遅く、動けば避けられる）。触れている間 0.25秒ごとに30（最大約300）
  {const from=wp(e.fmz),pc=playerCenter(new THREE.Vector3());
   const track=()=>{const tg=pc.clone().sub(from).normalize(),ang=Math.acos(Math.max(-1,Math.min(1,e.bdir.dot(tg))));if(ang>1e-4){const ax=new THREE.Vector3().crossVectors(e.bdir,tg);if(ax.lengthSq()>1e-8)e.bdir.applyAxisAngle(ax.normalize(),Math.min(ang,.4*dt))}};
   const place=(w,op)=>{let len=140;if(e.bdir.y<-.01)len=Math.min(len,from.y/-e.bdir.y);e.bm.position.copy(from).sub(e.g.position);e.bm.lookAt(from.clone().add(e.bdir));e.bmC.scale.set(w*.4,w*.4,len);e.bmO.scale.set(w,w,len);e.bmO.material.opacity=op;e.bm.visible=true;return len};
@@ -4950,7 +4950,7 @@ function siegeTick(e,dt,d,yaw){
    if(e.fch<=0){e.gfr.visible=false;e.fbt=2.5;e.fhT=0;sAt('mainGun',e.g.position,{g:.9,dk:.3});shake=Math.max(shake,.4)}}
   else if(e.fbt>0){e.fbt-=dt;track();e.bmC.visible=true;const len=place(2.6,.55);e.fhT-=dt;
    const tt=Math.max(0,Math.min(len,pc.clone().sub(from).dot(e.bdir))),pt=from.clone().addScaledVector(e.bdir,tt);
-   if(e.fhT<=0&&pc.distanceTo(pt)<3.2){e.fhT=.25;hitPlayer(15,'C',pt)}
+   if(e.fhT<=0&&pc.distanceTo(pt)<3.2){e.fhT=.25;hitPlayer(30,'C',pt)}
    shake=Math.max(shake,.18);if(sOnce('sgbm',.45))sAt('mainGun',e.g.position,{g:.4,dk:.3});
    if(e.bdir.y<-.01&&sOnce('sgbs',.06)){const gp=from.clone().addScaledVector(e.bdir,len);spawn(0xffe0a0,2.8,gp,{life:.12,grow:1});spawn(0xff6030,1.6,gp.clone().add(new THREE.Vector3((Math.random()-.5)*3,1+Math.random()*2,(Math.random()-.5)*3)),{life:.3,grow:.6})}
    if(e.fbt<=0){e.bm.visible=false;e.fcd=(e.ph?5.4:7)+Math.random()}}
@@ -4959,23 +4959,23 @@ function siegeTick(e,dt,d,yaw){
  if(e.rch>0){e.rch-=dt;const q=1-e.rch/1.3;e.grr.forEach(o=>{o.visible=true;o.scale.setScalar(.5+q*.9)});if(e.rch<=0){e.grr.forEach(o=>o.visible=false);e.rcq=2;e.rct=0}}
  else if(e.rcq<=0){e.rcd-=dt;if(e.rcd<=0&&lz<-3&&d<100&&Math.abs(lx)<-lz*1.6+20){e.rch=1.3;sAt('charge',e.g.position,{g:.8,dk:.2})}}
  if(e.rcq>0){e.rct-=dt;if(e.rct<=0){const from=wp(e.rzs[e.rcq-1]),dir=aim(2.5).sub(from).normalize();e.rcq--;e.rct=.3;sAt('mainGun',e.g.position,{g:.9,dk:.3});
-  spawn(0xff2010,1.8,from,{vel:dir.multiplyScalar(38),life:3.5,len:5,team:'e',dmg:150,imp:'A',hr:3.8});spawn(0xffc080,4,from,{life:.18,grow:.8});shake=Math.max(shake,.4);if(e.rcq<=0)e.rcd=2.8-.4*e.ph+Math.random()}}
+  spawn(0xff2010,1.8,from,{vel:dir.multiplyScalar(38),life:3.5,len:5,team:'e',dmg:225,imp:'A',hr:3.8});spawn(0xffc080,4,from,{life:.18,grow:.8});shake=Math.max(shake,.4);if(e.rcq<=0)e.rcd=2.8-.4*e.ph+Math.random()}}
  // 背中の副砲（旋回）：装甲が最も厚いので威力は弱い。2.2秒の充填→2発
  if(e.chg>0){e.chg-=dt;const q=1-e.chg/2.2;e.gtp.forEach(o=>{o.visible=true;o.scale.setScalar(.5+q*1.2)});if(e.chg<=0){e.gtp.forEach(o=>o.visible=false);e.cq=2;e.ct=0}}
  else if(e.cq<=0){e.cd-=dt;if(e.cd<=0&&d<120){e.chg=2.2;sAt('charge',e.g.position,{g:.6,dk:.2})}}
  if(e.cq>0){e.ct-=dt;if(e.ct<=0){const m=e.cq===2?e.mzA:e.mzB,from=wp(m),dir=aim(2).sub(from).normalize();e.cq--;e.ct=.4;sAt('mainGun',e.g.position,{g:.5,dk:.3});
-  spawn(0xff8030,1.1,from,{vel:dir.multiplyScalar(26),life:4,len:3,team:'e',dmg:55,imp:'B',hr:2.6});spawn(0xffc080,2.4,from,{life:.15,grow:.8});if(e.cq<=0)e.cd=(k<.5?4.8:6.5)+Math.random()*1.4}}
+  spawn(0xff8030,1.1,from,{vel:dir.multiplyScalar(26),life:4,len:3,team:'e',dmg:83,imp:'B',hr:2.6});spawn(0xffc080,2.4,from,{life:.15,grow:.8});if(e.cq<=0)e.cd=(k<.5?4.8:6.5)+Math.random()*1.4}}
  // 腹部のライフル：単発・高速。稼働数は 2〜4（HPの段階で増える）。反応するのは胴体の縁から、横24m・前後14m以内（側面に近づく・腹の下に入る）
  e.rit-=dt;if(e.rit<=0&&inR(24,14)){const act=2+e.ph;e.ri=(e.ri+1)%act;e.rit=1.7-.25*e.ph+Math.random()*.3;const from=wp(e.rifles[e.ri].mz),dir=aim(1.6).sub(from).normalize();
-  sAt('turretFire',e.g.position,{g:.45,dk:.6});spawn(0xffe890,.35,from,{vel:dir.multiplyScalar(46),life:3,len:3.5,team:'e',dmg:48,imp:'B'});spawn(0xffd090,1,from,{life:.07});
+  sAt('turretFire',e.g.position,{g:.45,dk:.6});spawn(0xffe890,.35,from,{vel:dir.multiplyScalar(46),life:3,len:3.5,team:'e',dmg:72,imp:'B'});spawn(0xffd090,1,from,{life:.07});
   if(RUN)sgTip('belly',RUN.def.comm.belly)}
  // 腹部の機関銃：短い連射（6＋2×段階 発）。胴体の縁から、横18m・前後10m以内だけ
  e.mt-=dt;if(e.bq<=0&&e.mt<=0&&inR(18,10)){e.bq=6+2*e.ph;e.bt=0;e.mt=3.2-.4*e.ph+Math.random()*.8}
  if(e.bq>0){e.bt-=dt;if(e.bt<=0){const act=2+e.ph,from=wp(e.mgs[e.bq%act].mz),dir=aim(6).sub(from).normalize();e.bq--;e.bt=.09;if(sOnce('sgmg',.14))sAt('turretFire',e.g.position,{g:.35,dk:.6});
-  spawn(0xffa040,.3,from,{vel:dir.multiplyScalar(32),life:3,len:2,team:'e',dmg:15,imp:'C'});spawn(0xffd090,.8,from,{life:.05})}}
+  spawn(0xffa040,.3,from,{vel:dir.multiplyScalar(32),life:3,len:2,team:'e',dmg:23,imp:'C'});spawn(0xffd090,.8,from,{life:.05})}}
  // 背面の迎撃：後ろに回りこむと動力部から5発の散弾
  if(lz<-6&&Math.abs(lx)<30&&d<60){e.rt-=dt;if(e.rt<=0){e.rt=2.4;const from=wp(e.rear);sAt('turretFire',e.g.position,{g:.5,dk:.5});
-  for(let i=0;i<5;i++){const dir=aim(7).sub(from).normalize();spawn(0xff7a20,.5,from,{vel:dir.multiplyScalar(28),life:3,len:3,team:'e',dmg:40,imp:'C'})}}}}
+  for(let i=0;i<5;i++){const dir=aim(7).sub(from).normalize();spawn(0xff7a20,.5,from,{vel:dir.multiplyScalar(28),life:3,len:3,team:'e',dmg:60,imp:'C'})}}}}
 // 撃破の崩れ方：爆発と振動 → 膝を折って足をたたむ → 足を地面につけたまま胴体が沈み、少し前のめりに傾いて止まる
 function siegeDeadAnim(e,dt){const t0=e.cl;e.cl+=dt;const c=e.cl,ez=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
  if(t0===0)e.legs.forEach(l=>{l.r0=l.root.rotation.z;l.k0=l.kn.rotation.z;l.s0=l.kn.scale.x});
