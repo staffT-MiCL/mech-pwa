@@ -961,7 +961,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v202</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v203</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1039,7 +1039,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v202</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v203</span></div>
  </div>
 </div>
 
@@ -1105,7 +1105,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v202</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v203</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4908,7 +4908,7 @@ function makeAntenna(){const g=grp(S),mat=psMat(0xffffff,{map:panel('#5a5e58','#
  e.hpBar=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0x8cf06e}));e.hpBar.position.y=17;g.add(e.hpBar);
  ENEMIES.push(e);e.alive=false;g.visible=false;e.off=true;return e}
 /* 妨害塔（大型）が壊れたとき：自機と反対向きに、上半分が折れて落ちる。下半分は残る。残骸はそのまま（当たり判定なし） */
-function towerBreak(e){const dx=e.g.position.x-P.pos.x,dz=e.g.position.z-P.pos.z,l=Math.hypot(dx,dz)||1;e.fall={t:0,dx:dx/l,dz:dz/l,done:false};e.bc.visible=false;e.hpBar.visible=false;e.bm.color.setHex(0x2a1208);e.lp.material.color.setHex(0x200806);e.gl.material.color.setHex(0x10181a);
+function towerBreak(e){const dx=e.g.position.x-P.pos.x,dz=e.g.position.z-P.pos.z,l=Math.hypot(dx,dz)||1;e.fall={t:0,dx:dx/l,dz:dz/l,done:false};e.bc.visible=false;e.hpBar.visible=false;e.hit=0;e.mat.emissive.setRGB(0,0,0);e.bm.color.setHex(0x2a1208);e.lp.material.color.setHex(0x200806);e.gl.material.color.setHex(0x10181a);
  const p=e.up.getWorldPosition(new THREE.Vector3());explode(p,3);sAt('turretFire',e.g.position,{g:.6})}
 function towerFall(e,dt){const F=e.fall;if(F.done)return;F.t+=dt;const u=Math.min(1,F.t/1.6),U=e.up;
  U.position.set(F.dx*6*u*u,7*(1-u*u)+.5*u*u,F.dz*6*u*u);U.quaternion.setFromAxisAngle(new THREE.Vector3(F.dz,0,-F.dx),1.45*Math.pow(u,1.5));
@@ -6428,6 +6428,9 @@ function relayTick(dt){const d=RUN.def,B=RUN.cmd,k=Math.max(0,B.hp/B.max),al=RUN
 function jamInit(){const A=ENEMIES.filter(e=>e.type==='antenna'&&!e.off),J=RUN.jm={al:A.length,n:A.length,t:4,intro:0,rf:0,say:0,ag:[0,0,0,0]};
  $('esc').hidden=false;$('escL').textContent='JAMMER';$('escL').classList.remove('lo');$('escS').textContent='妨害塔 残り '+J.n;$('escD').textContent='0 / '+J.n;$('escHp').style.width='100%';$('escHp').classList.remove('lo')}
 function jamClock(x,z){const dx=x-P.pos.x,dz=z-P.pos.z,fw=dx*Math.sin(camYaw)+dz*Math.cos(camYaw),rt=-dx*Math.cos(camYaw)+dz*Math.sin(camYaw),a=Math.atan2(rt,fw),h=((Math.round(a/(Math.PI/6))%12)+12)%12;return h||12}
+/* 4-2 クリア：残った護衛を消し（自機から100m以内は小さな爆発つき）、飛んでいる敵弾も消す。塔は残す（撃破数・報酬には加えない） */
+function jamClear(){ENEMIES.forEach(e=>{if(!e.post||e.off||!e.alive)return;e.alive=false;e.g.visible=false;if(e.shadow)e.shadow.visible=false;if(Math.hypot(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z)<100)explode(e.center(new THREE.Vector3()),1.4);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null;if(lockT3===e)lockT3=null});
+ for(let i=FX.length-1;i>=0;i--){const f=FX[i];if(f.team==='e'){S.remove(f.m);FX.splice(i,1)}}}
 function jamTick(dt){const d=RUN.def,J=RUN.jm,c=d.comm,A=ENEMIES.filter(e=>e.type==='antenna'&&!e.off),al=A.filter(a=>a.alive).length;
  if(RUN.ok){if(finishWait(dt))misFinish(true);return}
  $('escS').textContent='妨害塔 残り '+al;$('escD').textContent=(J.n-al)+' / '+J.n;$('escHp').style.width=(100*al/J.n)+'%';$('escHp').classList.toggle('lo',al===1);$('escL').classList.toggle('lo',al===1);
@@ -6442,7 +6445,7 @@ function jamTick(dt){const d=RUN.def,J=RUN.jm,c=d.comm,A=ENEMIES.filter(e=>e.typ
  if(J.intro){J.t-=dt;
   if(J.t<=0&&!COMM.busy&&!COMM.q.length&&al>0&&!RUN.ok&&P.down<=0){let b=null,bd=1e9;A.forEach(a=>{if(!a.alive)return;const q=Math.hypot(a.g.position.x-P.pos.x,a.g.position.z-P.pos.z);if(q<bd){bd=q;b=a}});
    if(b){const lr=Math.max(JAM_MIN,Math.round(SS.lockRange*JAM_LK)),txt=(bd<=lr?c.near:c.brg).replace('{h}',jamClock(b.g.position.x,b.g.position.z)).replace('{m}',Math.max(5,Math.round(bd/5)*5));comm(['h',txt],2.6);J.say++}J.t=15}}
- if(al===0&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=7;COMM.q=[];comm(c.clear,2.8);comm(['m',c.clearM],3);comm(['h',c.clearH],3.2);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},1600)}}
+ if(al===0&&!RUN.ok&&P.down<=0){RUN.ok=true;jamClear();SND.play('complete',{g:.55});RUN.endT=7;COMM.q=[];comm(c.clear,2.8);comm(['m',c.clearM],3);comm(['h',c.clearH],3.2);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},1600)}}
 // 回収：積み荷に近づくと拾う（1つずつ。持つと遅くなる）→ 回収地点の輪に入ると下ろす。拾うたびに伏兵（ambush）。全部で成功
 function collectTick(dt){const d=RUN.def,c=d.collect,dr=DROPM.position;
  RUN.cr.forEach((k,i)=>{if(k.st===0){k.g.rotation.y+=dt*.6;k.g.userData.bc.material.opacity=.25+Math.sin(t*4+i)*.12;
