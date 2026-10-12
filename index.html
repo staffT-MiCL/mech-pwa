@@ -961,7 +961,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v205</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v206</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1039,7 +1039,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v205</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v206</span></div>
  </div>
 </div>
 
@@ -1105,7 +1105,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v205</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v206</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4915,7 +4915,9 @@ function siegeStomp(e,l){const f=l.foot.getWorldPosition(new THREE.Vector3());f.
  if(e.oh<=0&&Math.hypot(f.x-P.pos.x,f.z-P.pos.z)<9&&P.pos.y<3&&P.hp.core>0&&P.down<=0){hitPlayer(110,'A',f);if(!DBG.inv)P.stun=Math.max(P.stun,.6)}}
 function siegeTick(e,dt,d,yaw){
  const sp=SG_SP*(1-.14*e.broken);e.home.z+=sp*dt;e.g.position.set(e.home.x,0,e.home.z);e.gt+=dt*(sp/SG_SP)*2.4;
- const wp=m=>m.getWorldPosition(new THREE.Vector3()),k=e.hp/e.max;e.ph=k<=1/3?2:k<=2/3?1:0;
+ const wp=m=>m.getWorldPosition(new THREE.Vector3()),k=e.hp/e.max,
+  inR=R=>{const a=P.pos.x-e.g.position.x,b=P.pos.z-e.g.position.z,c=Math.cos(e.g.rotation.y),s=Math.sin(e.g.rotation.y),x=a*c-b*s,z=a*s+b*c;return (x/(10+R))**2+(z/(13+R))**2<1};   // 胴体（幅20×長さ26）の縁から R m の楕円の中か
+ e.ph=k<=1/3?2:k<=2/3?1:0;
  e.head.position.y=SG_HY+Math.sin(e.gt*2)*.15;
  e.legs.forEach(l=>{if(l.broken)return;const ph=e.gt+l.ph,c=Math.cos(ph),lift=Math.max(0,c);l.root.rotation.x=Math.sin(ph)*.12;l.root.rotation.z=l.sx*lift*.2;const up=lift>.02;if(l.up&&!up)siegeStomp(e,l);l.up=up});
  if(e.ohCd>0)e.ohCd-=dt;if(e.oh<=0&&e.heat>0)e.heat=Math.max(0,e.heat-110*dt);
@@ -4927,8 +4929,8 @@ function siegeTick(e,dt,d,yaw){
  {const loc=Math.atan2(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z)-e.g.rotation.y;let dy=loc-e.tur.rotation.y;dy=Math.atan2(Math.sin(dy),Math.cos(dy));e.tur.rotation.y+=Math.max(-.45*dt,Math.min(.45*dt,dy))}
  // 腹部の小銃：稼働中はプレイヤーを追う（ライフル・機関銃とも 2＋段階 丁）。止まっているあいだは下を向く
  {const act=2+e.ph,live=e.oh<=0&&!TRAIN&&P.hp.core>0&&P.down<=0;
-  e.rifles.forEach((o,i)=>{if(live&&i<act)o.gg.lookAt(P.pos.x,P.pos.y+1.2,P.pos.z);else o.gg.rotation.set(Math.PI/2,0,0)});
-  e.mgs.forEach((o,i)=>{if(live&&i<act)o.gg.lookAt(P.pos.x,P.pos.y+1.2,P.pos.z);else o.gg.rotation.set(Math.PI/2,0,0)})}
+  e.rifles.forEach((o,i)=>{if(live&&i<act&&inR(14))o.gg.lookAt(P.pos.x,P.pos.y+1.2,P.pos.z);else o.gg.rotation.set(Math.PI/2,0,0)});
+  e.mgs.forEach((o,i)=>{if(live&&i<act&&inR(10))o.gg.lookAt(P.pos.x,P.pos.y+1.2,P.pos.z);else o.gg.rotation.set(Math.PI/2,0,0)})}
  if(TRAIN||P.hp.core<=0||P.down>0)return;
  if(e.oh>0){e.chg=e.cq=e.fch=e.rch=e.rcq=e.bq=0;e.glows.forEach(o=>o.visible=false);return}
  const aim=sp2=>playerCenter(new THREE.Vector3()).add(new THREE.Vector3((Math.random()-.5)*sp2,Math.random()*sp2-sp2*.5,(Math.random()-.5)*sp2)),
@@ -4948,12 +4950,12 @@ function siegeTick(e,dt,d,yaw){
  else if(e.cq<=0){e.cd-=dt;if(e.cd<=0&&d<120){e.chg=2.2;sAt('charge',e.g.position,{g:.6,dk:.2})}}
  if(e.cq>0){e.ct-=dt;if(e.ct<=0){const m=e.cq===2?e.mzA:e.mzB,from=wp(m),dir=aim(2).sub(from).normalize();e.cq--;e.ct=.4;sAt('mainGun',e.g.position,{g:.5,dk:.3});
   spawn(0xff8030,1.1,from,{vel:dir.multiplyScalar(26),life:4,len:3,team:'e',dmg:55,imp:'B',hr:2.6});spawn(0xffc080,2.4,from,{life:.15,grow:.8});if(e.cq<=0)e.cd=(k<.5?4.8:6.5)+Math.random()*1.4}}
- // 腹部のライフル：単発・高速。稼働数は 2〜4（HPの段階で増える）
- e.rit-=dt;if(e.rit<=0&&d<110){const act=2+e.ph;e.ri=(e.ri+1)%act;e.rit=1.7-.25*e.ph+Math.random()*.3;const from=wp(e.rifles[e.ri].mz),dir=aim(1.6).sub(from).normalize();
+ // 腹部のライフル：単発・高速。稼働数は 2〜4（HPの段階で増える）。反応するのは胴体の縁から14m以内（側面に近づく・腹の下に入る）
+ e.rit-=dt;if(e.rit<=0&&inR(14)){const act=2+e.ph;e.ri=(e.ri+1)%act;e.rit=1.7-.25*e.ph+Math.random()*.3;const from=wp(e.rifles[e.ri].mz),dir=aim(1.6).sub(from).normalize();
   sAt('turretFire',e.g.position,{g:.45,dk:.6});spawn(0xffe890,.35,from,{vel:dir.multiplyScalar(46),life:3,len:3.5,team:'e',dmg:48,imp:'B'});spawn(0xffd090,1,from,{life:.07});
   if(RUN&&!RUN.bySaid&&RUN.def.comm.belly){RUN.bySaid=true;comm(RUN.def.comm.belly,2.4)}}
- // 腹部の機関銃：短い連射（6＋2×段階 発）
- e.mt-=dt;if(e.bq<=0&&e.mt<=0&&d<85){e.bq=6+2*e.ph;e.bt=0;e.mt=3.2-.4*e.ph+Math.random()*.8}
+ // 腹部の機関銃：短い連射（6＋2×段階 発）。胴体の縁から10m以内だけ
+ e.mt-=dt;if(e.bq<=0&&e.mt<=0&&inR(10)){e.bq=6+2*e.ph;e.bt=0;e.mt=3.2-.4*e.ph+Math.random()*.8}
  if(e.bq>0){e.bt-=dt;if(e.bt<=0){const act=2+e.ph,from=wp(e.mgs[e.bq%act].mz),dir=aim(6).sub(from).normalize();e.bq--;e.bt=.09;if(sOnce('sgmg',.14))sAt('turretFire',e.g.position,{g:.35,dk:.6});
   spawn(0xffa040,.3,from,{vel:dir.multiplyScalar(32),life:3,len:2,team:'e',dmg:15,imp:'C'});spawn(0xffd090,.8,from,{life:.05})}}
  // 背面の迎撃：後ろに回りこむと動力部から5発の散弾
@@ -5473,15 +5475,15 @@ const MLIST=[
   brief:['目標は、地下の搬入ゲートを南から歩いてくる、大型の多脚要塞です。出口のゲートに着かれると、観客の避難路が塞がれます。足止めの目安は約150秒。','正面と上面の装甲は、ほとんど通りません。弱点は、脚の付け根と、背面の動力部です。脚の付け根を壊すと、歩みが遅くなります。弱点を撃ち続けると、要塞は過熱して、しばらく武装が止まります。','装甲の厚い正面ほど攻撃は穏やかで、薄い背面ほど苛烈です。主砲は正面に1門、背面に2門。砲口が光ってから撃ってきます。腹部の小銃は、足元に入ると狙われます。足を踏み下ろす衝撃にも注意してください。'],
   comm:{start:'非常灯が点いています。要塞が動き出しました。出口まで、約150秒。',charge:'主砲の充填を確認。射線から外れてください。',rear:'背面の動力部です。効いています。',leg:'脚の付け根を破壊。歩みが遅くなりました。',half:'出口まで、半分を切りました。',add:'要塞の腹部の銃座が、増えて動き出しました。',belly:'腹部に銃座を確認。足元に入ると狙われます。',oh:'動力部が過熱！ 要塞の武装が止まっています。今です。',bell1:'観客の避難を誘導中です。出口へ。お急ぎください。',bell2:'避難、あと少しです。……お願いいたします、○○様。',serena:'わたしの観客に、手を出さないでちょうだい。……ここは任せるわ、名無しさん。',fail:'要塞が、出口に到達しました。……',clear:'要塞、沈黙。観客の避難は完了しました。',clear2:'……動力部の奥に、何かあります。接続します。'},
   res:{ok:'ペトラさんから通信です。「全員無事！ ……あんた、本当に何者なの」と。',ng:'撤退します。……要塞は、出口に。もう一度、止めに行かなければなりません。'},
-  start:{x:0,z:-28},siege:true,
+  start:{x:0,z:-28},siege:true,memFx:['VOICE','── 断つな、と声は言った'],
   enemies:[{type:'siege',x:0,z:-66}],
   talk:[['c','ちょっと、大変！ 優勝おめでとう……って言いたいのに、それどころじゃないの！'],
    ['c','地下の搬入ゲートの奥で、大きな多脚の要塞が動き出した。運営局の記録には「廃棄済み」ってあるのに、勝手に起動してるのよ。'],
    ['c','観客が出口に流れてる。あれが出口のゲートに着いたら、人が逃げられなくなる。避難が終わるまで、およそ150秒。……お願い、足止めして。倒せるなら、倒して！'],
    ['n','N-07、ノーナです。……お受けします。○○、行きましょう。']],
   after:{ok:'ありがとう！ 観客は全員無事よ。……あんな機体、あたしの整備記録にはなかったのに。',later:'そう……。急いで、とは言えないけど。あれ、また動くかもしれないから。'},
-  cu:{mails:['n-c4-inv','n-c4-petra','n-c4-mira','n-c4-otto'],mem:['○○。要塞の動力部の奥で……思い出したことがあります。','誰かの声です。知らない男性の……いえ、知っている声。','「あの子の糸を、どうか紡ぎ直して」。……そう、言っていました。','「あの子」が誰なのかは、まだ思い出せません。けれど、その人が、わたくしを作ってくれたのだと……そう思います。'],
-   key:{pre:['それと……動力部の奥から、これを持ち帰りました。'],post:['暗号化されたデータの断片です。中継局で見つけたものと、同じ形式をしています。','並べてみると……片方の欠けを、もう片方が補っているようです。まだ、全部ではありませんが。','これに触れたとき、あの声を思い出しました。……ありがとう、○○。']},
+  cu:{mails:['n-c4-inv','n-c4-petra','n-c4-mira','n-c4-otto'],mem:['○○。要塞の動力部の奥で……思い出したことがあります。','声です。低く、厳しい男性の声。……知っている声でした。','「糸を断つな。紡げ。それが、お前の務めだ」。……命じるように、そう言っていました。','どなたの声なのかは、まだ思い出せません。けれど、その方が、わたくしを作ってくれたのだと……そう思います。'],
+   key:{pre:['それと……動力部の奥から、これを持ち帰りました。'],post:['暗号化されたデータの断片です。中継局で見つけたものと、同じ形式をしています。','並べてみると……片方の欠けを、もう片方が補っているようです。まだ、全部ではありませんが。','これに触れたとき、あの厳しい声を思い出しました。……冷たい声では、なかった気がします。']},
    news:['闘技場の速報が届いています。……「CLASS C 大会、優勝。第7区画の、<em>第七の黒羊</em>」。','観客の皆さんが、そう呼んでいるそうです。……○○のことですよ。'],
    after:['管理局からの通知も届いています。等級が上がりました。','次は CLASS B。……闘技場の奥にも、まだ見ていないものがありそうです。']}},
  // ===== CHAPTER 4「壁の向こう」（準備中の枠。設計は claude/CH4設計メモ.md。ready:false の間は届かない。実装は 4-1 から順に ready:true にする）
@@ -6135,7 +6137,7 @@ $('mailDim').addEventListener('click',mailDone);$('hdr').addEventListener('click
 $('app').addEventListener('click',e=>{if(document.body.classList.contains('mailing')&&e.target===$('app'))mailDone()});   // 右の機体パネル（暗くして押せなくした所）
 function mailClose(){const b=$('mailBox');if(b.hidden||b.classList.contains('cls'))return;b.classList.remove('pop');b.classList.add('cls');nbClose();$('mailDim').classList.remove('on');document.body.classList.remove('mailing');b._t=setTimeout(()=>{b.hidden=true;b.classList.remove('cls')},180)}
 /* ----- KEY（MORTA の断片）：★をクリアすると増える。所持は MIS[mis].clear から決める（保存項目は増やさない）。説明は物語が進むたびに足す ----- */
-const KEYS=[{no:'01',mis:'2-S',from:'★2-S 境界の中継局',info:'中継局の中枢から持ち帰った、暗号化されたデータの断片。指揮型の機体を動かしていた。鍵のような形式だが、これだけでは読めない。触れたとき、ノーナが自分の名前の意味を思い出した。'},{no:'02',mis:'3-S',from:'★3-S 地下の目覚め',info:'要塞の動力部の奥から持ち帰った、暗号化されたデータの断片。KEY 01 と同じ形式で、並べると片方の欠けをもう片方が補っているように見える。触れたとき、ノーナが設計者の声を思い出した。'}];
+const KEYS=[{no:'01',mis:'2-S',from:'★2-S 境界の中継局',info:'中継局の中枢から持ち帰った、暗号化されたデータの断片。指揮型の機体を動かしていた。鍵のような形式だが、これだけでは読めない。触れたとき、ノーナが自分の名前の意味を思い出した。'},{no:'02',mis:'3-S',from:'★3-S 地下の目覚め',info:'要塞の動力部の奥から持ち帰った、暗号化されたデータの断片。KEY 01 と同じ形式で、並べると片方の欠けをもう片方が補っているように見える。触れたとき、ノーナが設計者の厳しい声を思い出した。'}];
 let KEYHOLD=false;
 const ownKeys=()=>KEYS.filter(k=>MIS[k.mis]&&MIS[k.mis].clear);
 function keyList(){const box=$('mailBox'),L=ownKeys();$('keyBtn').classList.remove('new');
@@ -6441,6 +6443,8 @@ function bossMisTick(dt){const B=RUN.boss,d=RUN.def,k=Math.max(0,B.hp/B.max);
   for(let i=0;i<5;i++)setTimeout(()=>{if(RUN)explode(B.center(new THREE.Vector3()).add(new THREE.Vector3((Math.random()-.5)*6,Math.random()*3,(Math.random()-.5)*6)),2.5)},i*260);
   comm(d.comm.clear,2.8);setTimeout(()=>{if(RUN&&RUN.ok)comm(d.comm.clear2,3)},3000);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},1400);RUN.hold=performance.now()+3200}
  if(RUN.ok){if(finishWait(dt))misFinish(true)}}
+// 青いノイズの記憶画面。文面は def.memFx＝[上段,下段]（なければ NONA ／ 糸を、紡ぐ者）
+function memFxShow(d){const m=$('memFx'),t=d.memFx||['NONA','── 糸を、紡ぐ者'];m.querySelector('b').textContent=t[0];m.querySelector('span').textContent=t[1];m.classList.remove('on');void m.offsetWidth;m.classList.add('on');SND.play('holo',{g:.5});SND.play('online',{g:.4})}
 function siegeMisTick(dt){const B=RUN.sg,d=RUN.def,k=Math.max(0,B.hp/B.max);
  if(RUN.lost){if(finishWait(dt))misFinish(false,'要塞の出口到達');return}
  const dist=SG_GATE-(B.g.position.z+13.5);
@@ -6452,11 +6456,11 @@ function siegeMisTick(dt){const B=RUN.sg,d=RUN.def,k=Math.max(0,B.hp/B.max);
   if(!RUN.halfSaid&&dist<64){RUN.halfSaid=true;comm(d.comm.half,2.2)}
   if(dist<=0&&!RUN.ok&&P.down<=0){RUN.lost=true;banner('MISSION FAILED','出口到達',true,2.4);comm(d.comm.fail,3)}}
  else{B.cl+=dt;B.g.position.y=-Math.min(7,B.cl*2.2);B.head.rotation.x=Math.min(.1,B.cl*.04);B.legs.forEach(l=>{if(!l.broken)l.root.rotation.z=-l.sx*Math.min(.14,B.cl*.06)})}
- if(!B.alive&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=6.4;
+ if(!B.alive&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=9;
   ENEMIES.forEach(e=>{if(e!==B&&!e.off&&e.alive){e.alive=false;e.g.visible=false;if(e.shadow)e.shadow.visible=false;explode(e.center(new THREE.Vector3()),1.4)}});
   for(let i=0;i<7;i++)setTimeout(()=>{if(RUN)explode(B.center(new THREE.Vector3()).add(new THREE.Vector3((Math.random()-.5)*22,Math.random()*8,(Math.random()-.5)*22)),3)},i*300);
-  comm(d.comm.clear,2.8);setTimeout(()=>{if(RUN&&RUN.ok)comm(d.comm.clear2,3)},3000);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},1400);RUN.hold=performance.now()+3400}
- if(RUN.ok){if(finishWait(dt))misFinish(true)}}
+  comm(d.comm.clear,2.6);setTimeout(()=>{if(RUN&&RUN.ok){memFxShow(d);comm(d.comm.clear2,3.6)}},2800);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},6400);RUN.hold=performance.now()+6600}
+ if(RUN.ok){if(finishWait(dt)){$('memFx').classList.remove('on');misFinish(true)}}}
 // 護衛：荷車を進める・波を出す・到着／破壊を判定
 function escortTick(dt){const T=RUN.tr,d=RUN.def,es=d.escort;if(!T)return;
  if(RUN.lost){if(finishWait(dt))misFinish(false,'荷車の破壊');return}
@@ -6498,7 +6502,7 @@ function relayTick(dt){const d=RUN.def,B=RUN.cmd,k=Math.max(0,B.hp/B.max),al=RUN
  if(!RUN.halfSaid&&k<=.5&&B.alive){RUN.halfSaid=true;comm(d.comm.half,2.2)}
  if(!B.alive&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=8.4;
   ENEMIES.forEach(e=>{if(e!==B&&!e.off&&e.alive){e.alive=false;e.g.visible=false;if(e.type!=='antenna')explode(e.center(new THREE.Vector3()),1.4)}});
-  comm(d.comm.clear,2.6);setTimeout(()=>{if(!RUN||!RUN.ok)return;const m=$('memFx');m.classList.remove('on');void m.offsetWidth;m.classList.add('on');SND.play('holo',{g:.5});SND.play('online',{g:.4});comm(d.comm.clear2,3.6)},2800);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},6400);RUN.hold=performance.now()+6600}
+  comm(d.comm.clear,2.6);setTimeout(()=>{if(!RUN||!RUN.ok)return;memFxShow(d);comm(d.comm.clear2,3.6)},2800);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},6400);RUN.hold=performance.now()+6600}
  if(RUN.ok){if(finishWait(dt)){$('memFx').classList.remove('on');misFinish(true)}}}
 /* 妨害下（4-2）：塔（アンテナ）を全部壊すと成功。ロックは近距離だけ（updateLock）・マップはノイズ（drawMap）。
  ハンスが旧軍の周波数で、最寄りの塔の方位（自機の正面＝12時）と距離を一定の間隔で知らせる。塔が落ちるたびに警備のドローン（reinf）が出る */
