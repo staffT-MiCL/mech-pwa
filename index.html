@@ -20,7 +20,9 @@
 :root{
  --bg:#07090a; --panel:#0e1211; --panel2:#121816; --line:#2c3833; --fg:#d9e0dc; --dim:#7f8c86; --faint:#4a5550;
  --accent:#8cf06e; --fire:#f0a040; --cyan:#6fd3e0; --alert:#ff5a3c; --olive:#5b6b3a;
- --c-nona:#6fd3e0; --c-doll:#8cf06e; --c-client:#d8a35a; --c-bell:#f0a040; --c-jonah:#6fa0f0; --c-otto:#e0c060; --c-serena:#c8435c; --c-erich:#8a5a34; --c-viktor:#8a4aa8; --c-hans:#b0a0d8; --c-timo:#7fb4cc; --c-mira:#e8808a;  /* キャラクターごとの色（枠線・名前札）。ここだけで管理する */ --khaki:#b8a878;
+ --c-nona:#6fd3e0; --c-doll:#8cf06e; --c-client:#d8a35a; --c-bell:#b4bcbc; --c-jonah:#6fa0f0; --c-otto:#c9a23c; --c-serena:#c8435c; --c-erich:#6f8a3a; --c-viktor:#a866d0; --c-hans:#8e94e0; --c-timo:#d4bc8c; --c-mira:#ff7a4a; --c-gaius:#4560b4; --c-leonard:#b09a48; --c-walter:#d8a35a; --c-petra:#e08838;
+ /* キャラクターごとの色（名札・枠。通信・受付・来訪・SHOP・依頼のどの場面でも同じ）。ここだけで管理する。
+    【新しいキャラの色の決め方】①キャラ設定のテーマ色（衣装・性格）から主色を選ぶ ②暗い背景で沈まない明るさ（暗い色は彩度か明度を上げる）③既存のキャラと色相か明るさで区別できる（近い系統は明るさ・彩度で離す）④名札の文字色は自動（cf()：明るい色は黒、暗い色は白）⑤ここに --c-名前 を足し、JS の CHKEY に名前を足す。 */ --khaki:#b8a878;
  --disp:"DotGothic16","MS Gothic",monospace; --mech:"Chakra Petch","DotGothic16",monospace; --sten:"Stardos Stencil","Chakra Petch",monospace;
  --body:"M PLUS 1p","Hiragino Sans",sans-serif;
  color-scheme:dark;
@@ -601,7 +603,7 @@ body.eqm #btnTrain{display:none}
 html{-webkit-tap-highlight-color:transparent}
 #op,#nonaBox,#tbox,#ttext,#tchoice,#opTalk,#opSub{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 #nonaBox{position:absolute;left:8px;right:8px;bottom:8px;height:calc(var(--gsh,120px) - 4px);min-height:74px;z-index:3;pointer-events:auto;box-sizing:border-box;padding:16px 14px 10px;background:#0a0e0d;border:1px solid #34403a;border-top:2px solid var(--c-nona);cursor:pointer}
-#nonaBox.vo{border-top-color:var(--c-client)}#nonaBox.vo .nm{background:var(--c-client);color:#0b0e0d}#nonaBox.vo #nbText{color:#f4e6c0}
+#nonaBox.vo{border-top-color:var(--vo,var(--c-client))}#nonaBox.vo .nm{background:var(--vo,var(--c-client));color:var(--vof,#0b0e0d)}#nonaBox.vo #nbText{color:#f4e6c0}
 #nonaBox .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:var(--c-nona);color:#0b0e0d;font-weight:700;font-family:var(--mech);font-size:10px;letter-spacing:2px;display:flex;align-items:center}
 #nbText{font-family:var(--disp);font-size:13.5px;line-height:1.65;color:#e6ebe7;overflow:auto;height:100%}
 #nbText em{font-style:normal;color:var(--fire)}#nbText strong{font-weight:400;color:var(--accent)}
@@ -930,7 +932,7 @@ input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:d
 #vCh button{height:30px;padding:0 14px;font-family:var(--disp);font-size:12px;background:rgba(14,18,17,.92);border:1px solid #3a4540;color:#aeb8b3}
 #vCh button:first-child{background:var(--fire);border:0;color:#1a1006;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
 #vTalk{position:absolute;left:8px;right:8px;bottom:8px;height:calc(var(--gsh,120px) - 4px);min-height:74px;box-sizing:border-box;padding:16px 14px 10px;background:#0a0e0d;border:1px solid #34403a;border-top:2px solid var(--vc,#d8a35a);cursor:pointer}
-#vTalk .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:var(--vc,#d8a35a);color:#0b0e0d;font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:2px;display:flex;align-items:center}
+#vTalk .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:var(--vc,#d8a35a);color:var(--vf,#0b0e0d);font-family:var(--mech);font-size:10px;font-weight:700;letter-spacing:2px;display:flex;align-items:center}
 #vTalk .ci{position:absolute;left:auto;top:-9px;margin-left:8px;height:16px;padding:0 6px;border:1px solid var(--vc);background:#0a0e0d;color:var(--vc);font-family:var(--mech);font-size:9px;letter-spacing:.14em;display:flex;align-items:center}
 #vTx{font-family:var(--disp);font-size:13.5px;line-height:1.65;color:#e6ebe7;overflow:auto;height:100%}
 #vNx{position:absolute;right:12px;bottom:6px;color:var(--vc);font-size:10px;animation:kblink .8s steps(2) infinite}
@@ -985,7 +987,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v222</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v223</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1063,7 +1065,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v222</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v223</span></div>
  </div>
 </div>
 
@@ -1129,7 +1131,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v222</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v223</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -3948,7 +3950,7 @@ let curLine="",typingDone=null;
 function nextLine(){
  const ch=$('tchoice');ch.innerHTML='';ch.className='';clearInterval(typing);typing=null;
  if(!talkQ.length){$('tnext').hidden=true;keeper.classList.remove('talking');showChoices();return}
- const [txt,mood,sp]=talkQ.shift();if(mood)setMood(mood);curLine=txt;const nona=sp==='nona';document.querySelector('#tbox .nm').textContent=nona?'N-07 ノーナ':'D-06 ドール';
+ const [txt,mood,sp]=talkQ.shift();if(mood)setMood(mood);curLine=txt;const nona=sp==='nona';{const nmE=document.querySelector('#tbox .nm'),k=nona?'nona':'doll';nmE.textContent=nona?'N-07 ノーナ':'D-06 ドール';nmE.style.background=cc(k);nmE.style.color=cf(k)}
  // タグと文字に分け、文字だけを1つずつ足していく（文の中身はこのファイルで書いたものだけ）
  const parts=txt.split(/(<ruby[^>]*>.*?<\/ruby>|<\/?(?:em|strong)>)/).filter(Boolean),total=parts.reduce((a,p)=>a+(p.startsWith('<ruby')?1:p[0]==='<'?0:p.length),0);
  const el=$('ttext');let n=0;keeper.classList.toggle('talking',!nona);$('tnext').hidden=true;
@@ -4421,8 +4423,13 @@ const VS3=(()=>{
  会話の行は [話し手, 文, ベルの姿勢]。話し手：b＝ベル／n＝ノーナ（携帯端末）／VCH のキー（セレナなど：受付の絵を暗くしてイラストを左に重ねる）。
  文の中は <em>強調</em> と <strong>良い知らせ</strong>、<ruby> だけ。○○ は操縦者名 */
 const cc=k=>getComputedStyle(document.documentElement).getPropertyValue('--c-'+k).trim();   // キャラ色は CSS の --c-xxx が唯一の定義
-const VSP={b:{nm:'BELL-01 ベル',c:cc('bell'),f:'#0a0c0b',v:'bell'},n:{nm:'N-07 ノーナ（端末）',c:cc('nona'),f:'#06161a',v:'nona'},j:{nm:'JONAH（無線）',c:cc('jonah'),f:'#06161a',v:'adultF'}};
-const VCH={serena:{nm:'セレナ・ヴァルデス',c:cc('serena'),f:'#fff',v:'youthF',img:'img/rivals/rival-david-serena.png'},erich:{nm:'エーリヒ・ブラント',c:cc('erich'),f:'#fff',v:'adultM',img:'img/rivals/rival-deborah-erich.png'},viktor:{nm:'ヴィクトル・ザイン',c:cc('viktor'),f:'#fff',v:'youthM',img:'img/rivals/rival-nimrod-viktor.png'},timo:{nm:'ティモ・アルケン',c:cc('timo'),f:'#fff',v:'youthM',img:'img/rivals/rival-noah-timo.png'}};
+// 名札の文字色：背景が明るければ黒、暗ければ白（色を変えても自動で読める）
+const cf=k=>{const n=parseInt(cc(k).slice(1),16),f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};return .2126*f(n>>16)+.7152*f(n>>8&255)+.0722*f(n&255)>.28?'#0b0e0d':'#fff'};
+// 名前（日本語・英字）から色のキー。見つからなければ依頼人の色。新しいキャラはここへ足す
+const CHKEY=[['ノーナ','nona'],['ドール','doll'],['ベル','bell'],['JONAH','jonah'],['ジョナ','jonah'],['オットー','otto'],['セレナ','serena'],['エーリヒ','erich'],['ヴィクトル','viktor'],['ハンス','hans'],['ティモ','timo'],['ミラ','mira'],['ガイウス','gaius'],['レナード','leonard'],['ヴァルター','walter'],['ペトラ','petra']];
+const chKey=nm=>{nm=String(nm||'');const h=CHKEY.find(([w])=>nm.includes(w));return h?h[1]:'client'};
+const VSP={b:{nm:'BELL-01 ベル',c:cc('bell'),f:cf('bell'),v:'bell'},n:{nm:'N-07 ノーナ（端末）',c:cc('nona'),f:cf('nona'),v:'nona'},j:{nm:'JONAH（無線）',c:cc('jonah'),f:cf('jonah'),v:'adultF'}};
+const VCH={serena:{nm:'セレナ・ヴァルデス',c:cc('serena'),f:cf('serena'),v:'youthF',img:'img/rivals/rival-david-serena.png'},erich:{nm:'エーリヒ・ブラント',c:cc('erich'),f:cf('erich'),v:'adultM',img:'img/rivals/rival-deborah-erich.png'},viktor:{nm:'ヴィクトル・ザイン',c:cc('viktor'),f:cf('viktor'),v:'youthM',img:'img/rivals/rival-nimrod-viktor.png'},timo:{nm:'ティモ・アルケン',c:cc('timo'),f:cf('timo'),v:'youthM',img:'img/rivals/rival-noah-timo.png'}};
 /* 場面に応じて一度だけ出る会話（VSS.seen に記録）。ok が真になった受付の訪問で、ベルの案内のあとに流れる。セリフは仮 */
 const VSEV=[
  {id:'c-semi-erich',ok:()=>!!VSS.win[0],lines:[   // 1回戦に勝った直後の受付：エーリヒ（現在の審判官のトップ）の初登場。このあと 3-2 のメールが届く
@@ -6345,7 +6352,7 @@ $('mailBtn').onclick=()=>{if(TUT!=='done')return;const mb=$('mailBox');if(!mb.hi
 /* ----- 来訪（VISIT）：依頼人がハンガーを訪ねてくる。def.talk＝[['c'|'n'|'d', 文], ...]（c＝依頼人、n＝ノーナ、d＝ドールの通信）
  最後に［依頼を受ける］（依頼一覧を開く）／［考えておく］。どちらでも依頼は一覧に残り、一覧から［会話を見返す］で見直せる ----- */
 const VS={q:[],iv:null,done:null,d:null};
-const V_SP={c:d=>[d.client||d.from,cc('client'),false],n:()=>['N-07 ノーナ',cc('nona'),true],d:()=>['D-06 ドール（通信）',cc('doll'),true]};
+const V_SP={c:d=>{const k=chKey(d.client||d.from);return [d.client||d.from,cc(k),false,cf(k)]},n:()=>['N-07 ノーナ',cc('nona'),true,cf('nona')],d:()=>['D-06 ドール（通信）',cc('doll'),true,cf('doll')]};
 function visitPlay(id,replay){const d=MDEF[id];if(!d||!d.talk)return;mailClose();nbClose();VS.d=d;clearTimeout(VS.t);
  const img=$('vImg');img.style.visibility='hidden';img.onload=()=>{img.style.visibility=''};img.removeAttribute('src');img.src=d.img;if(img.complete&&img.naturalWidth)img.style.visibility='';img.style.filter=d.imgF||'';img.alt=d.from;img.classList.remove('dim');
  const v=$('visit');$('vCh').innerHTML='';$('vTx').textContent='';$('vNm').textContent='';$('vCi').hidden=true;$('vNx').hidden=true;$('vSkip').hidden=!replay;VS.replay=!!replay;
@@ -6353,8 +6360,8 @@ function visitPlay(id,replay){const d=MDEF[id];if(!d||!d.talk)return;mailClose()
  if(!replay)SND.play('visit',{g:.45});void v.offsetWidth;v.classList.add('in');VS.t=setTimeout(()=>{VS.busy=false;visitNext()},700)}
 function visitNext(){clearInterval(VS.iv);VS.iv=null;
  if(!VS.q.length){visitChoices();return}
- const [sp,raw]=VS.q.shift(),[nm,col,cut]=V_SP[sp](VS.d),txt=raw.replace(/○○様/g,esc(PILOT||'操縦者')+'様').replace(/○○/g,esc(PILOT||'操縦者'));
- const v=$('visit');v.style.setProperty('--vc',col);$('vNm').textContent=nm;const ci=$('vCi');ci.hidden=!cut;
+ const [sp,raw]=VS.q.shift(),[nm,col,cut,fcol]=V_SP[sp](VS.d),txt=raw.replace(/○○様/g,esc(PILOT||'操縦者')+'様').replace(/○○/g,esc(PILOT||'操縦者'));
+ const v=$('visit');v.style.setProperty('--vc',col);v.style.setProperty('--vf',fcol);$('vNm').textContent=nm;const ci=$('vCi');ci.hidden=!cut;
  requestAnimationFrame(()=>{ci.style.left=(12+$('vNm').offsetWidth)+'px'});
  $('vImg').classList.toggle('dim',sp!=='c');$('vNx').hidden=true;
  const el=$('vTx');let n=0;
@@ -6570,7 +6577,7 @@ function comm(txt,dur=0.001,cb=null){if(dur===0){COMM.q=[];commShow(txt,0,cb);re
 function commNext(){const it=COMM.q.shift();if(it)commShow(it[0],it[1],it[2])}
 function commShow(txt,dur,cb){clearInterval(COMM.iv);const el=$('commTx');$('comm').hidden=false;
  let who='n';if(Array.isArray(txt)){who=txt[0];txt=txt[1]}COMM.radio=who!=='n';if(COMM.radio)SND.play('radio',{g:.9});else SND.play('comm',{g:.3});txt=String(txt).replace(/○○/g,PILOT||'操縦者');const OP=who==='o'&&RUN&&RUN.vs?RUN.vs.r.opp:null;
- const CW={b:['BELL-01','bell'],s:['SERENA','youthF'],j:['JONAH','adultF'],t:['OTTO','youthM'],h:['HANS','adultM'],m:['MIRA','youthF']}[who],CK={b:['bell',0],s:['serena',1],j:['jonah',0],t:['otto',0],h:['hans',0],m:['mira',0]}[who]||['nona',0];if(!OP){$('comm').style.setProperty('--cc','var(--c-'+CK[0]+')');$('comm').style.setProperty('--cf',CK[1]?'#fff':'#0b0e0d')}else{$('comm').style.removeProperty('--cc');$('comm').style.removeProperty('--cf')}$('comm').classList.toggle('opp',!!OP);$('comm').querySelector('b').textContent=OP?OP.en.split(' ')[0]:CW?CW[0]:'N-07';const vc=OP?OP.v||'adultM':CW?CW[1]:'nona';let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
+ const CW={b:['BELL-01','bell'],s:['SERENA','youthF'],j:['JONAH','adultF'],t:['OTTO','youthM'],h:['HANS','adultM'],m:['MIRA','youthF']}[who],CK={b:['bell',0],s:['serena',1],j:['jonah',0],t:['otto',0],h:['hans',0],m:['mira',0]}[who]||['nona',0];if(!OP){$('comm').style.setProperty('--cc','var(--c-'+CK[0]+')');$('comm').style.setProperty('--cf',cf(CK[0]))}else{$('comm').style.removeProperty('--cc');$('comm').style.removeProperty('--cf')}$('comm').classList.toggle('opp',!!OP);$('comm').querySelector('b').textContent=OP?OP.en.split(' ')[0]:CW?CW[0]:'N-07';const vc=OP?OP.v||'adultM':CW?CW[1]:'nona';let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
  COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip(vc,n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;COMM.end=performance.now();if(cb)cb();
   if(dur===0){COMM.busy=false;COMM.t=0}else COMM.t=Math.max(1.5,1+txt.length*.12,dur)}},TXT_SPD)}
 function commEnd(){if(COMM.radio){COMM.radio=false;SND.play('radioEnd',{g:.7})}}   // 通信が切れるとき（ノーナ以外だけ）
@@ -7345,7 +7352,7 @@ function tutBlock(){if(TUT==='done')return false;openMenu(false);nonaSay([['ま�
 /* ===== ノーナのセリフ（ガレージ左下）=====
  1文字ずつ表示。タップで早送り→次へ。hold＝最後の文を出したまま残す（チュートリアルの案内用）、それ以外は数秒で閉じる */
 const NB={q:[],iv:null,done:null,hold:false,t:null,then:null};
-function nonaSay(lines,{hold=false,name=null}={}){clearTimeout(NB.t);clearInterval(NB.iv);{const nb=$('nonaBox');nb.querySelector('.nm').innerHTML=name||'N-07 ノーナ';nb.classList.toggle('vo',!!name)}NB.q=lines.map(l=>Array.isArray(l)?l[0]:l);NB.hold=hold;NB.then=null;$('nonaBox').hidden=false;nbNext()}
+function nonaSay(lines,{hold=false,name=null}={}){clearTimeout(NB.t);clearInterval(NB.iv);{const nb=$('nonaBox');nb.querySelector('.nm').innerHTML=name||'N-07 ノーナ';nb.classList.toggle('vo',!!name);{const k=chKey(name);nb.style.setProperty('--vo',cc(k));nb.style.setProperty('--vof',cf(k))}}NB.q=lines.map(l=>Array.isArray(l)?l[0]:l);NB.hold=hold;NB.then=null;$('nonaBox').hidden=false;nbNext()}
 function nbClose(){NB.then=null;clearTimeout(NB.t);clearInterval(NB.iv);NB.iv=null;$('nonaBox').hidden=true}
 function nbNext(){clearInterval(NB.iv);clearTimeout(NB.t);NB.iv=null;
  if(!NB.q.length){if(!NB.hold)nbClose();return}
