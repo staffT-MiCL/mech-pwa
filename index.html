@@ -961,7 +961,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v206</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v207</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1039,7 +1039,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v206</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v207</span></div>
  </div>
 </div>
 
@@ -1105,7 +1105,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v206</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v207</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4882,31 +4882,35 @@ function makeSiege(){
  const seg=(par,a,b,w,m)=>{const d=new THREE.Vector3(b[0]-a[0],b[1]-a[1],b[2]-a[2]),L=d.length(),me=box(par,w,w,L,m,(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2);me.rotation.set(0,0,0);me.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),d.normalize());return me};
  const legs=[];
  [-1,1].forEach(sx=>[0,1,2].forEach(r=>{const hz2=(r-1)*9.5,root=grp(h,sx*10.8,-2.5,hz2);
-  seg(root,[0,0,0],[sx*9,4.5,0],2.6,mat);box(root,3.4,3.4,3.4,dk,sx*9,4.5,0);seg(root,[sx*9,4.5,0],[sx*13.6,-12.5,0],2.2,steel);
-  seg(root,[sx*2,3,1.9],[sx*8,6,1.9],.7,pipe);seg(root,[sx*2,3,-1.9],[sx*8,6,-1.9],.7,pipe);seg(root,[sx*10,2,1.6],[sx*13,-7,1.6],.6,pipe);
-  box(root,4.8,1.3,4.6,steel,sx*9,6.6,0);box(root,4.9,.4,4.7,hz,sx*9,7.3,0);box(root,3,2.2,3,dk2,sx*13.6,-10.3,0);
-  const foot=box(root,5,1,5,dk,sx*13.8,-12,0);box(root,5.2,.3,5.2,hz,sx*13.8,-11.5,0);[-1.8,0,1.8].forEach(o=>box(root,2.4,.8,.9,steel,sx*(13.8+3.2),-12.1,o));
+  seg(root,[0,0,0],[sx*9,4.5,0],2.6,mat);box(root,3.4,3.4,3.4,dk,sx*9,4.5,0);
+  const kn=grp(root,sx*9,4.5,0);   // 膝：下の脚はここから先（撃破・脚の破壊で曲がる）
+  seg(kn,[0,0,0],[sx*4.6,-17,0],2.2,steel);
+  seg(root,[sx*2,3,1.9],[sx*8,6,1.9],.7,pipe);seg(root,[sx*2,3,-1.9],[sx*8,6,-1.9],.7,pipe);seg(kn,[sx*1,-2.5,1.6],[sx*4,-11.5,1.6],.6,pipe);
+  box(root,4.8,1.3,4.6,steel,sx*9,6.6,0);box(root,4.9,.4,4.7,hz,sx*9,7.3,0);box(kn,3,2.2,3,dk2,sx*4.6,-14.8,0);
+  const foot=box(kn,5,1,5,dk,sx*4.8,-16.5,0);box(kn,5.2,.3,5.2,hz,sx*4.8,-16,0);[-1.8,0,1.8].forEach(o=>box(kn,2.4,.8,.9,steel,sx*8,-16.6,o));
   const hm=new THREE.MeshBasicMaterial({color:0xff7a20});box(h,4,4,4,hm,sx*10.8,-2.5,hz2);
-  legs.push({root,foot,hm,hp:2400,max:2400,broken:false,up:false,sx,hz:hz2,ph:((sx>0?1:0)+r)%2?Math.PI:0})}));
+  legs.push({root,kn,foot,hm,hp:2400,max:2400,broken:false,up:false,sx,hz:hz2,ph:((sx>0?1:0)+r)%2?Math.PI:0})}));
  const e={type:'siege',g,mat,alive:false,hp:0,max:26000,stun:0,kb:new THREE.Vector3(),r:15,cd:5,ang:0,home:new THREE.Vector3(),hit:0,respawn:0,head:h,tur,mzA,mzB,glows:[...gtp,gfr,...grr],gtp,gfr,grr,fmz,rzs,rifles,mgs,rear,vents,legs,
   chg:0,cq:0,ct:0,mt:2.5,rt:3,bq:0,bt:0,gt:0,broken:0,cl:0,rearSaid:false,legSaid:false,
   fch:0,fcd:4,rch:0,rcq:0,rct:0,rcd:3,rit:2,ri:0,ph:0,heat:0,oh:0,ohCd:0,sm:0,
   center(v){return v.copy(g.position).add(new THREE.Vector3(0,SG_HY,0))}};
  e.hpBar=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0xff6a4c}));e.hpBar.visible=false;g.add(e.hpBar);
  ENEMIES.push(e);g.visible=false;e.off=true;return e}
+// 戦闘中のヒント通信：1度だけ。ほかの通信が出ている・待っているときは出さない（古いヒントを遅れて流さない）。撃破後は出さない
+function sgTip(key,txt){const e=RUN&&RUN.sg;if(!e||!e.alive||RUN.ok||!RUN.tp||RUN.tp[key]||COMM.busy||COMM.q.length)return;RUN.tp[key]=1;comm(txt,2.4)}
 function siegeGunsDown(e){e.rifles.concat(e.mgs).forEach(o=>o.gg.rotation.set(Math.PI/2,0,0))}
-function siegeReset(e){e.legs.forEach(l=>{l.hp=l.max;l.broken=false;l.up=false;l.hm.color.setHex(0xff7a20);l.root.rotation.set(0,0,0)});e.broken=0;e.cd=5;e.chg=0;e.cq=0;e.mt=2.5;e.rt=3;e.bq=0;e.gt=0;e.cl=0;e.rearSaid=false;e.legSaid=false;
+function siegeReset(e){e.legs.forEach(l=>{l.hp=l.max;l.broken=false;l.up=false;l.hm.color.setHex(0xff7a20);l.root.rotation.set(0,0,0);l.kn.rotation.set(0,0,0);l.kn.scale.setScalar(1)});e.broken=0;e.cd=5;e.chg=0;e.cq=0;e.mt=2.5;e.rt=3;e.bq=0;e.gt=0;e.cl=0;e.rearSaid=false;e.legSaid=false;
  e.fch=0;e.fcd=4;e.rch=0;e.rcq=0;e.rct=0;e.rcd=3;e.rit=2;e.ri=0;e.ph=0;e.heat=0;e.oh=0;e.ohCd=0;e.sm=0;siegeGunsDown(e);
- e.g.rotation.set(0,0,0);e.head.rotation.set(0,0,0);e.head.position.y=SG_HY;e.tur.rotation.y=0;e.mat.color.setHex(0xffffff);e.mat.emissive.setRGB(0,0,0);e.glows.forEach(q=>q.visible=false)}
-function siegeBreak(e,l){l.broken=true;l.hm.color.setHex(0x2a1a14);e.broken++;l.root.rotation.x=0;l.root.rotation.z=-l.sx*.14;
- const p=l.foot.getWorldPosition(new THREE.Vector3());p.y+=10;explode(p,3);SND.play('reinf',{g:.4});if(RUN&&!e.legSaid&&RUN.def.comm.leg){e.legSaid=true;comm(RUN.def.comm.leg,2.4)}}
+ e.g.rotation.set(0,0,0);e.g.position.y=0;e.head.rotation.set(0,0,0);e.head.position.y=SG_HY;e.tur.rotation.y=0;e.mat.color.setHex(0xffffff);e.mat.emissive.setRGB(0,0,0);e.glows.forEach(q=>q.visible=false)}
+function siegeBreak(e,l){l.broken=true;l.hm.color.setHex(0x2a1a14);e.broken++;l.root.rotation.x=0;l.root.rotation.z=0;l.kn.rotation.z=-l.sx*.9;
+ const p=l.foot.getWorldPosition(new THREE.Vector3());p.y+=10;explode(p,3);SND.play('reinf',{g:.4});sgTip('leg',RUN.def.comm.leg)}
 // 過熱：弱点に当てた量が SG_HEAT に達すると、SG_OH 秒のあいだ全武装が止まる（そのあとしばらくは溜まらない）
 function siegeHeat(e,v){if(!e.alive||e.oh>0||e.ohCd>0)return;e.heat+=v;if(e.heat>=SG_HEAT){e.heat=0;e.oh=SG_OH;e.ohCd=SG_OH+9;e.chg=e.cq=e.fch=e.rch=e.rcq=e.bq=0;e.glows.forEach(o=>o.visible=false);siegeGunsDown(e);
- sAt('boom',e.g.position,{g:.6,size:1.3});shake=Math.max(shake,.4);say('OVERHEAT',1.8);if(RUN&&!RUN.ohSaid&&RUN.def.comm.oh){RUN.ohSaid=true;comm(RUN.def.comm.oh,2.6)}}}
+ sAt('boom',e.g.position,{g:.6,size:1.3});shake=Math.max(shake,.4);say('OVERHEAT',1.8);if(RUN)sgTip('oh',RUN.def.comm.oh)}}
 // 要塞へのダメージ：当たった位置で倍率を変える（背面の動力部 2.5・脚の付け根 1.2（脚の耐久も削る）・腹部 0.5・ほかの装甲 0.3）。弱点に当てると過熱が溜まる
 function siegeDmg(e,dmg,pos){const ps=e.g.position,c=Math.cos(e.g.rotation.y),s=Math.sin(e.g.rotation.y),dx=pos.x-ps.x,dz=pos.z-ps.z,lx=dx*c-dz*s,lz=dx*s+dz*c,ly=pos.y-ps.y-SG_HY;
  for(const l of e.legs){if(l.broken)continue;if(Math.hypot(lx-l.sx*10.8,ly+2.5,lz-l.hz)<6){l.hp-=dmg;siegeHeat(e,dmg*.6);spawn(0xffc040,1.3,pos,{life:.14,grow:1});if(l.hp<=0)siegeBreak(e,l);return dmg*1.2}}
- if(lz<-8&&Math.abs(lx)<12&&ly>-12&&ly<12){siegeHeat(e,dmg);spawn(0xff6030,1.6,pos,{life:.16,grow:.8});if(RUN&&!e.rearSaid&&RUN.def.comm.rear){e.rearSaid=true;comm(RUN.def.comm.rear,2.4)}return dmg*2.5}
+ if(lz<-8&&Math.abs(lx)<12&&ly>-12&&ly<12){siegeHeat(e,dmg);spawn(0xff6030,1.6,pos,{life:.16,grow:.8});if(RUN)sgTip('rear',RUN.def.comm.rear);return dmg*2.5}
  if(ly<-3.5&&Math.abs(lz)<14&&Math.abs(lx)<12){spawn(0xffc040,1,pos,{life:.12,grow:.8});return dmg*apK(.5)}
  spawn(0xffffff,.8,pos,{life:.1,grow:1});return dmg*apK(.3)}
 function siegeStomp(e,l){const f=l.foot.getWorldPosition(new THREE.Vector3());f.y=0;if(f.distanceTo(P.pos)>90)return;
@@ -4916,7 +4920,7 @@ function siegeStomp(e,l){const f=l.foot.getWorldPosition(new THREE.Vector3());f.
 function siegeTick(e,dt,d,yaw){
  const sp=SG_SP*(1-.14*e.broken);e.home.z+=sp*dt;e.g.position.set(e.home.x,0,e.home.z);e.gt+=dt*(sp/SG_SP)*2.4;
  const wp=m=>m.getWorldPosition(new THREE.Vector3()),k=e.hp/e.max,
-  inR=R=>{const a=P.pos.x-e.g.position.x,b=P.pos.z-e.g.position.z,c=Math.cos(e.g.rotation.y),s=Math.sin(e.g.rotation.y),x=a*c-b*s,z=a*s+b*c;return (x/(10+R))**2+(z/(13+R))**2<1};   // 胴体（幅20×長さ26）の縁から R m の楕円の中か
+  inR=(Rx,Rz)=>{const a=P.pos.x-e.g.position.x,b=P.pos.z-e.g.position.z,c=Math.cos(e.g.rotation.y),s=Math.sin(e.g.rotation.y),x=a*c-b*s,z=a*s+b*c;return (x/(10+Rx))**2+(z/(13+Rz))**2<1};   // 胴体（幅20×長さ26）の縁から、横 Rx m・前後 Rz m の楕円の中か
  e.ph=k<=1/3?2:k<=2/3?1:0;
  e.head.position.y=SG_HY+Math.sin(e.gt*2)*.15;
  e.legs.forEach(l=>{if(l.broken)return;const ph=e.gt+l.ph,c=Math.cos(ph),lift=Math.max(0,c);l.root.rotation.x=Math.sin(ph)*.12;l.root.rotation.z=l.sx*lift*.2;const up=lift>.02;if(l.up&&!up)siegeStomp(e,l);l.up=up});
@@ -4929,8 +4933,8 @@ function siegeTick(e,dt,d,yaw){
  {const loc=Math.atan2(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z)-e.g.rotation.y;let dy=loc-e.tur.rotation.y;dy=Math.atan2(Math.sin(dy),Math.cos(dy));e.tur.rotation.y+=Math.max(-.45*dt,Math.min(.45*dt,dy))}
  // 腹部の小銃：稼働中はプレイヤーを追う（ライフル・機関銃とも 2＋段階 丁）。止まっているあいだは下を向く
  {const act=2+e.ph,live=e.oh<=0&&!TRAIN&&P.hp.core>0&&P.down<=0;
-  e.rifles.forEach((o,i)=>{if(live&&i<act&&inR(14))o.gg.lookAt(P.pos.x,P.pos.y+1.2,P.pos.z);else o.gg.rotation.set(Math.PI/2,0,0)});
-  e.mgs.forEach((o,i)=>{if(live&&i<act&&inR(10))o.gg.lookAt(P.pos.x,P.pos.y+1.2,P.pos.z);else o.gg.rotation.set(Math.PI/2,0,0)})}
+  e.rifles.forEach((o,i)=>{if(live&&i<act&&inR(24,14))o.gg.lookAt(P.pos.x,P.pos.y+1.2,P.pos.z);else o.gg.rotation.set(Math.PI/2,0,0)});
+  e.mgs.forEach((o,i)=>{if(live&&i<act&&inR(18,10))o.gg.lookAt(P.pos.x,P.pos.y+1.2,P.pos.z);else o.gg.rotation.set(Math.PI/2,0,0)})}
  if(TRAIN||P.hp.core<=0||P.down>0)return;
  if(e.oh>0){e.chg=e.cq=e.fch=e.rch=e.rcq=e.bq=0;e.glows.forEach(o=>o.visible=false);return}
  const aim=sp2=>playerCenter(new THREE.Vector3()).add(new THREE.Vector3((Math.random()-.5)*sp2,Math.random()*sp2-sp2*.5,(Math.random()-.5)*sp2)),
@@ -4939,7 +4943,7 @@ function siegeTick(e,dt,d,yaw){
  if(e.fch>0){e.fch-=dt;const q=1-e.fch/2.2;e.gfr.visible=true;e.gfr.scale.setScalar(.8+q*1.6);
   if(e.fch<=0){e.gfr.visible=false;const from=wp(e.fmz),dir=aim(1.2).sub(from).normalize();sAt('mainGun',e.g.position,{g:.9,dk:.3});
    spawn(0xff3020,2.2,from,{vel:dir.multiplyScalar(26),life:5,len:6,team:'e',dmg:120,imp:'A',hr:4.4});spawn(0xffc080,5,from,{life:.2,grow:.8});shake=Math.max(shake,.45);e.fcd=(e.ph?5.4:7)+Math.random()}}
- else{e.fcd-=dt;if(e.fcd<=0&&lz>4&&Math.abs(lx)<lz*1.2&&d<130){e.fch=2.2;sAt('charge',e.g.position,{g:.8,dk:.2});if(RUN&&!RUN.chgSaid&&RUN.def.comm.charge){RUN.chgSaid=true;comm(RUN.def.comm.charge,2.4)}}}
+ else{e.fcd-=dt;if(e.fcd<=0&&lz>4&&Math.abs(lx)<lz*1.2&&d<130){e.fch=2.2;sAt('charge',e.g.position,{g:.8,dk:.2});if(RUN)sgTip('charge',RUN.def.comm.charge)}}
  // 背面主砲（2門）：充填1.3秒→2連射。装甲が薄い背面ほど苛烈（威力150・弾も速い）
  if(e.rch>0){e.rch-=dt;const q=1-e.rch/1.3;e.grr.forEach(o=>{o.visible=true;o.scale.setScalar(.5+q*.9)});if(e.rch<=0){e.grr.forEach(o=>o.visible=false);e.rcq=2;e.rct=0}}
  else if(e.rcq<=0){e.rcd-=dt;if(e.rcd<=0&&lz<-3&&d<100&&Math.abs(lx)<-lz*1.6+20){e.rch=1.3;sAt('charge',e.g.position,{g:.8,dk:.2})}}
@@ -4950,17 +4954,27 @@ function siegeTick(e,dt,d,yaw){
  else if(e.cq<=0){e.cd-=dt;if(e.cd<=0&&d<120){e.chg=2.2;sAt('charge',e.g.position,{g:.6,dk:.2})}}
  if(e.cq>0){e.ct-=dt;if(e.ct<=0){const m=e.cq===2?e.mzA:e.mzB,from=wp(m),dir=aim(2).sub(from).normalize();e.cq--;e.ct=.4;sAt('mainGun',e.g.position,{g:.5,dk:.3});
   spawn(0xff8030,1.1,from,{vel:dir.multiplyScalar(26),life:4,len:3,team:'e',dmg:55,imp:'B',hr:2.6});spawn(0xffc080,2.4,from,{life:.15,grow:.8});if(e.cq<=0)e.cd=(k<.5?4.8:6.5)+Math.random()*1.4}}
- // 腹部のライフル：単発・高速。稼働数は 2〜4（HPの段階で増える）。反応するのは胴体の縁から14m以内（側面に近づく・腹の下に入る）
- e.rit-=dt;if(e.rit<=0&&inR(14)){const act=2+e.ph;e.ri=(e.ri+1)%act;e.rit=1.7-.25*e.ph+Math.random()*.3;const from=wp(e.rifles[e.ri].mz),dir=aim(1.6).sub(from).normalize();
+ // 腹部のライフル：単発・高速。稼働数は 2〜4（HPの段階で増える）。反応するのは胴体の縁から、横24m・前後14m以内（側面に近づく・腹の下に入る）
+ e.rit-=dt;if(e.rit<=0&&inR(24,14)){const act=2+e.ph;e.ri=(e.ri+1)%act;e.rit=1.7-.25*e.ph+Math.random()*.3;const from=wp(e.rifles[e.ri].mz),dir=aim(1.6).sub(from).normalize();
   sAt('turretFire',e.g.position,{g:.45,dk:.6});spawn(0xffe890,.35,from,{vel:dir.multiplyScalar(46),life:3,len:3.5,team:'e',dmg:48,imp:'B'});spawn(0xffd090,1,from,{life:.07});
-  if(RUN&&!RUN.bySaid&&RUN.def.comm.belly){RUN.bySaid=true;comm(RUN.def.comm.belly,2.4)}}
- // 腹部の機関銃：短い連射（6＋2×段階 発）。胴体の縁から10m以内だけ
- e.mt-=dt;if(e.bq<=0&&e.mt<=0&&inR(10)){e.bq=6+2*e.ph;e.bt=0;e.mt=3.2-.4*e.ph+Math.random()*.8}
+  if(RUN)sgTip('belly',RUN.def.comm.belly)}
+ // 腹部の機関銃：短い連射（6＋2×段階 発）。胴体の縁から、横18m・前後10m以内だけ
+ e.mt-=dt;if(e.bq<=0&&e.mt<=0&&inR(18,10)){e.bq=6+2*e.ph;e.bt=0;e.mt=3.2-.4*e.ph+Math.random()*.8}
  if(e.bq>0){e.bt-=dt;if(e.bt<=0){const act=2+e.ph,from=wp(e.mgs[e.bq%act].mz),dir=aim(6).sub(from).normalize();e.bq--;e.bt=.09;if(sOnce('sgmg',.14))sAt('turretFire',e.g.position,{g:.35,dk:.6});
   spawn(0xffa040,.3,from,{vel:dir.multiplyScalar(32),life:3,len:2,team:'e',dmg:15,imp:'C'});spawn(0xffd090,.8,from,{life:.05})}}
  // 背面の迎撃：後ろに回りこむと動力部から5発の散弾
  if(lz<-6&&Math.abs(lx)<30&&d<60){e.rt-=dt;if(e.rt<=0){e.rt=2.4;const from=wp(e.rear);sAt('turretFire',e.g.position,{g:.5,dk:.5});
   for(let i=0;i<5;i++){const dir=aim(7).sub(from).normalize();spawn(0xff7a20,.5,from,{vel:dir.multiplyScalar(28),life:3,len:3,team:'e',dmg:40,imp:'C'})}}}}
+// 撃破の崩れ方：爆発と振動 → 膝を折って足をたたむ → 足を地面につけたまま胴体が沈み、少し前のめりに傾いて止まる
+function siegeDeadAnim(e,dt){const t0=e.cl;e.cl+=dt;const c=e.cl,ez=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
+ if(t0===0)e.legs.forEach(l=>{l.r0=l.root.rotation.z;l.k0=l.kn.rotation.z;l.s0=l.kn.scale.x});
+ const f=ez((c-.6)/2.6),tf=ez((c-1.8)/2.2),v=Math.max(0,1-c/3.4);
+ e.legs.forEach(l=>{l.root.rotation.x*=Math.max(0,1-dt*4);l.root.rotation.z=l.r0+(-l.sx*.2-l.r0)*f;l.kn.rotation.z=l.k0+(-l.sx*.9-l.k0)*f;l.kn.scale.setScalar(l.s0+(.5-l.s0)*f)});
+ e.g.rotation.x=.1*tf;e.g.rotation.z=.035*tf+Math.sin(c*55)*.012*v;e.g.position.x=e.home.x+Math.sin(c*70)*.3*v;
+ e.g.position.y=0;e.g.updateMatrixWorld(true);let m=1e9;const w=new THREE.Vector3();e.legs.forEach(l=>{l.foot.getWorldPosition(w);m=Math.min(m,w.y-.3*l.kn.scale.x)});
+ e.g.position.y=-Math.max(0,Math.min(9.5,m));   // いちばん低い足が地面に着くように胴体を下ろす（足は埋めない）
+ if(c<3.4)shake=Math.max(shake,.15);
+ if(c>2.4&&sOnce('sgsm',.35)){const q=e.head.getWorldPosition(new THREE.Vector3());q.x+=(Math.random()-.5)*14;q.y+=4;q.z+=(Math.random()-.5)*16;smoke(q,3,2.4)}}
 function siegeDead(e){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.legs.forEach(l=>l.hm.color.setHex(0x2a1a14));e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a);e.glows.forEach(o=>o.visible=false);siegeGunsDown(e)}
 /* 中継アンテナ（★2-S）：骨組みの塔に皿と赤いランプ、足元の制御箱。撃ってこない。全部倒すと指揮型ギアの守り（被ダメージ 1/4）が消える */
 function makeAntenna(){const g=grp(S),mat=psMat(0xffffff,{map:panel('#5a5e58','#2a2e2a')}),dk=psMat(0x1a1c18),hz=psMat(0xffffff,{map:stripes('#d8b020','#1a1a14')}),lamp=new THREE.MeshBasicMaterial({color:0xff3020});
@@ -6378,12 +6392,12 @@ const COMM={iv:null,t:0};
 /* 通信：長いセリフは折り返して全文表示。出そろってから「1秒＋文字数×0.12秒（最低1.5秒）」残す。
  表示中に次が来たら順番待ち。dur=0（チュートリアルの指示）はすぐ差し替えて消さない */
 COMM.q=[];COMM.busy=false;
-function comm(txt,dur=0.001){if(dur===0){COMM.q=[];commShow(txt,0);return}COMM.q.push([txt,dur]);if(!COMM.busy)commNext()}
-function commNext(){const it=COMM.q.shift();if(it)commShow(it[0],it[1])}
-function commShow(txt,dur){clearInterval(COMM.iv);const el=$('commTx');$('comm').hidden=false;
+function comm(txt,dur=0.001,cb=null){if(dur===0){COMM.q=[];commShow(txt,0,cb);return}COMM.q.push([txt,dur,cb]);if(!COMM.busy)commNext()}
+function commNext(){const it=COMM.q.shift();if(it)commShow(it[0],it[1],it[2])}
+function commShow(txt,dur,cb){clearInterval(COMM.iv);const el=$('commTx');$('comm').hidden=false;
  let who='n';if(Array.isArray(txt)){who=txt[0];txt=txt[1]}COMM.radio=who!=='n';if(COMM.radio)SND.play('radio',{g:.9});else SND.play('comm',{g:.3});txt=String(txt).replace(/○○/g,PILOT||'操縦者');const OP=who==='o'&&RUN&&RUN.vs?RUN.vs.r.opp:null;
  const CW={b:['BELL-01','bell'],s:['SERENA','youthF'],j:['JONAH','adultF'],t:['OTTO','youthM'],h:['HANS','adultM'],m:['MIRA','youthF']}[who],CK={b:['bell',0],s:['serena',1],j:['jonah',0],t:['otto',0],h:['hans',0],m:['mira',0]}[who]||['nona',0];if(!OP){$('comm').style.setProperty('--cc','var(--c-'+CK[0]+')');$('comm').style.setProperty('--cf',CK[1]?'#fff':'#0b0e0d')}else{$('comm').style.removeProperty('--cc');$('comm').style.removeProperty('--cf')}$('comm').classList.toggle('opp',!!OP);$('comm').querySelector('b').textContent=OP?OP.en.split(' ')[0]:CW?CW[0]:'N-07';const vc=OP?OP.v||'adultM':CW?CW[1]:'nona';let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
- COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip(vc,n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;COMM.end=performance.now();
+ COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip(vc,n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;COMM.end=performance.now();if(cb)cb();
   if(dur===0){COMM.busy=false;COMM.t=0}else COMM.t=Math.max(1.5,1+txt.length*.12,dur)}},TXT_SPD)}
 function commEnd(){if(COMM.radio){COMM.radio=false;SND.play('radioEnd',{g:.7})}}   // 通信が切れるとき（ノーナ以外だけ）
 function commClear(){if(!$('comm').hidden)commEnd();COMM.q=[];clearInterval(COMM.iv);COMM.iv=null;COMM.busy=false;COMM.t=0;$('comm').hidden=true}
@@ -6404,7 +6418,7 @@ function misStartEnemies(){
  const es=RUN.def.escort,rc=RUN.def.reach,df=RUN.def.defend;$('esc').hidden=!es&&!RUN.def.boss&&!rc&&!df&&!RUN.def.siege;RUN.boss=null;RUN.rf=0;RUN.chgSaid=false;RUN.reachD0=0;RUN.halfSaid=false;RUN.nearSaid=false;RUN.wkSaid=false;RUN.lastSaid=false;RUN.arcSaid=false;RUN.lost=false;
  $('escL').classList.remove('lo');$('escL').textContent=es?'CARGO':rc?(RUN.def.limit?'TIME '+fmtT(RUN.def.limit):'POINT'):df?(df.kill?'BRIDGE':'BASE'):'TARGET';$('escS').textContent=es?'配給所まで':rc?(rc.lab||'中継アンテナまで'):df?(df.kill?'高架 ／ 敵の波':'防衛 残り'):'大型無人砲台';$('escHp').classList.remove('lo');$('escHp').style.width='100%';
  if(RUN.def.boss){RUN.boss=ENEMIES.find(e=>e.type==='boss'&&!e.off);const B=RUN.boss;B.mat.color.setHex(0xffffff);B.head.rotation.x=0;B.g.rotation.y=Math.PI;B.head.rotation.y=0;B.mc=9;B.chg=0;B.bq=0;B.front=0;B.cd=4;B.line.visible=B.glow.visible=false;$('escD').textContent='100%'}
- if(RUN.def.siege){RUN.sg=ENEMIES.find(e=>e.type==='siege'&&!e.off);$('esc').hidden=false;$('escL').textContent='SIEGE';$('escS').textContent='出口まで';$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo');RUN.bellSaid=0;RUN.serSaid=false;RUN.nearSaid=false;RUN.ph=0;RUN.ohSaid=false;RUN.bySaid=false}
+ if(RUN.def.siege){RUN.sg=ENEMIES.find(e=>e.type==='siege'&&!e.off);$('esc').hidden=false;$('escL').textContent='SIEGE';$('escS').textContent='出口まで';$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo');RUN.bellSaid=0;RUN.serSaid=false;RUN.nearSaid=false;RUN.ph=0;RUN.tp={};RUN.sgT=0}
  if(es){RUN.tr={hp:es.hp,max:es.hp,z:es.z0,stop:false,wait:false,hurt:false,near:false};truckPlace();TRUCK.visible=true;RUN.total=RUN.def.waves.reduce((a,w)=>a+w.en.length,0)}else TRUCK.visible=false;
  if(RUN.def.chase)chaseInit();
  if(RUN.def.jam)jamInit();
@@ -6450,16 +6464,17 @@ function siegeMisTick(dt){const B=RUN.sg,d=RUN.def,k=Math.max(0,B.hp/B.max);
  const dist=SG_GATE-(B.g.position.z+13.5);
  $('escHp').style.width=(100*k)+'%';$('escHp').classList.toggle('lo',k<.35);$('escD').textContent=Math.ceil(k*100)+'%';$('escS').textContent='出口まで '+Math.max(0,Math.round(dist))+' m';
  if(B.alive){
-  while(RUN.ph<B.ph){RUN.ph++;SND.play('reinf',{g:.4});comm(d.comm.add,2.2)}
+  RUN.sgT+=dt;if(RUN.ph<B.ph&&!COMM.busy&&!COMM.q.length){RUN.ph++;SND.play('reinf',{g:.4});comm(d.comm.add,2.2)}
   if(RUN.bellSaid<2&&dist<(RUN.bellSaid?40:85)){RUN.bellSaid++;comm(['b',RUN.bellSaid===1?d.comm.bell1:d.comm.bell2],2.6)}
-  if(!RUN.serSaid&&k<=.5){RUN.serSaid=true;comm(['s',d.comm.serena],3)}
+  if(!RUN.serSaid&&RUN.sgT>=12){RUN.serSaid=true;comm(['s',d.comm.serena],3)}
   if(!RUN.halfSaid&&dist<64){RUN.halfSaid=true;comm(d.comm.half,2.2)}
   if(dist<=0&&!RUN.ok&&P.down<=0){RUN.lost=true;banner('MISSION FAILED','出口到達',true,2.4);comm(d.comm.fail,3)}}
- else{B.cl+=dt;B.g.position.y=-Math.min(7,B.cl*2.2);B.head.rotation.x=Math.min(.1,B.cl*.04);B.legs.forEach(l=>{if(!l.broken)l.root.rotation.z=-l.sx*Math.min(.14,B.cl*.06)})}
+ else siegeDeadAnim(B,dt)
  if(!B.alive&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=9;
   ENEMIES.forEach(e=>{if(e!==B&&!e.off&&e.alive){e.alive=false;e.g.visible=false;if(e.shadow)e.shadow.visible=false;explode(e.center(new THREE.Vector3()),1.4)}});
-  for(let i=0;i<7;i++)setTimeout(()=>{if(RUN)explode(B.center(new THREE.Vector3()).add(new THREE.Vector3((Math.random()-.5)*22,Math.random()*8,(Math.random()-.5)*22)),3)},i*300);
-  comm(d.comm.clear,2.6);setTimeout(()=>{if(RUN&&RUN.ok){memFxShow(d);comm(d.comm.clear2,3.6)}},2800);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},6400);RUN.hold=performance.now()+6600}
+  for(let i=0;i<13;i++)setTimeout(()=>{if(RUN){const q=B.head.getWorldPosition(new THREE.Vector3());q.add(new THREE.Vector3((Math.random()-.5)*22,Math.random()*9-2,(Math.random()-.5)*26));explode(q,i%3?2.4:3.4);shake=Math.max(shake,.3)}},i*280);
+  commClear();comm(d.comm.clear,2.6);   // 戦闘中の通信は消す。「接続します」を打ち終えてから青い画面 → 帯
+  comm(d.comm.clear2,3.6,()=>{if(!RUN||!RUN.ok)return;memFxShow(d);RUN.hold=performance.now()+3800;setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},3300)});RUN.hold=performance.now()+60000}
  if(RUN.ok){if(finishWait(dt)){$('memFx').classList.remove('on');misFinish(true)}}}
 // 護衛：荷車を進める・波を出す・到着／破壊を判定
 function escortTick(dt){const T=RUN.tr,d=RUN.def,es=d.escort;if(!T)return;
@@ -6502,7 +6517,7 @@ function relayTick(dt){const d=RUN.def,B=RUN.cmd,k=Math.max(0,B.hp/B.max),al=RUN
  if(!RUN.halfSaid&&k<=.5&&B.alive){RUN.halfSaid=true;comm(d.comm.half,2.2)}
  if(!B.alive&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=8.4;
   ENEMIES.forEach(e=>{if(e!==B&&!e.off&&e.alive){e.alive=false;e.g.visible=false;if(e.type!=='antenna')explode(e.center(new THREE.Vector3()),1.4)}});
-  comm(d.comm.clear,2.6);setTimeout(()=>{if(!RUN||!RUN.ok)return;memFxShow(d);comm(d.comm.clear2,3.6)},2800);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},6400);RUN.hold=performance.now()+6600}
+  comm(d.comm.clear,2.6);comm(d.comm.clear2,3.6,()=>{if(!RUN||!RUN.ok)return;memFxShow(d);RUN.hold=performance.now()+3800;setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},3300)});RUN.hold=performance.now()+60000}
  if(RUN.ok){if(finishWait(dt)){$('memFx').classList.remove('on');misFinish(true)}}}
 /* 妨害下（4-2）：塔（アンテナ）を全部壊すと成功。ロックは近距離だけ（updateLock）・マップはノイズ（drawMap）。
  ハンスが旧軍の周波数で、最寄りの塔の方位（自機の正面＝12時）と距離を一定の間隔で知らせる。塔が落ちるたびに警備のドローン（reinf）が出る */
