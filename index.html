@@ -964,7 +964,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v214</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v215</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1042,7 +1042,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v214</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v215</span></div>
  </div>
 </div>
 
@@ -1108,7 +1108,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v214</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v215</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4646,24 +4646,43 @@ function bossTick(e,dt,d,yaw){const T=e.head;{const q=.75+.25*Math.sin(t*7)+Math
  SHOP の部位を自由に組み合わせ、色（OP_TINT の名前か色の表）を変えて出す。強さは部位の値を使わず、敵ごとに決める（GEAR_MOB）。
  依頼の enemies には {type:'gear', gear:'militia', x, z}（gear には GEAR_MOB の名前か、同じ形の表を直接書く）。
  動き：決めた距離（keep）まで近づく／離れる、左右に回り込む。tier（GEAR_TIER）でダッシュ・急加速・跳躍・シールドの有無が決まる。兵装は cfg の部位をそのまま使う（威力は GEAR_TIER の倍率） */
-/* ティモ専用兵装（キャリア）：旧式の改造品を、砂色・水色の発光・真鍮で派手に仕立てた見た目。性能は RF2／MG／MS と同じ（ショップには並べない） */
-const TMW={sand:psMat(0xb8a27c),dk:psMat(0x8a7a5e),brass:psMat(0xd0a84c),steel:psMat(0x3a352e),cy:new THREE.MeshBasicMaterial({color:0x9fe6ee}),cloth:psMat(0x7fb4cc)};
+/* ティモ専用兵装（キャリア）：4型相当の作り込みのオリジナル意匠。旧式の機関部を手入れと改造で蘇らせた「古いが高性能」の見た目（砂色の重ね装甲・真鍮の輪・水色の発光レール・たなびく布）。性能は RF2／MG／MS と同じ（ショップには並べない） */
+const TMW={sand:psMat(0xb8a27c),sandL:psMat(0xd6c298),dk:psMat(0x8a7a5e),brass:psMat(0xd0a84c),steel:psMat(0x3a352e),cy:new THREE.MeshBasicMaterial({color:0x9fe6ee}),cloth:psMat(0x7fb4cc),white:psMat(0xe8e4d4)};
 HAND.RFT={...HAND.RF2,name:'キャリアのライフル',build(g){
- box(g,.2,.7,.28,TMW.sand,0,-.35,0);box(g,.1,.42,.14,TMW.dk,0,-.6,.2);box(g,.08,.4,.22,TMW.brass,0,-.2,-.2);
- box(g,.09,2.3,.09,TMW.steel,0,-1.75,0);[-1,1].forEach(q=>{box(g,.03,1.7,.03,TMW.cy,q*.075,-1.6,.02);box(g,.02,.5,.18,TMW.cloth,q*.12,-.95,0,0,0,q*.3)});
- [-.95,-1.55,-2.15].forEach(y=>cyl(g,.095,.095,.12,TMW.brass,0,y,0,0,0,8));
- box(g,.1,.5,.1,TMW.dk,0,-.8,.2);box(g,.07,.06,.06,TMW.cy,0,-1.08,.24);
- box(g,.24,.32,.24,TMW.brass,0,-2.95,0);box(g,.26,.05,.26,TMW.cy,0,-2.8,0);
- const muzzle=grp(g,0,-3.1,0);muzzle.rotation.x=Math.PI/2;return {muzzle}}};
+ // 機関部：重ね装甲の箱＋上面の化粧板＋握り
+ box(g,.28,.86,.36,TMW.sand,0,-.42,0);box(g,.32,.5,.42,TMW.sandL,0,-.3,0);box(g,.34,.06,.44,TMW.brass,0,-.06,0);box(g,.34,.06,.44,TMW.brass,0,-.56,0);
+ box(g,.12,.46,.14,TMW.dk,0,-.74,.26,.25);box(g,.1,.36,.2,TMW.steel,0,-.22,-.26);box(g,.04,.22,.04,TMW.cy,.16,-.4,.12);box(g,.04,.22,.04,TMW.cy,-.16,-.4,.12);
+ // 銃身：芯＋二重の外筒＋真鍮の輪＋発光コイル
+ box(g,.1,2.6,.1,TMW.steel,0,-2.0,0);box(g,.24,.95,.26,TMW.sand,0,-1.35,0);box(g,.2,.8,.22,TMW.sand,0,-2.25,0);box(g,.26,.08,.28,TMW.brass,0,-.88,0);box(g,.26,.08,.28,TMW.brass,0,-1.82,0);
+ [-1.05,-1.25,-1.45,-1.65,-2.05,-2.25,-2.45].forEach((y,k)=>cyl(g,.16,.16,.04,k%2?TMW.cy:TMW.brass,0,y,0,0,0,8));
+ [-1,1].forEach(q=>{box(g,.03,2.3,.03,TMW.cy,q*.14,-1.75,.0);box(g,.04,.9,.22,TMW.dk,q*.15,-1.3,0,0,0,q*.25);box(g,.04,.5,.2,TMW.brass,q*.13,-2.35,0,0,0,q*.35)});
+ // 銃口：4枚の放熱板と発光
+ box(g,.3,.34,.3,TMW.brass,0,-3.0,0);[0,1,2,3].forEach(k=>{const a=k*Math.PI/2+Math.PI/4;box(g,.04,.4,.2,TMW.sandL,Math.cos(a)*.2,-3.1,Math.sin(a)*.2,0,-a,0)});box(g,.1,.12,.1,TMW.cy,0,-3.22,0);
+ // 照準器と、機関部からたなびく水色の布
+ cyl(g,.07,.07,.7,TMW.dk,0,-.95,.28,0,0,8);box(g,.1,.06,.1,TMW.cy,0,-1.32,.28);box(g,.14,.08,.14,TMW.brass,0,-.58,.28);
+ box(g,.03,.13,.95,TMW.cloth,.0,-.25,-.62,.25);box(g,.03,.1,.7,TMW.cloth,.1,-.45,-.48,.3,0,.1);
+ const muzzle=grp(g,0,-3.3,0);muzzle.rotation.x=Math.PI/2;return {muzzle}}};
 HAND.MGT={...HAND.MG,name:'キャリアのマシンガン',build(g){
- box(g,.28,.78,.34,TMW.sand,0,-.4,0);cyl(g,.26,.26,.2,TMW.dk,0,-.5,.3,0,Math.PI/2,10);cyl(g,.28,.28,.05,TMW.cy,0,-.5,.42,Math.PI/2,0,10);
- [[-.1,0],[.1,0],[0,.14]].forEach(([x,z])=>{cyl(g,.045,.045,.95,TMW.steel,x,-1.15,z,0,0,6);cyl(g,.06,.06,.1,TMW.brass,x,-1.62,z,0,0,6)});
- box(g,.34,.1,.4,TMW.brass,0,-.15,0);box(g,.03,.7,.03,TMW.cy,.16,-.4,.0);box(g,.03,.7,.03,TMW.cy,-.16,-.4,.0);box(g,.12,.3,.1,TMW.cloth,0,-.2,-.24,.3);
- const muzzle=grp(g,0,-1.75,.03);muzzle.rotation.x=Math.PI/2;return {muzzle}}};
+ // 機関部：厚い装甲＋化粧板＋側面のドラム（発光の縁）＋弾帯
+ box(g,.36,.96,.42,TMW.sand,0,-.46,0);box(g,.4,.5,.46,TMW.sandL,0,-.32,0);box(g,.42,.07,.48,TMW.brass,0,-.08,0);box(g,.42,.07,.48,TMW.brass,0,-.66,0);
+ cyl(g,.34,.34,.24,TMW.dk,0,-.55,.34,0,Math.PI/2,12);cyl(g,.37,.37,.05,TMW.cy,0,-.55,.47,Math.PI/2,0,12);cyl(g,.36,.36,.06,TMW.brass,0,-.55,.22,Math.PI/2,0,12);
+ for(let k=0;k<5;k++)box(g,.08,.12,.06,TMW.brass,.24-k*.1,-.2+k*.05,.2,0,0,.4);
+ [-1,1].forEach(q=>{box(g,.04,.8,.04,TMW.cy,q*.2,-.45,.0);box(g,.05,.5,.3,TMW.dk,q*.2,-.35,-.2)});
+ // 3連の銃身＋2段の束ね輪＋放熱の縦スリット
+ [[-.11,0],[.11,0],[0,.16]].forEach(([x,z])=>{cyl(g,.05,.05,1.2,TMW.steel,x,-1.35,z,0,0,6);cyl(g,.075,.075,.14,TMW.brass,x,-1.98,z,0,0,6);box(g,.04,.04,.04,TMW.cy,x,-2.07,z)});
+ [-1.1,-1.55].forEach(y=>cyl(g,.26,.26,.12,TMW.brass,0,y,.04,0,0,10));box(g,.34,.5,.3,TMW.sand,0,-1.35,.04);for(let k=0;k<4;k++)box(g,.36,.03,.1,TMW.steel,0,-1.15-k*.1,.2);
+ box(g,.04,.14,.9,TMW.cloth,.0,-.3,-.65,.25);box(g,.04,.1,.6,TMW.cloth,-.1,-.5,-.5,.3,0,-.1);
+ const muzzle=grp(g,0,-2.15,.03);muzzle.rotation.x=Math.PI/2;return {muzzle}}};
 SHOULDER.MST={...SHOULDER.MS,name:'キャリアのミサイル',build(g){const pod=grp(g,0,.3,0);pod.rotation.x=-.2;
- box(pod,.6,.5,.9,TMW.sand,0,0,0);box(pod,.6,.5,.02,TMW.steel,0,0,.46);box(pod,.5,.08,.9,TMW.brass,0,.28,0);box(pod,.62,.04,.92,TMW.cy,0,-.27,0);
- box(pod,.04,.5,.5,TMW.cloth,-.32,.02,-.1);box(pod,.04,.5,.5,TMW.cloth,.32,.02,-.1);
- const cells=[];for(let j=0;j<2;j++)for(let i=0;i<3;i++){const m=grp(pod,-.2+i*.2,.12-j*.24,.48);box(m,.12,.12,.03,TMW.cy,0,0,.01);cells.push(m)}
+ // 本体：重ね装甲＋真鍮の帯＋発光の縁＋側面のフィン
+ box(pod,.9,.66,.96,TMW.sand,0,0,0);box(pod,.94,.1,1.0,TMW.brass,0,.36,0);box(pod,.94,.06,1.0,TMW.brass,0,-.36,0);box(pod,.7,.12,.7,TMW.sandL,0,.44,-.05);
+ box(pod,.92,.04,.98,TMW.cy,0,-.3,0);box(pod,.9,.66,.03,TMW.steel,0,0,.49);
+ [-1,1].forEach(q=>{box(pod,.05,.6,.56,TMW.dk,q*.48,0,.1);box(pod,.04,.56,.4,TMW.cy,q*.52,0,.12);box(pod,.06,.5,.6,TMW.sandL,q*.52,.02,-.28,0,0,q*.18)});
+ // 上面：アンテナ状の板と、そこからたなびく水色の布
+ box(pod,.05,.55,.34,TMW.brass,.2,.66,-.2);box(pod,.04,.4,.26,TMW.dk,-.2,.6,-.2);box(pod,.03,.16,1.0,TMW.cloth,.2,.62,-.8,.3);
+ for(let k=0;k<3;k++)box(pod,.5,.03,.1,TMW.steel,0,.5,-.3+k*.16);
+ // 発射口：真鍮の縁と発光
+ const cells=[];for(let j=0;j<2;j++)for(let i=0;i<3;i++){const m=grp(pod,-.27+i*.27,.14-j*.28,.5);box(m,.22,.22,.04,TMW.brass,0,0,.0);box(m,.15,.15,.05,TMW.steel,0,0,.02);box(m,.08,.08,.06,TMW.cy,0,0,.04);cells.push(m)}
  return {cells}}};
 const GEAR_MOB={
  militia:{name:'払い下げ機',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'sand',hp:2400,dmg:40,rate:3.4,rng:50,spd:6,keep:24,bs:24,rw:1800,tier:'mob'},
@@ -5722,7 +5741,7 @@ const VSC_B={cls:'B',ch:4,name:'CLASS B 大会',rounds:[
  {label:'ROUND 1',ja:'1回戦',need:'4-1',mail:'v-b1',prize:25000,opp:{name:'ベルナルド・オズ',en:'BERNARD OZ',reg:'第2区画',pastor:'SOLOMON',mech:'重装の払い下げ改修機（3型級）',note:'第2区画の元民兵。大型の盾を前に構え、バズーカとミサイルで押してくる。腕のいい古参の重装乗り。',gear:'vb1',v:'adultM',
    talk:{start:['第7区画の代表か。……民兵あがりの意地、見せてやる。'],win:['……やるな。盾ごと、持っていかれたか。'],lose:['まだまだ甘いな。出直してこい。']}}},
  {label:'SEMIFINAL',ja:'準決勝',need:'4-2',mail:'v-b2',prize:35000,opp:{name:'ティモ・アルケン',en:'TIMO ARKEN',ali:'砂原の使者',reg:'第4区画',pastor:'NOAH',mech:'キャリア（MILITIA 01 カスタム）',note:'第4区画の使者。壁の外の砂原を知り尽くした、寡黙で優しい少年。旧型を手入れし尽くした機体で、ライフル・マシンガン・ミサイルを距離に応じて使い分ける万能型。',gear:'vb2',v:'youthM',riv:'timo',
-   talk:{start:['……始めよう。負けられない。'],win:['……負けた。強いな、あんた。'],lose:['……ごめん。でも、いい試合だった。']}}},
+   talk:{start:['……始めよう。負けられない。'],win:['……負けた。強いな、あんた。'],lose:['……悪いな。でも、いい試合だった。']}}},
  {label:'FINAL',ja:'決勝',ready:false,need:'4-3',mail:'v-b3',prize:50000,opp:{name:'エーリヒ・ブラント',en:'ERICH BRANDT',reg:'第5区画',pastor:'DEBORAH',mech:'リブラ（05 CENTURION）',note:'第5区画の審判官のトップ。丁寧な口調の63歳。盾とライフルで反撃する。',gear:'vb3',v:'adultM',riv:'erich',talk:{start:[],win:[],lose:[]}}}]};
 const VST=[VSC_C,VSC_B];let VSC=VSC_C;   // いま受付で見ている大会
 const vsW=(T=VSC)=>T===VSC_B?VSS.winB:VSS.win;
@@ -6786,7 +6805,7 @@ const VSN={start:[['盾持ちの重装機です。正面は固い。側面に回
  arms:'腕部、損傷限界。手持ちの兵装が使えません。',legs:'脚部、損傷限界。機動が落ちます。'};
 /* ライバルの試合中の通信。once＝1試合に1回／rep＝何度でも（30秒以上あけ、順に使う）。pri が大きいほど優先 */
 const VSEV_K={stand:{pri:1},firstE:{pri:1},firstP:{pri:1},cover:{pri:1,rep:1},melee:{pri:1},eHalf:{pri:2},pHalf:{pri:2},eLow:{pri:2},pLow:{pri:2},idle:{pri:1,rep:1}};
-const VRIV={timo:{stand:['……風が、止んでる。'],firstE:['まず、一つ。……悪い。'],firstP:['……当てられた。やるな。'],cover:['隠れても、風の音で分かる。','……そこ。動くな。'],melee:['近い……！'],eHalf:['……強い。でも、まだ倒れられない。'],pHalf:['……まだ、立てるか。'],eLow:['もう少し。……もう少しだけ、持て。'],pLow:['……ごめん。決める。'],idle:['……どうした。','見てるだけじゃ、砂は晴れない。'],arms:['腕が……動かないのか。'],legs:['脚が……動かないのか。']},
+const VRIV={timo:{stand:['……風が、止んでる。'],firstE:['まず、一つ。……悪い。'],firstP:['……当てられた。やるな。'],cover:['隠れても、風の音で分かる。','……そこ。動くな。'],melee:['近い……！'],eHalf:['……強い。でも、まだ倒れられない。'],pHalf:['……まだ、立てるか。'],eLow:['もう少し。……もう少しだけ、持て。'],pLow:['……悪いな。決める。'],idle:['……どうした。','見てるだけじゃ、砂は晴れない。'],arms:['腕が……動かないのか。'],legs:['脚が……動かないのか。']},
  serena:{stand:['様子見？　退屈させないで。'],firstE:['まずは一つ。'],firstP:['へえ……当ててくるのね。'],cover:['隠れても無駄よ。','柱の陰が好きなのね。','観客が退屈しているわ。出てきなさい。'],
  melee:['その距離で来る？　いいわ。'],eHalf:['……やるじゃない。'],pHalf:['まだ立っていられる？'],eLow:['ここからが本番よ。'],pLow:['終わりにしましょう。'],idle:['どうしたの、手が止まってる。','撃たないの？　つまらないわ。','見とれている場合じゃないわよ。'],
  arms:['腕はもう使えないわね。'],legs:['脚が止まったわ。どう逃げるの？']}};
