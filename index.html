@@ -20,7 +20,7 @@
 :root{
  --bg:#07090a; --panel:#0e1211; --panel2:#121816; --line:#2c3833; --fg:#d9e0dc; --dim:#7f8c86; --faint:#4a5550;
  --accent:#8cf06e; --fire:#f0a040; --cyan:#6fd3e0; --alert:#ff5a3c; --olive:#5b6b3a;
- --c-nona:#6fd3e0; --c-doll:#8cf06e; --c-client:#d8a35a; --c-bell:#f0a040; --c-jonah:#6fa0f0; --c-otto:#e0c060; --c-serena:#c8435c; --c-erich:#8a5a34; --c-viktor:#8a4aa8; --c-hans:#b0a0d8; --c-mira:#e8808a;  /* キャラクターごとの色（枠線・名前札）。ここだけで管理する */ --khaki:#b8a878;
+ --c-nona:#6fd3e0; --c-doll:#8cf06e; --c-client:#d8a35a; --c-bell:#f0a040; --c-jonah:#6fa0f0; --c-otto:#e0c060; --c-serena:#c8435c; --c-erich:#8a5a34; --c-viktor:#8a4aa8; --c-hans:#b0a0d8; --c-timo:#7fb4cc; --c-mira:#e8808a;  /* キャラクターごとの色（枠線・名前札）。ここだけで管理する */ --khaki:#b8a878;
  --disp:"DotGothic16","MS Gothic",monospace; --mech:"Chakra Petch","DotGothic16",monospace; --sten:"Stardos Stencil","Chakra Petch",monospace;
  --body:"M PLUS 1p","Hiragino Sans",sans-serif;
  color-scheme:dark;
@@ -668,6 +668,9 @@ body.tut #tagzone{opacity:.3}body.tut #tagzone *{pointer-events:none!important}
 .vacts .btn-main:disabled{background:#1a2427;color:#4f6266;opacity:1}
 #versus.walk #vtbox,#versus.walk #vsR,#versus.walk #vExit,#versus.walk .opcard{visibility:hidden}
 #versus.greet #vsR,#versus.greet #vExit{opacity:.25;pointer-events:none}
+#versus.alm::after{content:"";position:absolute;inset:0;z-index:30;pointer-events:none;background:rgba(255,40,20,.28);animation:vsalm .6s steps(2) infinite}
+@keyframes vsalm{0%{opacity:0}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){#versus.alm::after{animation:none}}
 #versus.evt #vsR,#versus.evt .shdr{opacity:.25;pointer-events:none;transition:opacity .2s}   /* 差し込みイベントの会話中：左（受付と会話）以外を暗くして押せなくする */
 #unlock{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:2;min-width:min(400px,calc(100% - 20px));max-width:calc(100% - 20px);padding:10px 16px 12px;background:rgba(10,14,13,.65);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);text-shadow:0 1px 2px #000;border:1px solid var(--accent);display:flex;flex-direction:column;gap:5px;animation:ulin .4s ease}
 #unlock b{font-family:var(--mech);font-size:12px;letter-spacing:.3em;color:var(--accent)}
@@ -961,7 +964,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v212</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v213</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1039,7 +1042,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v212</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v213</span></div>
  </div>
 </div>
 
@@ -1105,7 +1108,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v212</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v213</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -2831,7 +2834,7 @@ const SERIES=[
   rival:{name:'CARRIER',jp:'キャリア',ch:'CH4・CH7',pilot:'ティモ・アルケン（17）',alias:['砂原の使者','NUNTIUS HARENAE','ヌンティウス・ハレナエ'],
    pal:{main:0xb8a27c,sub:0x8a7a5e,joint:0x3a352e,line:0x7fb4cc,eye:0x9fe6ee,glow:0x9fe6ee,cloth:0x7fb4cc,patch:0x9c8a66},
    sw:[['砂','#b8a27c'],['砂・濃','#8a7a5e'],['水色','#7fb4cc'],['EYE','#9fe6ee']],
-   deco:['<b>水色の長い布</b>を首に巻き、後ろへなびかせる（ティモ本人の首の布と同じ）','胸と脚に色の違う<b>当て板（つぎはぎ）</b>','頭に<b>長いアンテナと2つのレンズ</b>','背中に<b>筒形の荷物入れ</b>（運び屋＝伝書鳩）。兵装は短いマシンガンとナイフ'],
+   deco:['<b>水色の長い布</b>を首に巻き、後ろへなびかせる（ティモ本人の首の布と同じ）','胸と脚に色の違う<b>当て板（つぎはぎ）</b>','頭に<b>長いアンテナと2つのレンズ</b>','背中に<b>筒形の荷物入れ</b>（運び屋＝伝書鳩）。兵装はライフル・マシンガン・ミサイル（旧式だが高性能な独自兵装）'],
    apply(P,K){
     P.legs.forEach(l=>{box(l.kn,.4,.35,.06,K.patch,l.s*.1,-.4,.63,.12);box(l.th,.3,.25,.05,K.patch,0,-.6,.38)});
     const t=P.torso;box(t,.5,.4,.06,K.patch,-.35,1.05,.58,-.1,0,.1);
@@ -3531,6 +3534,7 @@ const SND=(()=>{
  const sub=(t,f1,f2,dur,d,peak=1)=>osc('sine',f1,t,dur,d,{f2,fT:dur*.4,peak});
  const cv=(f0,wave,form,wob,len)=>{const d=out(.2);if(!d)return;const t=T(),f=jit(f0,wob);osc(wave,f,t,len,d,{peak:.8});osc('sine',f*2,t,len*.6,d,{peak:.25});noise(t,len*.5,d,{f:form,q:5,peak:.18})};
  const S={
+  alarm(d,t){osc('square',880,t,.26,d,{peak:.3,r:.2});osc('square',620,t+.28,.26,d,{peak:.3,r:.2})},
   click(d,t){osc('sine',jit(3200,.02),t,.025,d,{peak:.5});snap(t,d,{f:8000,peak:.25,dur:.006});osc('sine',1600,t,.04,d,{peak:.2})},
   decide(d,t){osc('sine',1046,t,.12,d,{peak:.5});osc('sine',1568,t+.06,.25,d,{peak:.5});osc('triangle',3136,t+.06,.2,d,{peak:.12});snap(t,d,{peak:.2})},
   cancel(d,t){osc('sine',1174,t,.07,d,{peak:.45});osc('sine',784,t+.05,.16,d,{f2:700,peak:.45})},
@@ -4339,7 +4343,7 @@ const VS3=(()=>{
  文の中は <em>強調</em> と <strong>良い知らせ</strong>、<ruby> だけ。○○ は操縦者名 */
 const cc=k=>getComputedStyle(document.documentElement).getPropertyValue('--c-'+k).trim();   // キャラ色は CSS の --c-xxx が唯一の定義
 const VSP={b:{nm:'BELL-01 ベル',c:cc('bell'),f:'#0a0c0b',v:'bell'},n:{nm:'N-07 ノーナ（端末）',c:cc('nona'),f:'#06161a',v:'nona'},j:{nm:'JONAH（無線）',c:cc('jonah'),f:'#06161a',v:'adultF'}};
-const VCH={serena:{nm:'セレナ・ヴァルデス',c:cc('serena'),f:'#fff',v:'youthF',img:'img/rivals/rival-david-serena.png'},erich:{nm:'エーリヒ・ブラント',c:cc('erich'),f:'#fff',v:'adultM',img:'img/rivals/rival-deborah-erich.png'},viktor:{nm:'ヴィクトル・ザイン',c:cc('viktor'),f:'#fff',v:'youthM',img:'img/rivals/rival-nimrod-viktor.png'}};
+const VCH={serena:{nm:'セレナ・ヴァルデス',c:cc('serena'),f:'#fff',v:'youthF',img:'img/rivals/rival-david-serena.png'},erich:{nm:'エーリヒ・ブラント',c:cc('erich'),f:'#fff',v:'adultM',img:'img/rivals/rival-deborah-erich.png'},viktor:{nm:'ヴィクトル・ザイン',c:cc('viktor'),f:'#fff',v:'youthM',img:'img/rivals/rival-nimrod-viktor.png'},timo:{nm:'ティモ・アルケン',c:cc('timo'),f:'#fff',v:'youthM',img:'img/rivals/rival-noah-timo.png'}};
 /* 場面に応じて一度だけ出る会話（VSS.seen に記録）。ok が真になった受付の訪問で、ベルの案内のあとに流れる。セリフは仮 */
 const VSEV=[
  {id:'c-semi-erich',ok:()=>!!VSS.win[0],lines:[   // 1回戦に勝った直後の受付：エーリヒ（現在の審判官のトップ）の初登場。このあと 3-2 のメールが届く
@@ -4383,6 +4387,41 @@ const VSEV=[
   ['n','……エーリヒ・ブラントも、<em>初戦を突破</em>。試合は、ほぼ一方的だったそうです。'],
   ['b','審判官長が選手として勝ち進むのは、闘技場の歴史でも初めてです。'],
   ['n','それに、対戦表の組み合わせ。決勝まで、あの方と当たらない並びになっています。……偶然でしょうか。']]},
+ {id:'b-semi-timo',ok:()=>VSC===VSC_B&&vsCur()===1&&vsState(1)==='open',lines:[   // B 準決勝が開いて最初の受付：ティモ（試合前）。セリフは仮
+  ['timo','……あんたが、第7区画の代表か。'],
+  ['timo','ティモ。ティモ・アルケン。……よろしく。'],
+  ['timo','壁の外の砂なら、よく知ってる。こういう場所は、あまり得意じゃない。……でも、全力で、やる。'],
+  ['_',700],
+  ['b','……ティモ・アルケン様。<em>第4区画のエースパイロットに準ずる方</em>で、「砂原の使者」と呼ばれています。'],
+  ['b','第4区画を治める統治AIは、<ruby class="mc">NOAH<rt>ノア</rt></ruby>。壁に囲まれた地域から、大会に出られるのは異例です。'],
+  ['n','……悪い方では、なさそうです。ですが、エース級であることに変わりはありません。○○、気をつけましょう。']]},
+ {id:'b-semi-timo-after',ok:()=>!!VSS.winB[1],lines:[   // 準決勝に勝った直後：ティモ（試合後）。セリフは仮
+  ['timo','……負けた。'],
+  ['timo','強いな、あんた。砂の上なら、もう少し粘れたと思うけど……言い訳は、しない。'],
+  ['timo','あんたに、頼みたいことがある。壁の外の、調査だ。一人じゃ、心もとなくて。'],
+  ['timo','詳しいことは、あとで連絡する。……ありがとう。いい試合だった。'],
+  ['b','……ティモ・アルケン様の敗退を確認しました。'],
+  ['n','頼みたいこと、ですか。……あの方は、嘘のつける人ではなさそうです。']]},
+ {id:'b-semi-emergency',ok:()=>!!VSS.winB[1],lines:[   // 同じ訪問の続き：緊急事態（別会場の準決勝でヴィクトルが失格）。間を置いてから警報
+  ['_',1800],
+  ['_',2400,'alarm'],
+  ['b','……緊急事態です。別会場の B 大会、準決勝で、<em>規定違反</em>が発生しました。'],
+  ['n','速報です。第2試合、ヴィクトル・ザイン対エーリヒ・ブラント。終了の合図のあとも、ヴィクトルが攻撃を続けている、と。'],
+  ['b','審判部の副官が試合を中断。……映像を、受付の画面に転送します。'],
+  ['_',1500],
+  ['viktor','ハハッ……ハハハハ！　止めるなよ、まだ終わっちゃいねぇ！'],
+  ['viktor','警告だァ？　何回目だか、数えてもいねぇよ！　あの爺さん、ずっと俺ばっかり睨みやがって！'],
+  ['b','……警告、五回目。審判部は、規定により、<em>失格</em>を決定しました。'],
+  ['viktor','失格？　……はぁ？　ふざけんな、ふざけんなよ！　デボラの犬が……！'],
+  ['_',1200],
+  ['erich','……ヴィクトル殿。規定は、すべての選手に、等しく適用されます。'],
+  ['erich','私が選手であることと、規定が公正であることは、別の問題です。副官の判定を、支持いたします。'],
+  ['viktor','覚えとけよ、天秤の爺さん……！　この借りは、必ず、返してやる……！'],
+  ['b','……ヴィクトル・ザイン様の失格を、記録しました。会場から退場されます。'],
+  ['_',1000],
+  ['erich','第7区画の代表、○○殿。お見苦しい場面を、お見せしました。決勝で、お会いしましょう。'],
+  ['n','……エーリヒ・ブラントは、戦わずに決勝へ。これも、「偶然」でしょうか。'],
+  ['n','それに、ヴィクトル。あの怒り方は、ただの癇癪には、見えませんでした。……○○、気をつけましょう。']]},
  {id:'c-final-serena',ok:()=>VSC===VSC_C&&vsCur()===2&&vsState(2)==='open',lines:[
   ['serena','あら。あなたが噂の、第7区画の代表さん？'],
   ['serena','聞いたことのない名前ね。……<em>名無しさん</em>でいいかしら。'],
@@ -4394,7 +4433,7 @@ const VSEV=[
   ['n','少し、引っかかります。○○、気をつけましょう。']]}];
 const VT={q:[],iv:null,done:null,ch:null};
 let vTab='card',vLeaving=false;
-function vtSay(lines,choices=null){VT.q=lines.slice();VT.ch=choices;vtNext()}
+function vtSay(lines,choices=null){if(VT.pzt){clearTimeout(VT.pzt);VT.pzt=null}VT.q=lines.slice();VT.ch=choices;vtNext()}
 // 立ち絵の入れ替え（共通）：絵が切り替わる場面は必ずこの関数を使う。2枚の層を重ね、前の絵は沈みながら消え、新しい絵は読み込み後に浮かびながら出る（クロスフェード）。
 // 層の見た目は CSS（.on で表示）。時間は PORT_MS だけで変える。st＝{a:層1,b:層2,cur:表示中の層,src:今の絵,tk:通し番号}
 const PORT_MS=400;document.documentElement.style.setProperty('--pms',PORT_MS+'ms');
@@ -4412,7 +4451,11 @@ Object.values(VCH).forEach(c=>{const i=new Image();i.src=c.img});
 const VT_DEF=['おかえりなさいませ、○○様。ご用件をお選びください。','お疲れさまでした、○○様。次のご案内をいたします。','受付です。対戦カードか対戦表をご確認ください。'];   // 話すことがなく、テキスト欄が空になるときの一言
 function vtNext(){const ch=$('vtChoice');ch.innerHTML='';clearInterval(VT.iv);VT.iv=null;
  if(!VT.q.length&&!$('vtText').textContent.trim()){VT.q=[['b',pick(VT_DEF),'normal']]}
- if(!VT.q.length){$('versus').classList.remove('evt');$('vtNext').hidden=true;VS3.talk(false);$('vState').textContent='待機中';vtChar(null);vtChoices();return}
+ if(VT.q.length&&VT.q[0][0]==='_'){const [,ms,fx]=VT.q.shift(),tok=VT.pz=(VT.pz||0)+1;   // 間：話者なし。立ち絵と文字を消して ms ミリ秒待つ（fx='alarm' なら警報）
+  $('vtText').textContent='';$('vtNext').hidden=true;vtChar(null);VS3.talk(false);$('vState').textContent='待機中';
+  if(fx==='alarm'){$('versus').classList.add('alm');SND.play('alarm',{g:.5});setTimeout(()=>SND.play('alarm',{g:.5}),600);setTimeout(()=>SND.play('alarm',{g:.5}),1200)}
+  VT.pzt=setTimeout(()=>{VT.pzt=null;$('versus').classList.remove('alm');vtNext()},ms||1000);return}
+ if(!VT.q.length){$('versus').classList.remove('evt','alm');$('vtNext').hidden=true;VS3.talk(false);$('vState').textContent='待機中';vtChar(null);vtChoices();return}
  const [sp,raw,mood,ev]=VT.q.shift(),S=VSP[sp]||VCH[sp],txt=raw.replace(/○○/g,esc(PILOT||'操縦者'));$('versus').classList.toggle('evt',!!ev);
  const box=$('vtbox');box.style.setProperty('--vc',S.c);box.style.setProperty('--vf',S.f);$('vtNm').textContent=S.nm;
  if(VCH[sp])vtChar(sp);else vtDim(true);
@@ -4424,7 +4467,7 @@ function vtNext(){const ch=$('vtChoice');ch.innerHTML='';clearInterval(VT.iv);VT
  draw(0);VT.iv=setInterval(()=>{draw(++n);SND.blip(S.v,n);if(n>=total)VT.done()},TXT_SPD)}
 function vtChoices(){const ch=$('vtChoice');ch.innerHTML='';if(typeof VT.ch==='function'){const f=VT.ch;VT.ch=null;return f()}const list=VT.ch||vsMenu();VT.ch=null;
  list.forEach(([lab,fn])=>{const b=document.createElement('button');b.textContent=lab;b.onclick=fn;ch.appendChild(b)})}
-$('vtText').onclick=()=>{if(VT.iv&&VT.done)VT.done();else if(VT.q.length)vtNext()};
+$('vtText').onclick=()=>{if(VT.pzt)return;if(VT.iv&&VT.done)VT.done();else if(VT.q.length)vtNext()};
 const vsMenu=()=>[['対戦カードを見る',()=>{setVTab('card');vtSay(vsStatus(true))}],['対戦表を見る',()=>{setVTab('table');vtSay([['b','対戦表です。勝ち進むと、次の試合が表に加わります。','point']])}],['ルールを聞く',vsRules]];
 function vsEquip(){if(vLeaving)return;fadeTo(()=>openEquipModal('versus'))}
 // ベルの案内：いまの試合の状態（日程調整中なら「追って連絡」）
@@ -4495,7 +4538,7 @@ function firstVersus(){const v=$('versus');v.classList.add('walk');$('vtChoice')
 function leaveVersus(){if(vLeaving)return;vLeaving=true;$('vtChoice').innerHTML='';
  vtSay([[ 'b',pick(['ご来場ありがとうございました、○○様。','お気をつけて。次のご来場をお待ちしております。','またのお越しを。試合の知らせは、メールでお届けします。']),'bow']],
   ()=>setTimeout(()=>fadeTo(closeVersus,'GARAGE'),800))}
-function closeVersus(toMatch=false){VS3.stop();if(!toMatch)SND.bgm('garage');clearInterval(VT.iv);VT.iv=null;VT.q=[];vtChar(null);$('versus').hidden=true;$('versus').classList.remove('walk','greet','evt');vLeaving=false;
+function closeVersus(toMatch=false){VS3.stop();if(!toMatch)SND.bgm('garage');clearInterval(VT.iv);VT.iv=null;VT.q=[];if(VT.pzt){clearTimeout(VT.pzt);VT.pzt=null}vtChar(null);$('versus').hidden=true;$('versus').classList.remove('walk','greet','evt','alm');vLeaving=false;
  view='overview';selSlot=null;renderGarage();if(!toMatch)garageGreet('versus')}   // 試合へ向かうときはガレージのあいさつを出さない（暗転中に文字の音が鳴るため）
 $('vEq').onclick=vsEquip;
 $('mVersus').onclick=()=>{if(tutBlock())return;if(!vsOk())return;openMenu(false);fadeTo(openVersus,'VERSUS')};$('vExit').onclick=leaveVersus;
@@ -4620,6 +4663,8 @@ const GEAR_MOB={
   hp:14000,dmg:0,rate:2.4,rng:70,spd:6,keep:26,bs:24,rw:0,tier:'mid',msK:1.8,msSpd:.8,tx:{dk:.30,spread:2,cdK:1.4,gap:.9},guard:{p:5,near:12,t:[1.2,1.8],cd:[1.6,2.6]},msMax:2},
  vs3:{name:'ルージュ・ファンファーレ',model:'serena',vpose:'serena',bladeFx:1,cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'BLS',lHand:'SH',rShoulder:'MS',lShoulder:'MS'},
   hp:17000,dmg:0,rate:1.5,rng:70,spd:10,keep:14,bs:32,rw:0,tier:'boss',msK:2,tx:{dk:.24,mk:.273,spread:1.6,cdK:1.3,gap:.6},guard:{p:6,near:0,t:[.8,1.2],cd:[1.5,2.5]},rush:26,msMax:3,rage:1},
+ vb2:{name:'キャリア',model:'timo',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF2',lHand:'MG',rShoulder:'MS',lShoulder:'none'},   // ティモ：旧型を手入れした万能型。ライフル・マシンガン・ミサイル（CH7 で強化版「キャリア改」）
+  hp:20000,dmg:0,rate:1.8,rng:70,spd:9,keep:22,bs:30,rw:0,tier:'boss',msK:1.6,tx:{dk:.22,spread:1.8,cdK:1.4,gap:.7},msMax:2},
  cvBoss:{name:'無人輸送ギア（親機）',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'none',rShoulder:'MS',lShoulder:'none'},tint:'convoy',hp:4500,dmg:34,rate:2.0,rng:70,spd:12,keep:30,bs:30,rw:6000,scale:1.15,tier:'boss'},
  cvEsc:{name:'無人護衛ギア',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'convoyD',hp:1500,dmg:30,rate:3.0,rng:60,spd:12,keep:30,bs:30,rw:2000,tier:'mob'},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
@@ -5655,7 +5700,8 @@ const VSC_C={cls:'C',ch:3,name:'CLASS C 大会',rounds:[
 const VSC_B={cls:'B',ch:4,name:'CLASS B 大会',rounds:[
  {label:'ROUND 1',ja:'1回戦',need:'4-1',mail:'v-b1',prize:25000,opp:{name:'ベルナルド・オズ',en:'BERNARD OZ',reg:'第2区画',pastor:'SOLOMON',mech:'重装の払い下げ改修機（3型級）',note:'第2区画の元民兵。大型の盾を前に構え、バズーカとミサイルで押してくる。腕のいい古参の重装乗り。',gear:'vb1',v:'adultM',
    talk:{start:['第7区画の代表か。……民兵あがりの意地、見せてやる。'],win:['……やるな。盾ごと、持っていかれたか。'],lose:['まだまだ甘いな。出直してこい。']}}},
- {label:'SEMIFINAL',ja:'準決勝',ready:false,need:'4-2',mail:'v-b2',prize:35000,opp:{name:'ティモ・アルケン',en:'TIMO ARKEN',reg:'第4区画',pastor:'NOAH',mech:'（未定）',note:'第4区画の使者。壁の外の砂原を知り尽くした、穏やかな若者。',gear:'vb2',v:'youthM',riv:'timo',talk:{start:[],win:[],lose:[]}}},
+ {label:'SEMIFINAL',ja:'準決勝',need:'4-2',mail:'v-b2',prize:35000,opp:{name:'ティモ・アルケン',en:'TIMO ARKEN',ali:'砂原の使者',reg:'第4区画',pastor:'NOAH',mech:'キャリア（MILITIA 01 カスタム）',note:'第4区画の使者。壁の外の砂原を知り尽くした、寡黙で優しい少年。旧型を手入れし尽くした機体で、ライフル・マシンガン・ミサイルを距離に応じて使い分ける万能型。',gear:'vb2',v:'youthM',riv:'timo',
+   talk:{start:['……第7区画の代表。手加減は、しない。'],win:['……強いな、あんた。'],lose:['ごめん。……でも、いい試合だった。']}}},
  {label:'FINAL',ja:'決勝',ready:false,need:'4-3',mail:'v-b3',prize:50000,opp:{name:'エーリヒ・ブラント',en:'ERICH BRANDT',reg:'第5区画',pastor:'DEBORAH',mech:'リブラ（05 CENTURION）',note:'第5区画の審判官のトップ。丁寧な口調の63歳。盾とライフルで反撃する。',gear:'vb3',v:'adultM',riv:'erich',talk:{start:[],win:[],lose:[]}}}]};
 const VST=[VSC_C,VSC_B];let VSC=VSC_C;   // いま受付で見ている大会
 const vsW=(T=VSC)=>T===VSC_B?VSS.winB:VSS.win;
@@ -6718,7 +6764,8 @@ const VSN={start:[['盾持ちの重装機です。正面は固い。側面に回
  arms:'腕部、損傷限界。手持ちの兵装が使えません。',legs:'脚部、損傷限界。機動が落ちます。'};
 /* ライバルの試合中の通信。once＝1試合に1回／rep＝何度でも（30秒以上あけ、順に使う）。pri が大きいほど優先 */
 const VSEV_K={stand:{pri:1},firstE:{pri:1},firstP:{pri:1},cover:{pri:1,rep:1},melee:{pri:1},eHalf:{pri:2},pHalf:{pri:2},eLow:{pri:2},pLow:{pri:2},idle:{pri:1,rep:1}};
-const VRIV={serena:{stand:['様子見？　退屈させないで。'],firstE:['まずは一つ。'],firstP:['へえ……当ててくるのね。'],cover:['隠れても無駄よ。','柱の陰が好きなのね。','観客が退屈しているわ。出てきなさい。'],
+const VRIV={timo:{stand:['……行くよ。'],firstE:['まず、一つ。'],firstP:['……当てられた。やるな。'],cover:['隠れても、見えてる。','そこ、動かないで。'],melee:['近い……！'],eHalf:['……強い。でも、まだだ。'],pHalf:['まだ、立てるか？'],eLow:['もう少し……！'],pLow:['……ごめん、決める。'],idle:['どうした？','見てるだけじゃ、終わらない。'],arms:['腕が……使えないのか？'],legs:['脚が……動かないのか？']},
+ serena:{stand:['様子見？　退屈させないで。'],firstE:['まずは一つ。'],firstP:['へえ……当ててくるのね。'],cover:['隠れても無駄よ。','柱の陰が好きなのね。','観客が退屈しているわ。出てきなさい。'],
  melee:['その距離で来る？　いいわ。'],eHalf:['……やるじゃない。'],pHalf:['まだ立っていられる？'],eLow:['ここからが本番よ。'],pLow:['終わりにしましょう。'],idle:['どうしたの、手が止まってる。','撃たないの？　つまらないわ。','見とれている場合じゃないわよ。'],
  arms:['腕はもう使えないわね。'],legs:['脚が止まったわ。どう逃げるの？']}};
 function vsDef(i,rem=false){const r=VSC.rounds[i];return {id:(VSC===VSC_B?'VB':'VS')+(i+1),vs:i,vt:VSC.cls,rem,vsJa:r.ja,title:VSC.name+' '+r.ja,ch:VSC.ch,field:'colo',fieldJa:'闘技場',ready:true,bgm:i===2?'avsf':'avs',
@@ -7311,7 +7358,7 @@ function dbgApply(){const now=Date.now();
  // 等級の通知メール：クリア済みの★の分だけ届いている状態にそろえる
  MLIST.filter(d=>d.story&&d.cls).forEach(d=>{const nid='n-cls-'+d.cls.toLowerCase();if(!MDEF[nid])return;if(DW.m[d.id]===2){if(!MIS[nid])MIS[nid]={got:true,read:true,clear:false,n:0,t:now}}else delete MIS[nid]});
  // VERSUS：受付の初回・各試合の勝利と対戦カードのメール
- if(!DW.vs.reg&&VSS.reg)VSS.seen={};if(DW.vs.sb[0]<2){delete VSS.seen['b-erich-reg'];delete VSS.seen['b-r1-news']}   // オズ戦を「未着／届いた」に戻したら、エーリヒの登録と速報をもう一度見られる
+ if(!DW.vs.reg&&VSS.reg)VSS.seen={};if(DW.vs.sb[0]<2){delete VSS.seen['b-erich-reg'];delete VSS.seen['b-r1-news']}if(DW.vs.sb[1]<2){delete VSS.seen['b-semi-timo'];delete VSS.seen['b-semi-timo-after'];delete VSS.seen['b-semi-emergency']}   // オズ戦を「未着／届いた」に戻したら、エーリヒの登録と速報をもう一度見られる
  VSS.reg=DW.vs.reg;const vsNew=[];[[VSC_C,DW.vs.st,VSS.win],[VSC_B,DW.vs.sb,VSS.winB]].forEach(([T,sts,wins])=>T.rounds.forEach((r,i)=>{const v=sts[i];wins[i]=v===2;if(v>=1){if(!MIS[r.mail]){MIS[r.mail]={got:true,read:v===2,clear:false,n:0,t:now+i};if(v===1)vsNew.push(r)}}else delete MIS[r.mail]}));
  // パーツ：所持品を入れ替え。00 は TUNE を全 MAX に。持っていない品を装備していたら、その部位を初期装備に戻す
  const nOwn=DW.own.size;OWN.clear();START_OWN.forEach(i=>OWN.add(i));DW.own.forEach(i=>OWN.add(i));
