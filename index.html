@@ -961,7 +961,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v201</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v202</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1039,7 +1039,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v201</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v202</span></div>
  </div>
 </div>
 
@@ -1105,7 +1105,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v201</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v202</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4756,7 +4756,8 @@ function makeWalker(){const g=grp(S),mat=psMat(0xffffff,{map:panel('#6a6258','#3
  e.hpBar=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0x8cf06e}));e.hpBar.position.y=7;g.add(e.hpBar);
  ENEMIES.push(e);e.alive=false;g.visible=false;e.off=true;return e}
 // 多脚砲台の歩き：出現位置のまわり（半径12m）の点へ、時速の遅い歩みで向かい、着いたら次の点へ。撃つ間（充填中）は止まる
-const jamQuiet=e=>!!(e.post&&RUN&&RUN.jm&&!RUN.jm.alert);   // 4-2：警戒前の護衛か
+/* 4-2：護衛が「静か」か（警戒前、または警戒していても自機が持ち場から遠いギア・ドローン）。グループ（塔）ごとに警戒する */
+const jamQuiet=e=>{if(!e.post||!RUN||!RUN.jm)return false;if(!RUN.jm.ag[e.post.i])return true;return (e.type==='gear'||e.type==='drone')&&Math.hypot(P.pos.x-e.post.x,P.pos.z-e.post.z)>JAM_LEASH};
 function walkerMove(e,dt){if(!e.wp||Math.hypot(e.wp.x-e.home.x,e.wp.z-e.home.z)<1.2){const a=Math.random()*6.28,r=4+Math.random()*(e.post?e.post.r:8);e.wp={x:e.base.x+Math.sin(a)*r,z:e.base.z+Math.cos(a)*r}}
  const mv=e.stun<=0&&e.cd>.8;if(mv){const dx=e.wp.x-e.home.x,dz=e.wp.z-e.home.z,l=Math.hypot(dx,dz)||1;e.home.x+=dx/l*2.6*dt;e.home.z+=dz/l*2.6*dt;pushOut(e.home,2.2,0);clampField(e.home);e.ph+=dt*5}
  e.legs.forEach(l=>{l.up.rotation.x=mv?Math.sin(e.ph+l.ph)*.25:0});e.body.position.y=3.1+(mv?Math.abs(Math.sin(e.ph))*.12:0);
@@ -4894,15 +4895,24 @@ function siegeDead(e){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.legs.forEac
 /* 中継アンテナ（★2-S）：骨組みの塔に皿と赤いランプ、足元の制御箱。撃ってこない。全部倒すと指揮型ギアの守り（被ダメージ 1/4）が消える */
 function makeAntenna(){const g=grp(S),mat=psMat(0xffffff,{map:panel('#5a5e58','#2a2e2a')}),dk=psMat(0x1a1c18),hz=psMat(0xffffff,{map:stripes('#d8b020','#1a1a14')}),lamp=new THREE.MeshBasicMaterial({color:0xff3020});
  box(g,3,2.4,3,mat,0,1.2,0);box(g,3.1,.3,3.1,hz,0,2.5,0);const gl=box(g,1.6,.4,.1,new THREE.MeshBasicMaterial({color:0x6fd3e0}),0,1.6,1.52);
- [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>box(g,.2,13,.2,dk,a*.8,9,b*.8,a*-.04,0,b*.04));for(let y=4;y<15;y+=2.2)box(g,1.8,.12,1.8,dk,0,y,0);
- const dsh=grp(g,0,14.6,0);dsh.rotation.set(-.5,0,0);cyl(dsh,1.6,.5,.25,mat,0,0,0,0,0,10);const lp=box(g,.4,.4,.4,lamp,0,15.8,0);
- const e={type:'antenna',g,mat,alive:true,hp:0,max:1500,stun:0,kb:new THREE.Vector3(),r:2,cd:99,ang:0,home:new THREE.Vector3(),hit:0,respawn:0,head:null,lp,gl,
+ /* 上半分（y=7 より上）は別グループ `up`：壊れると折れて倒れる（towerFall）。下半分は折れ口を残して立ったまま */
+ const up=grp(g,0,7,0);
+ [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>{box(g,.2,4.5,.2,dk,a*.8,4.75,b*.8,a*-.04,0,b*.04);box(up,.2,8.5,.2,dk,a*.8,4.25,b*.8,a*-.04,0,b*.04)});box(g,2,.4,2,dk,0,7,0,.2,0,.15);
+ for(let y=4;y<15;y+=2.2)box(y<7?g:up,1.8,.12,1.8,dk,0,y<7?y:y-7,0);
+ const dsh=grp(up,0,7.6,0);dsh.rotation.set(-.5,0,0);cyl(dsh,1.6,.5,.25,mat,0,0,0,0,0,10);const lp=box(up,.4,.4,.4,lamp,0,8.8,0);
+ const e={type:'antenna',g,up,mat,alive:true,hp:0,max:1500,stun:0,kb:new THREE.Vector3(),r:2,cd:99,ang:0,home:new THREE.Vector3(),hit:0,respawn:0,head:null,lp,gl,
   center(v){return v.copy(g.position).add(new THREE.Vector3(0,3.4*(e.k||1),0))}};
  /* 妨害塔（4-2）の目印：遠くからも見える赤い光の柱。霧の影響を受けない。大型（big）のときだけ表示 */
  const bc=new THREE.Mesh(new THREE.CylinderGeometry(1,1,80,8,1,true),new THREE.MeshBasicMaterial({color:0xff5018,transparent:true,opacity:.3,depthWrite:false,fog:false,side:THREE.DoubleSide}));bc.position.y=56;bc.visible=false;g.add(bc);e.bc=bc;
- const bn=grp(g),bm=new THREE.MeshBasicMaterial({color:0xff6418,fog:false});[5.5,8.5,11.5,14.2].forEach(y=>box(bn,2.1,.38,2.1,bm,0,y,0));box(bn,3.4,.5,3.4,bm,0,2.75,0);bn.visible=false;e.bn=bn;
+ const bn=grp(g),bu=grp(up),bm=new THREE.MeshBasicMaterial({color:0xff6418,fog:false});box(bn,2.1,.38,2.1,bm,0,5.5,0);box(bn,3.4,.5,3.4,bm,0,2.75,0);[1.5,4.5,7.2].forEach(y=>box(bu,2.1,.38,2.1,bm,0,y,0));bn.visible=bu.visible=false;e.bn=bn;e.bu=bu;e.bm=bm;
  e.hpBar=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0x8cf06e}));e.hpBar.position.y=17;g.add(e.hpBar);
  ENEMIES.push(e);e.alive=false;g.visible=false;e.off=true;return e}
+/* 妨害塔（大型）が壊れたとき：自機と反対向きに、上半分が折れて落ちる。下半分は残る。残骸はそのまま（当たり判定なし） */
+function towerBreak(e){const dx=e.g.position.x-P.pos.x,dz=e.g.position.z-P.pos.z,l=Math.hypot(dx,dz)||1;e.fall={t:0,dx:dx/l,dz:dz/l,done:false};e.bc.visible=false;e.hpBar.visible=false;e.bm.color.setHex(0x2a1208);e.lp.material.color.setHex(0x200806);e.gl.material.color.setHex(0x10181a);
+ const p=e.up.getWorldPosition(new THREE.Vector3());explode(p,3);sAt('turretFire',e.g.position,{g:.6})}
+function towerFall(e,dt){const F=e.fall;if(F.done)return;F.t+=dt;const u=Math.min(1,F.t/1.6),U=e.up;
+ U.position.set(F.dx*6*u*u,7*(1-u*u)+.5*u*u,F.dz*6*u*u);U.quaternion.setFromAxisAngle(new THREE.Vector3(F.dz,0,-F.dx),1.45*Math.pow(u,1.5));
+ if(u>=1){F.done=true;const p=U.getWorldPosition(new THREE.Vector3());p.x+=F.dx*8*(e.k||1)*.6;p.z+=F.dz*8*(e.k||1)*.6;p.y=1;explode(p,4);sAt('turretFire',p,{g:.7});if(Math.hypot(P.pos.x-p.x,P.pos.z-p.z)<90)shake=Math.max(shake,.5)}}
 function makeEnemy(type,sp){if(type==='boss')return makeBoss();if(type==='antenna')return makeAntenna();if(type==='crawler')return makeCrawler();if(type==='bomber')return makeBomber();if(type==='arc')return makeArc();if(type==='siege')return makeSiege();if(type==='gear')return makeGearEnemy(sp&&sp.gear||'militia');if(type==='walker')return makeWalker();
  const g=grp(S),mat=psMat(0xffffff,{map:panel('#8a3a2c','#3a1812')}),dk=psMat(0x2a2320),eye=new THREE.MeshBasicMaterial({color:0xff4020});
  const e={type,g,mat,alive:true,hp:0,max:type==='drone'?600:1000,stun:0,kb:new THREE.Vector3(),r:type==='drone'?1.3:1.6,cd:2+Math.random()*2,ang:Math.random()*6,home:new THREE.Vector3(),hit:0,respawn:0,head:null,
@@ -4951,7 +4961,7 @@ function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(mode==='play'&&RUN&&RUN.c
  for(let i=0,n=Math.round(3+7*pw);i<n;i++)spawn(i%2?0xffa040:0xffd070,.1+.06*pw,pos,{vel:new THREE.Vector3((Math.random()-.5)*10,2+Math.random()*6,(Math.random()-.5)*10),grav:16,life:.25+Math.random()*.2});
  if(sOnce('ehit',.05))sAt('ehit',pos,{g:.5});dmgNum(e,dmg);
  const I=e.type==='boss'||e.type==='siege'?null:IMP[imp];if(I&&!(e.stImm>0)&&Math.random()<I.p){e.stun=Math.max(e.stun,I.st);e.stImm=I.st+.6;e.kb.copy(e.g.position).sub(P.pos).setY(0).normalize().multiplyScalar(I.kb*3)}
- if(e.hp<=0){if(RUN&&RUN.kills)RUN.kills[e.type]=(RUN.kills[e.type]||0)+1;e.alive=false;const keepB=e.type==='gear'&&RUN&&((RUN.vs&&e===RUN.vs.e)||e.spec.tier==='boss');e.g.visible=e.type==='boss'||e.type==='siege'||keepB;if(keepB)finDown(e);if(e.type==='siege')siegeDead(e);if(e.type==='boss'){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.head.rotation.x=.08;e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a)}e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN&&!(RUN&&RUN.vs)){const rw=e.type==='gear'?(e.spec.rw||2000):e.type==='drone'?REWARD.drone:e.type==='walker'?1500:e.type==='crawler'?600:e.type==='bomber'?500:e.type==='antenna'?1000:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}if(!keepB)explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
+ if(e.hp<=0){if(RUN&&RUN.kills)RUN.kills[e.type]=(RUN.kills[e.type]||0)+1;e.alive=false;const keepB=e.type==='gear'&&RUN&&((RUN.vs&&e===RUN.vs.e)||e.spec.tier==='boss');e.g.visible=e.type==='boss'||e.type==='siege'||keepB||(e.type==='antenna'&&e.k>1);if(e.type==='antenna'&&e.k>1)towerBreak(e);if(keepB)finDown(e);if(e.type==='siege')siegeDead(e);if(e.type==='boss'){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.head.rotation.x=.08;e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a)}e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN&&!(RUN&&RUN.vs)){const rw=e.type==='gear'?(e.spec.rw||2000):e.type==='drone'?REWARD.drone:e.type==='walker'?1500:e.type==='crawler'?600:e.type==='bomber'?500:e.type==='antenna'?1000:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}if(!keepB)explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
 // 索敵レーダー（RD-3）：壁の向こうでも敵の輪郭が見える（奥行きを無視して描く線）
 const XR_M=new THREE.LineBasicMaterial({color:0xff6a4c,transparent:true,opacity:.55,depthTest:false});
 function xrayMark(e){const on=mode==='play'&&SS.xray&&e.alive&&!e.off;
@@ -4964,7 +4974,9 @@ function updateEnemies(dt){
   EIN=e.alive&&!e.off?e.vel:null;
   xrayMark(e);
   if(e.off)return;
+  if(e.post&&e.alive){const dd=Math.hypot(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z);e.g.visible=dd<JAM_CULL;if(dd>=JAM_CULL&&jamQuiet(e)){if(e.shadow)e.shadow.visible=false;return}}   // 4-2：霧の向こう（遠い護衛）は描かず、巡回の計算もしない
   if(e.fin){finTick(e,dt);return}
+  if(!e.alive&&e.fall){towerFall(e,dt);return}
   if(!e.alive){if(RUN)return;e.respawn-=dt;if(e.respawn<=0)placeEnemy(e);return}
   const tr=RUN&&RUN.tr&&RUN.tr.hp>0?RUN.tr:null,dP=Math.hypot(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z),dT=tr?Math.hypot(TOBJ().position.x-e.g.position.x,TOBJ().position.z-e.g.position.z):1e9,atT=tr&&(e.cargo?dT<60:dT<dP-6);
   const to=_q.copy(atT?TOBJ().position:P.pos).sub(e.g.position);to.y=0;const d=to.length(),yaw=Math.atan2(to.x,to.z);
@@ -5062,10 +5074,12 @@ function quickBoost(x,y,mult=1,free=false){
 }
 /* 4-2 の配置：塔の周りに護衛（post＝持ち場。警戒前は塔のまわりを巡回し、警戒後は自機を攻撃する） */
 function wallEnemies(){const TW=[[-105,10],[100,50],[-30,140],[120,-80]],GP=[{g:['militia'],w:1,t:1,d:1},{g:['militia','vanguard'],w:1,t:1,d:2},{g:['vanguard','militia'],w:1,t:1,d:2},{g:['vanguard','vanguard'],w:1,t:2,d:2}],L=[];
- TW.forEach(([x,z],i)=>L.push({type:'antenna',x,z,big:2.6}));
- TW.forEach(([x,z],i)=>{const G=GP[i];let n=0;const put=(type,ex,rad,pr)=>{const a=(n++)*2.4+i*.9;L.push(Object.assign({type,x:+(x+Math.sin(a)*rad).toFixed(1),z:+(z+Math.cos(a)*rad).toFixed(1),post:{x,z,r:pr}},ex))};
+ TW.forEach(([x,z],i)=>L.push({type:'antenna',x,z,big:2.6,gi:i}));
+ TW.forEach(([x,z],i)=>{const G=GP[i];let n=0;const put=(type,ex,rad,pr)=>{const a=(n++)*2.4+i*.9;L.push(Object.assign({type,x:+(x+Math.sin(a)*rad).toFixed(1),z:+(z+Math.cos(a)*rad).toFixed(1),post:{x,z,r:pr,i}},ex))};
   G.g.forEach(k=>put('gear',{gear:k},20,26));for(let k=0;k<G.w;k++)put('walker',{rng:60},15,14);for(let k=0;k<G.t;k++)put('turret',{},24,10);for(let k=0;k<G.d;k++)put('drone',{},6,30)});
  return L}
+const JAM_CULL=165;   // 4-2：これより遠い護衛は非表示（霧 150m の向こう）
+const JAM_LEASH=85;   // 4-2：警戒した護衛（ギア・ドローン）が追うのは、塔からこの距離まで
 const JAM_ALERT=48;   // 4-2：護衛・塔にこの距離まで近づくと警戒される
 const JAM_LK=.5,JAM_MIN=24;   // 妨害下：ロック距離はふだんの半分（最低24m）
 let lockT2=null,lockT3=null,reveal=0;
@@ -5446,7 +5460,7 @@ const MLIST=[
    h2:'……要点か。塔は四本。方位は私が声で伝える。以上だ。',
    n:'ありがとうございます。……とても分かりやすいです。',
    brg:'最寄りの塔は、{h}時の方向。約{m}メートルだ。',near:'近いぞ。{h}時の方向、約{m}メートル。ロックが効くはずだ。',
-   down:'ひとつ落ちたな。残りは{n}本だ。',down1:'……聞こえる。塔の信号が薄くなっている。残りは{n}本だ。',last:'最後の一本だ。方位を伝える。',alert:'気づかれたぞ。警備の機械が、いっせいに動き出した。',
+   down:'ひとつ落ちたな。残りは{n}本だ。',down1:'……聞こえる。塔の信号が薄くなっている。残りは{n}本だ。',last:'最後の一本だ。方位を伝える。',alert:'気づかれたぞ。この塔の警備の機械が、動き出した。',
    clear:'妨害塔、全機能停止。……通信が戻ります。',clearM:'こちら境界監視所、ミラ。……つながった。全部の回線が戻ったわ。ありがとう。',clearH:'うむ。旧軍の施設が勝手に動いていたとは。……詳しい話は、また今度にしよう。長くなるのでね。'},
   res:{ok:'ハンスさんから、長い返信が届いています。……要約すると「通信が戻った。ありがとう」です。',ng:'撤退します。……妨害は、まだ続いています。もう一度、塔を探しに行く必要があります。'},
   start:{x:0,z:-150},
@@ -5953,6 +5967,13 @@ const fieldG=()=>isCanyon()?CANYON:RUN&&RUN.def.field==='chase'?CHASE:RUN&&RUN.d
  各ステージのグループ（演習場 world／CITY／ROAD／RUINS）から、地面に立っている箱（高さ1.5m以上・ほぼ水平）を
  向きつきの箱 {x,z,c,s,hw,hd,top} として自動で集める（最初に使うときに1回）。新しいステージも同じ作り方なら自動で入る */
 const COLC=new Map(),_cq=new THREE.Quaternion(),_ce=new THREE.Euler(),_cs=new THREE.Vector3(),_cp=new THREE.Vector3();
+/* 静止物の描画をまとめる（4-2 の壁の外周）：直下の箱を材質ごとに1つのメッシュへ。当たり判定は先に `colsOf` で作って保存しておく */
+function mergeStatic(g){colsOf(g);g.updateMatrixWorld(true);const by=new Map(),del=[];
+ g.children.forEach(o=>{if(!o.isMesh||!o.geometry||o.geometry.type!=='BoxGeometry')return;o.updateMatrix();const q=o.geometry.clone().applyMatrix4(o.matrix);let b=by.get(o.material);if(!b)by.set(o.material,b=[]);b.push(q);del.push(o)});
+ by.forEach((L,mat)=>{let nv=0,ni=0;L.forEach(q=>{nv+=q.attributes.position.count;ni+=q.index.count});const P=new Float32Array(nv*3),N=new Float32Array(nv*3),U=new Float32Array(nv*2),I=new Uint32Array(ni);let v=0,k=0;
+  L.forEach(q=>{P.set(q.attributes.position.array,v*3);N.set(q.attributes.normal.array,v*3);U.set(q.attributes.uv.array,v*2);const ix=q.index.array;for(let i=0;i<ix.length;i++)I[k++]=ix[i]+v;v+=q.attributes.position.count;q.dispose()});
+  const G=new THREE.BufferGeometry();G.setAttribute('position',new THREE.BufferAttribute(P,3));G.setAttribute('normal',new THREE.BufferAttribute(N,3));G.setAttribute('uv',new THREE.BufferAttribute(U,2));G.setIndex(new THREE.BufferAttribute(I,1));g.add(new THREE.Mesh(G,mat))});
+ del.forEach(o=>{g.remove(o);o.geometry.dispose()})}
 function colsOf(g){let L=COLC.get(g);if(L)return L;L=[];g.updateMatrixWorld(true);
  g.traverse(o=>{if(!o.isMesh||!o.geometry||o.geometry.type!=='BoxGeometry'||o.material.transparent)return;
   o.matrixWorld.decompose(_cp,_cq,_cs);_ce.setFromQuaternion(_cq,'YXZ');if(Math.abs(_ce.x)>.35||Math.abs(_ce.z)>.35)return;
@@ -6288,8 +6309,8 @@ function commShow(txt,dur){clearInterval(COMM.iv);const el=$('commTx');$('comm')
 function commEnd(){if(COMM.radio){COMM.radio=false;SND.play('radioEnd',{g:.7})}}   // 通信が切れるとき（ノーナ以外だけ）
 function commClear(){if(!$('comm').hidden)commEnd();COMM.q=[];clearInterval(COMM.iv);COMM.iv=null;COMM.busy=false;COMM.t=0;$('comm').hidden=true}
 function misSpawn(sp){const e=(sp.type==='gear'?ENEMIES.find(x=>x.type==='gear'&&!x.tg&&x.off&&typeof sp.gear==='string'&&x.gk===sp.gear):ENEMIES.find(x=>!x.tr&&x.off&&x.type===sp.type))||makeEnemy(sp.type,sp);
- const x=sp.o!==undefined?roadX(sp.z)+sp.o:sp.x;e.cargo=!!sp.cargo;e.rng=sp.rng||0;e.post=sp.post||null;e.pw=null;e.pat=false;
- if(e.type==='antenna'){const k=sp.big||1;e.k=k;e.g.scale.setScalar(k);e.r=2*k;e.bc.visible=e.bn.visible=k>1;e.mat.color.setHex(k>1?0xff8a60:0xffffff);e.lp.scale.setScalar(k>1?2.2:1)}
+ const x=sp.o!==undefined?roadX(sp.z)+sp.o:sp.x;e.cargo=!!sp.cargo;e.rng=sp.rng||0;e.post=sp.post||null;e.gi=sp.gi;e.pw=null;e.pat=false;
+ if(e.type==='antenna'){const k=sp.big||1;e.k=k;e.g.scale.setScalar(k);e.r=2*k;e.bc.visible=e.bn.visible=e.bu.visible=k>1;e.fall=null;e.up.position.set(0,7,0);e.up.rotation.set(0,0,0);e.bm.color.setHex(0xff6418);e.gl.material.color.setHex(0x6fd3e0);e.hpBar.visible=true;e.mat.color.setHex(k>1?0xff8a60:0xffffff);e.lp.scale.setScalar(k>1?2.2:1)}
  e.off=false;e.fuse=null;e.fph=0;e.fon=false;e.chg=0;e.cool=2;if(e.bolt)e.bolt.visible=false;if(e.mat&&e.mat.emissive)e.mat.emissive.setRGB(0,0,0);e.home.set(x,sp.type==='drone'||sp.type==='bomber'||sp.type==='arc'?6:0,sp.z);if(sp.type==='turret'||sp.type==='walker')pushOut(e.home,e.r+.6,0);if(e.base){e.base.copy(e.home);e.wp=null}e.ang=Math.random()*6;e.g.position.copy(e.home);e.hp=e.max;e.alive=true;e.g.visible=true;e.cd=3+Math.random()*2.5;e.stun=0;e.kb.set(0,0,0);if(e.type==='gear')gearInit(e);if(e.type==='siege')siegeReset(e);return e}
 /* 追跡の依頼の準備（misStartEnemies の最後）。自機の前進の速さ（ダッシュ）に合わせて、親機は少し遅く走る。近づきすぎたら速くなる */
 function chaseInit(){const B=ENEMIES.find(e=>e.type==='gear'&&e.gk==='cvBoss'&&!e.off);
@@ -6404,7 +6425,7 @@ function relayTick(dt){const d=RUN.def,B=RUN.cmd,k=Math.max(0,B.hp/B.max),al=RUN
  if(RUN.ok){if(finishWait(dt)){$('memFx').classList.remove('on');misFinish(true)}}}
 /* 妨害下（4-2）：塔（アンテナ）を全部壊すと成功。ロックは近距離だけ（updateLock）・マップはノイズ（drawMap）。
  ハンスが旧軍の周波数で、最寄りの塔の方位（自機の正面＝12時）と距離を一定の間隔で知らせる。塔が落ちるたびに警備のドローン（reinf）が出る */
-function jamInit(){const A=ENEMIES.filter(e=>e.type==='antenna'&&!e.off),J=RUN.jm={al:A.length,n:A.length,t:4,intro:0,rf:0,say:0};
+function jamInit(){const A=ENEMIES.filter(e=>e.type==='antenna'&&!e.off),J=RUN.jm={al:A.length,n:A.length,t:4,intro:0,rf:0,say:0,ag:[0,0,0,0]};
  $('esc').hidden=false;$('escL').textContent='JAMMER';$('escL').classList.remove('lo');$('escS').textContent='妨害塔 残り '+J.n;$('escD').textContent='0 / '+J.n;$('escHp').style.width='100%';$('escHp').classList.remove('lo')}
 function jamClock(x,z){const dx=x-P.pos.x,dz=z-P.pos.z,fw=dx*Math.sin(camYaw)+dz*Math.cos(camYaw),rt=-dx*Math.cos(camYaw)+dz*Math.sin(camYaw),a=Math.atan2(rt,fw),h=((Math.round(a/(Math.PI/6))%12)+12)%12;return h||12}
 function jamTick(dt){const d=RUN.def,J=RUN.jm,c=d.comm,A=ENEMIES.filter(e=>e.type==='antenna'&&!e.off),al=A.filter(a=>a.alive).length;
@@ -6412,10 +6433,11 @@ function jamTick(dt){const d=RUN.def,J=RUN.jm,c=d.comm,A=ENEMIES.filter(e=>e.typ
  $('escS').textContent='妨害塔 残り '+al;$('escD').textContent=(J.n-al)+' / '+J.n;$('escHp').style.width=(100*al/J.n)+'%';$('escHp').classList.toggle('lo',al===1);$('escL').classList.toggle('lo',al===1);
  if(al!==J.al){const dn=al<J.al;J.al=al;
   if(dn&&al>0){const sp=COMM.q.length<2;if(sp)comm(['h',al===1?c.last:(J.rf++%2?c.down1:c.down).replace('{n}',al)],2.6);J.t=10}}   // 増援はなし（v201）
- if(!J.alert&&al>0){   // 警戒：自機が護衛・塔に近づく／塔か護衛が攻撃された／護衛が倒された → 護衛が一斉に自機を攻撃する
-  const G=ENEMIES.filter(e=>e.post&&!e.off),nr=(o,r)=>Math.hypot(o.g.position.x-P.pos.x,o.g.position.z-P.pos.z)<r;
-  if(al<J.n||A.some(a=>a.alive&&a.hp<a.max)||G.some(e=>!e.alive||e.hp<e.max||e.stun>0||e.shBrk>0||(e.shMax&&e.shHp<e.shMax))||G.some(e=>nr(e,JAM_ALERT))||A.some(a=>a.alive&&nr(a,JAM_ALERT))){
-   J.alert=1;G.forEach(e=>{e.cd=1+Math.random()*2;e.gapT=.6+Math.random()});SND.play('reinf',{g:.5});COMM.q=[];comm(['h',c.alert],2.8);J.t=12}}
+ if(al>0){   // 警戒（グループ＝塔ごと）：そのグループの護衛・塔に自機が48m以内／被弾／護衛撃破／塔が壊れる → そのグループだけが自機を攻撃する
+  const nr=(o,r)=>Math.hypot(o.g.position.x-P.pos.x,o.g.position.z-P.pos.z)<r;
+  for(let i=0;i<J.ag.length;i++){if(J.ag[i])continue;const G=ENEMIES.filter(e=>e.post&&e.post.i===i&&!e.off),T=A.find(a=>a.gi===i);
+   if((T&&(!T.alive||T.hp<T.max||nr(T,JAM_ALERT)))||G.some(e=>!e.alive||e.hp<e.max||e.stun>0||e.shBrk>0||(e.shMax&&e.shHp<e.shMax)||nr(e,JAM_ALERT))){
+    J.ag[i]=1;G.forEach(e=>{e.cd=1+Math.random()*2;e.gapT=.6+Math.random()});SND.play('reinf',{g:.5});COMM.q=[];comm(['h',c.alert],2.8);J.t=12;break}}}
  if(!J.intro&&RUN.time>3&&al>0){J.intro=1;comm(['h',c.h1],3);comm(['m',c.m],2.4);comm(['h',c.h2],2.4);comm(c.n,2.4);J.t=2}
  if(J.intro){J.t-=dt;
   if(J.t<=0&&!COMM.busy&&!COMM.q.length&&al>0&&!RUN.ok&&P.down<=0){let b=null,bd=1e9;A.forEach(a=>{if(!a.alive)return;const q=Math.hypot(a.g.position.x-P.pos.x,a.g.position.z-P.pos.z);if(q<bd){bd=q;b=a}});
@@ -6758,10 +6780,10 @@ function setMode(m,training=false,mis=null,tt=false){introClear();resetPoses();g
  if(p){selSlot=null;view='overview';highlight(null)}
  if(p&&builtKey!==JSON.stringify(cfg))buildMech(cfg);
  if(p)SND.bgm(RUN&&RUN.def.bgm||(RUN&&RUN.def.boss?'boss':'sortie'));else if(!wasMis)SND.bgm('garage');
- $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';FAC.visible=p&&!!RUN&&RUN.def.field==='factory';BORDER.visible=p&&!!RUN&&RUN.def.field==='border';VIAD.visible=p&&!!RUN&&RUN.def.field==='viaduct';HANG.visible=p&&!!RUN&&RUN.def.field==='hangar';PWR.visible=p&&!!RUN&&RUN.def.field==='power';UND.visible=p&&!!RUN&&RUN.def.field==='under';RELAY.visible=p&&!!RUN&&RUN.def.field==='relay';WALL.visible=p&&!!RUN&&RUN.def.field==='wall';CANYON.visible=p&&!!RUN&&RUN.def.field==='canyon';COLO.visible=p&&!!RUN&&RUN.def.field==='colo';CHASE.visible=CHSC.visible=p&&!!RUN&&RUN.def.field==='chase';gnd.visible=!COLO.visible&&!CHASE.visible&&!CANYON.visible&&!ROAD.visible&&!RUINS.visible&&!FAC.visible&&!BORDER.visible&&!VIAD.visible&&!HANG.visible&&!PWR.visible&&!UND.visible&&!RELAY.visible&&!WALL.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}GOALM.visible=p&&!!RUN&&!!RUN.def.reach;{const cl=p&&!!RUN&&!!RUN.def.collect;DROPM.visible=WRECKG.visible=cl;CRATES.forEach(c=>c.visible=cl)}if(GOALM.visible)GOALM.position.set(RUN.def.reach.x,0,RUN.def.reach.z);dock.visible=!p;
+ $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';FAC.visible=p&&!!RUN&&RUN.def.field==='factory';BORDER.visible=p&&!!RUN&&RUN.def.field==='border';VIAD.visible=p&&!!RUN&&RUN.def.field==='viaduct';HANG.visible=p&&!!RUN&&RUN.def.field==='hangar';PWR.visible=p&&!!RUN&&RUN.def.field==='power';UND.visible=p&&!!RUN&&RUN.def.field==='under';RELAY.visible=p&&!!RUN&&RUN.def.field==='relay';WALL.visible=p&&!!RUN&&RUN.def.field==='wall';if(WALL.visible&&!WALL.userData.m){WALL.userData.m=1;mergeStatic(WALL)}CANYON.visible=p&&!!RUN&&RUN.def.field==='canyon';COLO.visible=p&&!!RUN&&RUN.def.field==='colo';CHASE.visible=CHSC.visible=p&&!!RUN&&RUN.def.field==='chase';gnd.visible=!COLO.visible&&!CHASE.visible&&!CANYON.visible&&!ROAD.visible&&!RUINS.visible&&!FAC.visible&&!BORDER.visible&&!VIAD.visible&&!HANG.visible&&!PWR.visible&&!UND.visible&&!RELAY.visible&&!WALL.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}GOALM.visible=p&&!!RUN&&!!RUN.def.reach;{const cl=p&&!!RUN&&!!RUN.def.collect;DROPM.visible=WRECKG.visible=cl;CRATES.forEach(c=>c.visible=cl)}if(GOALM.visible)GOALM.position.set(RUN.def.reach.x,0,RUN.def.reach.z);dock.visible=!p;
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
- S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}wxApply(p&&RUN?RUN.def.wx:null);{const wf=p&&RUN&&RUN.def.field==='wall';if(wf){S.fog.near=70;S.fog.far=330}C.far=wf?480:80;C.updateProjectionMatrix()}C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
+ S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}wxApply(p&&RUN?RUN.def.wx:null);{const wf=p&&RUN&&RUN.def.field==='wall';if(wf){S.fog.near=35;S.fog.far=150}C.far=wf?210:80;C.updateProjectionMatrix()}C.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
  P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=lockT3=null;LOCKS=[];pinned=null;reveal=0;topYaw=topYawC=Math.PI;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
  if(p&&RUN&&RUN.def.start){P.pos.set(RUN.def.start.x,0,RUN.def.start.z);mech.bot.position.copy(P.pos);if(RUN.def.siege&&RUN.def.enemies[0]){const b=RUN.def.enemies[0];P.yaw=camYaw=Math.atan2(b.x-P.pos.x,b.z-P.pos.z)}}
