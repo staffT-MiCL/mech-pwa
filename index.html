@@ -987,7 +987,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v225</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v226</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1065,7 +1065,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v225</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v226</span></div>
  </div>
 </div>
 
@@ -1131,7 +1131,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v225</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v226</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4533,8 +4533,9 @@ function swapPortrait(st,src,alt){
 const VPORT={a:$('vsImg'),b:$('vsImg2'),cur:null,src:'',tk:0};
 function vtDim(on){VPORT.a.classList.toggle('dim',on);VPORT.b.classList.toggle('dim',on)}
 function vtChar(k){const v=$('versus');
- if(!k){v.classList.remove('chr');vtDim(false);return}
- const c=VCH[k];swapPortrait(VPORT,c.img,c.nm);vtDim(false);v.classList.add('chr')}
+ if(!k){v.classList.remove('chr');vtDim(false);   // 話し手がいない間：フェードアウトが終わったら2枚とも「表示中」を外す（残すと、次のキャラの読み込み中に前の絵がまた出てちらつく）
+  const tk=++VPORT.tk;setTimeout(()=>{if(tk!==VPORT.tk)return;[VPORT.a,VPORT.b].forEach(i=>{i.classList.remove('on');i.onload=null});VPORT.cur=null;VPORT.src=''},PORT_MS+50);return}
+ VPORT.tk++;const c=VCH[k];swapPortrait(VPORT,c.img,c.nm);vtDim(false);v.classList.add('chr')}
 Object.values(VCH).forEach(c=>{const i=new Image();i.src=c.img});
 const VT_DEF=['おかえりなさいませ、○○様。ご用件をお選びください。','お疲れさまでした、○○様。次のご案内をいたします。','受付です。対戦カードか対戦表をご確認ください。'];   // 話すことがなく、テキスト欄が空になるときの一言
 function vtNext(){const ch=$('vtChoice');ch.innerHTML='';clearInterval(VT.iv);VT.iv=null;
