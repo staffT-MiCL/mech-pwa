@@ -987,7 +987,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v226</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v227</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1065,7 +1065,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v226</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v227</span></div>
  </div>
 </div>
 
@@ -1131,7 +1131,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v226</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v227</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -1840,7 +1840,8 @@ function sustainTick(key,a){const A=a.def.act;a.sus=false;if(!A.sus)return;const
 function run(key,def,side=0){active[key]={def,sl:{side},t0:t,st:{},fired:new Set()}}
 // 兵装の発動（出撃中は、硬直中と同じ兵装の動作中は受け付けない）
 function trigger(key){
- if(mode==='play'&&RUN&&RUN.vs){if(inLock())return false;RUN.vs.atk=RUN.time||0}
+ if(mode==='play'&&inLock())return false;   // 出撃前の演出中・試合前は発動しない
+ if(mode==='play'&&RUN&&RUN.vs)RUN.vs.atk=RUN.time||0
  const sl=WSLOTS.find(s=>s.key===key),def=sl.cat[cfg[key]];
  if(!def.act)return false;
  if(mode==='play'&&(P.stun>0||active[key]||!ammoReady(key)||def.st.kind==='防御'))return false;
@@ -1854,17 +1855,18 @@ const GUARD={'-1':false,'1':false};
 // 長押し：押している間、弾が尽きるまで撃ち続ける（HOLD を毎フレーム見て再発動）
 const HOLD={rHand:false,lHand:false,sh:false};
 function pressHand(side,down){const key=side<0?'rHand':'lHand';
+ if(down&&mode==='play'&&inLock())return;   // 止めている間に押したボタンは受け付けない（離して押し直すと撃てる）
  if(mode==='play'&&P.hp.arms<=0){GUARD[side]=false;HOLD[key]=false;if(down)say('ARMS 損壊：使用不能',.6);return}
  if(HAND[cfg[key]].st.kind==='防御'&&mode==='play'){GUARD[side]=down;return}
  HOLD[key]=down&&mode==='play';if(down)trigger(key)}
-function pressShoulder(down){if(mode==='play'&&P.hp.core<=0){HOLD.sh=false;return}HOLD.sh=down&&mode==='play';if(down)fireShoulders()}
+function pressShoulder(down){if(down&&mode==='play'&&inLock())return;if(mode==='play'&&P.hp.core<=0){HOLD.sh=false;return}HOLD.sh=down&&mode==='play';if(down)fireShoulders()}
 function tickHold(){
  ['rHand','lHand'].forEach(k=>{if(HOLD[k]&&!active[k])trigger(k)});
  // 肩は攻撃兵装だけ撃ち続ける（レーダーなどの補助は押した瞬間の1回だけ）
  if(HOLD.sh)['rShoulder','lShoulder'].forEach(k=>{const st=stOf(k);if(st&&st.kind==='射撃'&&!active[k])trigger(k)});
 }
-// 試合の操作を止める時間：試合が始まるまで／決着から受付へ戻るまで（移動・射撃・跳躍・視点）
-function inLock(){return mode==='play'&&!!RUN&&!!RUN.vs&&(!RUN.vs.go||!!RUN.ok||!!RUN.lost)}
+// 操作を止める時間：出撃前の演出・通信・MISSION START の帯が終わるまで（INTRO／GOW）／試合が始まるまで／決着から受付へ戻るまで（移動・射撃・跳躍・視点）
+function inLock(){return mode==='play'&&(INTRO.on||GOW||(!!RUN&&!!RUN.vs&&(!RUN.vs.go||!!RUN.ok||!!RUN.lost)))}
 function jump(){
  if(active.jump&&active.jump.def===JUMP&&SS.dj&&mode==='play'&&JLIFT>.8&&!inLock()&&P.hp.legs>0){   // 二段ジャンプ
   const bc=20*(SS.bcost||1);if(P.stun>0||P.boost<bc){if(P.boost<bc)say('BOOST 不足',.6);return}P.boost-=bc;P.regen=.8*SS.regenK;run('jump',JUMP2);return}
