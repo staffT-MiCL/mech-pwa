@@ -987,7 +987,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v231</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v232</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1131,7 +1131,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v231</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v232</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4515,7 +4515,7 @@ const VSEV=[
   ['viktor','覚えとけよ、天秤の爺さん……！　この借りは、必ず、返してやる……！'],
   ['b','……ヴィクトル・ザイン様の失格を、記録しました。会場から退場されます。'],
   ['_',1000],
-  ['erich','第7区画の代表、○○殿。お見苦しい場面を、お見せしました。決勝で、お会いしましょう。'],
+  ['b','エーリヒ・ブラント様より、伝言をお預かりしています。「お見苦しい場面をお見せしました。決勝でお会いしましょう」とのことです。'],
   ['n','……エーリヒ・ブラントは、相手の失格により、決勝進出が決まりました。これも、「偶然」でしょうか。'],
   ['n','それに、ヴィクトル。あの怒り方は、ただの癇癪には、見えませんでした。……○○、気をつけましょう。']]},
  {id:'c-final-serena',ok:()=>VSC===VSC_C&&vsCur()===2&&vsState(2)==='open',lines:[
@@ -5691,7 +5691,7 @@ const MLIST=[
   brief:['このミッションでは、自機は常にダッシュで前へ進み続けます。操作するのは左右への回避と、射撃、ジャンプだけです。スティックを後ろに倒すと、前進が少し遅くなります（最大で約半分）。ダッシュでブーストは減りません。','道をふさぐ壁には、隙間があります。ぶつかるとダメージと硬直で、親機との距離が開きます。150m 以上離されると見失い、失敗です。','親機は地雷を落としながら逃げます。護衛の2機は、自機と親機のあいだを走ります。目標は親機の破壊。護衛は倒さなくても構いません。ただし護衛を全滅させると、左右から高速でドローンが割り込み、倒しても時間をおいて補充されます。','このミッションに限り、すべての射撃兵装は、威力が揃えられます。射撃兵装を積んでいない機体は、出撃できません。'],
   comm:{start:'砂嵐の旧街道です。親機は北へ逃げています。止まらずに、追ってください。',wall:'壁です。隙間を抜けてください。ぶつかると遅れます。',mine:'親機が地雷を落としました。避けてください。',esc:'護衛を撃破。荷が落ちました。',half:'親機の装甲が半分を切りました。',far:'親機が遠ざかります。壁を、うまく避けてください。',last:'残り30秒です。',lost:'親機を見失いました。……逃げられました。',timeout:'時間切れです。……逃げられました。',drone:'左右からドローンです。護衛が全滅したため、投入されました。',clear:'親機、沈黙。部隊が止まりました。',clear2:'……荷が散らばっています。中身は、見ないでおきましょう。',
    t:['おーい、聞こえるか！ オットーだ。約束どおり案内するぞ。この街道は一本道だ、真っすぐ走れ。','壁の隙間は、左右交互に空いてるぞ。','親機が地雷を撒いてるぞ。足もとを見ろ！']},
-  res:{ok:'SOLOMON から短い返信です。「確かに受け取りました。回収した荷の中身は、壁の内側の測量図でした。……何も見なかったことに、とのことです」。',ng:'撤退します。……部隊は、壁の方へ逃げ去りました。もう一度、追う必要があります。'},
+  res:{ok:'SOLOMON から短い返信です。「確かに受け取りました。荷は、こちらで引き取ります」。',ng:'撤退します。……部隊は、壁の方へ逃げ去りました。もう一度、追う必要があります。'},
   start:{x:0,z:0},limit:180,
   enemies:[{type:'gear',gear:'cvBoss',x:0,z:85},{type:'gear',gear:'cvEsc',x:-6,z:68},{type:'gear',gear:'cvEsc',x:6,z:55}]},
  {id:'v-c4-otto',ch:0,kind:'visit',notice:true,once:true,ready:true,afterRead:'4-1',title:'オットーの来訪',from:'行商人 オットー',client:'オットー',voice:'youthM',img:'img/clients/client-merchant-otto.png',imgF:'',
@@ -5752,7 +5752,7 @@ const MLIST=[
    ['d','ハ、ハンス様！ お話が長くて、ドールのお茶が冷めてしまいました……！'],
    ['c','おや、それは失礼。……報酬は、配給所の皆から集めた分で、20,000。無線屋の意地だ。'],
    ['n','……お受けしましょう、○○。']]},
- {id:'4-3',wx:'day',ch:4,kind:'visit',ready:true,need:['vb1'],broken:true,title:'壁の外周調査',from:'砂原の使者 ティモ',client:'砂原の使者 ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',reward:22000,field:'wall',fieldJa:'壁の外周',   // v230：ティモと3地点を回り、各30秒の測定を守る。4-2で折れた塔は折れたまま。セリフは仮
+ {id:'4-3',wx:'day',ch:4,kind:'visit',ready:true,need:['vb1'],broken:true,title:'壁の外周調査',from:'ティモ',client:'ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',reward:22000,field:'wall',fieldJa:'壁の外周',   // v230：ティモと3地点を回り、各30秒の測定を守る。4-2で折れた塔は折れたまま。セリフは仮
   obj:'ティモの測定3地点を守り抜く',fail:'ティモ 大破／CORE 大破',enemyJa:'旧軍の警備網（ギア・ドローン・多脚砲台）',
   desc:'ティモと一緒に、壁の外周3か所で信号を測定する。測定中のティモは無防備になるので、襲ってくる旧軍の警備網から守ること。',
   brief:['依頼人は砂原の使者、ティモです。壁の外周の3か所で、壁から漏れている信号を測定します。各地点には、青緑の光の柱が立つ受信ビーコンがあります。','測定中のティモは、動けず、撃てません。壁の方角から旧軍の警備網が襲ってくるので、ティモを守ってください。4-2 で折れた電波塔は、そのまま残っています。'],
@@ -5783,7 +5783,7 @@ const MLIST=[
    ['n','……そうですか。'],
    ['c','妹は、壁の外にいる。それも、調べたい理由のひとつだ。報酬は22,000。おれの稼ぎのほとんどだ。頼む。'],
    ['n','……お受けしましょう、○○。']]},
- {id:'v-b3-timo',ch:0,kind:'visit',notice:true,once:true,ready:true,afterClear:'4-3',title:'ティモの報告',together:true,from:'砂原の使者 ティモ',client:'砂原の使者 ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',   // 4-3 クリア後：リザルトのあと、ガレージへ一緒に戻ってきた場面（調査の結果）。人口抑制は言わない。セリフは仮
+ {id:'v-b3-timo',ch:0,kind:'visit',notice:true,once:true,ready:true,afterClear:'4-3',title:'ティモの報告',together:true,from:'ティモ',client:'ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',   // 4-3 クリア後：リザルトのあと、ガレージへ一緒に戻ってきた場面（調査の結果）。人口抑制は言わない。セリフは仮
   talk:[['d','おかえりなさいませ、○○様！ ……おや、ティモ様とノーナ様も、ご一緒で。ハンガーの隅でよろしければ、どうぞ、どうぞ！'],
    ['c','ああ。隅を借りる。測定の結果を、先に話しておく。'],
    ['c','三か所の方位を重ねると、信号は壁の内側の一点から出ている。'],
@@ -5944,8 +5944,10 @@ const TRUCK=grp(S);TRUCK.visible=false;
  [[2.6],[-.6],[-2.2]].forEach(([z])=>[-1,1].forEach(sg=>cyl(TRUCK,.55,.55,.42,dk,sg*1.25,.55,z,0,Math.PI/2,8)));
  box(TRUCK,.1,1.2,.1,dk,-1,3.2,1.3);box(TRUCK,.5,.35,.04,psMat(0xc8a040),-.75,3.65,1.3)}
 /* 回収（2-2）：墜落した輸送機の残骸（道ばた）、積み荷3つ（黒い金属の箱に鈍い金の帯と、見つけやすいシアンの発光）、入口の回収地点（シアンの輪と標識） */
-const CRATES=[0,1,2].map(()=>{const g=grp(S);g.visible=false;const m=psMat(0xffffff,{map:panel('#3a3a3c','#1a1a1c')}),gd=psMat(0xb8973e),gl=new THREE.MeshBasicMaterial({color:0x6fd3e0});
- box(g,2.2,1.4,1.5,m,0,.7,0);box(g,2.26,.2,1.56,gd,0,.95,0);box(g,.1,1,1.2,gl,1.12,.7,0);box(g,.1,1,1.2,gl,-1.12,.7,0);box(g,.5,.08,.5,gl,0,1.45,0);
+const cargoMats={m:psMat(0xffffff,{map:panel('#3a3a3c','#1a1a1c')}),gd:psMat(0xb8973e),gl:new THREE.MeshBasicMaterial({color:0x6fd3e0})};
+function mkCargo(par){const g=grp(par),{m,gd,gl}=cargoMats;g.visible=false;
+ box(g,2.2,1.4,1.5,m,0,.7,0);box(g,2.26,.2,1.56,gd,0,.95,0);box(g,.1,1,1.2,gl,1.12,.7,0);box(g,.1,1,1.2,gl,-1.12,.7,0);box(g,.5,.08,.5,gl,0,1.45,0);return g}
+const CRATES=[0,1,2].map(()=>{const g=mkCargo(S);
  const bc=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,12,6),new THREE.MeshBasicMaterial({color:0x6fd3e0,transparent:true,opacity:.35,depthWrite:false}));bc.position.y=7;g.add(bc);g.userData.bc=bc;return g});
 const DROPM=grp(S);DROPM.visible=false;
 {const ring=new THREE.Mesh(new THREE.RingGeometry(6.4,7,40),new THREE.MeshBasicMaterial({color:0x6fd3e0,transparent:true,opacity:.6,side:THREE.DoubleSide,depthWrite:false}));ring.rotation.x=-Math.PI/2;ring.position.y=.08;DROPM.add(ring);
@@ -6635,7 +6637,7 @@ function comm(txt,dur=0.001,cb=null){if(dur===0){COMM.q=[];commShow(txt,0,cb);re
 function commNext(){const it=COMM.q.shift();if(it)commShow(it[0],it[1],it[2])}
 function commShow(txt,dur,cb){clearInterval(COMM.iv);const el=$('commTx');$('comm').hidden=false;
  let who='n';if(Array.isArray(txt)){who=txt[0];txt=txt[1]}COMM.radio=who!=='n';if(COMM.radio)SND.play('radio',{g:.9});else SND.play('comm',{g:.3});txt=String(txt).replace(/○○/g,PILOT||'操縦者');const OP=who==='o'&&RUN&&RUN.vs?RUN.vs.r.opp:null;
- const CW={b:['BELL-01','bell'],s:['SERENA','youthF'],j:['JONAH','adultF'],t:['OTTO','youthM'],h:['HANS','adultM'],m:['MIRA','youthF'],i:['TIMO','youthM']}[who],CK={b:['bell',0],s:['serena',1],j:['jonah',0],t:['otto',0],h:['hans',0],m:['mira',0],i:['timo',0]}[who]||['nona',0];if(!OP){$('comm').style.setProperty('--cc','var(--c-'+CK[0]+')');$('comm').style.setProperty('--cf',cf(CK[0]))}else{$('comm').style.removeProperty('--cc');$('comm').style.removeProperty('--cf')}$('comm').classList.toggle('opp',!!OP);$('comm').querySelector('b').textContent=OP?OP.en.split(' ')[0]:CW?CW[0]:'N-07';const vc=OP?OP.v||'adultM':CW?CW[1]:'nona';let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
+ const CW={b:['BELL-01 ベル','bell'],s:['セレナ','youthF'],j:['JONAH','adultF'],t:['オットー','youthM'],h:['ハンス','adultM'],m:['ミラ','youthF'],i:['ティモ','youthM']}[who],CK={b:['bell',0],s:['serena',1],j:['jonah',0],t:['otto',0],h:['hans',0],m:['mira',0],i:['timo',0]}[who]||['nona',0];const RK=OP&&OP.riv&&VCH[OP.riv]?OP.riv:null,OPc=OP&&!RK;if(!OPc){const ck=RK||CK[0];$('comm').style.setProperty('--cc','var(--c-'+ck+')');$('comm').style.setProperty('--cf',cf(ck))}else{$('comm').style.removeProperty('--cc');$('comm').style.removeProperty('--cf')}$('comm').classList.toggle('opp',!!OPc);$('comm').querySelector('b').textContent=RK?OP.name.split('・')[0]:OP?OP.en.split(' ')[0]:CW?CW[0]:'N-07 ノーナ';const vc=OP?OP.v||'adultM':CW?CW[1]:'nona';let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
  COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip(vc,n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;COMM.end=performance.now();if(cb)cb();
   if(dur===0){COMM.busy=false;COMM.t=0}else COMM.t=Math.max(1.5,1+txt.length*.12,dur)}},TXT_SPD)}
 function commEnd(){if(COMM.radio){COMM.radio=false;SND.play('radioEnd',{g:.7})}}   // 通信が切れるとき（ノーナ以外だけ）
@@ -6891,7 +6893,7 @@ function chaseVel(e,dt){const C=RUN.ch,B=C.boss,z=e.g.position.z,x=e.g.position.
   const gx=nx?nx.gx:0;vx=Math.max(-12,Math.min(12,(gx+e.lo-x)*1.5))}
  return [vx,vz]}
 let CH_CRATES=null;
-function chCrate(pos){if(!CH_CRATES){CH_CRATES=[];for(let i=0;i<6;i++){const g=grp(CHSC,0,0,0);box(g,1.6,1.1,1.6,psMat(0xb0902c),0,.55,0);box(g,1.7,.14,1.7,psMat(0x3a3028),0,1.1,0);g.visible=false;CH_CRATES.push(g)}}
+function chCrate(pos){if(!CH_CRATES){CH_CRATES=[];for(let i=0;i<6;i++){const g=mkCargo(CHSC);g.visible=false;CH_CRATES.push(g)}}
  const g=CH_CRATES.find(c=>!c.visible)||CH_CRATES[0];g.position.set(pos.x,0,pos.z);g.rotation.y=Math.random()*3;g.visible=true}
 function chaseTick(dt){const d=RUN.def,C=RUN.ch;if(!C)return;const B=C.boss,pz=P.pos.z;
  // 地面・道路・車線・景色・障害物を自機に合わせる（遠いものは隠す）
@@ -7531,7 +7533,7 @@ function dbgSet(id,v){if(id==='tut'){DW.tut=v;if(!v)dependents('tut').forEach(d=
  if(v>=1)misDeps(d).forEach(k=>{if(k==='tut')DW.tut=true;else if(/^vs\d$/.test(k)){if(DW.vs.st[+k[2]]!==2)dbgVsSet(+k[2],2)}else if(/^vb\d$/.test(k)){if(DW.vs.sb[+k[2]]!==2)dbgVsSet(+k[2],2,true)}else if(DW.m[k]!==2)dbgSet(k,2)});
  if(v<2)dependents(id).forEach(x=>{if(DW.m[x.id])dbgSet(x.id,0)})}
 function dbgOpen(){mailClose();nbClose();DW={tut:tutOk(),inv:DBG.inv,cr:!!DBG.cr,m:{},own:new Set(OWN),vs:{reg:VSS.reg,st:VSC_C.rounds.map((r,i)=>VSS.win[i]?2:(MIS[r.mail]&&MIS[r.mail].got)?1:0),sb:VSC_B.rounds.map((r,i)=>VSS.winB[i]?2:(MIS[r.mail]&&MIS[r.mail].got)?1:0)}};MLIST.filter(isMis).forEach(d=>{const m=MIS[d.id];DW.m[d.id]=!m||!m.got?0:m.clear?2:1});dbgRender()}
-function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).map(d=>d.ch))].sort((a,b)=>a-b);
+function dbgRender(){const box=$('dbgBox'),sc0=(box.querySelector('.dl')||{}).scrollTop||0,chs=[...new Set(MLIST.filter(isMis).map(d=>d.ch))].sort((a,b)=>a-b);
  const seg=(id,v,dis)=>`<span class="sg">${['未着','届いた','クリア'].map((l,i)=>`<button data-id="${id}" data-v="${i}" class="${v===i?'on':''}" ${dis?'disabled':''}>${l}</button>`).join('')}</span>`;
  box.innerHTML=`<div class="dh"><span>DEBUG ／ 進行状況</span><small>選ぶと、矛盾しないように関係する依頼も自動でそろいます</small></div>
   <div class="dl"><div class="dt"><span>チュートリアル完了（ガレージ案内・初回 TRAINING）</span><span class="sg"><button data-t="0" class="${DW.tut?'':'on'}">未完了</button><button data-t="1" class="${DW.tut?'on':''}">完了</button></span></div>
@@ -7543,7 +7545,7 @@ function dbgRender(){const box=$('dbgBox'),chs=[...new Set(MLIST.filter(isMis).m
   <div class="dt"><span>クレジット無限（表示は ∞。OFF で元の額に戻る）</span><span class="sg"><button data-c="0" class="${DW.cr?'':'on'}">OFF</button><button data-c="1" class="${DW.cr?'on':''}">ON</button></span></div></div>
   <div class="note">いまの状態：CLASS ${CLS} ／ CH.${CH}　→　適用後：CLASS ${dbgDerive().cls} ／ CH.${dbgDerive().ch}</div>
   <div class="ft"><button class="go" id="dbgGo">適用して保存</button><button class="btn-sub" id="dbgOff">デバッグを終了</button><button class="btn-sub x" id="dbgX">閉じる</button></div>`;
- box.hidden=false;
+ box.hidden=false;{const dl=box.querySelector('.dl');if(dl)dl.scrollTop=sc0}
  box.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{dbgSet(b.dataset.id,+b.dataset.v);dbgRender()});
  box.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{dbgSet('tut',b.dataset.t==='1');dbgRender()});
  box.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{DW.inv=b.dataset.i==='1';dbgRender()});
