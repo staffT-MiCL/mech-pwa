@@ -987,7 +987,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v232</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v233</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1065,7 +1065,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v230</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v233</span></div>
  </div>
 </div>
 
@@ -1131,7 +1131,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v232</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v233</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -5615,7 +5615,7 @@ const MLIST=[
    afterVoice:['……いまの声。第7区画の統治AI、JONAH です。記録には、そうあります。','けれど……なぜでしょう。懐かしい声だと、感じました。','理由は、思い出せません。'],
    after:['管理局からの通知も届いています。等級が上がりました。','それと……闘技場からの招待状、だそうです。JONAH の言ったとおりですね。','まずは闘技場の受付で、登録を済ませましょう、○○。MENU の <em>VERSUS</em> から入れます。'],mails:['n-david']}},
  {id:'2-3',wx:'dawn',ch:2,kind:'mail',ready:true,need:['2-1'],afterGot:'2-2',title:'信号の出どころ',from:'通信技師 ハンス',fromFull:'第7区画 配給所 無線修理 ハンス',reward:13000,field:'canyon',fieldJa:'廃墟の奥の涸れ谷',
-  subj:'妙な信号について（少し長くなります）',body:'はじめまして。配給所の無線を直して回っている、ハンスという者です。<br>先日から、配給所の受信機に妙な信号が混ざるようになりました。周波数を調べたところ、旧軍の指揮系統のものでした。戦役のあと、とうに使われなくなったはずの帯域です。<br>発信源をたどると、旧戦役の廃墟の奥に行き着きます。あそこには、昔の中継アンテナが一本残っているはずです。<br>壊さなくていい。向きだけ、見てきてほしいのです。アンテナの向きが分かれば、信号がどこへ送られているかが分かります。<br>報酬は 13,000 CR。修理代を少しずつ貯めていた分です。<br><span class="end">── ハンス（配給所 無線修理）</span>',
+  subj:'妙な信号について（少し長くなる）',body:'はじめまして。配給所の無線を直して回っている、ハンスという者だ。<br>先日から、配給所の受信機に妙な信号が混ざるようになった。周波数を調べたところ、旧軍の指揮系統のものだったよ。戦役のあと、とうに使われなくなったはずの帯域だ。<br>発信源をたどると、旧戦役の廃墟の奥に行き着く。あそこには、昔の中継アンテナが一本残っているはずだ。<br>壊さなくていい。向きだけ、見てきてほしい。アンテナの向きが分かれば、信号がどこへ送られているかが分かる。<br>報酬は 13,000 CR。修理代を少しずつ貯めていた分だ。<br><span class="end">── ハンス（配給所 無線修理）</span>',
   mailNona:'……旧軍の指揮系統の信号。ヴァルターさんの砲台が出していたものと、同じ帯域です。',
   obj:'廃墟の奥の中継アンテナに到達',fail:'CORE 大破',enemyJa:'多脚砲台 ＋ 重装ギア ＋ ドローン',
   desc:'配給所の無線に、旧軍の信号が混ざっている。発信源は廃墟の奥の中継アンテナらしい。依頼人は、配給所の無線を直して回る技師。',
@@ -5752,7 +5752,7 @@ const MLIST=[
    ['d','ハ、ハンス様！ お話が長くて、ドールのお茶が冷めてしまいました……！'],
    ['c','おや、それは失礼。……報酬は、配給所の皆から集めた分で、20,000。無線屋の意地だ。'],
    ['n','……お受けしましょう、○○。']]},
- {id:'4-3',wx:'day',ch:4,kind:'visit',ready:true,need:['vb1'],broken:true,title:'壁の外周調査',from:'ティモ',client:'ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',reward:22000,field:'wall',fieldJa:'壁の外周',   // v230：ティモと3地点を回り、各30秒の測定を守る。4-2で折れた塔は折れたまま。セリフは仮
+ {id:'4-3',wx:'day',ch:4,kind:'visit',ready:true,need:['vb1'],broken:true,title:'壁の外周調査',from:'砂原の使者 ティモ',client:'ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',reward:22000,field:'wall',fieldJa:'壁の外周',   // v230：ティモと3地点を回り、各30秒の測定を守る。4-2で折れた塔は折れたまま。セリフは仮
   obj:'ティモの測定3地点を守り抜く',fail:'ティモ 大破／CORE 大破',enemyJa:'旧軍の警備網（ギア・ドローン・多脚砲台）',
   desc:'ティモと一緒に、壁の外周3か所で信号を測定する。測定中のティモは無防備になるので、襲ってくる旧軍の警備網から守ること。',
   brief:['依頼人は砂原の使者、ティモです。壁の外周の3か所で、壁から漏れている信号を測定します。各地点には、青緑の光の柱が立つ受信ビーコンがあります。','測定中のティモは、動けず、撃てません。壁の方角から旧軍の警備網が襲ってくるので、ティモを守ってください。4-2 で折れた電波塔は、そのまま残っています。'],
@@ -5783,7 +5783,7 @@ const MLIST=[
    ['n','……そうですか。'],
    ['c','妹は、壁の外にいる。それも、調べたい理由のひとつだ。報酬は22,000。おれの稼ぎのほとんどだ。頼む。'],
    ['n','……お受けしましょう、○○。']]},
- {id:'v-b3-timo',ch:0,kind:'visit',notice:true,once:true,ready:true,afterClear:'4-3',title:'ティモの報告',together:true,from:'ティモ',client:'ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',   // 4-3 クリア後：リザルトのあと、ガレージへ一緒に戻ってきた場面（調査の結果）。人口抑制は言わない。セリフは仮
+ {id:'v-b3-timo',ch:0,kind:'visit',notice:true,once:true,ready:true,afterClear:'4-3',title:'ティモの報告',together:true,from:'砂原の使者 ティモ',client:'ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',   // 4-3 クリア後：リザルトのあと、ガレージへ一緒に戻ってきた場面（調査の結果）。人口抑制は言わない。セリフは仮
   talk:[['d','おかえりなさいませ、○○様！ ……おや、ティモ様とノーナ様も、ご一緒で。ハンガーの隅でよろしければ、どうぞ、どうぞ！'],
    ['c','ああ。隅を借りる。測定の結果を、先に話しておく。'],
    ['c','三か所の方位を重ねると、信号は壁の内側の一点から出ている。'],
@@ -5793,7 +5793,7 @@ const MLIST=[
    ['c','中身まではわからない。確かめるなら、壁の中に入るしかない。おれは使者だ。<ruby class="mc">NOAH<rt>ノア</rt></ruby> の許しがあれば、入口は開けられる。……許しが出るかは、わからない。'],
    ['n','わかりました。ティモさん、この件は、私たちも気にかけておきます。'],
    ['c','助かる、○○。また連絡する。']]},
- {id:'4-S',ch:4,kind:'visit',story:true,ready:false,need:['vb2'],title:'壁の中の研究所',from:'ティモ（NOAH）',reward:36000,cls:'A'},
+ {id:'4-S',ch:4,kind:'visit',story:true,ready:false,need:['vb2'],title:'壁の中の研究所',from:'砂原の使者 ティモ',reward:36000,cls:'A'},
  // CHAPTER 4 の始まりに届く後日談のメール（依頼ではない）。afterClear＝その依頼をクリア済みなら届く（既存のセーブにも1回ずつ）
  {id:'n-c4-inv',ch:0,kind:'mail',notice:true,afterClear:'3-S',afterCls:'B',ready:false,title:'CLASS B 大会のご案内',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
   subj:'CLASS B 大会 参加のご案内',body:'第7区画 代表 ○○ 殿<br>登録等級の更新に伴い、<b>CLASS B 大会</b>への参加資格を付与しました。<br>対戦カードは、条件がそろい次第、運営局からメールでお知らせします。<br>これまでの CLASS C 大会の試合も、受付の対戦表から引き続きご確認いただけます。<br><span class="end">── 闘技場運営局</span>',
@@ -5805,7 +5805,7 @@ const MLIST=[
   subj:'境界監視所より（近況）',body:'○○<br>優勝の中継は見た。所長が一番うるさかった。<br>こっちは変わりない。……と言いたいが、最近、北の壁のほうから雑音が入る。気のせいならいい。<br>それだけだ。<br><span class="end">── ミラ</span>',
   mailNona:'ミラさんからです。……壁のほうの雑音、というのが少し気になります。'},
  {id:'n-c4-otto',ch:0,kind:'mail',notice:true,afterClear:'3-S',afterCls:'B',ready:false,title:'行商の道すがら',from:'行商人 オットー',fromFull:'行商人 オットー',reward:0,
-  subj:'行商の道すがら',body:'○○さん、ご無沙汰です！ オットーです。<br>闘技場の優勝、聞きましたよ。うちの荷車の自慢話になりました。<br>いまは北の砂原あたりを回っています。道は荒れていますが、近道ならお任せを。荷運びの用があれば、いつでも声をかけてください。<br><span class="end">── オットー</span>',
+  subj:'行商の道すがら',body:'○○、久しぶりだな！ オットーだ。<br>闘技場で優勝したって聞いたぞ。うちの荷車の自慢話になっちまった。<br>いまは北の砂原あたりを回ってる。道は荒れてるが、近道なら任せとけ。荷運びの用があれば、いつでも声をかけてくれ。<br><span class="end">── オットー</span>',
   mailNona:'オットーさんです。……相変わらず、お元気そうですね。'},
  // SHOP の入荷のお知らせ（ドールから。shop＝届く等級。既存のセーブにも1回ずつ届く）
  {id:'n-shop-g',ch:0,kind:'mail',notice:true,shop:'G',ready:false,title:'入荷のお知らせ',from:'部品倉庫 D-06',fromFull:'第7整備区画 部品倉庫（整備管理AI D-06）',reward:0,
