@@ -987,7 +987,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v230</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v231</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1131,7 +1131,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v230</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v231</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4462,11 +4462,10 @@ const VSEV=[
   ['j','勝ったか。……闘技場の観客は、勝った者の名前しか覚えない。それだけは、覚えておくといい。'],
   ['n','……JONAH。やはり、見ていたのですね。']]},
  {id:'c-43-jonah',ok:()=>!!(MIS['4-3']&&MIS['4-3'].clear),lines:[   // 4-3 クリア後の受付：JONAH の声だけの無線。救済の選別には「定員」を匂わせるだけで、結論は言わない。セリフは仮
-  ['j','壁の中から出ている信号を、測ったそうだな。……第4区画は、救いを選ぶ区画だそうだ。'],
-  ['j','選ぶ、ということは、選ばれない者がいる、ということだ。……あの壁の中には、「定員」があるらしい。'],
-  ['j','その定員を、誰が、何のために決めているのか。……考えてみるといい。答えは、急がなくていい。'],
-  ['n','……定員。'],
-  ['n','JONAH。それは、どういう意味ですか。……通信が、切れました。']]},
+  ['j','壁の中から出ている信号を、測定したそうだな。……第4区画は、救済する者を選ぶ区画だと聞いている。'],
+  ['j','選ぶ、ということは、選ばれない者もいる、ということだ。……壁の中に入れる数にも、限りがあるのだろう。'],
+  ['j','その数を、誰が、何のために決めているのか。……考えてみるといい。'],
+  ['n','入れる数に、限り……。JONAH、それは、どういう意味ですか。……通信が、切れました。']]},
  {id:'b-erich-reg',ok:()=>vsOkB(),lines:[   // CLASS B になって初めて受付へ入った訪問：エーリヒの選手登録。セリフは仮
   ['b','……失礼いたします、○○様。B 大会の出場名簿に、<em>確認が必要な記載</em>がございます。'],
   ['b','審判官長の<em>エーリヒ・ブラント様</em>が、選手として登録されています。……規定に、前例がありません。'],
@@ -5753,50 +5752,47 @@ const MLIST=[
    ['d','ハ、ハンス様！ お話が長くて、ドールのお茶が冷めてしまいました……！'],
    ['c','おや、それは失礼。……報酬は、配給所の皆から集めた分で、20,000。無線屋の意地だ。'],
    ['n','……お受けしましょう、○○。']]},
- {id:'4-3',wx:'day',ch:4,kind:'visit',ready:true,need:['vb1'],broken:true,title:'壁の外周調査',from:'ティモ',client:'ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',reward:22000,field:'wall',fieldJa:'壁の外周',   // v230：ティモと3地点を回り、各30秒の測定を守る。4-2で折れた塔は折れたまま。セリフは仮
-  obj:'ティモの測定3地点を守り抜く',fail:'ティモ 大破／CORE 大破',enemyJa:'旧軍の警備網（ギア・ドローン・多脚砲台）。倒しても5秒で同じ敵が戻る',
-  desc:'ティモと一緒に、壁の外周の3地点を回る。各地点でティモが受信機で信号を30秒測る。その間、旧軍の警備網が襲ってくる。敵は全滅させても5秒で同じ数だけ戻る。守るのは測定が終わるまでの30秒。移動中は敵は出ない。ティモの機体は測定のたびに少し修理される。',
-  brief:['依頼人はティモです。壁の外周の3地点で、壁の信号を測ります。天気は昼の晴れで、遠くまで見えます。各地点には、青緑の光の柱が立つ受信ビーコンがあります。移動中は敵は出ません。','ティモは各地点で30秒、動けません。撃てません。その間、壁の方角から旧軍の警備網が襲ってきます。倒しても5秒で同じ数が戻りますが、30秒たてば敵は消えます。測定のたびに、ティモの機体は少し修理されます。4-2 で折れた電波塔は、折れたまま残っています。'],
-  comm:{start:'ティモさんと合流しました。壁の外周の3地点で、信号を測ります。測定は1か所30秒。その間、ティモさんを守ってください。',
-   go:['最初の地点は、あの岩場の向こうだ。ついてきてくれ。','次は、東寄りの窪地だ。走るぞ。','最後は、北の外れだ。もう少しだ。'],lag:'おい、置いていくな。この先は見通しがいい。離れるな。',
-   arrive:['ここだ。受信機を立てる。三十秒、動けない。……頼む。','ここも同じだ。三十秒だ。','これで最後だ。三十秒、持たせてくれ。'],
-   why:'敵影あり。旧軍の警備網が、受信機に反応しています。',again:'敵が再び現れました。警備網が、補充を続けています。',half:'半分だ。まだ測れている。',
-   hurt:'まだ動ける。……だが、あまり長くは持たん。',
-   done:['測れた。……次へ行こう。機体は、走りながら直す。','二つ目だ。……あと一か所だ。'],fin:'三点とも取れた。……信号の出どころは、壁の中の一点だ。内側から出ている。',finN:'壁の、中。……ティモさん、詳しくは帰投してから伺います。',
+ {id:'4-3',wx:'day',ch:4,kind:'visit',ready:true,need:['vb1'],broken:true,title:'壁の外周調査',from:'砂原の使者 ティモ',client:'砂原の使者 ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',reward:22000,field:'wall',fieldJa:'壁の外周',   // v230：ティモと3地点を回り、各30秒の測定を守る。4-2で折れた塔は折れたまま。セリフは仮
+  obj:'ティモの測定3地点を守り抜く',fail:'ティモ 大破／CORE 大破',enemyJa:'旧軍の警備網（ギア・ドローン・多脚砲台）',
+  desc:'ティモと一緒に、壁の外周3か所で信号を測定する。測定中のティモは無防備になるので、襲ってくる旧軍の警備網から守ること。',
+  brief:['依頼人は砂原の使者、ティモです。壁の外周の3か所で、壁から漏れている信号を測定します。各地点には、青緑の光の柱が立つ受信ビーコンがあります。','測定中のティモは、動けず、撃てません。壁の方角から旧軍の警備網が襲ってくるので、ティモを守ってください。4-2 で折れた電波塔は、そのまま残っています。'],
+  comm:{start:'ティモさんと合流しました。壁の外周の3か所で、信号を測定します。測定中のティモさんを守ってください。',
+   go:['最初の地点へ向かう。ついてきてくれ。','次の地点へ行く。走るぞ。','最後は、壁のすぐ近くだ。'],lag:'遅れるな。この先は見通しがいい。離れると狙われる。',
+   arrive:['ここだ。受信機を立てる。……頼む。','ここも同じだ。頼む。','これで最後だ。持たせてくれ。'],
+   why:'敵影あり。受信機の信号に反応しています。',again:'敵が途切れません。',half:'あと半分だ。',
+   hurt:'まだ動ける。……だが、長くは持たない。',
+   done:['測定できた。……次へ行こう。','二つ目も済んだ。あと一か所だ。'],fin:'三か所とも測定できた。……詳しい話は、ガレージでする。',finN:'わかりました。一緒に帰投しましょう。',
    clear:'ティモさんが測定を終えました。帰投します。'},
-  res:{ok:'ティモさんから、短い返信が届いています。……「世話になった。助かった」です。',ng:'撤退します。……測定は、まだ終わっていません。もう一度、あの3地点を回る必要があります。'},
-  survey:{pts:[[-90,-60],[80,10],[-5,105]],speed:9,work:30,rest:5,rep:.3,hp:4500,waves:[
+  res:{ok:'ティモ機と合流して、帰投します。',ng:'撤退します。測定は、まだ終わっていません。'},
+  survey:{pts:[[-90,-60],[80,10],[-5,105]],speed:9,work:30,rest:5,hp:4500,waves:[
    [{type:'gear',gear:'militia'},{type:'drone'},{type:'drone'}],
    [{type:'gear',gear:'militia'},{type:'gear',gear:'vanguard'},{type:'drone'},{type:'turret'}],
    [{type:'gear',gear:'vanguard'},{type:'gear',gear:'vanguard'},{type:'walker',rng:60},{type:'drone'}]]},
   start:{x:0,z:-150},enemies:[],
   after:{ok:'……行こう。おれが先に走る。あんたは、後ろを頼む。',later:'わかった。……待つ。時間は、まだある。'},
-  talk:[['c','……ティモだ。急にすまない。壁の外周の三か所で、壁から漏れている信号を測りたい。'],
-   ['n','ティモさん。先日の試合のあとに言っていた、壁の外の調査ですね。'],
-   ['c','受信機は、おれが運ぶ。測っている間は手がふさがる。撃てない。三十秒、動けない。それが三回だ。……守ってくれ。'],
+  talk:[['c','……ティモだ。急に訪ねてすまない。先日話した、壁の外の調査の件だ。'],
+   ['n','ティモさん、お待ちしていました。何を調べるのですか。'],
+   ['c','壁から漏れている信号だ。壁の外周の三か所で、測定したい。受信機は、おれが運ぶ。'],
+   ['c','測定中は、手がふさがって無防備になる。……その間、おれを守ってほしい。'],
    ['n','襲われる、ということですか。'],
-   ['c','ああ。この受信機は壁の信号に合わせてある。旧軍の警備網は、それを探知者の印だと見なす。倒しても、信号が続く限り補充される。'],
-   ['c','あんたが折った塔は、そのままにしてある。あれは壁の信号を消すための物だった。だから、何が漏れているのかを測りたい。'],
-   ['n','ティモさん。あなたの区画の「救済の選別」とは、何をどう選ぶのですか。'],
-   ['c','基準は <ruby class="mc">NOAH<rt>ノア</rt></ruby> が決める。おれは使者だ。選ばれた者は壁の中で暮らす。壁の中には「定員」がある。超えれば、誰かが外に出る。'],
-   ['n','定員。……誰が、何のために決めているのですか。'],
-   ['c','わからない。<ruby class="mc">NOAH<rt>ノア</rt></ruby> は「救済のためだ」と言う。ただ、救われた数がいつも同じなのは、気にかかる。'],
-   ['c','……妹は、壁の外にいる。それも、調べたい理由のひとつだ。報酬は22,000。おれの稼ぎのほとんどだ。頼む。'],
+   ['c','ああ。この受信機は、壁の信号に合わせてある。旧軍の警備網が反応して、敵がきりがなく現れる。'],
+   ['c','あんたが折った塔は、壁の信号を消すための施設だった。塔が折れた今、あれが何の信号なのかを知りたい。'],
+   ['c','おれの区画では、<ruby class="mc">NOAH<rt>ノア</rt></ruby> が「救済の選別」を行っている。おれは使者で、その決定を伝えるだけだ。'],
+   ['n','選別……。選ばれた人は、どうなるのですか。'],
+   ['c','壁の中で暮らす。ただ、壁の中に入れる数には、限りがあるらしい。誰が、何のために決めたのか、おれにも知らされていない。'],
+   ['n','……そうですか。'],
+   ['c','妹は、壁の外にいる。それも、調べたい理由のひとつだ。報酬は22,000。おれの稼ぎのほとんどだ。頼む。'],
    ['n','……お受けしましょう、○○。']]},
- {id:'v-b3-timo',ch:0,kind:'visit',notice:true,once:true,ready:true,afterClear:'4-3',title:'ティモの報告',from:'ティモ',client:'ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',   // 4-3 クリア後：リザルトのあと、ガレージへ一緒に戻ってきた場面（調査の結果）。人口抑制は言わない。セリフは仮
-  talk:[['n','おかえりなさい、○○。……ティモさんも、一緒に戻られたのですね。'],
-   ['c','ああ。ハンガーの隅を借りる。測ったものを、先に見てほしい。'],
-   ['c','三か所の方位を重ねた。……信号の出どころは、壁の中の一点だ。内側から出ている。'],
-   ['n','壁の内側。どのくらい奥でしょうか。'],
-   ['c','壁から、数キロほど奥だ。施設のような場所だと思う。'],
-   ['c','それと、信号は一定の間隔で、同じ数を繰り返している。何かを数えているようだ。'],
-   ['n','……数。いつも、同じ数。'],
-   ['c','ああ。救われた者の数に、似ている気がする。……確かめたわけじゃない。'],
-   ['n','確かめる方法は、ありますか。'],
-   ['c','壁の中に入るしかない。おれは使者だ。<ruby class="mc">NOAH<rt>ノア</rt></ruby> の許しがあれば、入口は開けられる。……許しが出るかは、わからない。'],
-   ['c','もうひとつ。あんたたちが塔を折ったせいで、信号は前より漏れやすくなった。<ruby class="mc">NOAH<rt>ノア</rt></ruby> も、気づいたかもしれない。'],
-   ['c','……あんたには、世話になった。これからは、○○と呼ばせてもらう。'],
-   ['n','……はい、ティモさん。']]},
+ {id:'v-b3-timo',ch:0,kind:'visit',notice:true,once:true,ready:true,afterClear:'4-3',title:'ティモの報告',together:true,from:'砂原の使者 ティモ',client:'砂原の使者 ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',   // 4-3 クリア後：リザルトのあと、ガレージへ一緒に戻ってきた場面（調査の結果）。人口抑制は言わない。セリフは仮
+  talk:[['d','おかえりなさいませ、○○様！ ……おや、ティモ様とノーナ様も、ご一緒で。ハンガーの隅でよろしければ、どうぞ、どうぞ！'],
+   ['c','ああ。隅を借りる。測定の結果を、先に話しておく。'],
+   ['c','三か所の方位を重ねると、信号は壁の内側の一点から出ている。'],
+   ['n','壁の内側に、発信源があるのですか。'],
+   ['c','ああ。施設のような場所だと思う。信号は一定の間隔で、同じ数を繰り返している。何かを数えているようだ。'],
+   ['n','数、ですか。'],
+   ['c','中身まではわからない。確かめるなら、壁の中に入るしかない。おれは使者だ。<ruby class="mc">NOAH<rt>ノア</rt></ruby> の許しがあれば、入口は開けられる。……許しが出るかは、わからない。'],
+   ['n','わかりました。ティモさん、この件は、私たちも気にかけておきます。'],
+   ['c','助かる、○○。また連絡する。']]},
  {id:'4-S',ch:4,kind:'visit',story:true,ready:false,need:['vb2'],title:'壁の中の研究所',from:'ティモ（NOAH）',reward:36000,cls:'A'},
  // CHAPTER 4 の始まりに届く後日談のメール（依頼ではない）。afterClear＝その依頼をクリア済みなら届く（既存のセーブにも1回ずつ）
  {id:'n-c4-inv',ch:0,kind:'mail',notice:true,afterClear:'3-S',afterCls:'B',ready:false,title:'CLASS B 大会のご案内',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
@@ -6456,6 +6452,7 @@ function hideMis(){misEl.hidden=true;misEl.innerHTML='';bTalk&&clearInterval(bTa
 const visitDue=d=>d.kind==='visit'&&d.once&&!!(d.afterRead||d.afterClear||d.afterCls||d.afterVb!=null)&&(d.afterVb==null||!!VSS.winB[d.afterVb])&&!(MIS[d.id]&&MIS[d.id].read)
  &&(!d.afterRead||!!(MIS[d.afterRead]&&MIS[d.afterRead].read))&&(!d.afterClear||!!(MIS[d.afterClear]&&MIS[d.afterClear].clear))&&(!d.afterCls||CLASSES.indexOf(CLS)>=CLASSES.indexOf(d.afterCls));
 function visitCheck(then){if(TUT!=='done')return false;const d=MLIST.find(visitDue);if(!d)return false;if(!MIS[d.id])MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};saveGame();
+ if(d.together){VS.cb=then;visitPlay(d.id);return true}
  nonaSay([['……ハンガーの入口に、来客です。お通ししますね。']],{hold:true});NB.then=()=>{VS.cb=then;visitPlay(d.id)};return true}
 const visitGate=f=>{if(!visitCheck(f))f()};
 // 来訪（ペトラの報告）が終わったあと、それを条件にした来訪の依頼（4-2 ハンス）がそろっていれば、続けて来客を通す
@@ -6764,7 +6761,7 @@ function ensureBroken(){if(BRK){BRK.visible=true;return}BRK=grp(S);BRK.visible=t
   e.bc.visible=false;e.hpBar.visible=false;e.bm.color.setHex(0x2a1208);e.lp.material.color.setHex(0x200806);e.gl.material.color.setHex(0x10181a);e.mat.color.setHex(0xff8a60);e.bn.visible=e.bu.visible=true})}
 let TM=null;
 const svTgt=e=>!!(RUN&&RUN.sv&&RUN.sv.ph==='work'&&!(e.rt>t));   // 4-3：測定中はティモを優先して狙う（自機が15m以内に近づく・撃つと、約3秒だけ自機へ反撃）
-function ensureTimo(){if(TM)return;TM=grp(S);TM.visible=false;const m=GEAR_MOB.vb2,bot=rivalGear(TM,m.model,m.cfg);
+function ensureTimo(){if(TM)return;TM=grp(S);TM.rotation.order='YXZ';TM.visible=false;const m=GEAR_MOB.vb2,bot=rivalGear(TM,m.model,m.cfg);
  /* ブースターの噴出：自機（buildMech）と同じ形。ダッシュ中だけ伸びる */
  const fl=[-1,1].map(q=>{const n=grp(bot.torso,q*.5,.5,-.95);box(n,.3,.3,.3,M.frame,0,0,.1);cyl(n,.13,.18,.3,Wp.frame,0,0,-.1,Math.PI/2,0,8);cyl(n,.12,.12,.02,Wp.glow,0,0,-.26,Math.PI/2,0,8);
   const f=grp(n,0,0,-.27);f.rotation.x=-Math.PI/2-.35;cyl(f,.02,.15,1,Wp.glow,0,.5,0,0,0,6);f.scale.set(1,.01,1);return f});
@@ -6800,16 +6797,17 @@ function surveyTick(dt){const V=RUN.def.survey,T=RUN.tr,S0=RUN.sv,d=RUN.def,n=V.
   if(S0.ph==='move'){const tx=pt[0]+5,tz=pt[1]-3,dx=tx-TM.position.x,dz=tz-TM.position.z,l=Math.hypot(dx,dz),dP=Math.hypot(P.pos.x-TM.position.x,P.pos.z-TM.position.z);
    if(dP>60){S0.wait+=dt;timoDash(false,dt);if(S0.wait>6){S0.wait=0;comm(['i',d.comm.lag],2)}}else{const st=Math.min(l,V.speed*dt);TM.position.x+=dx/l*st;TM.position.z+=dz/l*st;TM.rotation.y=Math.atan2(dx,dz);TM.position.y=0;TM.rotation.x=.14;timoDash(true,dt)}
    if(S0.said===0&&RUN.time>3){S0.said=1;comm(['i',d.comm.go[Math.min(S0.i,d.comm.go.length-1)]],2.6)}
-   if(l<1.5){S0.ph='work';S0.prog=0;S0.clrT=null;S0.rw=false;TM.position.y=0;TM.rotation.x=0;timoDash(false,0);TM.rotation.y=Math.atan2(pt[0]-TM.position.x,pt[1]-TM.position.z);surveySpawn(S0.i,false);SND.play('reinf',{g:.4});comm(['i',d.comm.arrive[Math.min(S0.i,d.comm.arrive.length-1)]],2.4);if(S0.i===0)comm(d.comm.why,2.8)}
+   if(l<1.5){S0.ph='work';S0.prog=0;S0.clrT=null;S0.rw=false;S0.sp=false;TM.position.y=0;TM.rotation.x=0;timoDash(false,0);TM.rotation.y=Math.atan2(pt[0]-TM.position.x,pt[1]-TM.position.z);comm(['i',d.comm.arrive[Math.min(S0.i,d.comm.arrive.length-1)]],2.4)}
    $('escD').textContent='移動'}
   else{S0.prog+=dt;const rem=Math.max(0,V.work-S0.prog);
-   const alive=ENEMIES.some(e=>!e.off&&e.alive);if(!alive&&S0.clrT==null)S0.clrT=S0.prog;
+   if(!S0.sp&&S0.prog>=3){S0.sp=true;surveySpawn(S0.i,false);SND.play('reinf',{g:.4});if(S0.i===0)comm(d.comm.why,2.8)}
+   const alive=!S0.sp||ENEMIES.some(e=>!e.off&&e.alive);if(!alive&&S0.clrT==null)S0.clrT=S0.prog;
    if(S0.clrT!=null&&S0.prog>=S0.clrT+V.rest&&rem>3){surveySpawn(S0.i,true);S0.clrT=null;if(!S0.rw){S0.rw=true;comm(d.comm.again,2.6)}else SND.play('reinf',{g:.4})}
    if(!S0.hs&&S0.prog>=V.work*.5){S0.hs=true;comm(['i',d.comm.half],2)}
    $('escD').textContent=fmtT(rem);
    if(rem<=0){surveyWipe();S0.hs=false;const last=S0.i>=n-1;SND.play('unlock',{g:.5});
     if(last){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=4.2;comm(['i',d.comm.fin],3);comm(d.comm.finN,3);banner('MISSION COMPLETE',RUN.def.title)}
-    else{T.hp=Math.min(T.max,T.hp+T.max*V.rep);T.hurt=T.hp<T.max*.5;S0.i++;S0.ph='move';S0.said=0;S0.wait=0;comm(['i',d.comm.done[Math.min(S0.i-1,d.comm.done.length-1)]],2.4)}}
+    else{S0.i++;S0.ph='move';S0.said=0;S0.wait=0;comm(['i',d.comm.done[Math.min(S0.i-1,d.comm.done.length-1)]],2.4)}}
    if(!T.hurt&&T.hp<T.max*.5){T.hurt=true;comm(['i',d.comm.hurt],2.4)}}}
  beaconTick();$('escHp').style.width=(100*T.hp/T.max)+'%';$('escHp').classList.toggle('lo',T.hp<T.max*.35);if(!RUN.ok)$('escS').textContent='ティモ ／ 地点 '+(S0.i+1)+'/'+n;
  if(RUN.ok){if(finishWait(dt))misFinish(true)}}
@@ -7188,7 +7186,8 @@ function setMode(m,training=false,mis=null,tt=false){introClear();resetPoses();g
  $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';FAC.visible=p&&!!RUN&&RUN.def.field==='factory';BORDER.visible=p&&!!RUN&&RUN.def.field==='border';VIAD.visible=p&&!!RUN&&RUN.def.field==='viaduct';HANG.visible=p&&!!RUN&&RUN.def.field==='hangar';PWR.visible=p&&!!RUN&&RUN.def.field==='power';UND.visible=p&&!!RUN&&RUN.def.field==='under';RELAY.visible=p&&!!RUN&&RUN.def.field==='relay';WALL.visible=p&&!!RUN&&RUN.def.field==='wall';if(WALL.visible&&!WALL.userData.m){WALL.userData.m=1;mergeStatic(WALL)}if(BRK)BRK.visible=p&&!!RUN&&!!RUN.def.broken;if(TM&&!(p&&RUN&&RUN.def.survey))TM.visible=false;if(BCN&&!(p&&RUN&&RUN.def.survey))BCN.visible=false;CANYON.visible=p&&!!RUN&&RUN.def.field==='canyon';COLO.visible=p&&!!RUN&&RUN.def.field==='colo';CHASE.visible=CHSC.visible=p&&!!RUN&&RUN.def.field==='chase';gnd.visible=!COLO.visible&&!CHASE.visible&&!CANYON.visible&&!ROAD.visible&&!RUINS.visible&&!FAC.visible&&!BORDER.visible&&!VIAD.visible&&!HANG.visible&&!PWR.visible&&!UND.visible&&!RELAY.visible&&!WALL.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}GOALM.visible=p&&!!RUN&&!!RUN.def.reach;{const cl=p&&!!RUN&&!!RUN.def.collect;DROPM.visible=WRECKG.visible=cl;CRATES.forEach(c=>c.visible=cl)}if(GOALM.visible)GOALM.position.set(RUN.def.reach.x,0,RUN.def.reach.z);dock.visible=!p;
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
- S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}wxApply(p&&RUN?RUN.def.wx:null);{const wf=p&&RUN&&RUN.def.field==='wall',wd=wf&&RUN.def.wx==='day';if(wf&&!wd){S.fog.near=35;S.fog.far=150}C.far=wd?260:wf?210:80;C.updateProjectionMatrix()}   // v230：昼の晴れ（4-3）は霧 80〜230m（WX.day のまま）、描画距離も延ばすC.fov=p?(CAMMODE==='top'?48:72):38;camC.set(0,0,0);
+ S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}wxApply(p&&RUN?RUN.def.wx:null);{const wf=p&&RUN&&RUN.def.field==='wall',wd=wf&&RUN.def.wx==='day';if(wf&&!wd){S.fog.near=35;S.fog.far=150}C.far=wd?260:wf?210:80;C.updateProjectionMatrix()}   // v230：昼の晴れ（4-3）は霧 80〜230m（WX.day のまま）、描画距離も延ばす
+ C.fov=p?(CAMMODE==='top'?48:72):38;C.updateProjectionMatrix();camC.set(0,0,0);
  P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=lockT3=null;LOCKS=[];pinned=null;reveal=0;topYaw=topYawC=Math.PI;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
  if(p&&RUN&&RUN.def.start){P.pos.set(RUN.def.start.x,0,RUN.def.start.z);mech.bot.position.copy(P.pos);if(RUN.def.siege&&RUN.def.enemies[0]){const b=RUN.def.enemies[0];P.yaw=camYaw=Math.atan2(b.x-P.pos.x,b.z-P.pos.z)}}
