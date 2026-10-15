@@ -725,7 +725,7 @@ ruby.mc.n{margin-right:0}
 .hst div{display:flex;justify-content:space-between;gap:14px}.hst b{font-weight:700;color:#2f4f53}
 .hst div.on{color:#b8f0a0}.hst div.on b{color:var(--accent)}
 #opTalk{position:absolute;left:24px;right:24px;bottom:14px;height:104px;z-index:3;box-sizing:border-box;padding:16px 16px 10px;background:#0c110f;border:1px solid #2c3833;cursor:pointer}
-#opTalk .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:var(--olive);color:#e8ecd8;font-family:var(--mech);font-size:10px;letter-spacing:2px;display:flex;align-items:center}
+#opTalk .nm{position:absolute;left:12px;top:-9px;height:16px;padding:0 8px;background:var(--c-nona);color:#0b0e0d;font-family:var(--mech);font-size:10px;letter-spacing:2px;display:flex;align-items:center}
 #opText{font-family:var(--disp);font-size:17px;line-height:1.6;color:#e6ebe7}
 #opText em{font-style:normal;color:var(--fire)}
 #opTalk .nx{position:absolute;right:12px;bottom:6px;color:var(--fire);font-size:10px;animation:kblink .8s steps(2) infinite}
@@ -987,7 +987,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v233</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v234</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1065,7 +1065,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v233</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v234</span></div>
  </div>
 </div>
 
@@ -1131,7 +1131,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v233</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v234</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4785,8 +4785,8 @@ const GEAR_MOB={
   hp:17000,dmg:0,rate:1.5,rng:70,spd:10,keep:14,bs:32,rw:0,tier:'boss',msK:2,tx:{dk:.24,mk:.273,spread:1.6,cdK:1.3,gap:.6},guard:{p:6,near:0,t:[.8,1.2],cd:[1.5,2.5]},rush:26,msMax:3,rage:1},
  vb2:{name:'キャリア',model:'timo',vpose:'timo',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RFT',lHand:'MGT',rShoulder:'MST',lShoulder:'none'},   // ティモ：旧型を手入れした万能型。ライフル・マシンガン・ミサイル（CH7 で強化版「キャリア改」）
   hp:20000,dmg:0,rate:1.8,rng:70,spd:9,keep:22,bs:30,rw:0,tier:'boss',msK:1.6,tx:{dk:.22,spread:1.8,cdK:1.4,gap:.7},msMax:2},
- cvBoss:{name:'無人輸送ギア（親機）',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'none',rShoulder:'MS',lShoulder:'none'},tint:'convoy',hp:4500,dmg:34,rate:2.0,rng:70,spd:12,keep:30,bs:30,rw:6000,scale:1.15,tier:'boss'},
- cvEsc:{name:'無人護衛ギア',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'convoyD',hp:1500,dmg:30,rate:3.0,rng:60,spd:12,keep:30,bs:30,rw:2000,tier:'mob'},
+ cvBoss:{name:'無人輸送ギア（親機）',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'none',rShoulder:'MS',lShoulder:'none'},tint:'convoy',hp:22500,dmg:34,rate:2.0,rng:70,spd:12,keep:30,bs:30,rw:6000,scale:1.15,tier:'boss'},
+ cvEsc:{name:'無人護衛ギア',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'convoyD',hp:7500,dmg:30,rate:3.0,rng:60,spd:12,keep:30,bs:30,rw:2000,tier:'mob'},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
 };
 function rivalGear(g,key,c){const Sx=GX.SERIES[GEARS[key].s],bot=GX.build(g,Sx.base,Sx.rival,Sx.rival.pal),weps={},hide=o=>o.traverse(x=>{if(x.isMesh)x.visible=false});
@@ -5217,7 +5217,7 @@ let HITSRC=null;
 // 徹甲ライフル（RF3）：ダメージを下げる補正（1より小さい倍率）を無視する。プラスの補正（背面・弱点など）はそのまま
 const AP_IDS=new Set(['RF3','RF4']);   // ダメージを下げる補正を無視する兵装
 const apK=m=>m<1&&HITSRC&&AP_IDS.has(cfg[HITSRC])?1:m;
-function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(RUN&&RUN.sv)e.rt=t+3;if(mode==='play'&&RUN&&RUN.chase)dmg=Math.round(dmg*chaseK(HITSRC));else if(mode==='play'&&SS.dmgOut)dmg=Math.round(dmg*SS.dmgOut);   // 系列特性：与えるダメージの倍率
+function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(RUN&&RUN.sv)e.rt=t+3;if(mode==='play'&&SS.dmgOut)dmg=Math.round(dmg*SS.dmgOut);   // 系列特性：与えるダメージの倍率
  if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){{const kk=apK(e.gFront<0?.1:.15),raw=dmg,take=Math.min(raw,Math.max(0,e.shHp??0)),over=raw-take;e.shHp=Math.max(0,(e.shHp??0)-take);dmg=take*kk+over;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
   if(e.shHp<=0&&e.shMax>0){e.guardT=0;e.shBrk=e.spec.shRec??ENEMY_SH_REC;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2);shBreakComm(e)}}}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=apK(.25);spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
  // 命中の演出：共通の命中音・威力に応じた光と火花・小さな振動・ダメージの数字（CONFIG で ON のとき）
@@ -5688,7 +5688,7 @@ const MLIST=[
   mailNona:'「内密」で、「見なかったことに」。……そういう依頼は、たいてい、見てはいけないものが入っています。',
   obj:'180秒以内に、逃げる親機を追いかけて破壊',fail:'親機を見失う（150m 以上離れる） ／ 時間切れ ／ CORE 大破',enemyJa:'無人輸送ギア（親機）＋ 護衛2機 ＋ 地雷',
   desc:'SOLOMON の無人輸送ギア部隊が暴走し、砂嵐の旧街道を北へ逃げた。自機は走り続けたまま、左右に避けて親機を追い、撃ち壊す。射撃兵装を積んでいること。依頼人は、仲介を通した SOLOMON。',
-  brief:['このミッションでは、自機は常にダッシュで前へ進み続けます。操作するのは左右への回避と、射撃、ジャンプだけです。スティックを後ろに倒すと、前進が少し遅くなります（最大で約半分）。ダッシュでブーストは減りません。','道をふさぐ壁には、隙間があります。ぶつかるとダメージと硬直で、親機との距離が開きます。150m 以上離されると見失い、失敗です。','親機は地雷を落としながら逃げます。護衛の2機は、自機と親機のあいだを走ります。目標は親機の破壊。護衛は倒さなくても構いません。ただし護衛を全滅させると、左右から高速でドローンが割り込み、倒しても時間をおいて補充されます。','このミッションに限り、すべての射撃兵装は、威力が揃えられます。射撃兵装を積んでいない機体は、出撃できません。'],
+  brief:['このミッションでは、自機は常にダッシュで前へ進み続けます。操作するのは左右への回避と、射撃、ジャンプだけです。スティックを後ろに倒すと、前進が少し遅くなります（最大で約半分）。ダッシュでブーストは減りません。','道をふさぐ壁には、隙間があります。ぶつかるとダメージと硬直で、親機との距離が開きます。150m 以上離されると見失い、失敗です。','親機は地雷を落としながら逃げます。護衛の2機は、自機と親機のあいだを走ります。目標は親機の破壊。護衛は倒さなくても構いません。ただし護衛を全滅させると、左右から高速でドローンが割り込み、倒しても時間をおいて補充されます。','射撃兵装を積んでいない機体は、出撃できません。'],
   comm:{start:'砂嵐の旧街道です。親機は北へ逃げています。止まらずに、追ってください。',wall:'壁です。隙間を抜けてください。ぶつかると遅れます。',mine:'親機が地雷を落としました。避けてください。',esc:'護衛を撃破。荷が落ちました。',half:'親機の装甲が半分を切りました。',far:'親機が遠ざかります。壁を、うまく避けてください。',last:'残り30秒です。',lost:'親機を見失いました。……逃げられました。',timeout:'時間切れです。……逃げられました。',drone:'左右からドローンです。護衛が全滅したため、投入されました。',clear:'親機、沈黙。部隊が止まりました。',clear2:'……荷が散らばっています。中身は、見ないでおきましょう。',
    t:['おーい、聞こえるか！ オットーだ。約束どおり案内するぞ。この街道は一本道だ、真っすぐ走れ。','壁の隙間は、左右交互に空いてるぞ。','親機が地雷を撒いてるぞ。足もとを見ろ！']},
   res:{ok:'SOLOMON から短い返信です。「確かに受け取りました。荷は、こちらで引き取ります」。',ng:'撤退します。……部隊は、壁の方へ逃げ去りました。もう一度、追う必要があります。'},
@@ -6873,18 +6873,7 @@ function reachTick(dt){const d=RUN.def,g=d.reach,dist=Math.hypot(P.pos.x-g.x,P.p
  if(d.killAll){const left=misLeft();$('escS').textContent=left?'敵 残り '+left+' 体':g.lab;if(dist<=g.r&&left&&!RUN.ok&&!RUN.leftSaid){RUN.leftSaid=true;setTimeout(()=>{if(RUN)RUN.leftSaid=false},6000);comm(d.comm.left,2.4)}}
  if(dist<=g.r&&!RUN.ok&&P.down<=0&&!(d.killAll&&misLeft())){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=6.4;comm(d.comm.clear,2.6);setTimeout(()=>{if(RUN&&RUN.ok)comm(d.comm.clear2,3.2)},2800);RUN.hold=performance.now()+3000;banner('MISSION COMPLETE',RUN.def.title)}
  if(RUN.ok){if(finishWait(dt))misFinish(true)}}
-/* ----- 追跡（4-1）。兵装のダメージ均一化：1秒あたりの理論ダメージ（弾切れ・リロードを含む）を CH_DPS に揃える（近接・防御は 1 倍） ----- */
-const CH_DPS=90;
-function wDps(st){if(!st||st.kind!=='射撃')return 0;const r=st.rate||'';let per=0,n=1,m;
- if(m=r.match(/(\d+)点射／([\d.]+)秒/)){n=+m[1];per=+m[2]}
- else if(m=r.match(/(\d+)発／秒/)){n=+m[1];per=1}
- else if(m=r.match(/1発／([\d.]+)秒/)){n=1;per=+m[1]}
- else if(m=r.match(/1斉射／([\d.]+)秒/)){n=st.count||1;per=+m[1]}
- else return 0;
- const sps=n/per;let dps=st.dmg*sps;
- if(isFinite(st.ammo)&&st.reload){const tf=st.ammo/sps;dps*=tf/(tf+st.reload)}
- return dps}
-function chaseK(key){if(!key)return 1;let st;try{st=stOf(key)}catch(e){return 1}const d=wDps(st);return d>0?CH_DPS/d:1}
+/* ----- 追跡（4-1）。v234 で兵装のダメージ均一化（chaseK）を廃止し、敵の体力を約5倍（基準の理論DPS 450 ÷ 旧均一値 90）に ----- */
 /* 敵の車列の動き。親機：自機のダッシュの 0.85 倍で前へ（近づかれると少し速くなる）／隙間の中心へ。護衛：自機と親機のあいだの帯を保つ */
 function chaseVel(e,dt){const C=RUN.ch,B=C.boss,z=e.g.position.z,x=e.g.position.x,nx=chNext(z-2);let vx=0,vz=C.vc;
  if(e.chase==='boss'){const gap=z-P.pos.z;vz=C.vc;const gx=nx?nx.gx:0;e.sw+=dt*1.4;vx=Math.max(-12,Math.min(12,(gx+Math.sin(e.sw)*1.2-x)*1.6))}
