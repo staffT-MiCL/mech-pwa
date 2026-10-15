@@ -477,6 +477,12 @@ input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line);
 #shop .money,#versus .money{display:flex;align-items:baseline;gap:6px;white-space:nowrap}#versus .money small,#shop .money small{font-size:10px;color:var(--dim);letter-spacing:1px}
 #versus .money b,#shop .money b{font-size:15px;font-variant-numeric:tabular-nums;color:#eef2ef}#versus .money i,#shop .money i{font-style:normal;font-size:10px;color:var(--khaki)}
 #shop .money b.flash{color:var(--accent)}
+#spv{position:absolute;right:3%;top:9%;bottom:15%;aspect-ratio:5/8;max-width:42%;z-index:3;border:1px solid rgba(240,160,64,.7);background:rgba(10,14,13,.72);box-shadow:0 0 0 1px rgba(0,0,0,.5),inset 0 0 18px rgba(240,160,64,.12);transform-origin:50% 50%;pointer-events:none;will-change:transform}
+#spv[hidden]{display:none}
+#spv .spvc{position:absolute;inset:0;overflow:hidden}#spv canvas{display:block;width:100%;height:100%}
+#spv .spvt{position:absolute;left:5px;top:3px;font:700 9px/1 'Chakra Petch',monospace;letter-spacing:.14em;color:#f0a040}
+#spv .spvr{position:absolute;right:5px;top:1px;font:700 14px/1.2 sans-serif;color:#f0a040}
+#spv .spvl{position:absolute;left:0;right:0;bottom:0;padding:3px 5px;font:600 9px/1.3 'Chakra Petch',monospace;color:#e8e2d0;background:rgba(0,0,0,.65);border-top:1px solid rgba(240,160,64,.4);word-break:break-all}
 #shopL{position:relative;display:grid;grid-template-rows:minmax(0,1fr) clamp(128px,36%,190px);min-height:0;min-width:0;border-right:1px solid var(--line)}
 #scene{position:relative;overflow:hidden;min-height:0;border-bottom:1px solid var(--line);background:#0d1110}
 #scene .bg{position:absolute;inset:0;width:100%;height:100%}
@@ -987,7 +993,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v234</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v235</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1065,7 +1071,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v234</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v235</span></div>
  </div>
 </div>
 
@@ -1081,6 +1087,7 @@ body.eqm #visit{display:none}
  <div id="shopL">
   <div id="scene">
    <div id="sceneGL"></div>
+   <div id="spv" hidden aria-hidden="true"><div class="spvc"></div><span class="spvt">PREVIEW</span><span class="spvr">⟳</span><span class="spvl"></span></div>
    <div id="unlock" hidden role="status"><b>UNLOCKED ／ 機能が解放されました</b><span>・装備の変更（部位ボタン・機体のタッチ）、PAINT、VIEW</span><span>・SHOP の BUY／REPAIR／TUNE、CONFIG</span><span>・TRAINING（演習：敵の攻撃あり／なし）</span></div>
    <div class="opcard"><span class="r">OPERATOR</span><span class="n">D-06 ドール</span><span class="d">整備管理AI ／ 部品倉庫担当</span><span class="st" id="sState">応答中</span></div>
    <div class="kp" id="keeper" aria-hidden="true"><svg viewBox="0 0 60 40">
@@ -1131,7 +1138,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v234</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v235</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -3388,6 +3395,13 @@ const PR=WGL({antialias:false,alpha:true});PR.setPixelRatio(1);PR.setSize(124,84
 const PS=new THREE.Scene();PS.add(new THREE.AmbientLight(0x8890a0,2.4));{const l=new THREE.DirectionalLight(0xfff0d8,3);l.position.set(3,5,4);PS.add(l)}
 const PC=new THREE.PerspectiveCamera(30,124/84,.05,50);
 const pvSpin=new THREE.Group();PS.add(pvSpin);let pvOn=false,pvKey='';
+function fitPrev(g,cam){
+ // 回転軸は縦（Y）。回しても中心が動かないよう、見えている頂点すべてを囲む最小の円（XZ）の中心を軸に合わせる（箱の中心では、片側に長く伸びた形でずれる）。高さは箱の中心。どの装備を足しても自動で合う
+ const pts=[],_v3=new THREE.Vector3();g.traverse(o=>{if(!o.isMesh||!o.geometry)return;for(let q=o;q;q=q.parent)if(q.visible===false)return;const pa=o.geometry.attributes.position;if(!pa)return;o.updateWorldMatrix(true,false);const st=Math.max(1,Math.floor(pa.count/600));for(let i=0;i<pa.count;i+=st){_v3.fromBufferAttribute(pa,i).applyMatrix4(o.matrixWorld);pts.push(_v3.x,_v3.y,_v3.z)}});
+ let cx=0,cz=0,y0=1e9,y1=-1e9;if(pts.length){cx=pts[0];cz=pts[2];for(let k=1;k<=600;k++){let fi=0,fd=-1;for(let i=0;i<pts.length;i+=3){const dd=(pts[i]-cx)**2+(pts[i+2]-cz)**2;if(dd>fd){fd=dd;fi=i}}cx+=(pts[fi]-cx)/(k+1);cz+=(pts[fi+2]-cz)/(k+1)}for(let i=1;i<pts.length;i+=3){y0=Math.min(y0,pts[i]);y1=Math.max(y1,pts[i])}}else{y0=y1=0}
+ const c=new THREE.Vector3(cx,(y0+y1)/2,cz);let r=.5;for(let i=0;i<pts.length;i+=3)r=Math.max(r,Math.hypot(pts[i]-c.x,pts[i+1]-c.y,pts[i+2]-c.z));
+ g.position.sub(c);
+ const hf=Math.atan(Math.tan(cam.fov*Math.PI/360)*cam.aspect),vf=cam.fov*Math.PI/360,d=r/Math.sin(Math.min(hf,vf))*1.05;cam.position.set(0,d*.35,d);cam.lookAt(0,0,0);}
 function setPreview(slot,id){
  const k=slot?slot+':'+id:'';if(k===pvKey)return;pvKey=k;
  while(pvSpin.children.length){const c=pvSpin.children.pop();c.traverse(o=>o.geometry&&o.geometry!==UB&&o.geometry.dispose())}
@@ -3397,12 +3411,7 @@ function setPreview(slot,id){
  const g=new THREE.Group();
  if(slot==='rHand'||slot==='lHand')g.rotation.z=Math.PI/2;
  SHFREE=true;sl.cat[id].build(g,sl.side||1);SHFREE=false;pvSpin.rotation.set(0,0,0);pvSpin.add(g);shieldSync();g.updateMatrixWorld(true);
- // 回転軸は縦（Y）。回しても中心が動かないよう、見えている頂点すべてを囲む最小の円（XZ）の中心を軸に合わせる（箱の中心では、片側に長く伸びた形でずれる）。高さは箱の中心。どの装備を足しても自動で合う
- const pts=[],_v3=new THREE.Vector3();g.traverse(o=>{if(!o.isMesh||!o.geometry)return;for(let q=o;q;q=q.parent)if(q.visible===false)return;const pa=o.geometry.attributes.position;if(!pa)return;o.updateWorldMatrix(true,false);const st=Math.max(1,Math.floor(pa.count/600));for(let i=0;i<pa.count;i+=st){_v3.fromBufferAttribute(pa,i).applyMatrix4(o.matrixWorld);pts.push(_v3.x,_v3.y,_v3.z)}});
- let cx=0,cz=0,y0=1e9,y1=-1e9;if(pts.length){cx=pts[0];cz=pts[2];for(let k=1;k<=600;k++){let fi=0,fd=-1;for(let i=0;i<pts.length;i+=3){const dd=(pts[i]-cx)**2+(pts[i+2]-cz)**2;if(dd>fd){fd=dd;fi=i}}cx+=(pts[fi]-cx)/(k+1);cz+=(pts[fi+2]-cz)/(k+1)}for(let i=1;i<pts.length;i+=3){y0=Math.min(y0,pts[i]);y1=Math.max(y1,pts[i])}}else{y0=y1=0}
- const c=new THREE.Vector3(cx,(y0+y1)/2,cz);let r=.5;for(let i=0;i<pts.length;i+=3)r=Math.max(r,Math.hypot(pts[i]-c.x,pts[i+1]-c.y,pts[i+2]-c.z));
- g.position.sub(c);
- const d=r/Math.sin(PC.fov*Math.PI/360)*1.05;PC.position.set(0,d*.35,d);PC.lookAt(0,0,0);pvOn=true;
+ fitPrev(g,PC);pvOn=true;
 }
 /* 説明文のコマ送り：欄に収まらない文はタッチで1文字ずつ左へ送り、最後まで出したら先頭に戻す */
 let tickT=null;
@@ -3767,7 +3776,8 @@ function shopCatOf(id){const sl=slotOfItem(id);return FRAME_CAT[sl]?PN[id][0]+'|
 // 種類の表示名（フレームは「系列|部位」の部位だけ）
 const scLab=c=>c&&c.includes('|')?c.split('|')[1]:c;
 const SHOP_CATS=(()=>{const out=[];Object.keys(PN).forEach(id=>{const c=shopCatOf(id);if(!out.includes(c))out.push(c)});return out})();
-const stockOf=c=>Object.keys(PRICE).filter(id=>shopCatOf(id)===c&&clsOk(id));  // 購入済みも並べたまま（色を変えて表示）
+const tierOf=id=>isFrameId(id)?0:parseInt((id.match(/(\d)$/)||[])[1]||1);
+const stockOf=c=>Object.keys(PRICE).filter(id=>shopCatOf(id)===c&&clsOk(id)).map((id,i)=>[id,i]).sort((a,b)=>tierOf(a[0])-tierOf(b[0])||a[1]-b[1]).map(x=>x[0]);  // 購入済みも並べたまま（色を変えて表示）
 const isEquipped=id=>Object.values(cfg).includes(id);
 let smode='buy',rview='equip',rsel=null,ramt=null,tsel='core';
 // 種類ごとの店主の説明
@@ -4005,11 +4015,56 @@ const SERIES=()=>{const o=[];Object.keys(PRICE).forEach(id=>{if(FRAME_CAT[slotOf
 function TREE(n){if(n==='FRAME')return SERIES();if(SERIES().includes(n))return ['HEAD','CORE','ARMS','LEGS'].map(p=>n+'|'+p).filter(c=>stockOf(c).length);return SHOP_TREE[n]}
 const nodeStock=n=>TREE(n)?TREE(n).reduce((a,c)=>a+nodeStock(c),0):stockOf(n).length;
 function pathTo(cat){const walk=(list,path)=>{for(const n of list){if(n===cat)return path;if(TREE(n)){const r=walk(TREE(n),[...path,n]);if(r)return r}}return null};return walk(SHOP_ROOT,[])||[]}
+/* ショップのプレビュー：ドールの右に選択中の品を回して見せる。出現＝中心から枠が広がる／切替＝縮んで入れ替え→再び広がる */
+const SPV=(()=>{
+ let R=null,sc,cam,spin,box,cv,lab,key='',shown=false,raf=0,tok=0,anim=null,last=0,ready=false;
+ const reduce=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
+ function init(){if(ready)return;ready=true;box=$('spv');cv=box.querySelector('.spvc');lab=box.querySelector('.spvl');
+  R=WGL({antialias:true,alpha:true});R.setPixelRatio(1);cv.appendChild(R.domElement);
+  sc=new THREE.Scene();sc.add(new THREE.AmbientLight(0x8890a0,2.4));const l=new THREE.DirectionalLight(0xfff0d8,3);l.position.set(3,5,4);sc.add(l);
+  cam=new THREE.PerspectiveCamera(30,5/8,.05,60);spin=new THREE.Group();sc.add(spin)}
+ function clear(){while(spin.children.length){const c=spin.children.pop();c.traverse(o=>o.geometry&&o.geometry!==UB&&o.geometry.dispose())}}
+ function build(id){clear();spin.rotation.set(0,0,0);const g=new THREE.Group();let ok=true;
+  try{
+   if(isFrameId(id)){
+    if(HEADS[id])HEADS[id].build(grp(g));
+    else if(CORES[id]){const t=grp(g);t.scale.setScalar(UPPER);CORES[id].build(t)}
+    else if(ARMS[id]){const a=grp(g);a.scale.setScalar(UPPER);ARMS[id].build(a,1)}
+    else{const h=grp(g);LEGS[id].build(h)}
+    spin.add(g);g.updateMatrixWorld(true);
+   }else{const slot=slotOfItem(id),sl=SLOTOF(slot);
+    if(slot==='rHand'||slot==='lHand')g.rotation.z=Math.PI/2;
+    SHFREE=true;try{sl.cat[id].build(g,sl.side||1)}finally{SHFREE=false}spin.add(g);shieldSync();g.updateMatrixWorld(true)}
+  }catch(e){ok=false;clear()}
+  if(ok){cam.aspect=Math.max(.2,(cv.clientWidth||5)/(cv.clientHeight||8));cam.updateProjectionMatrix();fitPrev(spin.children[0],cam)}
+  const sl=slotOfItem(id),p=PN[id]||[];
+  lab.textContent=isFrameId(id)?`${id} / ${p[0]||''} ・ ${FRAME_CAT[sl]||''}`:`${p[3]||id} / ${p[0]||''} ・ ${tierOf(id)}型`}
+ function fit(){const w=cv.clientWidth,h=cv.clientHeight;if(w&&h){R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}}
+ function loop(now){if(!shown){raf=0;return}raf=requestAnimationFrame(loop);const dt=Math.min((now-last)/1000||.016,.05);last=now;spin.rotation.y+=dt*.8;R.render(sc,cam)}
+ function run(frames,ms,done){const t0=tok;if(anim){try{anim.cancel()}catch(e){}anim=null}
+  if(reduce()||!box.animate){done&&done();return}
+  anim=box.animate(frames,{duration:ms,easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'});anim.onfinish=()=>{if(t0!==tok)return;done&&done()};}
+ const FLASH='0 0 0 1px rgba(0,0,0,.5),0 0 16px 3px rgba(255,190,100,.85),inset 0 0 18px rgba(240,160,64,.45)',CALM='0 0 0 1px rgba(0,0,0,.5),inset 0 0 18px rgba(240,160,64,.12)';
+ function show(id){
+  if(!id){if(!shown)return;key='';tok++;const t=tok;shown=false;
+   run([{transform:'scale(1,1)',opacity:1},{transform:'scale(1,.03)',opacity:1,offset:.6},{transform:'scale(0,.03)',opacity:0}],150,()=>{if(t===tok&&!shown)box.hidden=true});
+   if(reduce()||!box.animate)box.hidden=true;return}
+  init();if(id===key&&shown)return;
+  const first=!shown;key=id;tok++;const t=tok;
+  if(first){box.hidden=false;shown=true;fit();build(id);last=performance.now();if(!raf)raf=requestAnimationFrame(loop);
+   run([{transform:'scale(0,.02)',opacity:0,boxShadow:FLASH},{transform:'scale(.06,.02)',opacity:1,boxShadow:FLASH,offset:.08},{transform:'scale(1,.02)',opacity:1,boxShadow:FLASH,offset:.4},{transform:'scale(1,1)',opacity:1,boxShadow:CALM}],300)}
+  else{
+   run([{transform:'scale(1,1)'},{transform:'scale(.06,.03)',opacity:.9}],90,()=>{if(t!==tok)return;build(id);fit();
+    run([{transform:'scale(.06,.03)',opacity:.9,boxShadow:FLASH},{transform:'scale(1,1)',opacity:1,boxShadow:CALM}],130)});
+   if(reduce()||!box.animate){build(id);fit()}}
+ }
+ return {show,stop(){tok++;shown=false;key='';if(anim){try{anim.cancel()}catch(e){}anim=null}if(box)box.hidden=true},get state(){return {shown,key}}};
+})();
 function renderShop(){fitSoon($('shopR'));
  if(!$('sMoney').classList.contains('up')&&!$('sMoney').classList.contains('dn'))$('sMoney').textContent=fmtCR(CREDIT);
  $('sTabs').querySelectorAll('[data-m]').forEach(b=>{b.setAttribute('aria-selected',b.dataset.m===smode);b.onclick=()=>setSMode(b.dataset.m)});
  $('sBody').hidden=smode!=='buy';$('sAlt').hidden=smode==='buy';
- if(smode!=='buy'){$('sCode').textContent=smode.toUpperCase();renderAlt();return}
+ if(smode!=='buy'){SPV.show(null);$('sCode').textContent=smode.toUpperCase();renderAlt();return}
  $('sCode').textContent='BUY';
  const here=spath.length?TREE(spath[spath.length-1]):SHOP_ROOT;
  if(scat&&!here.includes(scat))scat=null;
@@ -4024,8 +4079,8 @@ function renderShop(){fitSoon($('shopR'));
   const st=stockOf(scat);talk([[CAT_TALK[scLab(scat)]||'',null]].concat(st.length&&st.every(i=>OWN.has(i))?[['この種類は、もう<strong>すべてお持ち</strong>ですね。さすがでございます。','happy']]:[]))});
  const bk=$('sCats').querySelector('[data-back]');if(bk)bk.onclick=()=>{spath=spath.slice(0,-1);scat=null;ssel=null;renderShop()};
  const det=$('sDet');
- if(!scat){det.innerHTML=`<div class="sempty">${spath.length?'種類を選んでください。':'FRAME（フレーム）・WEAPONS（兵装）・EXTRA（背中の装備）から選んでください。'}</div>`;return}
- if(!ssel){det.innerHTML=`<div class="sempty">この種類の在庫はありません。<br>（所持品はガレージで装備できます）</div>`;return}
+ if(!scat){SPV.show(null);det.innerHTML=`<div class="sempty">${spath.length?'種類を選んでください。':'FRAME（フレーム）・WEAPONS（兵装）・EXTRA（背中の装備）から選んでください。'}</div>`;return}
+ if(!ssel){SPV.show(null);det.innerHTML=`<div class="sempty">この種類の在庫はありません。<br>（所持品はガレージで装備できます）</div>`;return}
  const items=stock.map(id=>{const sl=slotOfItem(id),own=OWN.has(id),ov=statsFor(withPart(sl,id)).over,ng=PRICE[id]>CREDIT;
   const tag=own?(isEquipped(id)?'装備中':'所持'):ng?'資金不足':ov?'過積載':'NEW';
   return `<button class="sitem${own?' own':''}${id===ssel?' sel':''}" data-i="${id}"><span class="a"><small class="fit">${isFrameId(id)?SER(id)+' ・ ':''}${esc(pn(sl,id)[1]||scLab(scat))}</small><b>${esc(ENM(sl,id).trim())}</b></span><span class="p"><small class="${own?'':ng?'ng':ov?'ov':''}">${tag}</small><b>${own?'購入済み':fmtCR(PRICE[id])}</b></span></button>`}).join('');
@@ -4036,6 +4091,7 @@ function renderShop(){fitSoon($('shopR'));
   <div class="sbuy">${OWN.has(ssel)?`<small>購入済み</small><span class="grow" style="flex:1"></span><button class="btn-eq cut" id="sEq" ${isEquipped(ssel)?'disabled':''}>${isEquipped(ssel)?'装備中':'装備する'}</button>`:
    `<small>価格</small><span class="pr">${fmtCR(PRICE[ssel])}<i>CR</i></span><span class="grow" style="flex:1"></span>${PRICE[ssel]>CREDIT?`<span class="lack">不足 −${fmtCR(PRICE[ssel]-CREDIT)} CR</span>`:'<button class="btn-main cut" id="sBuy">購入</button>'}`}</div>`;
  det.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{ssel=b.dataset.i;renderShop();explainItem(ssel)});
+ SPV.show(ssel);
  det.querySelectorAll('[data-lr]').forEach(b=>b.onclick=()=>{scmpSide=b.dataset.lr;renderShop()});
  const bb=$('sBuy'),be=$('sEq');if(bb)bb.onclick=()=>openConfirm(ssel);else if(be)be.onclick=()=>openConfirm(ssel);
  else if(det.querySelector('.lack'))det.querySelector('.lack').onclick=()=>talk([['大変申し上げにくいのですが……所持金が <em>'+fmtCR(PRICE[ssel]-CREDIT)+' CR</em> ほど足りないようです。','sorry'],['計算は3回確かめました。4回目もしましょうか？','normal']]);
@@ -4284,7 +4340,7 @@ let leaving=false;
 function leaveShop(){if(leaving)return;leaving=true;$('tchoice').innerHTML='';
  talk([[pick(['またのお越しを、心よりお待ちしております、'+SAMA()+'！','いってらっしゃいませ、'+SAMA()+'。またいつでもお立ち寄りくださいね。','お気をつけて。……次にいらっしゃるまでに、棚を数え直しておきます！']),'happy']],
   ()=>setTimeout(()=>fadeTo(()=>{leaving=false;closeShop()},'GARAGE'),900))}
-function closeShop(kind){stopShop3D();SND.bgm('garage');clearInterval(typing);typing=null;closeConfirm();$('shop').hidden=true;$('shop').classList.remove('walk','greet');view='overview';selSlot=null;renderGarage();garageGreet(typeof kind==='string'?kind:'shop')}
+function closeShop(kind){SPV.stop();stopShop3D();SND.bgm('garage');clearInterval(typing);typing=null;closeConfirm();$('shop').hidden=true;$('shop').classList.remove('walk','greet');view='overview';selSlot=null;renderGarage();garageGreet(typeof kind==='string'?kind:'shop')}
 $('mShop').onclick=()=>{if(vsLock())return;openMenu(false);fadeTo(openShop,'SHOP')};$('sExit').onclick=leaveShop;
 
 /* ===== VERSUS：闘技場の受付（3D）と受付案内ロボ ベル（BELL-01）=====
