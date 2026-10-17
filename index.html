@@ -993,7 +993,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v238</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v239</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1071,7 +1071,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v238</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v239</span></div>
  </div>
 </div>
 
@@ -1138,7 +1138,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v238</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v239</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -1523,7 +1523,7 @@ function shieldSync(){SHRIG.forEach(r=>{let top=r.pv;while(top.parent)top=top.pa
  r.pv.parent.updateWorldMatrix(true,false);r.pv.parent.getWorldQuaternion(_sp);r.pv.parent.getWorldScale(_ss);const sc=_ss.x||1;
  _se.set(ph,psi,0,'YXZ');_sq.setFromEuler(_se);r.pv.quaternion.copy(_sp).invert().multiply(_sq);
  r.pv.updateWorldMatrix(true,false);r.pv.getWorldPosition(_sv);
- const px=r.s*(.15-1.15*e),pz=.1*e,half=r.h*sc/2,idleC=_sv.y+.3*sc,guardC=5.8-half+(r.lift||0)*sc,minC=.05+half*Math.cos(ph)+.1*sc;
+ const px=r.s*(.15-(r.gx??1.15)*e)-r.s*(r.inw||0)*.8,pz=(r.gz??.1)*e,half=r.h*sc/2,idleC=_sv.y+.3*sc,guardC=5.8-half+(r.lift||0)*sc,minC=.05+half*Math.cos(ph)+.1*sc;
  const cw=r.free?idleC:Math.max(minC,idleC+(guardC-idleC)*e),py=(cw-_sv.y)/sc;
  r.p.position.set(px,py,pz);r.bar.position.set(-px/2,-py,-pz);r.bar.scale.x=Math.max(.01,Math.abs(px))})}
 const HAND={
@@ -4853,12 +4853,12 @@ SHOULDER.MST={...SHOULDER.MS,name:'キャリアのミサイル',build(g){const p
  return {cells}}};
 /* リブラ（エーリヒ機・05 CENTURION）専用兵装：両手の巨大な盾・右肩の巨大ミサイルポッド・左肩の2方向レーザー砲。見た目は SERIES[05].rival の wep／sh（libraShield／libraPod／libraLaser）、弾の出口と盾の構えは HAND.LBS／SHOULDER.LBM／LBL（非表示）で同じ形から作る。ショップには並べない */
 const LBK={};['main','sub','trim','metal','glow','joint','frame'].forEach(k=>LBK[k]=psMat(0x445544));
-function libraPod(g,K){const pod=grp(g,0,.5,0);pod.rotation.x=-.2;
+function libraPod(g,K){const pod=grp(g,0,.5,0);pod.rotation.x=-.2;pod.scale.setScalar(.85);
  box(pod,1.5,1.3,1.5,K.main,0,0,0);[.7,-.7].forEach(y=>box(pod,1.54,.1,1.54,K.trim,0,y,0));box(pod,1.5,1.3,.04,K.frame,0,0,.77);
  [-1,1].forEach(q=>box(pod,.08,1.2,.9,K.sub,q*.78,0,.1));
  const cells=[];for(let j=0;j<3;j++)for(let i=0;i<4;i++){const m=grp(pod,-.54+i*.36,.4-j*.4,.8);cyl(m,.14,.14,.06,K.metal,0,0,0,Math.PI/2,0,8);cells.push(m)}
  return {cells}}
-function libraLaser(g,K){const c=grp(g,0,.55,0);c.rotation.x=-.1;
+function libraLaser(g,K){const c=grp(g,0,.55,0);c.rotation.x=-.1;c.scale.setScalar(.85);
  box(c,1.2,1.0,1.6,K.main,0,0,0);box(c,1.24,.1,1.64,K.trim,0,.55,0);
  box(c,.56,.56,2.6,K.sub,0,0,2.0);[1.0,1.9,2.8].forEach(z=>box(c,.74,.74,.14,K.trim,0,0,z));
  [-1,1].forEach(q=>{box(c,.2,.34,1.1,K.trim,q*.42,0,3.7);box(c,.14,.14,.2,K.glow,q*.42,0,4.3)});
@@ -4868,6 +4868,7 @@ HAND.LBS={...HAND.SH4,vis:true,name:'リブラの大盾',st:{...HAND.SH4.st,fron
  build(g,s){const R=shieldBase(g,s),p=R.p;shieldPlate(R,2.2,5.4,{back:LBT.back,mid:LBT.mid,panel:LBT.back,band:LBT.gold,acc:LBT.gold,fin:LBT.dark});   // 観音開き：中央の盾の左右に、外へ開いた二層の翼板
   [-1,1].forEach(q=>{box(p,1.15,4.4,.22,LBT.mid,q*1.55,.2,.12,0,q*.42,0);box(p,.8,3.4,.2,LBT.back,q*2.25,.1,.5,0,q*.7,0);box(p,.08,4.2,.12,LBT.glow,q*1.0,.2,.3,0,q*.2,0);box(p,.1,3.2,.12,LBT.gold,q*2.62,.1,.62,0,q*.7,0)});
   box(p,.14,2.6,.1,LBT.glow,0,.5,.66);box(p,1.2,.1,.1,LBT.glow,0,1.5,.66);
+  p.scale.set(.62,.75,1);R.h=5.4*.75;R.gx=-.55;R.gz=.1;   // 機体の脇に立てる縦長の盾（中央をあけて機体を見せる）。被弾で少し内側へ（rig.inw）
   return {plate:p,pv:R.pv,rig:R}}};
 SHOULDER.LBM={...SHOULDER.MS,name:'審判ミサイル',st:{kind:'射撃',dmg:600,range:95,area:4,rate:'1斉射',count:12,ammo:24,reload:12,wt:0,imp:'C',spd:40,hom:'強',note:'リブラ専用。12連装を一斉に放つ'},
  act:{name:'一斉発射',dur:1.6,run(c){c.w.cells.forEach((m,i)=>{if(c.once('m'+i,.1+i*.07)&&c.missile(m,i)){flash(m,.25,0xffb060);shake=Math.max(shake,.04)}});
@@ -4905,9 +4906,10 @@ const SHE_HP=6000;
 function dualShield(e,dmg,pos){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z,l=Math.hypot(dx,dz)||1,fr=(dx*Math.sin(ry)+dz*Math.cos(ry))/l;
  if(fr<=(e.gFront??.2))return dmg;
  const lat=(dx*Math.cos(ry)-dz*Math.sin(ry))/l,sd=lat>=0?1:-1;let s=null;
- if(e.shx[sd].brk<=0)s=sd;else if(Math.abs(lat)<.3&&e.shx[-sd].brk<=0)s=-sd;
+ if(Math.abs(lat)<.22)return dmg*apK(.5);   // 中央は盾がない（機体が見える）：通常の正面装甲
+ if(e.shx[sd].brk<=0)s=sd;
  if(s==null)return dmg*apK(.25);
- const q=e.shx[s],take=Math.min(dmg,Math.max(0,q.hp)),over=dmg-take;q.hp-=take;
+ e.hitIn=.35;const q=e.shx[s],take=Math.min(dmg,Math.max(0,q.hp)),over=dmg-take;q.hp-=take;
  spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
  if(q.hp<=0){q.brk=e.hp<e.max*.3?40:25;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2);shBreakComm(e);if(e.shx[-s].brk>0)e.guardT=0}
  return take*apK(.15)+over}
@@ -5049,7 +5051,7 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
   if(o.legs){const lw=o.legs.w??w;legF.forEach((f,i)=>{f.th=L(f.th,o.legs.th[i],lw);f.kn=L(f.kn,o.legs.kn[i],lw)})}
   if(o.torsoY!=null)tY=L(tY,o.torsoY,w);if(o.torsoX!=null)tX=L(tX,o.torsoX,w);if(o.headY!=null)hY=L(hY,o.headY,w);if(o.crouch)crouch=Math.max(crouch,o.crouch*w);if(o.lift)lift+=o.lift}
  {const on=e.guardT>0&&shw,old=e.gd||0;e.gd=Math.max(0,Math.min(1,old+(on?1:-1)*dt/.2));if(on&&old<=0)e.gb=0;e.gb=(e.gb==null?1:e.gb)+dt;
-  if(shw){const br=on?Math.sin(Math.PI*Math.min(1,e.gb/.4)):0,q=sm(e.gd);if(shw.w&&shw.w.rig){shw.w.rig.gd=e.gd;shw.w.rig.br=br}if(e.shx)e.ws.forEach(w=>{if(w.kind==='防御'&&w.w&&w.w.rig){w.w.rig.gd=e.gd;w.w.rig.br=br}})
+  if(shw){const br=on?Math.sin(Math.PI*Math.min(1,e.gb/.4)):0,q=sm(e.gd);e.hitIn=Math.max(0,(e.hitIn||0)-dt);if(shw.w&&shw.w.rig){shw.w.rig.gd=e.gd;shw.w.rig.br=br}if(e.shx)e.ws.forEach(w=>{if(w.kind==='防御'&&w.w&&w.w.rig){const q=w.w.rig,tg=e.hitIn>0?1:0;q.inw=(q.inw||0)+(tg-(q.inw||0))*Math.min(1,dt*(tg?18:6));q.gd=e.gd;q.br=br}})
    if(q>0){const gp=GUARD_POSE(shw.s);mixArm(armF[shw.s<0?0:1],{x:gp.x-br*.12,z:gp.z,e:gp.e},q);crouch=Math.max(crouch,.15*q);
     if(e.shx){const o2=e.ws.find(w=>w.kind==='防御'&&w!==shw&&e.shx[w.s].brk<=0);if(o2){const g2=GUARD_POSE(o2.s);mixArm(armF[o2.s<0?0:1],{x:g2.x-br*.12,z:g2.z,e:g2.e},q)}}}}}
  m.torso.rotation.set(tX+e.lean,tY,0);m.head.rotation.y=hY;
