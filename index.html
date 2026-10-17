@@ -994,7 +994,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v247</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v248</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1072,7 +1072,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v247</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v248</span></div>
  </div>
 </div>
 
@@ -1139,7 +1139,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v247</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v248</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4972,11 +4972,11 @@ const GEAR_MOB={
  vb3:{name:'リブラ',model:'erich',vpose:'common',dual:1,beam:1,cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'LBS',lHand:'LBS',rShoulder:'LBM',lShoulder:'LBL'},   // エーリヒ：両手の巨大な盾で正面を固め、ミサイルとレーザーで攻める耐久型
   hp:30000,dmg:0,rate:2.6,rng:70,spd:5,keep:28,bs:24,rw:0,tier:'boss',msK:.8,msSpd:1.8,msHom:1.7,msMax:12,rage:1,tx:{dk:.16,spread:1.6,cdK:1.0,gap:1,qb:0,jump:0},guard:{p:9,near:0,t:[2.2,3.4],cd:[.5,1.2]}},
  lab_n:{name:'警備機 N',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'RF3',rShoulder:'none',lShoulder:'none'},tint:{main:0xe6e8e4,sub:0xb4b9b6,warn:0x6fd3e0,joint:0x1a1c20,eye:0x202a30},
-  hp:15000,dmg:0,rate:2.0,rng:70,spd:8,keep:26,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.13,spread:1.7,cdK:1.3,gap:.8},deco(m){labDeco(m,'N')}},   // N：中距離から両手のライフル
+  hp:15000,dmg:0,rate:2.0,rng:70,spd:8,keep:26,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.13,spread:1.7,cdK:2.1,gap:1.2,imp:'D'},deco(m){labDeco(m,'N')}},   // N：中距離から両手のライフル
  lab_d:{name:'警備機 D',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF4',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:{main:0xe6e8e4,sub:0xb4b9b6,warn:0x8cf06e,joint:0x1a1c20,eye:0x202a30},
-  hp:15000,dmg:0,rate:2.0,rng:110,spd:6,keep:46,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.09,spread:1.1,cdK:1.2,gap:1},deco(m){labDeco(m,'D')}},   // D：遠距離から長砲身
+  hp:15000,dmg:0,rate:2.0,rng:110,spd:6,keep:46,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.09,spread:1.1,cdK:1.9,gap:1.5,imp:'C'},deco(m){labDeco(m,'D')}},   // D：遠距離から長砲身
  lab_m:{name:'警備機 M',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'BL4',lHand:'BL4',rShoulder:'none',lShoulder:'none'},tint:{main:0xe6e8e4,sub:0xb4b9b6,warn:0xe0403a,joint:0x1a1c20,eye:0x202a30},
-  hp:15000,dmg:0,rate:1.6,rng:30,spd:11,keep:6,bs:30,rw:0,scale:1.2,tier:'boss',rush:34,tx:{mk:.15,spread:1.6,cdK:1.3,gap:.65},deco(m){labDeco(m,'M')}},   // M：近接で斬りかかる
+  hp:15000,dmg:0,rate:1.6,rng:30,spd:11,keep:6,bs:30,rw:0,scale:1.2,tier:'boss',rush:34,tx:{mk:.15,spread:1.6,cdK:2.1,gap:1.0,imp:'C'},deco(m){labDeco(m,'M')}},   // M：近接で斬りかかる
  cvBoss:{name:'無人輸送ギア（親機）',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'none',rShoulder:'MS',lShoulder:'none'},tint:'convoy',hp:22500,dmg:34,rate:2.0,rng:70,spd:12,keep:30,bs:30,rw:6000,scale:1.15,tier:'boss'},
  cvEsc:{name:'無人護衛ギア',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'convoyD',hp:7500,dmg:30,rate:3.0,rng:60,spd:12,keep:30,bs:30,rw:2000,tier:'mob'},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
@@ -5017,7 +5017,7 @@ function gearShot(e,A,obj,vis={}){const S0=A.def.st,T=e.tier;obj.getWorldPositio
  if(EIN&&!e.atT){const iv=einV(),tt=from.distanceTo(aim)/(spd*ENEMY_BS*(RUN&&RUN.vs?VS_BS:1));aim.x-=iv.x*tt;aim.z-=iv.z*tt}   // 弾は撃つ機体の速度を引き継ぐので、そのぶんを差し引いて狙う
  aim.add(new THREE.Vector3(Math.random()-.5,(Math.random()-.5)*.8,Math.random()-.5).multiplyScalar(T.spread));
  const dir=aim.sub(from).normalize(),n=WSND(A.id);if(n)sAt(n,from,{g:.38});
- const f=spawn(vis.color&&vis.color!==0xffe080?vis.color:0xff8a4a,Math.max(.22,(vis.size||.1)*2.2),from,{vel:dir.multiplyScalar(spd),life:(S0.range||50)*1.1/spd+.4,len:Math.min(3,vis.len||3),trail:vis.trail||0,team:'e',dmg:Math.round(S0.dmg*T.dk),imp:S0.imp,splash:S0.area||0});
+ const f=spawn(vis.color&&vis.color!==0xffe080?vis.color:0xff8a4a,Math.max(.22,(vis.size||.1)*2.2),from,{vel:dir.multiplyScalar(spd),life:(S0.range||50)*1.1/spd+.4,len:Math.min(3,vis.len||3),trail:vis.trail||0,team:'e',dmg:Math.round(S0.dmg*T.dk),imp:T.imp||S0.imp,splash:S0.area||0});
  spawn(0xffd090,.8,from,{life:.07});return f}
 const CH_V=30;   // v188：34 → v189：30
 const CH_BS=1.5;   // 4-1 のあいだだけ、自機の弾速（射撃・ミサイル）に掛ける倍率。射程は変えない   // 4-1 追跡：自機の前進速度（m/s。フレーム性能によらない固定値。仮）。親機はこの0.8倍、護衛はその前後（chaseVel）
@@ -5027,7 +5027,7 @@ function gearMissile(e,A,obj,i){const st=A.def.st,bk=ENEMY_BS*(RUN&&RUN.vs?VS_BS
  FX.push({m,homeT:(st.vert?.7:.45)/(e.spec.msHom||1),homeK:(st.vert?3:1.4)*(e.spec.msHom||1),arc:!!st.arc,vel:st.vert?_d.clone().multiplyScalar(20*bk*(e.spec.msSpd||1)):_d.clone().multiplyScalar(7*(e.spec.msSpd||1)).add(new THREE.Vector3(0,st.arc?8:5,0)),life:st.range/st.spd+1.6/(e.spec.msSpd||1),age:0,missile:true,base:.16,tt:0,team:'e',vmax:26*bk*(e.spec.msSpd||1),dmg:Math.round(st.dmg*e.tier.dk*ENEMY_MS*dk*(e.spec.msK||1)),splash:st.area||0,imp:st.imp,home:e.atT?null:PTGT});{const iv=einV();if(iv){const f=FX[FX.length-1];f.vel.x+=iv.x;f.vel.z+=iv.z;f.vmax+=Math.hypot(iv.x,iv.z)}}}
 function gearMelee(e,A){const S0=A.def.st,ry=e.g.rotation.y,fx=Math.sin(ry),fz=Math.cos(ry),dmg=Math.round(S0.dmg*e.tier.mk);
  const tg=e.atT&&RUN&&RUN.tr?TOBJ().position:P.pos,dx=tg.x-e.g.position.x,dz=tg.z-e.g.position.z,d=Math.hypot(dx,dz)||1;
- if(d<S0.range+3.2&&(dx*fx+dz*fz)/d>.3){if(e.atT)truckHit(dmg,new THREE.Vector3(tg.x,2,tg.z));else if(Math.abs(mech.bot.position.y-e.y)<5)hitPlayer(dmg,S0.imp,playerCenter(new THREE.Vector3()))}}
+ if(d<S0.range+3.2&&(dx*fx+dz*fz)/d>.3){if(e.atT)truckHit(dmg,new THREE.Vector3(tg.x,2,tg.z));else if(Math.abs(mech.bot.position.y-e.y)<5)hitPlayer(dmg,e.tier.imp||S0.imp,playerCenter(new THREE.Vector3()))}}
 // 敵の爆発弾（バズーカ・グレネード・ミサイル）：着弾点の近くにいれば半分のダメージ
 function eSplash(pos,f){explode(pos,Math.min(.8,f.splash/5));const by=mech.bot.position.y;if(P.down<=0&&Math.hypot(pos.x-P.pos.x,pos.z-P.pos.z)<f.splash+1.5&&Math.abs(pos.y-(by+3))<f.splash+3)hitPlayer(Math.round(f.dmg*.5),f.imp,playerCenter(new THREE.Vector3()))}
 const pAttacking=()=>Object.values(active).some(a=>a.def.st&&/射撃|近接/.test(a.def.st.kind));
