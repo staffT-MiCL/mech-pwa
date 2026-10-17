@@ -993,7 +993,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v241</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v242</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1071,7 +1071,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v241</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v242</span></div>
  </div>
 </div>
 
@@ -1138,7 +1138,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v241</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v242</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -2350,7 +2350,7 @@ Object.assign(HAND,{
  // セレナ専用の三連斬り（敵機用）：1発 550×ボス係数0.273＝約150、全弾で約450
  'BLS':{...HAND.BL3,st:{kind:'近接',dmg:550,range:8,area:0,rate:'3連撃',count:1,ammo:INF,reload:0,wt:16,imp:'B',spd:0,hom:'－',note:'セレナの三連斬り（1発 約150）'},
   act:BL_TRI,
-  build(g){return HAND.BL3.build(g)}},
+  build(g){const o=HAND.BL3.build(g);o.muzzle.position.y=-3.1;return o}},
  // 展開シールド：2枚のパネルを扇形に開く新デザイン
  'SH4':{...HAND.SH,st:{kind:'防御',dmg:0,range:0,area:0,rate:'押している間',count:1,ammo:1200,reload:70,wt:24,imp:'なし',spd:0,hom:'－',front:0,grd:{walk:.7,dash:0,qb:0,jump:1,opp:1},note:'前方約±90°を高い耐久で受け止める。構え中の歩きは7割。ダッシュと急加速は不可'},
   build(g,s){const R=shieldBase(g,s),p=R.p,h=4.4;R.h=h;R.lift=.6;
@@ -2905,7 +2905,16 @@ const SERIES=[
     const L=P.arms.find(a=>a.s>0);cyl(L.sh,.5,.5,.6,K.main,.2,.12,0,0,Math.PI/2,10);cyl(L.sh,.55,.55,.08,K.sub,.52,.12,0,0,Math.PI/2,10);cyl(L.sh,.14,.14,.1,K.trim,.6,.12,0,0,Math.PI/2,8);
     cyl(L.el,.42,.42,.08,K.sub,.27,-.5,0,0,Math.PI/2,10);cyl(L.el,.12,.12,.12,K.trim,.32,-.5,0,0,Math.PI/2,8);
    },
-   wep:{r(g,K){box(g,.24,.45,.3,K.main,0,-.25,0);box(g,.66,.1,.3,K.sub,0,-.52,0);box(g,.07,1.7,.18,K.glow,0,-1.42,0);box(g,.07,.2,.1,K.glow,0,-2.35,.03,.5)}},
+   wep:{r(g,K){   // 光刃剣（全長約3m）：暗い刃を加算発光の層が包む。菱形のつば・側柱・赤い布
+    const Gl=K.glow,T=K.trim,Cr=K.crest,M=K.frame;
+    const ad=(w,h,d,y,o)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshBasicMaterial({color:0xff5a2a,transparent:true,opacity:o,blending:THREE.AdditiveBlending,depthWrite:false}));m.position.set(0,y,0);g.add(m)};
+    box(g,.15,.5,.15,M,0,-.25,0);box(g,.24,.14,.24,T,0,-.55,0);
+    box(g,.5,.16,.3,T,0,-.62,0);box(g,.3,.16,.34,Cr,0,-.62,0,0,0,Math.PI/4);
+    [-1,1].forEach(q=>{box(g,.12,.5,.12,T,q*.34,-.66,0,0,0,q*.35);box(g,.07,.16,.09,Gl,q*.4,-.9,0,0,0,q*.35);
+     box(g,.08,.9,.04,K.cloth,q*.1,-.95,-.14,.08,0,q*.12)});
+    box(g,.24,2.4,.1,M,0,-1.95,0);box(g,.05,2.3,.12,Gl,0,-1.95,0);
+    ad(.78,2.3,.06,-1.95,.28);ad(.5,2.5,.2,-2.0,.18);
+    box(g,.2,.3,.1,Gl,0,-3.12,0,0,0,Math.PI/4)}},
    sh:{r(g,K){const p=grp(g,0,.25,0);p.rotation.x=-.25;box(p,.5,.4,.7,K.main,0,0,0);box(p,.5,.4,.02,K.pods,0,0,.36);box(p,.52,.06,.72,K.trim,0,.22,0)},
        l(g,K){const p=grp(g,0,.25,0);p.rotation.x=-.25;box(p,.5,.4,.7,K.main,0,0,0);box(p,.5,.4,.02,K.pods,0,0,.36);box(p,.52,.06,.72,K.trim,0,.22,0)}}},
   shop:{name:'GLADIATOR SET',jp:'GLADIATOR 04 一式（購入時）',deco:['とさかと外套はライバル機と同じ大きさ。外套は主人公の塗装の SUB 色になる','肩当ては左右とも同じ形（左肩の大きな丸い肩当てと円盾はセレナ専用）','色は主人公の塗装。オレンジの警戒ラインが、ももの帯とすねの横のひれに入る']}},
