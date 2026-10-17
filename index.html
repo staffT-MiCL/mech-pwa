@@ -944,6 +944,7 @@ input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:d
 #vNx{position:absolute;right:12px;bottom:6px;color:var(--vc);font-size:10px;animation:kblink .8s steps(2) infinite}
 body.visiting #side{opacity:.25;pointer-events:none}body.visiting #menuBtn,body.visiting #mailBtn,body.visiting #keyBtn{pointer-events:none;opacity:.4}
 body.eqm #visit{display:none}
+body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:40}   /* ★4-S：出撃中にレナードの会話を重ねる（#gui の中の来訪の枠だけを出す） */
 .bmp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:14px;color:#3f6f74;letter-spacing:.2em}
 /* メールボックス */
 #mailBox .mlx{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:4px}
@@ -993,7 +994,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v244</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v245</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1071,7 +1072,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v244</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v245</span></div>
  </div>
 </div>
 
@@ -1138,7 +1139,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v244</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v245</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -1874,7 +1875,7 @@ function tickHold(){
  if(HOLD.sh)['rShoulder','lShoulder'].forEach(k=>{const st=stOf(k);if(st&&st.kind==='射撃'&&!active[k])trigger(k)});
 }
 // 操作を止める時間：出撃前の演出・通信・MISSION START の帯が終わるまで（INTRO／GOW）／試合が始まるまで／決着から受付へ戻るまで（移動・射撃・跳躍・視点）
-function inLock(){return mode==='play'&&(INTRO.on||GOW||(!!RUN&&!!RUN.vs&&(!RUN.vs.go||!!RUN.ok||!!RUN.lost)))}
+function inLock(){return mode==='play'&&(INTRO.on||GOW||!!(RUN&&RUN.lab&&RUN.lab.lock)||(!!RUN&&!!RUN.vs&&(!RUN.vs.go||!!RUN.ok||!!RUN.lost)))}
 function jump(){
  if(active.jump&&active.jump.def===JUMP&&SS.dj&&mode==='play'&&JLIFT>.8&&!inLock()&&P.hp.legs>0){   // 二段ジャンプ
   const bc=20*(SS.bcost||1);if(P.stun>0||P.boost<bc){if(P.boost<bc)say('BOOST 不足',.6);return}P.boost-=bc;P.regen=.8*SS.regenK;run('jump',JUMP2);return}
@@ -4924,6 +4925,29 @@ function dualShield(e,dmg,pos){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,d
  spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
  if(q.hp<=0){q.brk=1;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2);shBreakComm(e);if(e.shx[-s].brk>0){e.guardT=0;e.shRec=25}}   // 両方壊れたら25秒後に2枚とも復元
  return take*apK(.15)+over}
+/* ★4-S の警備機 N／D／M：AI が設計した次世代機。白磁の装甲板・灰色の装飾線・黒い関節・光る継ぎ目。顔は卵形で、横一本の光の帯と左右のセンサー角（文字は入れない）。
+ 起動前は光る所が暗く、起動の演出で色が入る（m.labMats の色を入れ替える）。土台は旧軍制式のギア（HD-03／CR-03／AR-03／LG-03）に、装甲板を重ねる */
+function labDeco(m,kind){
+ const PN=labDeco.pn||(labDeco.pn=panel('#e4e4e4','#6a6a6a')),t=m.torso,h=m.head,Wh=psMat(0xe6e8e4,{map:PN}),Wh2=psMat(0xb4b9b6,{map:PN}),Dk=psMat(0x3a3f46,{map:PN}),Ln=psMat(0x5a6068),Gl=new THREE.MeshBasicMaterial({color:0x202a30});
+ h.traverse(o=>{if(o.isMesh)o.visible=false});
+ const hg=new THREE.Mesh(new THREE.SphereGeometry(.4,10,8),Wh);hg.scale.set(.95,1.05,1.25);hg.position.set(0,.1,.05);h.add(hg);
+ box(h,.62,.06,.08,Gl,0,.12,.5);box(h,.12,.1,.5,Wh2,0,.52,.05);
+ [-1,1].forEach(s=>{box(h,.08,.12,.7,Wh2,s*.34,.2,-.25,.35,0,0);box(h,.1,.3,.3,Dk,s*.4,0,0)});
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(1.25,.06,4,28),Gl);ring.position.set(0,1.2,-1.1);t.add(ring);
+ box(t,1.5,1.1,.55,Dk,0,1.2,-.8);box(t,1.2,.4,.2,Wh2,0,1.6,-1.1);
+ box(t,1.2,.5,.3,Wh2,0,1.25,.62,-.25);box(t,1.6,.04,.04,Gl,0,1.02,.58);box(t,1.9,.05,.05,Ln,0,1.86,.55);
+ [-1,1].forEach(s=>{
+  const pd=grp(t,s*1.8,2.0,0);box(pd,.75,.6,1.05,Wh,0,0,0,0,0,s*-.15);box(pd,.6,.3,.9,Wh2,0,.34,0,0,0,s*-.15);box(pd,.77,.05,1.07,Gl,0,-.26,0,0,0,s*-.15);box(pd,.3,.5,.9,Wh2,s*.38,-.1,0,0,0,s*-.35);
+  box(t,.55,.7,.32,Wh,s*.65,1.45,.58,-.1,s*.25,0);box(t,.04,.6,.05,Ln,s*.4,1.45,.74,-.1);
+  box(t,.42,.75,.6,Wh,s*.95,-.35,0,0,0,s*.18)});
+ m.arms.forEach(a=>{const s=a.s;box(a.sh,.22,.9,.55,Wh2,s*.34,-.6,0);box(a.sh,.06,.7,.07,Gl,s*.4,-.6,.26);box(a.el,.5,.9,.6,Wh,0,-.55,0);box(a.el,.5,.05,.62,Ln,0,-.98,0);box(a.el,.4,.3,.12,Wh2,0,-.35,.34,-.15)});
+ m.legs.forEach(l=>{if(l.dg||!l.th)return;box(l.th,.2,1.0,.66,Wh2,.42,-.55,0);box(l.th,.06,.8,.07,Gl,.46,-.5,.3);box(l.th,.5,.5,.14,Wh2,0,-.4,.44,-.12);if(l.kn)box(l.kn,.5,.6,.24,Wh2,0,-.2,.5,-.3)});
+ if(kind==='N')[-1,1].forEach(s=>{for(let i=0;i<3;i++)box(t,.12,2.6-i*.5,.03,i===1?Gl:Wh2,s*(1.4+i*.14),.1+i*.2,-.5-i*.1,0,0,s*(.1+i*.04))});
+ if(kind==='D'){[-1,1].forEach(s=>{cyl(h,.38,.38,.07,Wh2,s*.46,.18,0,0,Math.PI/2,12);cyl(h,.2,.2,.09,Gl,s*.5,.18,0,0,Math.PI/2,12)});
+  cyl(t,.05,.05,3.2,Ln,-.75,3.1,-1.0,0,0,5);cyl(t,.8,.8,.08,Wh2,-.75,4.6,-1.0,0,0,16);cyl(t,.4,.4,.1,Gl,-.75,4.66,-1.0,0,0,12)}
+ if(kind==='M'){m.arms.forEach(a=>{const s=a.s;box(a.el,.14,2.6,.4,Wh,s*.12,-2.2,.12);box(a.el,.06,2.4,.1,Gl,s*.18,-2.2,.34)});
+  [-1,1].forEach(s=>box(t,.1,1.2,.5,Wh2,s*.7,2.1,-.8,-.5,0,s*.3))}
+ const mats=new Set();m.traverse(o=>{if(o.isMesh&&o.material&&o.material.isMeshBasicMaterial&&o.material.color.getHex()===0x202a30)mats.add(o.material)});m.labMats=[...mats]}
 const GEAR_MOB={
  militia:{name:'払い下げ機',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'sand',hp:2400,dmg:40,rate:3.4,rng:50,spd:6,keep:24,bs:24,rw:1800,tier:'mob'},
  bulwark:{name:'重装機',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'SH',rShoulder:'none',lShoulder:'none'},tint:'rust',hp:3600,dmg:30,rate:2.2,rng:40,spd:4.5,keep:18,bs:22,rw:2400,tier:'mob'},
@@ -4947,6 +4971,12 @@ const GEAR_MOB={
   hp:20000,dmg:0,rate:1.8,rng:70,spd:9,keep:22,bs:30,rw:0,tier:'boss',msK:1.6,tx:{dk:.22,spread:1.8,cdK:1.4,gap:.7},msMax:2},
  vb3:{name:'リブラ',model:'erich',vpose:'common',dual:1,beam:1,cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'LBS',lHand:'LBS',rShoulder:'LBM',lShoulder:'LBL'},   // エーリヒ：両手の巨大な盾で正面を固め、ミサイルとレーザーで攻める耐久型
   hp:30000,dmg:0,rate:2.6,rng:70,spd:5,keep:28,bs:24,rw:0,tier:'boss',msK:.8,msSpd:1.8,msHom:1.7,msMax:12,rage:1,tx:{dk:.16,spread:1.6,cdK:1.0,gap:1,qb:0,jump:0},guard:{p:9,near:0,t:[2.2,3.4],cd:[.5,1.2]}},
+ lab_n:{name:'警備機 N',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'RF3',rShoulder:'none',lShoulder:'none'},tint:{main:0xe6e8e4,sub:0xb4b9b6,warn:0x6fd3e0,joint:0x1a1c20,eye:0x202a30},
+  hp:15000,dmg:0,rate:2.0,rng:70,spd:8,keep:26,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.2,spread:1.7,cdK:1.3,gap:.8},deco(m){labDeco(m,'N')}},   // N：中距離から両手のライフル
+ lab_d:{name:'警備機 D',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF4',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:{main:0xe6e8e4,sub:0xb4b9b6,warn:0x8cf06e,joint:0x1a1c20,eye:0x202a30},
+  hp:15000,dmg:0,rate:2.0,rng:110,spd:6,keep:46,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.3,spread:1.1,cdK:1.2,gap:1},deco(m){labDeco(m,'D')}},   // D：遠距離から長砲身
+ lab_m:{name:'警備機 M',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'BL4',lHand:'BL4',rShoulder:'none',lShoulder:'none'},tint:{main:0xe6e8e4,sub:0xb4b9b6,warn:0xe0403a,joint:0x1a1c20,eye:0x202a30},
+  hp:15000,dmg:0,rate:1.6,rng:30,spd:11,keep:6,bs:30,rw:0,scale:1.2,tier:'boss',rush:34,tx:{mk:.35,spread:1.6,cdK:1.0,gap:.5},deco(m){labDeco(m,'M')}},   // M：近接で斬りかかる
  cvBoss:{name:'無人輸送ギア（親機）',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'none',rShoulder:'MS',lShoulder:'none'},tint:'convoy',hp:22500,dmg:34,rate:2.0,rng:70,spd:12,keep:30,bs:30,rw:6000,scale:1.15,tier:'boss'},
  cvEsc:{name:'無人護衛ギア',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'convoyD',hp:7500,dmg:30,rate:3.0,rng:60,spd:12,keep:30,bs:30,rw:2000,tier:'mob'},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
@@ -5384,7 +5414,7 @@ let HITSRC=null;
 const AP_IDS=new Set(['RF3','RF4','GC3','GC4']);   // ダメージを下げる補正を無視する兵装
 const apOn=()=>!!(HITSRC&&AP_IDS.has(cfg[HITSRC]));   // 徹甲・レール・貫通砲・対艦砲：敵の盾・装甲を無視
 const apK=m=>m<1&&apOn()?1:m;
-function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(RUN&&RUN.sv)e.rt=t+3;if(mode==='play'&&SS.dmgOut)dmg=Math.round(dmg*SS.dmgOut);   // 系列特性：与えるダメージの倍率
+function hitEnemy(e,dmg,pos,imp){if(!e.alive||e.frz)return;if(RUN&&RUN.sv)e.rt=t+3;if(mode==='play'&&SS.dmgOut)dmg=Math.round(dmg*SS.dmgOut);   // 系列特性：与えるダメージの倍率
  if(e.type==='gear'&&e.shx){if(e.lbOn)dmg*=1.5;else if(!apOn())dmg=dualShield(e,dmg,pos)}else if(e.type==='gear'&&e.guardT>0&&!apOn()){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){{const kk=apK(e.gFront<0?.1:.15),raw=dmg,take=Math.min(raw,Math.max(0,e.shHp??0)),over=raw-take;e.shHp=Math.max(0,(e.shHp??0)-take);dmg=take*kk+over;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
   if(e.shHp<=0&&e.shMax>0){e.guardT=0;e.shBrk=e.spec.shRec??ENEMY_SH_REC;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2);shBreakComm(e)}}}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=apK(.25);spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
  // 命中の演出：共通の命中音・威力に応じた光と火花・小さな振動・ダメージの数字（CONFIG で ON のとき）
@@ -5415,7 +5445,7 @@ function updateEnemies(dt){
   if(e.type==='siege'){siegeTick(e,dt,d,yaw);return}
   if(tr&&e.type==='drone'&&e.stun<=0&&d>14){const k=Math.min(1,dt*.5*(e.cargo?1.6:1));e.home.x+=(TOBJ().position.x-e.home.x)*k*.25;e.home.z+=(TOBJ().position.z+(atT?0:6)-e.home.z)*k*.25}
   e.stun=Math.max(0,e.stun-dt);e.stImm=Math.max(0,(e.stImm||0)-dt);e.home.addScaledVector(e.kb,dt);e.kb.multiplyScalar(Math.max(0,1-dt*5));
-  if(e.type==='gear'){e.atT=atT;
+  if(e.type==='gear'){if(e.frz)return;e.atT=atT;
    if(jamQuiet(e)){   // 4-2：警戒前は、塔の周りを巡回する（自機には反応しない）
     const po=e.post;e.pwT=(e.pwT||0)-dt;if(!e.pw||e.pwT<=0||Math.hypot(e.pw.x-e.home.x,e.pw.z-e.home.z)<4){const a=Math.random()*6.28,r=po.r*(.35+Math.random()*.65);e.pw={x:po.x+Math.sin(a)*r,z:po.z+Math.cos(a)*r};e.pwT=7}
     const dx=e.pw.x-e.home.x,dz=e.pw.z-e.home.z;e.pat=true;gearTick(e,dt,Math.hypot(dx,dz)+(e.spec.keep||22)+5,Math.atan2(dx,dz))}
@@ -5730,6 +5760,9 @@ const MLIST=[
  {id:'n-cls-b',ch:0,kind:'mail',notice:true,ready:false,title:'登録等級 更新',from:'第7区画管理局',fromFull:'第7区画管理局（'+PASTOR07+' '+JONAH+' 管轄）',reward:0,
   subj:'登録等級 更新 CLASS C → CLASS B',body:'登録ギア乗り 殿<br>貴殿の登録等級を CLASS C から <b>CLASS B</b> に更新した。<br>受注できる依頼の範囲が広がる。<br><span class="end">── 以上</span>',
   mailNona:'等級の通知です。……今回も、要件だけです。'},
+ {id:'n-cls-a',ch:0,kind:'mail',notice:true,ready:false,title:'登録等級 更新',from:'第7区画管理局',fromFull:'第7区画管理局（'+PASTOR07+' '+JONAH+' 管轄）',reward:0,
+  subj:'登録等級 更新 CLASS B → CLASS A',body:'登録ギア乗り 殿<br>貴殿の登録等級を CLASS B から <b>CLASS A</b> に更新した。<br>受注できる依頼の範囲が広がる。<br><span class="end">── 以上</span>',
+  mailNona:'等級の通知です。……今回も、要件だけです。'},
  {id:'n-david',ch:0,kind:'mail',notice:true,ready:false,title:'闘技場からの招待',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
   subj:'招待状 ── 闘技場 CLASS C 大会',body:'第7区画 登録ギア乗り ○○ 殿<br>貴殿を、闘技場 <b>CLASS C 大会</b>の、第7区画の代表として招待いたします。<br>第7区画からの代表は、闘技場の歴史で初めてのことです。<br>観客は、新しい顔を待っています。<br>開催の日程は、追ってお知らせいたします。<br><span class="end">── 闘技場運営局</span>',
   mailNona:'……闘技場。第7区画の代表は、史上初、だそうです。○○、どうされますか。'},
@@ -5960,7 +5993,66 @@ const MLIST=[
    ['c','中身まではわからない。確かめるなら、壁の中に入るしかない。おれは使者だ。<ruby class="mc">NOAH<rt>ノア</rt></ruby> の許しがあれば、入口は開けられる。……許しが出るかは、わからない。'],
    ['n','わかりました。ティモさん、この件は、私たちも気にかけておきます。'],
    ['c','助かる、○○。また連絡する。']]},
- {id:'4-S',ch:4,kind:'visit',story:true,ready:false,need:['vb2'],title:'壁の中の研究所',from:'砂原の使者 ティモ',reward:36000,cls:'A'},
+ {id:'v-b3-valter',ch:0,kind:'visit',notice:true,once:true,ready:true,afterVb:2,title:'ヴァルターの来訪',from:'元整備兵 ヴァルター',client:'ヴァルター',voice:'adultM',img:'img/clients/client-veteran-walter.png',imgF:'',   // 決勝に勝ったあとの来訪（壁の中の研究所の噂）。セリフは仮
+  talk:[['c','……邪魔するぞ。この脚で来るのは骨だったがな。'],
+   ['n','ヴァルターさん。ハンガーまで、わざわざ。'],
+   ['c','優勝おめでとう、とでも言っておく。中継は、廃墟のラジオで聞いた。'],
+   ['d','ヴ、ヴァルター様！ お足元にお気をつけて……！ お茶は、ございませんが！'],
+   ['c','騒がしいな、D-06。……用件は短い。噂を一つ、持ってきた。'],
+   ['c','壁の中に、研究所があるらしい。旧軍の頃の話だ。ギアに積む「頭」を作っていた場所だと聞いた。'],
+   ['n','ギアに積む、頭……。'],
+   ['c','俺は整備兵だった。頭の中身までは、触らせてもらえなかった。ただ、壁ができる前に、あそこへ運び込まれた機械は、二度と戻らなかった。'],
+   ['c','あんたの端末の信号が、前に妙な送り先を指しただろう。あの方角と、壁の中は、同じだ。'],
+   ['n','……ええ。偶然とは、思えません。'],
+   ['c','噂だ。それだけ伝えに来た。行くなら、準備はしていけ。……じゃあな。']]},
+ {id:'4-S',wx:'indoor',ch:4,kind:'visit',story:true,ready:true,need:['vb2'],afterVisit:'v-b3-valter',jam:true,lab:true,title:'壁の中の研究所',from:'砂原の使者 ティモ',client:'ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',reward:36000,cls:'A',field:'lab',fieldJa:'壁の内側（旧軍の研究所）',   // 長い廊下→レナード→起動ムービー→円形の広間で N／D／M。セリフは仮
+  obj:'広間の警備機3機（N・D・M）をすべて撃破（1機あたり耐久15,000）',fail:'CORE 大破',enemyJa:'警備機 N ／ D ／ M（旧軍の制式ではない次世代機）',
+  desc:'NOAH の許しで、壁の入口が開いた。内側は旧軍の研究所。長い廊下の先の円形の広間で、三機の警備機が待っている。壁の内側は妨害が強く、ロックは近距離だけ、マップも乱れる。依頼人は、砂原の使者ティモ。',
+  brief:['依頼人は砂原の使者、ティモです。壁の入口は、NOAH の許しで開いています。内側は旧軍の研究所。入口から北へ、長い廊下が続きます。','廊下に敵はいません。ただし、壁の内側は妨害が強く、ロックは近距離だけ、マップはノイズで乱れます。廊下の先は円形の広間で、警備機が三機、休眠しています。','三機とも耐久は15,000。役割が違います。中距離から撃ってくる機体、遠くから狙う機体、斬りかかってくる機体。1機倒すと、残りは動きと攻撃が速くなります。順番を考えて落としてください。'],
+  comm:{start:'壁の内側に入りました。……あの信号が、この廊下の先から出ています。',t0:'おれは入口までだ。ここで待つ。……気をつけてくれ。',c1:'内部の電源は生きています。警備の反応は、まだありません。',c2:'信号が強くなりました。発信源は、この先の広間です。',c3:'前方に機影。……この反応は、レナードさんです。',
+   m0:'広間の奥に、台座が三つ。……動力が入ります。',m1:'起動しました。三機、同時に。……識別名は、N、D、M。',m2:'この並び……。いえ、今は戦闘に集中します。',fight:'妨害、継続。残り三機です。',
+   d1:'一機、沈黙。残りの動きが速くなりました。連携を崩してください。',d2:'二機目、沈黙。最後の一機が、単独で攻撃を強めています。',clear:'三機とも、沈黙。',clear2:'……動力部の奥に、何かあります。接続します。'},
+  res:{ok:'ティモさんから通信です。「入口で待っていた。……無事でよかった」と。',ng:'撤退します。……あの三機は、まだ広間にいます。'},
+  start:{x:0,z:-128},bgm:'boss',memFx:['N ／ D ／ M','── 糸は、三本あった'],
+  enemies:[{type:'gear',gear:'lab_n',x:-15,z:26},{type:'gear',gear:'lab_d',x:0,z:32},{type:'gear',gear:'lab_m',x:15,z:26}],
+  leoTalk:[['c','よう、ハンガー07の払い下げ乗り。やっと来たか。'],
+   ['n','レナードさん。……なぜ、壁の中に。'],
+   ['c','商売だ。ここは旧軍の頭脳を作っていた研究所でな。設計の写しが残ってる。取れれば、高く売れる。'],
+   ['c','それと、先に言っておく。暴走した輸送ギアの荷主は、俺だ。中身は、この研究所から持ち出した部品さ。「他言無用」と書いたろう。'],
+   ['n','あの依頼の……。'],
+   ['c','仲介屋は表向きの顔だ。第2区画の統治AI、<ruby class="mc">SOLOMON<rt>ソロモン</rt></ruby> の管轄でね。壁の外の仕事は、あの方から任されてる。'],
+   ['n','……最初から、私たちを使うつもりで。'],
+   ['c','使えるものは使う。それが商売だ。ただ、お前の腕は買ってる。だから今日は、金も払う。'],
+   ['c','奥の広間に、警備機が三機いる。旧軍の制式じゃない。型が新しすぎる。誰かが、あとから足した機体だ。'],
+   ['c','俺の機体じゃ、三機は無理だ。沈めてくれ。動力部から写しを取る。取り分は、お前の依頼料に載せる。'],
+   ['n','……わかりました。条件は、それだけですか。'],
+   ['c','それだけだ。俺は端で見物させてもらう。死ぬなよ、上客。']],
+  talk:[['c','……○○。突然、すまない。'],
+   ['n','ティモさん。お待ちしていました。'],
+   ['c','許しが出た。<ruby class="mc">NOAH<rt>ノア</rt></ruby> が、壁の入口を開けるそうだ。あんたに、来てほしいと。'],
+   ['n','NOAH が、私たちを……？ なぜでしょう。'],
+   ['c','理由は、おれにも言わない。準決勝のあとで、直々に命令が来た。「あの機体を、壁の中へ通せ」と。'],
+   ['c','測定の結果は、伝えてある。信号の出どころは、壁の内側の研究所だ。……おれは入口までしか案内できない。中は、許されていない。'],
+   ['n','中に何があるのか、わからないのですね。'],
+   ['c','ああ。ただ、<ruby class="mc">NOAH<rt>ノア</rt></ruby> の「救済の選別」を、誰が、どう決めたのか。その手がかりが、中にあるかもしれない。'],
+   ['c','妹は、壁の外にいる。選ばれなかった側だ。……救う価値があるのか。それを決めた者の顔を、おれは見たい。'],
+   ['c','報酬は36,000。悪いな、頼む。'],
+   ['n','……お受けしましょう、○○。']],
+  after:{ok:'……ありがとう。入口の前で、待っている。',later:'わかった。……待つ。入口は、まだ開いている。'},
+  cu:{mails:[],mem:['○○。三機の動力部の奥で……思い出したことがあります。','糸は、三本ありました。紡ぐ者、測る者、断つ者。N と、D と、M。','わたくしは N。紡ぐ者でした。D は、測り、数え続ける役目でした。M は、断つ者。','あの信号は、D を呼ぶためのものだったのかもしれません。'],
+   key:{pre:['それと……三機の動力部から、これを持ち帰りました。'],post:['暗号化されたデータの断片です。これまでの二つと、同じ形式をしています。','N、D、M の刻印があります。触れたとき、わたくしのほかに、二つの対抗AIがいたことを思い出しました。','……わたくしは、競わされていたのかもしれません。']},
+   voice:{name:'レナード（通信）',lines:['写しは取った。いい仕事だ。','……お前の値段、また上がったな。']},
+   after:['管理局からの通知も届いています。等級が上がりました。','CLASS A。……闘技場の頂は、すぐそこですね。']}},
+ {id:'v-lab-doll',ch:0,kind:'visit',notice:true,once:true,together:true,ready:true,afterClear:'4-S',title:'ドールの違和感',from:'砂原の使者 ティモ',client:'ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',   // 4-S のあと、ガレージで。ドールは自分の正体を知らない。ノーナだけが気づく。セリフは仮
+  talk:[['c','……戻った。入口まで、一緒に帰ってきた。おれは、ここで失礼する。'],
+   ['d','おかえりなさいませ、○○様！ ティモ様も、ご一緒で……あら。'],
+   ['d','あの、わたくし、先ほどから、へんなのでございます。棚卸しの数が、頭の中で、勝手に増えたり減ったりいたしまして。'],
+   ['n','ドールさん。……何か、聞こえますか。'],
+   ['d','数えるのは得意でございます。ですが、誰かに、呼ばれているような気がいたしまして。……故障でしょうか。'],
+   ['n','……いいえ。故障では、ありません。'],
+   ['d','そ、そうでございますか！ ノーナ様がそうおっしゃるなら、安心でございます。お茶でも、お淹れしましょうか。お湯は、ございませんが。'],
+   ['c','……悪いな。おれは行く。']],
+  nona:['D は、測り、数える者。……ドールさんの型番は、D-06。','研究所の三機のうちの一つと、同じ文字です。','記憶を消されて、部品倉庫の勘定係に……。そういうことだったのでしょうか。','まだ、ドールさんには言わないでおきます。……あの人は、いまの暮らしを気に入っているようですから。']},
  // CHAPTER 4 の始まりに届く後日談のメール（依頼ではない）。afterClear＝その依頼をクリア済みなら届く（既存のセーブにも1回ずつ）
  {id:'n-c4-inv',ch:0,kind:'mail',notice:true,afterClear:'3-S',afterCls:'B',ready:false,title:'CLASS B 大会のご案内',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
   subj:'CLASS B 大会 参加のご案内',body:'第7区画 代表 ○○ 殿<br>登録等級の更新に伴い、<b>CLASS B 大会</b>への参加資格を付与しました。<br>対戦カードは、条件がそろい次第、運営局からメールでお知らせします。<br>これまでの CLASS C 大会の試合も、受付の対戦表から引き続きご確認いただけます。<br><span class="end">── 闘技場運営局</span>',
@@ -6066,7 +6158,7 @@ const vsCur=()=>{const i=vsW().findIndex(w=>!w);return i<0?VSC.rounds.length:i};
 // 対戦カードのメール：条件（前の試合に勝利＋need の依頼をクリア）がそろった試合の分を届ける
 function vsNotice(){const out=[];if(!vsOk())return out;let t=Date.now();const keep=VSC;   // vsShown は「いま見ている大会」で決まるので、大会ごとに VSC を切り替えて調べる
  VST.forEach(T=>{if(T===VSC_B&&!vsOkB())return;VSC=T;T.rounds.forEach((r,i)=>{if(r.ready===false||MIS[r.mail]||!vsShown(i))return;if(r.need&&!(MIS[r.need]&&MIS[r.need].clear))return;MIS[r.mail]={got:true,read:false,clear:false,n:0,t:t++};out.push(MDEF[r.mail])})});VSC=keep;return out}
-const FIELD_BG={chase:0x6a5438,under:0x2a1214,power:0x1c2330,hangar:0x1a1f22,viaduct:0x363a3e,colo:0x0e1619,canyon:0x2a2622,relay:0x22262a,wall:0x16181c,border:0x2e2a22,city:0x26241f,road:0x2b2721,ruins:0x2a2e2a,factory:0x23261f};
+const FIELD_BG={chase:0x6a5438,under:0x2a1214,power:0x1c2330,hangar:0x1a1f22,viaduct:0x363a3e,colo:0x0e1619,canyon:0x2a2622,relay:0x22262a,wall:0x16181c,lab:0x0c1013,border:0x2e2a22,city:0x26241f,road:0x2b2721,ruins:0x2a2e2a,factory:0x23261f};
 const nameIn=s=>s.replace(/○○/g,esc(PILOT||'操縦者'));
 
 /* ----- 地形：配給都市の外れ（乱数はシード固定。配置は毎回同じ）-----
@@ -6248,6 +6340,20 @@ const HANG_R=50,HANG=grp(S);HANG.visible=false;const HANG_MAP=[];
  [[-12,46],[0,47],[12,46]].forEach(([x,z])=>{box(HANG,3,5,2.4,dk,x,2.5,z);box(HANG,1.4,1.2,1.4,dk,x,5.8,z);box(HANG,.5,.2,.1,cy,x,5.8,z-.75)});
  // 入口の大扉（南）
  box(HANG,16,12,.8,wall2,0,6,-HANG_R-1);box(HANG,16.2,.5,.9,hz,0,12.2,-HANG_R-1)}
+/* ----- 地形：壁の中の研究所（★4-S）。南の入口から北へ長い廊下（幅11）が続き、円形の広間（半径41）の口につながる。屋内で薄暗く、天井の面は張らない（灯りの板だけ）。広間の奥に台座が三つ ----- */
+const LAB_R=41,LAB_CW=5.6,LAB_Z0=-146,LAB_PED=[[-15,26],[0,32],[15,26]],LAB_LEO={x:0,z:-46},LAB=grp(S);LAB.visible=false;
+{const T=(c,l)=>psMat(0xffffff,{map:panel(c,l)}),fl=psMat(0x22282c),fl2=psMat(0x2c3338),wl=T('#cfd3d0','#8a9094'),wl2=T('#b4b9b6','#70777a'),dk=psMat(0x14181b),hz=psMat(0xffffff,{map:stripes('#d8b020','#1a1a14')}),lamp=new THREE.MeshBasicMaterial({color:0xcfe8f0}),cy=new THREE.MeshBasicMaterial({color:0x2e7f8a});
+ const gp=new THREE.Mesh(new THREE.CircleGeometry(LAB_R+4,40),fl);gp.rotation.x=-Math.PI/2;gp.position.y=.01;LAB.add(gp);
+ const cr=new THREE.Mesh(new THREE.PlaneGeometry(LAB_CW*2+2,114),fl2);cr.rotation.x=-Math.PI/2;cr.position.set(0,.02,-95);LAB.add(cr);
+ [12,30].forEach(r=>{const rg=new THREE.Mesh(new THREE.RingGeometry(r-.15,r+.15,56),cy);rg.rotation.x=-Math.PI/2;rg.position.y=.03;LAB.add(rg)});
+ const N=56,rw=LAB_R+1.5;
+ for(let i=0;i<N;i++){const a=i/N*Math.PI*2;if(Math.abs(a-Math.PI)<.2)continue;const w=2*Math.PI*rw/N+.6;
+  box(LAB,w,15,3,i%2?wl:wl2,Math.sin(a)*rw,7.5,Math.cos(a)*rw,0,a,0);box(LAB,w-.6,.35,.2,cy,Math.sin(a)*(rw-1.55),3,Math.cos(a)*(rw-1.55),0,a,0);if(i%2)box(LAB,w-.6,.25,.2,cy,Math.sin(a)*(rw-1.55),9,Math.cos(a)*(rw-1.55),0,a,0)}
+ for(let i=0;i<6;i++){const a=(i*60+30)*Math.PI/180,x=Math.sin(a)*22,z=Math.cos(a)*22;box(LAB,2.6,15,2.6,wl,x,7.5,z,0,a,0);box(LAB,2.9,.8,2.9,hz,x,.4,z,0,a,0);box(LAB,.1,12,.1,cy,x-Math.sin(a)*1.35,7,z-Math.cos(a)*1.35,0,a,0)}
+ for(let i=0;i<12;i++){const a=i/12*Math.PI*2,r=i%2?14:30;box(LAB,5,.3,1.4,lamp,Math.sin(a)*r,17,Math.cos(a)*r,0,a,0)}
+ const ped=[];LAB_PED.forEach(([x,z])=>{cyl(LAB,3.8,4.2,.5,dk,x,.25,z,0,0,20);const m=new THREE.MeshBasicMaterial({color:0x1a2024}),rg=new THREE.Mesh(new THREE.RingGeometry(2.9,3.5,36),m);rg.rotation.x=-Math.PI/2;rg.position.set(x,.52,z);LAB.add(rg);ped.push(m)});LAB.userData.ped=ped;LAB.add(new THREE.HemisphereLight(0xdff0f4,0x303a40,1.1));
+ for(let k=0,z=-44;z>-150;z-=8,k++){[-1,1].forEach(sg=>{box(LAB,1.8,12,8.2,k%2?wl:wl2,sg*(LAB_CW+.9),6,z);box(LAB,.08,.3,7.4,cy,sg*(LAB_CW-.02),2.4,z);box(LAB,.08,.2,7.4,cy,sg*(LAB_CW-.02),7.5,z);box(LAB,.3,.02,2.4,hz,sg*3.2,.04,z)});if(k%2===0)box(LAB,LAB_CW*2,.3,1.2,lamp,0,14,z-4)}
+ box(LAB,LAB_CW*2+4,12,1.6,wl2,0,6,-148.5);box(LAB,4,6,.1,cy,0,3,-147.6)}
 /* ----- 地形：闘技場の地下・搬入ゲート（★3-S）。非常灯の赤。広い地下の大空間を南北に搬入路が通り、北の突き当たりが出口のゲート（観客の避難路）。要塞は南から歩いてくる ----- */
 const UND_R=92,UND=grp(S);UND.visible=false;const UND_MAP=[];
 {let sd=0x0304;const rnd=(a=0,b=1)=>{sd=(sd*1664525+1013904223)>>>0;return a+sd/4294967296*(b-a)};
@@ -6466,8 +6572,8 @@ function buildColo(g,R){
  return g}
 const COLO_R=45,COLO=grp(S);COLO.visible=false;buildColo(COLO,COLO_R);
 const isRoad=()=>RUN&&RUN.def.field==='road',isCanyon=()=>RUN&&RUN.def.field==='canyon';
-const fieldR=()=>RUN&&RUN.def.field==='chase'?400:RUN&&RUN.def.field==='under'?UND_R:RUN&&RUN.def.field==='power'?PWR_R:RUN&&RUN.def.field==='hangar'?HANG_R:RUN&&RUN.def.field==='viaduct'?VIAD_R:RUN&&RUN.def.field==='colo'?COLO_R:RUN&&RUN.def.field==='relay'?RELAY_R:RUN&&RUN.def.field==='border'?BORDER_R:RUN&&RUN.def.field==='city'?CITY_R:RUN&&RUN.def.field==='ruins'?RUINS_R:RUN&&RUN.def.field==='factory'?FAC_R:RUN&&RUN.def.field==='wall'?WALL_R:ARENA;
-const fieldG=()=>isCanyon()?CANYON:RUN&&RUN.def.field==='chase'?CHASE:RUN&&RUN.def.field==='under'?UND:RUN&&RUN.def.field==='power'?PWR:RUN&&RUN.def.field==='hangar'?HANG:RUN&&RUN.def.field==='viaduct'?VIAD:RUN&&RUN.def.field==='colo'?COLO:RUN&&RUN.def.field==='relay'?RELAY:RUN&&RUN.def.field==='border'?BORDER:RUN&&RUN.def.field==='city'?CITY:isRoad()?ROAD:RUN&&RUN.def.field==='ruins'?RUINS:RUN&&RUN.def.field==='factory'?FAC:RUN&&RUN.def.field==='wall'?WALL:world;
+const fieldR=()=>RUN&&RUN.def.field==='chase'?400:RUN&&RUN.def.field==='under'?UND_R:RUN&&RUN.def.field==='power'?PWR_R:RUN&&RUN.def.field==='hangar'?HANG_R:RUN&&RUN.def.field==='viaduct'?VIAD_R:RUN&&RUN.def.field==='colo'?COLO_R:RUN&&RUN.def.field==='relay'?RELAY_R:RUN&&RUN.def.field==='border'?BORDER_R:RUN&&RUN.def.field==='city'?CITY_R:RUN&&RUN.def.field==='ruins'?RUINS_R:RUN&&RUN.def.field==='factory'?FAC_R:RUN&&RUN.def.field==='wall'?WALL_R:RUN&&RUN.def.field==='lab'?LAB_R:ARENA;
+const fieldG=()=>isCanyon()?CANYON:RUN&&RUN.def.field==='chase'?CHASE:RUN&&RUN.def.field==='under'?UND:RUN&&RUN.def.field==='power'?PWR:RUN&&RUN.def.field==='hangar'?HANG:RUN&&RUN.def.field==='viaduct'?VIAD:RUN&&RUN.def.field==='colo'?COLO:RUN&&RUN.def.field==='relay'?RELAY:RUN&&RUN.def.field==='border'?BORDER:RUN&&RUN.def.field==='city'?CITY:isRoad()?ROAD:RUN&&RUN.def.field==='ruins'?RUINS:RUN&&RUN.def.field==='factory'?FAC:RUN&&RUN.def.field==='wall'?WALL:RUN&&RUN.def.field==='lab'?LAB:world;
 /* ===== 障害物の当たり判定 =====
  各ステージのグループ（演習場 world／CITY／ROAD／RUINS）から、地面に立っている箱（高さ1.5m以上・ほぼ水平）を
  向きつきの箱 {x,z,c,s,hw,hd,top} として自動で集める（最初に使うときに1回）。新しいステージも同じ作り方なら自動で入る */
@@ -6497,7 +6603,7 @@ function pushOut(v,r,y=0){const L=curCols();for(const o of L){if(y>=o.top-.2)con
 // 点が箱の中か（弾・ミサイルの先読み用）
 function hitCol(p,pad=0){const L=curCols();for(const o of L){if(p.y>o.top+pad||p.y<-1)continue;const dx=p.x-o.x,dz=p.z-o.z;if(Math.abs(dx)>o.b+pad||Math.abs(dz)>o.b+pad)continue;
  const lx=dx*o.c-dz*o.s,lz=dx*o.s+dz*o.c;if(Math.abs(lx)<=o.hw+pad&&Math.abs(lz)<=o.hd+pad)return o}return null}
-function clampField(v){if(RUN&&RUN.def.field==='chase'){v.x=Math.max(-CH_W,Math.min(CH_W,v.x));v.z=Math.max(CH_Z0,Math.min(CH_Z1,v.z));return}if(isCanyon()){v.z=Math.max(CAN_Z0,Math.min(CAN_Z1,v.z));const c=canX(v.z),w=canW(v.z);v.x=Math.max(c-w,Math.min(c+w,v.x));return}if(isRoad()){v.z=Math.max(ROAD_Z0,Math.min(ROAD_Z1,v.z));const c=roadX(v.z);v.x=Math.max(c-ROAD_W,Math.min(c+ROAD_W,v.x));return}
+function clampField(v){if(RUN&&RUN.def.field==='lab'){v.z=Math.max(LAB_Z0,v.z);if(v.z<-(LAB_R-.5)){v.x=Math.max(-LAB_CW+.8,Math.min(LAB_CW-.8,v.x))}else if(!(v.z<-30&&Math.abs(v.x)<=LAB_CW+1)){const pl=Math.hypot(v.x,v.z),FR=LAB_R-1.5;if(pl>FR){v.x*=FR/pl;v.z*=FR/pl}}return}if(RUN&&RUN.def.field==='chase'){v.x=Math.max(-CH_W,Math.min(CH_W,v.x));v.z=Math.max(CH_Z0,Math.min(CH_Z1,v.z));return}if(isCanyon()){v.z=Math.max(CAN_Z0,Math.min(CAN_Z1,v.z));const c=canX(v.z),w=canW(v.z);v.x=Math.max(c-w,Math.min(c+w,v.x));return}if(isRoad()){v.z=Math.max(ROAD_Z0,Math.min(ROAD_Z1,v.z));const c=roadX(v.z);v.x=Math.max(c-ROAD_W,Math.min(c+ROAD_W,v.x));return}
  if(RUN&&RUN.def.field==='viaduct'){v.x=Math.max(-VIAD_R,Math.min(VIAD_R,v.x));v.z=Math.max(-VIAD_R,Math.min(VIAD_ZN,v.z))}else{const pl=Math.hypot(v.x,v.z),FR=fieldR();if(pl>FR){v.x*=FR/pl;v.z*=FR/pl}}
  if(RUN&&RUN.boss){const bp=RUN.boss.g.position,dx=v.x-bp.x,dz=v.z-bp.z,l=Math.hypot(dx,dz);if(l<8.2&&l>.01){v.x=bp.x+dx/l*8.2;v.z=bp.z+dz/l*8.2}}}
 
@@ -6575,7 +6681,7 @@ $('mailDim').addEventListener('click',mailDone);$('hdr').addEventListener('click
 $('app').addEventListener('click',e=>{if(document.body.classList.contains('mailing')&&e.target===$('app'))mailDone()});   // 右の機体パネル（暗くして押せなくした所）
 function mailClose(){const b=$('mailBox');if(b.hidden||b.classList.contains('cls'))return;b.classList.remove('pop');b.classList.add('cls');nbClose();$('mailDim').classList.remove('on');document.body.classList.remove('mailing');b._t=setTimeout(()=>{b.hidden=true;b.classList.remove('cls')},180)}
 /* ----- KEY（MORTA の断片）：★をクリアすると増える。所持は MIS[mis].clear から決める（保存項目は増やさない）。説明は物語が進むたびに足す ----- */
-const KEYS=[{no:'01',mis:'2-S',from:'★2-S 境界の中継局',info:'中継局の中枢から持ち帰った、暗号化されたデータの断片。指揮型の機体を動かしていた。鍵のような形式だが、これだけでは読めない。触れたとき、ノーナが自分の名前の意味を思い出した。'},{no:'02',mis:'3-S',from:'★3-S 地下の目覚め',info:'要塞の動力部の奥から持ち帰った、暗号化されたデータの断片。KEY 01 と同じ形式で、並べると片方の欠けをもう片方が補っているように見える。触れたとき、ノーナが設計者の厳しい声を思い出した。'}];
+const KEYS=[{no:'01',mis:'2-S',from:'★2-S 境界の中継局',info:'中継局の中枢から持ち帰った、暗号化されたデータの断片。指揮型の機体を動かしていた。鍵のような形式だが、これだけでは読めない。触れたとき、ノーナが自分の名前の意味を思い出した。'},{no:'02',mis:'3-S',from:'★3-S 地下の目覚め',info:'要塞の動力部の奥から持ち帰った、暗号化されたデータの断片。KEY 01 と同じ形式で、並べると片方の欠けをもう片方が補っているように見える。触れたとき、ノーナが設計者の厳しい声を思い出した。'},{no:'03',mis:'4-S',from:'★4-S 壁の中の研究所',info:'研究所の警備機の動力部から得た、暗号化された断片。N／D／M の刻印がある。触れたとき、ノーナは自分のほかに二つの対抗AIがいたことを思い出した。'}];
 let KEYHOLD=false;
 const ownKeys=()=>KEYS.filter(k=>MIS[k.mis]&&MIS[k.mis].clear);
 function keyList(){const box=$('mailBox'),L=ownKeys();$('keyBtn').classList.remove('new');
@@ -6615,7 +6721,7 @@ function visitChoices(){const ch=$('vCh');if(ch.childElementCount||VS.fin)return
  if(d.cv!=null){[['◀ 前',()=>charStep(-1)],['次 ▶',()=>charStep(1)],['DEBUG へ戻る',()=>{visitEnd();setTimeout(dbgOpen,680)}]]
   .forEach(([lab,fn])=>{const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=e=>{e.stopPropagation();if(!VS.busy)fn()};ch.appendChild(b)});return}
  // 見返し：選択肢は出さず、最後のセリフのあとタップで依頼一覧へ戻る
- if(d.once){VS.fin=()=>{const cb=VS.cb;VS.cb=null;visitEnd();if(cb)setTimeout(cb,720)};$('vNx').hidden=false;return}   // 来訪だけの場面（依頼ではない）：最後のセリフのあとタップで終わる
+ if(d.once){VS.fin=()=>{const cb=VS.cb,nn=d.nona;VS.cb=null;visitEnd();if(nn)setTimeout(()=>{nonaSay(nn.map(x=>[x]),{hold:!!cb});if(cb)NB.then=cb},720);else if(cb)setTimeout(cb,720)};$('vNx').hidden=false;return}   // 来訪だけの場面（依頼ではない）：最後のセリフのあとタップで終わる
  if(VS.replay){VS.fin=()=>{visitEnd();openBoard(d.id)};$('vNx').hidden=false;return}
  const ok=()=>{visitEnd();openBoard(d.id)},later=()=>{visitEnd();nonaSay([['依頼一覧に入れておきました。MENU の <em>MISSION</em> から、いつでも確認できます。']])};
  const pick=(key,fn)=>{ch.innerHTML='';const a=d.after&&d.after[key];if(!a){fn();return}VS.fin=fn;VS.q=[['c',a]];visitNext()};
@@ -6708,6 +6814,13 @@ function briefMapUnder(d){const s=[];
  const st=d.start;s.push(`<path d="M${st.x} ${-st.z-4}l3 6h-6z" fill="#8cf06e"/><text x="${st.x}" y="${-st.z+9}" fill="#8cf06e" font-size="4.4" text-anchor="middle" font-family="Chakra Petch,monospace">START</text>`);
  return `<svg viewBox="-100 -100 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
 const e0=(d,k)=>(d.enemies&&d.enemies[0])?d.enemies[0][k]:0;
+function briefMapLab(d){const s=[];
+ s.push(`<circle r="${LAB_R}" fill="none" stroke="#2f7e86" stroke-width=".8" stroke-dasharray="4 3"/><rect x="${-LAB_CW}" y="${LAB_R-1}" width="${LAB_CW*2}" height="${-LAB_Z0-LAB_R+1}" fill="none" stroke="#24585e" stroke-width=".6" stroke-dasharray="2 2"/>`);
+ [12,30].forEach(r=>s.push(`<circle r="${r}" fill="none" stroke="#173236" stroke-width=".4"/>`));
+ const C3=['#6fd3e0','#8cf06e','#e0403a'];LAB_PED.forEach(([x,z],i)=>s.push(`<circle cx="${x}" cy="${-z}" r="4" fill="none" stroke="${C3[i]}" stroke-width=".9"/>`));
+ s.push(`<path d="M${LAB_LEO.x} ${-LAB_LEO.z-3}l3 3l-3 3l-3 -3z" fill="#b09a48"/><text x="${LAB_LEO.x+7}" y="${-LAB_LEO.z+2}" fill="#b09a48" font-size="4.4" font-family="Chakra Petch,monospace">?</text>`);
+ const st=d.start;s.push(`<path d="M${st.x} ${-st.z-4}l3 6h-6z" fill="#8cf06e"/><text x="${st.x+6}" y="${-st.z+3}" fill="#8cf06e" font-size="4.4" font-family="Chakra Petch,monospace">START</text>`);
+ return `<svg viewBox="-50 -50 100 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
 function briefMapPower(d){const s=[];
  for(let i=-60;i<=60;i+=20)s.push(`<path d="M-62 ${i}H62M${i} -62V62" stroke="#173236" stroke-width=".4"/>`);
  s.push(`<circle r="${PWR_R}" fill="none" stroke="#2f7e86" stroke-width=".6" stroke-dasharray="3 2"/><rect x="-7" y="-56" width="14" height="112" fill="none" stroke="#24585e" stroke-width=".4" stroke-dasharray="1.5 1.5"/>`);
@@ -6775,7 +6888,7 @@ function briefMapChase(d){const s=[];
  s.push(`<path d="M12 0H690" stroke="#6fd3e0" stroke-width=".8" stroke-dasharray="4 3"/><path d="M690 0l-6 -4v8z" fill="#6fd3e0"/>`);
  s.push(`<path d="M0 -4l6 4l-6 4z" fill="#8cf06e"/><text x="0" y="-17" fill="#8cf06e" font-size="7" font-family="Chakra Petch,monospace">START</text><text x="150" y="-17" fill="#ff6a4c" font-size="7" font-family="DotGothic16,monospace">逃げる輸送ギア ▶ ▶ ▶（北へ一本道）</text><text x="350" y="26" fill="#d8a020" font-size="6" font-family="DotGothic16,monospace">赤茶の壁は、黄色い柱の間の隙間を抜ける</text>`);
  return `<svg viewBox="-12 -28 724 56" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${s.join('')}</svg>`}
-function briefMap(d){if(d.field==='chase')return briefMapChase(d);if(d.field==='under')return briefMapUnder(d);if(d.field==='power')return briefMapPower(d);if(d.field==='hangar')return briefMapHangar(d);if(d.field==='viaduct')return briefMapViaduct(d);if(d.field==='canyon')return briefMapCanyon(d);if(d.field==='relay')return briefMapRelay(d);if(d.field==='wall')return briefMapWall(d);if(d.field==='border')return briefMapBorder(d);if(d.field==='road')return briefMapRoad(d);if(d.field==='ruins')return briefMapRuins(d);const s=[],FAC1=d.field==='factory',MAP=FAC1?FAC_MAP:CITY_MAP;
+function briefMap(d){if(d.field==='lab')return briefMapLab(d);if(d.field==='chase')return briefMapChase(d);if(d.field==='under')return briefMapUnder(d);if(d.field==='power')return briefMapPower(d);if(d.field==='hangar')return briefMapHangar(d);if(d.field==='viaduct')return briefMapViaduct(d);if(d.field==='canyon')return briefMapCanyon(d);if(d.field==='relay')return briefMapRelay(d);if(d.field==='wall')return briefMapWall(d);if(d.field==='border')return briefMapBorder(d);if(d.field==='road')return briefMapRoad(d);if(d.field==='ruins')return briefMapRuins(d);const s=[],FAC1=d.field==='factory',MAP=FAC1?FAC_MAP:CITY_MAP;
  for(let i=-60;i<=60;i+=20)s.push(`<path d="M-62 ${i}H62M${i} -62V62" stroke="#173236" stroke-width=".4"/>`);
  s.push(`<circle r="${FAC1?FAC_R:CITY_R}" fill="none" stroke="#2f7e86" stroke-width=".6" stroke-dasharray="3 2"/>`);
  MAP.forEach(o=>s.push(`<rect x="${-o.w/2}" y="${-o.d/2}" width="${o.w}" height="${o.d}" transform="translate(${o.x.toFixed(1)} ${(-o.z).toFixed(1)}) rotate(${(o.ry*180/Math.PI).toFixed(1)})" fill="${o.k==='w'?'rgba(111,211,224,.18)':'none'}" stroke="${o.k==='f'?'#24585e':'#2f7e86'}" stroke-width="${o.k==='w'?.8:.5}"/>`));
@@ -6822,7 +6935,7 @@ function comm(txt,dur=0.001,cb=null){if(dur===0){COMM.q=[];commShow(txt,0,cb);re
 function commNext(){const it=COMM.q.shift();if(it)commShow(it[0],it[1],it[2])}
 function commShow(txt,dur,cb){clearInterval(COMM.iv);const el=$('commTx');$('comm').hidden=false;
  let who='n';if(Array.isArray(txt)){who=txt[0];txt=txt[1]}COMM.radio=who!=='n';if(COMM.radio)SND.play('radio',{g:.9});else SND.play('comm',{g:.3});txt=String(txt).replace(/○○/g,PILOT||'操縦者');const OP=who==='o'&&RUN&&RUN.vs?RUN.vs.r.opp:null;
- const CW={b:['BELL-01 ベル','bell'],s:['セレナ','youthF'],j:['JONAH','adultF'],t:['オットー','youthM'],h:['ハンス','adultM'],m:['ミラ','youthF'],i:['ティモ','youthM']}[who],CK={b:['bell',0],s:['serena',1],j:['jonah',0],t:['otto',0],h:['hans',0],m:['mira',0],i:['timo',0]}[who]||['nona',0];const RK=OP&&OP.riv&&VCH[OP.riv]?OP.riv:null,OPc=OP&&!RK;if(!OPc){const ck=RK||CK[0];$('comm').style.setProperty('--cc','var(--c-'+ck+')');$('comm').style.setProperty('--cf',cf(ck))}else{$('comm').style.removeProperty('--cc');$('comm').style.removeProperty('--cf')}$('comm').classList.toggle('opp',!!OPc);$('comm').querySelector('b').textContent=RK?OP.name.split('・')[0]:OP?OP.en.split(' ')[0]:CW?CW[0]:'N-07 ノーナ';const vc=OP?OP.v||'adultM':CW?CW[1]:'nona';let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
+ const CW={b:['BELL-01 ベル','bell'],s:['セレナ','youthF'],j:['JONAH','adultF'],t:['オットー','youthM'],h:['ハンス','adultM'],m:['ミラ','youthF'],i:['ティモ','youthM'],l:['レナード','adultM']}[who],CK={b:['bell',0],s:['serena',1],j:['jonah',0],t:['otto',0],h:['hans',0],m:['mira',0],i:['timo',0],l:['leonard',0]}[who]||['nona',0];const RK=OP&&OP.riv&&VCH[OP.riv]?OP.riv:null,OPc=OP&&!RK;if(!OPc){const ck=RK||CK[0];$('comm').style.setProperty('--cc','var(--c-'+ck+')');$('comm').style.setProperty('--cf',cf(ck))}else{$('comm').style.removeProperty('--cc');$('comm').style.removeProperty('--cf')}$('comm').classList.toggle('opp',!!OPc);$('comm').querySelector('b').textContent=RK?OP.name.split('・')[0]:OP?OP.en.split(' ')[0]:CW?CW[0]:'N-07 ノーナ';const vc=OP?OP.v||'adultM':CW?CW[1]:'nona';let n=0;el.textContent='';COMM.t=0;COMM.busy=true;
  COMM.iv=setInterval(()=>{el.textContent=txt.slice(0,++n);SND.blip(vc,n);if(n>=txt.length){clearInterval(COMM.iv);COMM.iv=null;COMM.end=performance.now();if(cb)cb();
   if(dur===0){COMM.busy=false;COMM.t=0}else COMM.t=Math.max(1.5,1+txt.length*.12,dur)}},TXT_SPD)}
 function commEnd(){if(COMM.radio){COMM.radio=false;SND.play('radioEnd',{g:.7})}}   // 通信が切れるとき（ノーナ以外だけ）
@@ -6847,7 +6960,7 @@ function misStartEnemies(){
  if(RUN.def.siege){RUN.sg=ENEMIES.find(e=>e.type==='siege'&&!e.off);$('esc').hidden=false;$('escL').textContent='SIEGE';$('escS').textContent='出口まで';$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo');RUN.bellSaid=0;RUN.serSaid=false;RUN.nearSaid=false;RUN.ph=0;RUN.tp={};RUN.sgT=0;RUN.bgI=false}
  if(es){RUN.tr={hp:es.hp,max:es.hp,z:es.z0,stop:false,wait:false,hurt:false,near:false};truckPlace();TRUCK.visible=true;RUN.total=RUN.def.waves.reduce((a,w)=>a+w.en.length,0)}else TRUCK.visible=false;
  if(RUN.def.chase)chaseInit();
- if(RUN.def.jam)jamInit();
+ if(RUN.def.jam&&!RUN.def.lab)jamInit();if(RUN.def.lab)labInit();
  if(RUN.def.survey)surveyInit();
  if(RUN.def.relay){RUN.cmd=ENEMIES.find(e=>e.type==='gear'&&e.gk==='commander'&&!e.off);RUN.ants=ENEMIES.filter(e=>e.type==='antenna'&&!e.off);RUN.cmd.shielded=()=>RUN&&RUN.ants&&RUN.ants.some(a=>a.alive);RUN.antLeft=RUN.ants.length;RUN.rfT=22;RUN.rfN=0;RUN.shSaid=false;RUN.halfSaid=false;RUN.memDone=false;
   $('esc').hidden=false;$('escL').textContent='TARGET';$('escS').textContent='指揮型ギア ／ アンテナ '+RUN.antLeft;$('escD').textContent='100%';$('escHp').style.width='100%';$('escHp').classList.remove('lo')}
@@ -6999,6 +7112,44 @@ function surveyTick(dt){const V=RUN.def.survey,T=RUN.tr,S0=RUN.sv,d=RUN.def,n=V.
  beaconTick();$('escHp').style.width=(100*T.hp/T.max)+'%';$('escHp').classList.toggle('lo',T.hp<T.max*.35);if(!RUN.ok)$('escS').textContent='ティモ ／ 地点 '+(S0.i+1)+'/'+n;
  if(RUN.ok){if(finishWait(dt))misFinish(true)}}
 // 中継局（★2-S）：アンテナが生きている間、指揮型ギアは被ダメージ 1/4、一定間隔で護衛を呼ぶ。アンテナ全滅で守りが消える。ギア撃破で成功（記憶①の演出）
+/* ===== ★4-S 壁の中の研究所 =====
+ 廊下（敵なし・妨害つき）→ レナード（会話）→ 起動ムービー（台座の三機が N→D→M の順に目を覚ます）→ 円形の広間で三機と戦う。
+ 1機倒すと、残りは動きと攻撃が15%速くなる。全機撃破で記憶の画面（memFx）→ 成功。状態は RUN.lab（st：corr／talk／movie／fight、lock＝操作を止める、cam＝ムービーのカメラ） */
+function labNpc(key,x,z,ry){const g=grp(LAB),m=rivalGear(g,key,{});g.position.set(x,0,z);g.rotation.y=ry;g.scale.setScalar(1.2);return {g,m}}
+function labInit(){const d=RUN.def,Z=RUN.lab={st:'corr',t:0,lock:false,cam:null,said:0,dead:0,ev:[0,0,0],ord:[]};
+ if(!LAB.userData.leo){LAB.userData.leo=labNpc('leonard',LAB_LEO.x,LAB_LEO.z,Math.PI);LAB.userData.timo=labNpc('timo',3.4,-137,0)}
+ const lo=LAB.userData.leo,ti=LAB.userData.timo;lo.g.position.set(LAB_LEO.x,0,LAB_LEO.z);lo.g.rotation.y=Math.PI;ti.g.position.set(3.4,0,-137);ti.g.rotation.y=0;
+ Z.ord=['lab_n','lab_d','lab_m'].map(k=>ENEMIES.find(e=>e.type==='gear'&&!e.off&&e.gk===k));
+ Z.ord.forEach((e,i)=>{e.frz=true;e.spec={...GEAR_MOB[e.gk]};e.home.set(LAB_PED[i][0],0,LAB_PED[i][1]);e.g.position.copy(e.home);e.g.rotation.y=Math.PI;e.hpBar.visible=false;e.model.labMats.forEach(m=>m.color.setHex(0x202a30))});
+ LAB.userData.ped.forEach(m=>m.color.setHex(0x1a2024));
+ $('esc').hidden=true}
+function labLight(i){const Z=RUN.lab,e=Z.ord[i],col=[0x6fd3e0,0x8cf06e,0xe0403a][i];LAB.userData.ped[i].color.setHex(col);e.model.labMats.forEach(m=>m.color.setHex(col));
+ spawn(col,5,new THREE.Vector3(e.g.position.x,5,e.g.position.z),{life:.5,grow:3});SND.play('online',{g:.5});shake=Math.max(shake,.25)}
+function labTalk(){const d=RUN.def;commClear();
+ MDEF._lab={id:'_lab',once:true,kind:'visit',talk:d.leoTalk,img:'img/rivals/rival-solomon-leonard.png',imgF:'',from:'仲介屋 レナード',client:'レナード',voice:'adultM'};
+ $('gui').hidden=false;document.body.classList.add('labtalk');VS.cb=()=>{$('gui').hidden=true;document.body.classList.remove('labtalk');labMovieStart()};visitPlay('_lab')}
+function labMovieStart(){const Z=RUN.lab,d=RUN.def,lo=LAB.userData.leo;if(!RUN||!RUN.lab)return;Z.st='movie';Z.t=0;Z.lock=true;
+ P.pos.set(0,0,-37);P.vel.set(0,0,0);P.yaw=camYaw=0;mech.bot.position.copy(P.pos);Z.lo={x:lo.g.position.x,z:lo.g.position.z};Z.cam=true;
+ comm(d.comm.m0,3.4);comm(d.comm.m1,3.8);comm(d.comm.m2,3.2)}
+function labCam(dt){const Z=RUN.lab,t=Z.t,u=Math.min(1,t/9);C.position.set(Math.sin(t*.3)*3,9.5-2.4*u,-40+u*30);C.lookAt(0,5.2,30)}
+function labMovie(dt){const Z=RUN.lab,d=RUN.def,t=Z.t,lo=LAB.userData.leo;
+ {const u=Math.min(1,t/3.4),k=u*u*(3-2*u),tx=-31,tz=-14;lo.g.position.set(Z.lo.x+(tx-Z.lo.x)*k,0,Z.lo.z+(tz-Z.lo.z)*k);lo.g.rotation.y=u<1?Math.atan2(tx-Z.lo.x,tz-Z.lo.z):Math.atan2(-tx,-tz)}
+ [1.4,3.2,5.0].forEach((te,i)=>{if(!Z.ev[i]&&t>=te){Z.ev[i]=1;banner('UNIT-'+'NDM'[i],'BOOT',false,1.5);labLight(i)}});
+ if(t>=6.4)Z.ord.forEach(e=>{const yaw=Math.atan2(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z);e.g.rotation.y=L(e.g.rotation.y,yaw,Math.min(1,dt*2.5))});
+ if(t>=9.2){Z.cam=null;Z.lock=false;Z.st='fight';Z.ord.forEach(e=>{e.frz=false;e.hpBar.visible=true;e.ws.forEach(w=>{w.cd=1.5+Math.random()*1.5})});
+  $('esc').hidden=false;$('escL').textContent='TARGET';$('escL').classList.remove('lo');$('escHp').style.width='100%';$('escHp').classList.remove('lo');$('escD').textContent='100%';
+  banner('BATTLE START','N ／ D ／ M',false,2);SND.play('start',{g:.5});comm(d.comm.fight,3)}}
+function labFight(dt){const Z=RUN.lab,d=RUN.def,g=Z.ord,al=g.filter(e=>e.alive),dead=3-al.length,tot=g.reduce((a,e)=>a+Math.max(0,e.hp),0),mx=g.reduce((a,e)=>a+e.max,0),k=tot/mx;
+ $('escHp').style.width=(100*k)+'%';$('escHp').classList.toggle('lo',k<.35);$('escD').textContent=Math.ceil(k*100)+'%';$('escS').textContent='警備機 N ／ D ／ M　残り '+al.length;
+ if(dead>Z.dead){Z.dead=dead;if(al.length){al.forEach(e=>{e.spec.spd*=1.15;e.tier.cdK/=1.15;e.tier.gap/=1.15;e.ws.forEach(w=>{w.cd=Math.min(w.cd,.8)})});SND.play('reinf',{g:.4});comm(dead===1?d.comm.d1:d.comm.d2,3)}}
+ if(!al.length&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=8.4;
+  comm(d.comm.clear,2.6);comm(d.comm.clear2,3.6,()=>{if(!RUN||!RUN.ok)return;RUN.hold=performance.now()+4800;setTimeout(()=>{if(!RUN||!RUN.ok)return;memFxShow(d);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},3300)},1000)});RUN.hold=performance.now()+60000}}
+function labTick(dt){const Z=RUN.lab,d=RUN.def,c=d.comm;Z.t+=dt;
+ if(RUN.ok){if(finishWait(dt)){$('memFx').classList.remove('on');misFinish(true)}return}
+ if(Z.st==='corr'){const z=P.pos.z;[[-126,['i',c.t0]],[-112,c.c1],[-84,c.c2],[-66,c.c3]].forEach(([zz,tx],i)=>{if(Z.said===i&&z>zz){Z.said++;comm(tx,3.4)}});
+  if(Math.hypot(P.pos.x-LAB_LEO.x,P.pos.z-LAB_LEO.z)<17){Z.st='talk';Z.lock=true;labTalk()}}
+ else if(Z.st==='movie')labMovie(dt);
+ else if(Z.st==='fight')labFight(dt)}
 function relayTick(dt){const d=RUN.def,B=RUN.cmd,k=Math.max(0,B.hp/B.max),al=RUN.ants.filter(a=>a.alive).length;
  if(al!==RUN.antLeft){RUN.antLeft=al;comm(al?d.comm.ant.replace('{n}',al):d.comm.down,2.6);if(!al)SND.play('unlock',{g:.4})}
  $('escHp').style.width=(100*k)+'%';$('escHp').classList.toggle('lo',k<.35);$('escD').textContent=Math.ceil(k*100)+'%';$('escS').textContent=al?'指揮型ギア ／ アンテナ '+al:'指揮型ギア ／ 守り 解除';
@@ -7116,7 +7267,7 @@ const misLeft=()=>ENEMIES.filter(e=>!e.off&&e.alive&&(!RUN||!RUN.def.goal||e.typ
 function misTick(dt){ENEMIES.forEach(e=>{if(e.bolt&&e.bolt.visible&&(!e.alive||e.off))e.bolt.visible=false});
  if(COMM.t>0){COMM.t-=dt;if(COMM.t<=0){COMM.busy=false;if(COMM.q.length)commNext();else{$('comm').hidden=true;commEnd()}}}
  if(RUN&&!RUN.leaving&&!RUN.ok)RUN.time=(RUN.time||0)+dt;
- if(!RUN||RUN.leaving)return;if(RUN.vs){vsTick(dt);return}if(RUN.def.chase){chaseTick(dt);return}if(RUN.def.survey){surveyTick(dt);return}if(RUN.tr){if(RUN.def.defend)defendTick(dt);else escortTick(dt);return}if(RUN.boss){bossMisTick(dt);return}if(RUN.def.siege){siegeMisTick(dt);return}if(RUN.def.reach){reachTick(dt);return}if(RUN.def.collect){collectTick(dt);return}if(RUN.def.relay){relayTick(dt);return}if(RUN.def.jam){jamTick(dt);return}const n=misLeft();
+ if(!RUN||RUN.leaving)return;if(RUN.vs){vsTick(dt);return}if(RUN.def.chase){chaseTick(dt);return}if(RUN.def.lab){labTick(dt);return}if(RUN.def.survey){surveyTick(dt);return}if(RUN.tr){if(RUN.def.defend)defendTick(dt);else escortTick(dt);return}if(RUN.boss){bossMisTick(dt);return}if(RUN.def.siege){siegeMisTick(dt);return}if(RUN.def.reach){reachTick(dt);return}if(RUN.def.collect){collectTick(dt);return}if(RUN.def.relay){relayTick(dt);return}if(RUN.def.jam){jamTick(dt);return}const n=misLeft();
  if(n!==RUN.left){const dn=n<RUN.left;RUN.left=n;if(dn&&n>0&&RUN.def.comm.left)comm(RUN.def.comm.left.replace('{n}',n));else if(n===1&&RUN.total>1&&RUN.def.comm.last)comm(RUN.def.comm.last,2.4)}
  if(n===0&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=3.4;comm(RUN.def.comm.clear,3);banner('MISSION COMPLETE',RUN.def.title)}
  if(RUN.ok){if(finishWait(dt))misFinish(true)}}
@@ -7360,10 +7511,10 @@ function setMode(m,training=false,mis=null,tt=false){introClear();resetPoses();g
  if(p){selSlot=null;view='overview';highlight(null)}
  if(p&&builtKey!==JSON.stringify(cfg))buildMech(cfg);
  if(p)SND.bgm(RUN&&RUN.def.bgm||(RUN&&RUN.def.boss?'boss':'sortie'));else if(!wasMis)SND.bgm('garage');
- $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';FAC.visible=p&&!!RUN&&RUN.def.field==='factory';BORDER.visible=p&&!!RUN&&RUN.def.field==='border';VIAD.visible=p&&!!RUN&&RUN.def.field==='viaduct';HANG.visible=p&&!!RUN&&RUN.def.field==='hangar';PWR.visible=p&&!!RUN&&RUN.def.field==='power';UND.visible=p&&!!RUN&&RUN.def.field==='under';RELAY.visible=p&&!!RUN&&RUN.def.field==='relay';WALL.visible=p&&!!RUN&&RUN.def.field==='wall';if(WALL.visible&&!WALL.userData.m){WALL.userData.m=1;mergeStatic(WALL)}if(BRK)BRK.visible=p&&!!RUN&&!!RUN.def.broken;if(TM&&!(p&&RUN&&RUN.def.survey))TM.visible=false;if(BCN&&!(p&&RUN&&RUN.def.survey))BCN.visible=false;CANYON.visible=p&&!!RUN&&RUN.def.field==='canyon';COLO.visible=p&&!!RUN&&RUN.def.field==='colo';CHASE.visible=CHSC.visible=p&&!!RUN&&RUN.def.field==='chase';gnd.visible=!COLO.visible&&!CHASE.visible&&!CANYON.visible&&!ROAD.visible&&!RUINS.visible&&!FAC.visible&&!BORDER.visible&&!VIAD.visible&&!HANG.visible&&!PWR.visible&&!UND.visible&&!RELAY.visible&&!WALL.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}GOALM.visible=p&&!!RUN&&!!RUN.def.reach;{const cl=p&&!!RUN&&!!RUN.def.collect;DROPM.visible=WRECKG.visible=cl;CRATES.forEach(c=>c.visible=cl)}if(GOALM.visible)GOALM.position.set(RUN.def.reach.x,0,RUN.def.reach.z);dock.visible=!p;
+ $('app').classList.toggle('play',p);play.hidden=!p;$('gui').hidden=p;world.visible=p&&!RUN;CITY.visible=p&&!!RUN&&RUN.def.field==='city';ROAD.visible=p&&!!RUN&&RUN.def.field==='road';RUINS.visible=p&&!!RUN&&RUN.def.field==='ruins';FAC.visible=p&&!!RUN&&RUN.def.field==='factory';BORDER.visible=p&&!!RUN&&RUN.def.field==='border';VIAD.visible=p&&!!RUN&&RUN.def.field==='viaduct';HANG.visible=p&&!!RUN&&RUN.def.field==='hangar';PWR.visible=p&&!!RUN&&RUN.def.field==='power';UND.visible=p&&!!RUN&&RUN.def.field==='under';RELAY.visible=p&&!!RUN&&RUN.def.field==='relay';WALL.visible=p&&!!RUN&&RUN.def.field==='wall';LAB.visible=p&&!!RUN&&RUN.def.field==='lab';if(WALL.visible&&!WALL.userData.m){WALL.userData.m=1;mergeStatic(WALL)}if(BRK)BRK.visible=p&&!!RUN&&!!RUN.def.broken;if(TM&&!(p&&RUN&&RUN.def.survey))TM.visible=false;if(BCN&&!(p&&RUN&&RUN.def.survey))BCN.visible=false;CANYON.visible=p&&!!RUN&&RUN.def.field==='canyon';COLO.visible=p&&!!RUN&&RUN.def.field==='colo';CHASE.visible=CHSC.visible=p&&!!RUN&&RUN.def.field==='chase';gnd.visible=!COLO.visible&&!CHASE.visible&&!CANYON.visible&&!ROAD.visible&&!RUINS.visible&&!FAC.visible&&!BORDER.visible&&!VIAD.visible&&!HANG.visible&&!PWR.visible&&!UND.visible&&!RELAY.visible&&!WALL.visible&&!LAB.visible;if(!(p&&RUN&&RUN.def.escort)){TRUCK.visible=false;$('esc').hidden=true}GOALM.visible=p&&!!RUN&&!!RUN.def.reach;{const cl=p&&!!RUN&&!!RUN.def.collect;DROPM.visible=WRECKG.visible=cl;CRATES.forEach(c=>c.visible=cl)}if(GOALM.visible)GOALM.position.set(RUN.def.reach.x,0,RUN.def.reach.z);dock.visible=!p;
  Object.keys(active).forEach(k=>{endOf(active[k].def)?.(mech.weps[k]);delete active[k]});
  FX.forEach(f=>{S.remove(f.m)});FX.length=0;
- S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}wxApply(p&&RUN?RUN.def.wx:null);{const wf=p&&RUN&&RUN.def.field==='wall',wd=wf&&RUN.def.wx==='day';if(wf&&!wd){S.fog.near=35;S.fog.far=150}C.far=wd?260:wf?210:80;C.updateProjectionMatrix()}   // v230：昼の晴れ（4-3）は霧 80〜230m（WX.day のまま）、描画距離も延ばす
+ S.fog.near=p?40:20;S.fog.far=p?120:70;{const bg=!p?0x0c100e:RUN?FIELD_BG[RUN.def.field]:0x1a1e1c;S.background.setHex(bg);S.fog.color.setHex(bg)}wxApply(p&&RUN?RUN.def.wx:null);{const wf=p&&RUN&&RUN.def.field==='wall',wd=wf&&RUN.def.wx==='day';if(wf&&!wd){S.fog.near=35;S.fog.far=150}C.far=wd?260:wf?210:80;C.updateProjectionMatrix()}if(p&&RUN&&RUN.def.field==='lab'){S.fog.near=34;S.fog.far=130;C.far=220;C.updateProjectionMatrix()}   // v230：昼の晴れ（4-3）は霧 80〜230m（WX.day のまま）、描画距離も延ばす
  C.fov=p?(CAMMODE==='top'?48:72):38;C.updateProjectionMatrix();camC.set(0,0,0);
  P.pos.set(0,0,0);P.vel.set(0,0,0);P.yaw=camYaw=0;PART_KEYS.forEach(k=>{P.hpMax[k]=partMax(k);P.hp[k]=partNow(k)});P.boost=SS.boost;P.stun=0;P.qb=null;P.down=0;lockT=lockT2=lockT3=null;LOCKS=[];pinned=null;reveal=0;topYaw=topYawC=Math.PI;GUARD[-1]=GUARD[1]=false;resetAmmo();
  mech.bot.position.set(0,0,0);mech.bot.rotation.y=0;gt.offset.set(0,0);
@@ -7612,6 +7763,7 @@ R.setAnimationLoop(()=>{
   if(VSEND.k==='me'){p=P.pos;const yw=P.yaw;fd=7.6;rd=2.4;y=5;ly=4.8;C.position.set(p.x+Math.sin(yw)*fd-Math.cos(yw)*rd,y,p.z+Math.cos(yw)*fd+Math.sin(yw)*rd)}
   else{p=E.position;const ry=E.rotation.y;if(VSEND.k==='opp'){fd=7.2;rd=2.2;y=5.2;ly=5}else{fd=8;rd=3;y=4.2;ly=3.4}C.position.set(p.x+Math.sin(ry)*fd-Math.cos(ry)*rd,y,p.z+Math.cos(ry)*fd+Math.sin(ry)*rd)}
   C.lookAt(p.x,ly,p.z)}
+ if(mode==='play'&&RUN&&RUN.lab&&RUN.lab.cam)labCam(dt);
  updateFX(dt);tickWX(dt);
  if(shake>0&&!reduce){C.position.x+=(Math.random()-.5)*shake;C.position.y+=(Math.random()-.5)*shake;shake*=.85;if(shake<.005)shake=0}
  Wp.glow.color.setHSL(.07,1,.5+Math.sin(t*6)*.08);
