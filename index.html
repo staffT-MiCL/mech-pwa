@@ -993,7 +993,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v240</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v241</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1071,7 +1071,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v240</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v241</span></div>
  </div>
 </div>
 
@@ -1138,7 +1138,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v240</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v241</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -2915,7 +2915,7 @@ const SERIES=[
   rival:{name:'LIBRA',jp:'リブラ',ch:'CH4',pilot:'エーリヒ・ブラント（63）',alias:['鉄血の天秤','EISENWAAGE','アイゼンヴァーゲ'],
    pal:{main:0x1f3a26,sub:0x3d4a2c,joint:0x1c1712,line:0x6f8a3a,eye:0xb6e88a,glow:0xb6e88a,trim:0x9a8a4a,metal:0x6a5a44},
    sw:[['深緑','#1f3a26'],['苔','#3d4a2c'],['樹皮','#1c1712'],['琥珀','#9a8a4a'],['EYE','#b6e88a']],
-   deco:['テーマは<b>千年樹</b>：深緑の装甲、苔色の重ね板、樹皮のような焦茶の関節、樹脂を思わせる琥珀色の縁取り、若葉色の目','兜に<b>左右へ広がる琥珀色のとさか</b>（百人隊長の兜）','肩当て・草ずり・胸の紋章に<b>琥珀色の縁取り</b>','背中に<b>天秤</b>（柱の上の横木と2枚の皿）','兵装：左手に大きな長方形の盾、右手にライフル'],
+   deco:['テーマは<b>千年樹</b>：深緑の装甲、苔色の重ね板、樹皮のような焦茶の関節、樹脂を思わせる琥珀色の縁取り、若葉色の目','兜に<b>左右へ広がる琥珀色のとさか</b>（百人隊長の兜）','肩当て・草ずり・胸の紋章に<b>琥珀色の縁取り</b>','背中に<b>天秤</b>（柱の上の横木と2枚の皿）','兵装：両手に大きな盾（機体の脇に立てる縦長の盾2枚）、右肩に12連装ミサイル、左肩に2方向レーザー砲'],
    apply(P,K){
     const h=P.head;box(h,.92,.2,.1,K.trim,0,.68,0);for(let i=-4;i<=4;i++)box(h,.07,.14,.09,K.trim,i*.1,.57,0);
     P.arms.forEach(a=>{for(let i=0;i<3;i++)box(a.sh,.74-i*.06,.04,.76-i*.04,K.trim,a.s*(.14+i*.05),.34-i*.17,0,0,0,a.s*.22)});
