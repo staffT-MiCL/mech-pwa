@@ -994,7 +994,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v248</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v249</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1072,7 +1072,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v248</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v249</span></div>
  </div>
 </div>
 
@@ -1139,7 +1139,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v248</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v249</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -3624,6 +3624,7 @@ const SND=(()=>{
   complete(d,t){sub(t,98,98,2,d,.7);snap(t,d,{peak:.5});[392,494,587,784].forEach((f,i)=>[-12,12].forEach(dt=>osc('sawtooth',f,t+i*.1,1.8-i*.1,d,{a:.01,h:.35,r:1.3,peak:.06,detune:dt})));[1,1.5,2].forEach((m,i)=>osc('sine',1568*m,t+.3,1.8,d,{a:.005,peak:.1/(i+1)}))},
   holo(d,t){osc('sine',1400,t,.15,d,{f2:2800,peak:.35});osc('sine',2800,t+.12,.35,d,{peak:.2})},
   tick(d,t){osc('sine',jit(2600,.03),t,.02,d,{peak:.4});snap(t,d,{f:8000,peak:.15,dur:.005})},
+  bun(d,t){osc('sawtooth',150,t,.2,d,{f2:55,peak:.3,a:.004});sub(t,120,42,.28,d,.9);osc('square',64,t,.1,d,{peak:.12});snap(t,d,{f:3200,peak:.22,dur:.01})},   // 「ブンッ」：扉の閉まる音・機体の起動音
   online(d,t){[1046,1568,2093].forEach((f,i)=>osc('sine',f,t+i*.07,.5,d,{peak:.4}));sub(t,90,60,.6,d,.5)},
   reinf(d,t){for(let i=0;i<2;i++)[-14,14].forEach(dt=>osc('sawtooth',330,t+i*.5,.4,d,{f2:660,peak:.07,detune:dt}));sub(t,60,60,1,d,.4)},
   // ---- 出撃中（第2回）：アタック・芯・サブ低音・余韻の層。残響なし ----
@@ -4972,11 +4973,11 @@ const GEAR_MOB={
  vb3:{name:'リブラ',model:'erich',vpose:'common',dual:1,beam:1,cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'LBS',lHand:'LBS',rShoulder:'LBM',lShoulder:'LBL'},   // エーリヒ：両手の巨大な盾で正面を固め、ミサイルとレーザーで攻める耐久型
   hp:30000,dmg:0,rate:2.6,rng:70,spd:5,keep:28,bs:24,rw:0,tier:'boss',msK:.8,msSpd:1.8,msHom:1.7,msMax:12,rage:1,tx:{dk:.16,spread:1.6,cdK:1.0,gap:1,qb:0,jump:0},guard:{p:9,near:0,t:[2.2,3.4],cd:[.5,1.2]}},
  lab_n:{name:'警備機 N',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'RF3',rShoulder:'none',lShoulder:'none'},tint:{main:0xe6e8e4,sub:0xb4b9b6,warn:0x6fd3e0,joint:0x1a1c20,eye:0x202a30},
-  hp:15000,dmg:0,rate:2.0,rng:70,spd:8,keep:26,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.13,spread:1.7,cdK:2.1,gap:1.2,imp:'D'},deco(m){labDeco(m,'N')}},   // N：中距離から両手のライフル
+  hp:15000,dmg:0,rate:2.0,rng:70,spd:6.8,keep:26,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.104,spread:1.7,cdK:2.1,gap:1.2,imp:'D'},deco(m){labDeco(m,'N')}},   // N：中距離から両手のライフル
  lab_d:{name:'警備機 D',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF4',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:{main:0xe6e8e4,sub:0xb4b9b6,warn:0x8cf06e,joint:0x1a1c20,eye:0x202a30},
-  hp:15000,dmg:0,rate:2.0,rng:110,spd:6,keep:46,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.09,spread:1.1,cdK:1.9,gap:1.5,imp:'C'},deco(m){labDeco(m,'D')}},   // D：遠距離から長砲身
+  hp:15000,dmg:0,rate:2.0,rng:110,spd:5.1,keep:46,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.072,spread:1.1,cdK:1.9,gap:1.5,imp:'C'},deco(m){labDeco(m,'D')}},   // D：遠距離から長砲身
  lab_m:{name:'警備機 M',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'BL4',lHand:'BL4',rShoulder:'none',lShoulder:'none'},tint:{main:0xe6e8e4,sub:0xb4b9b6,warn:0xe0403a,joint:0x1a1c20,eye:0x202a30},
-  hp:15000,dmg:0,rate:1.6,rng:30,spd:11,keep:6,bs:30,rw:0,scale:1.2,tier:'boss',rush:34,tx:{mk:.15,spread:1.6,cdK:2.1,gap:1.0,imp:'C'},deco(m){labDeco(m,'M')}},   // M：近接で斬りかかる
+  hp:15000,dmg:0,rate:1.6,rng:30,spd:9.4,keep:6,bs:30,rw:0,scale:1.2,tier:'boss',rush:29,tx:{mk:.12,spread:1.6,cdK:2.1,gap:1.0,imp:'C'},deco(m){labDeco(m,'M')}},   // M：近接で斬りかかる
  cvBoss:{name:'無人輸送ギア（親機）',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'none',rShoulder:'MS',lShoulder:'none'},tint:'convoy',hp:22500,dmg:34,rate:2.0,rng:70,spd:12,keep:30,bs:30,rw:6000,scale:1.15,tier:'boss'},
  cvEsc:{name:'無人護衛ギア',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'convoyD',hp:7500,dmg:30,rate:3.0,rng:60,spd:12,keep:30,bs:30,rw:2000,tier:'mob'},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
@@ -6023,6 +6024,7 @@ const MLIST=[
    ['c','奥の広間に、番犬が三匹いる。起こすのはお前の仕事だ。おれは壁際で見物させてもらう。'],
    ['n','ご忠告は、感謝します。信用はいたしませんが。'],
    ['c','それでいい。信用には値がつく。']],
+  leoTalk2:[['c','早く行ってこい。時は金なりだ。']],
   talk:[['c','○○。許しが出た。<ruby class="mc">NOAH<rt>ノア</rt></ruby> が、壁の入口を開けるそうだ。'],
    ['c','ただし、招かれたのは、あんただけだ。おれは使者として、入口まで案内する。'],
    ['n','統治AIからの、直接の招待ですか。……理由は。'],
@@ -6338,6 +6340,7 @@ const LAB_R=65,LAB_CW=5.6,LAB_Z0=-330,LAB_PED=[[-24,40],[0,50],[24,40]],LAB_LEO=
  for(let i=0;i<12;i++){const a=i/12*Math.PI*2,r=i%2?24:46;box(LAB,5,.3,1.4,lamp,Math.sin(a)*r,17,Math.cos(a)*r,0,a,0)}
  const ped=[];LAB_PED.forEach(([x,z])=>{cyl(LAB,3.8,4.2,.5,dk,x,.25,z,0,0,20);const m=new THREE.MeshBasicMaterial({color:0x1a2024}),rg=new THREE.Mesh(new THREE.RingGeometry(2.9,3.5,36),m);rg.rotation.x=-Math.PI/2;rg.position.set(x,.52,z);LAB.add(rg);ped.push(m)});LAB.userData.ped=ped;LAB.add(new THREE.HemisphereLight(0xdff0f4,0x303a40,1.1));
  for(let k=0,z=-(LAB_R+3);z>LAB_Z0-4;z-=8,k++){[-1,1].forEach(sg=>{box(LAB,1.8,12,8.2,k%2?wl:wl2,sg*(LAB_CW+.9),6,z);box(LAB,.08,.3,7.4,cy,sg*(LAB_CW-.02),2.4,z);box(LAB,.08,.2,7.4,cy,sg*(LAB_CW-.02),7.5,z);box(LAB,.3,.02,2.4,hz,sg*3.2,.04,z)});if(k%2===0)box(LAB,LAB_CW*2,.3,1.2,lamp,0,14,z-4)}
+ LAB.userData.doors=[-1,1].map(sg=>{const m=box(LAB,6.4,14,1.6,wl2,sg*9.4,7,-(LAB_R+1.5));box(m,.14,11,.1,cy,-sg*3.1,0,.85);box(m,6,.2,.1,cy,0,5.6,.85);box(m,6,.2,.1,cy,0,-5.6,.85);return m});
  box(LAB,LAB_CW*2+4,12,1.6,wl2,0,6,LAB_Z0-2.5);box(LAB,4,6,.1,cy,0,3,LAB_Z0-1.6)}
 /* ----- 地形：闘技場の地下・搬入ゲート（★3-S）。非常灯の赤。広い地下の大空間を南北に搬入路が通り、北の突き当たりが出口のゲート（観客の避難路）。要塞は南から歩いてくる ----- */
 const UND_R=92,UND=grp(S);UND.visible=false;const UND_MAP=[];
@@ -6588,7 +6591,7 @@ function pushOut(v,r,y=0){const L=curCols();for(const o of L){if(y>=o.top-.2)con
 // 点が箱の中か（弾・ミサイルの先読み用）
 function hitCol(p,pad=0){const L=curCols();for(const o of L){if(p.y>o.top+pad||p.y<-1)continue;const dx=p.x-o.x,dz=p.z-o.z;if(Math.abs(dx)>o.b+pad||Math.abs(dz)>o.b+pad)continue;
  const lx=dx*o.c-dz*o.s,lz=dx*o.s+dz*o.c;if(Math.abs(lx)<=o.hw+pad&&Math.abs(lz)<=o.hd+pad)return o}return null}
-function clampField(v){if(RUN&&RUN.def.field==='lab'){v.z=Math.max(LAB_Z0,v.z);if(v.z<-(LAB_R-.5)){v.x=Math.max(-LAB_CW+.8,Math.min(LAB_CW-.8,v.x))}else if(!(v.z<-(LAB_R-11)&&Math.abs(v.x)<=LAB_CW+1)){const pl=Math.hypot(v.x,v.z),FR=LAB_R-1.5;if(pl>FR){v.x*=FR/pl;v.z*=FR/pl}}return}if(RUN&&RUN.def.field==='chase'){v.x=Math.max(-CH_W,Math.min(CH_W,v.x));v.z=Math.max(CH_Z0,Math.min(CH_Z1,v.z));return}if(isCanyon()){v.z=Math.max(CAN_Z0,Math.min(CAN_Z1,v.z));const c=canX(v.z),w=canW(v.z);v.x=Math.max(c-w,Math.min(c+w,v.x));return}if(isRoad()){v.z=Math.max(ROAD_Z0,Math.min(ROAD_Z1,v.z));const c=roadX(v.z);v.x=Math.max(c-ROAD_W,Math.min(c+ROAD_W,v.x));return}
+function clampField(v){if(RUN&&RUN.def.field==='lab'){const Zl=RUN.lab;v.z=Math.max(Zl&&Zl.zmin!=null?Zl.zmin:LAB_Z0,v.z);if(!(Zl&&Zl.seal)&&v.z<-(LAB_R-.5)){v.x=Math.max(-LAB_CW+.8,Math.min(LAB_CW-.8,v.x))}else if((Zl&&Zl.seal)||!(v.z<-(LAB_R-11)&&Math.abs(v.x)<=LAB_CW+1)){const pl=Math.hypot(v.x,v.z),FR=LAB_R-1.5;if(pl>FR){v.x*=FR/pl;v.z*=FR/pl}}return}if(RUN&&RUN.def.field==='chase'){v.x=Math.max(-CH_W,Math.min(CH_W,v.x));v.z=Math.max(CH_Z0,Math.min(CH_Z1,v.z));return}if(isCanyon()){v.z=Math.max(CAN_Z0,Math.min(CAN_Z1,v.z));const c=canX(v.z),w=canW(v.z);v.x=Math.max(c-w,Math.min(c+w,v.x));return}if(isRoad()){v.z=Math.max(ROAD_Z0,Math.min(ROAD_Z1,v.z));const c=roadX(v.z);v.x=Math.max(c-ROAD_W,Math.min(c+ROAD_W,v.x));return}
  if(RUN&&RUN.def.field==='viaduct'){v.x=Math.max(-VIAD_R,Math.min(VIAD_R,v.x));v.z=Math.max(-VIAD_R,Math.min(VIAD_ZN,v.z))}else{const pl=Math.hypot(v.x,v.z),FR=fieldR();if(pl>FR){v.x*=FR/pl;v.z*=FR/pl}}
  if(RUN&&RUN.boss){const bp=RUN.boss.g.position,dx=v.x-bp.x,dz=v.z-bp.z,l=Math.hypot(dx,dz);if(l<8.2&&l>.01){v.x=bp.x+dx/l*8.2;v.z=bp.z+dz/l*8.2}}}
 
@@ -7101,30 +7104,38 @@ function surveyTick(dt){const V=RUN.def.survey,T=RUN.tr,S0=RUN.sv,d=RUN.def,n=V.
  廊下（敵なし・妨害つき）→ レナード（会話）→ 起動ムービー（台座の三機が N→D→M の順に目を覚ます）→ 円形の広間で三機と戦う。
  1機倒すと、残りは動きと攻撃が15%速くなる。全機撃破で記憶の画面（memFx）→ 成功。状態は RUN.lab（st：corr／talk／movie／fight、lock＝操作を止める、cam＝ムービーのカメラ） */
 function labNpc(key,x,z,ry){const g=grp(LAB),m=rivalGear(g,key,{});g.position.set(x,0,z);g.rotation.y=ry;g.scale.setScalar(1.2);return {g,m}}
-function labInit(){const d=RUN.def,Z=RUN.lab={st:'corr',t:0,lock:false,cam:null,said:0,dead:0,ev:[0,0,0,0],ord:[]};
+function labInit(){const d=RUN.def,Z=RUN.lab={st:'corr',t:0,lock:false,cam:null,said:0,dead:0,ev:[0,0,0,0,0,0],ord:[],zmin:null,seal:false,wk:-1,said2:0};
  if(!LAB.userData.leo){LAB.userData.leo=labNpc('leonard',LAB_LEO.x,LAB_LEO.z,Math.PI);LAB.userData.timo=labNpc('timo',3.4,-321,0)}
  const lo=LAB.userData.leo,ti=LAB.userData.timo;lo.g.position.set(LAB_LEO.x,0,LAB_LEO.z);lo.g.rotation.y=Math.PI;ti.g.position.set(3.4,0,-321);ti.g.rotation.y=0;
  Z.ord=['lab_n','lab_d','lab_m'].map(k=>ENEMIES.find(e=>e.type==='gear'&&!e.off&&e.gk===k));
  Z.ord.forEach((e,i)=>{e.frz=true;e.spec={...GEAR_MOB[e.gk]};e.home.set(LAB_PED[i][0],0,LAB_PED[i][1]);e.g.position.copy(e.home);e.g.rotation.y=Math.PI;e.hpBar.visible=false;e.model.labMats.forEach(m=>m.color.setHex(0x202a30))});
- LAB.userData.ped.forEach(m=>m.color.setHex(0x1a2024));
+ LAB.userData.ped.forEach(m=>m.color.setHex(0x1a2024));LAB.userData.doors.forEach((m,i)=>m.position.x=(i?9.4:-9.4));
  $('esc').hidden=true}
 function labLight(i){const Z=RUN.lab,e=Z.ord[i],col=[0x6fd3e0,0x8cf06e,0xe0403a][i];LAB.userData.ped[i].color.setHex(col);e.model.labMats.forEach(m=>m.color.setHex(col));
- spawn(col,5,new THREE.Vector3(e.g.position.x,5,e.g.position.z),{life:.5,grow:3});SND.play('online',{g:.5});shake=Math.max(shake,.25)}
+ spawn(col,5,new THREE.Vector3(e.g.position.x,5,e.g.position.z),{life:.5,grow:3});SND.play('bun',{g:.6});SND.play('online',{g:.25});shake=Math.max(shake,.25)}
 function labTalk(){const d=RUN.def;commClear();
  MDEF._lab={id:'_lab',once:true,kind:'visit',talk:d.leoTalk,img:'img/rivals/rival-solomon-leonard.png',imgF:'',from:'仲介屋 レナード',client:'レナード',voice:'adultM'};
- $('gui').hidden=false;document.body.classList.add('labtalk');VS.cb=()=>{$('gui').hidden=true;document.body.classList.remove('labtalk');labMovieStart()};visitPlay('_lab')}
-function labMovieStart(){const Z=RUN.lab,d=RUN.def,lo=LAB.userData.leo;if(!RUN||!RUN.lab)return;Z.st='movie';Z.t=0;Z.lock=true;
- P.pos.set(0,0,-(LAB_R-12));P.vel.set(0,0,0);P.yaw=camYaw=0;mech.bot.position.copy(P.pos);Z.lo={x:lo.g.position.x,z:lo.g.position.z};Z.cam=true}
-const LAB_U=3.6,LAB_T0=.9,LAB_TE=LAB_T0+LAB_U*3,LAB_FIN=LAB_TE+2.6;   // 起動ムービー：台座ごとに3.6秒（寄り）→全機が向く→引き
+ $('gui').hidden=false;document.body.classList.add('labtalk');VS.cb=()=>{$('gui').hidden=true;document.body.classList.remove('labtalk');labAfter()};visitPlay('_lab')}
+function labAfter(){const Z=RUN&&RUN.lab;if(!Z)return;const lo=LAB.userData.leo;Z.st='free';Z.lock=false;Z.zmin=LAB_LEO2.z+8;Z.wk=0;Z.lo={x:lo.g.position.x,z:lo.g.position.z}}   // 会話のあと：レナード機は廊下側へ下がって振り返る。自機はその手前までしか下がれない
+function labTalk2(){const d=RUN.def;commClear();
+ MDEF._lab2={id:'_lab2',once:true,kind:'visit',talk:d.leoTalk2,img:'img/rivals/rival-solomon-leonard.png',imgF:'',from:'仲介屋 レナード',client:'レナード',voice:'adultM'};
+ $('gui').hidden=false;document.body.classList.add('labtalk');VS.cb=()=>{$('gui').hidden=true;document.body.classList.remove('labtalk');const Z=RUN&&RUN.lab;if(Z){Z.st='free';Z.lock=false;Z.said2=1}};visitPlay('_lab2')}
+function labMovieStart(){const Z=RUN.lab;if(!RUN||!RUN.lab)return;Z.st='movie';Z.t=-LAB_DR;Z.lock=true;Z.seal=true;   // 広間に入ると扉が閉まる（t が負の間＝扉の場面）
+ P.vel.set(0,0,0);P.yaw=camYaw=0;Z.cam=true}
+const LAB_DR=2.6,LAB_U=3.6,LAB_T0=.9,LAB_TE=LAB_T0+LAB_U*3,LAB_FIN=LAB_TE+2.6;   // 起動ムービー：台座ごとに3.6秒（寄り）→全機が向く→引き
+function labCamLim(v){const Z=RUN.lab;if(!(Z&&Z.seal)&&v.z<-(LAB_R-11)&&Math.abs(v.x)<=LAB_CW+1){if(v.z<-(LAB_R-1))v.x=Math.max(-(LAB_CW-.7),Math.min(LAB_CW-.7,v.x));v.z=Math.max(v.z,LAB_Z0+1)}else{const h=Math.hypot(v.x,v.z),lim=LAB_R-1.4;if(h>lim){v.x*=lim/h;v.z*=lim/h}}}   // 追従カメラが広間・廊下の壁を突き抜けないように
 function labCam(dt){const Z=RUN.lab,t=Z.t,sm=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2*u)};
  const wp=new THREE.Vector3(0,8.5,P.pos.z-9),wl=new THREE.Vector3(0,5,40);
+ if(t<0){const u=(t+LAB_DR)/LAB_DR;C.position.set(11-3*u,5.4,-46-2*u);C.lookAt(0,5.5,-(LAB_R+1.5));return}
  if(t<LAB_T0){const u=t/LAB_T0;C.position.set(0,9.5-u,P.pos.z-9);C.lookAt(0,5.2,40);return}
  if(t<LAB_TE){const i=Math.min(2,Math.floor((t-LAB_T0)/LAB_U)),u=(t-LAB_T0-i*LAB_U)/LAB_U,e=Z.ord[i],bx=e.g.position.x,bz=e.g.position.z,sd=[-5,0,5][i];
   C.position.set(bx+sd*(1-.4*u),4.6-.5*u,bz-13+u*5);C.lookAt(bx,5.5,bz);Z.cp=C.position.clone();return}
  const k=sm((t-LAB_TE)/(LAB_FIN-LAB_TE)),cp=Z.cp||wp;C.position.lerpVectors(cp,wp,k);C.lookAt(bxL(k,wl))}
 function bxL(k,wl){const e=RUN.lab.ord[2];return new THREE.Vector3(e.g.position.x*(1-k),5.4+(wl.y-5.4)*k,e.g.position.z+(wl.z-e.g.position.z)*k)}
 function labMovie(dt){const Z=RUN.lab,d=RUN.def,t=Z.t,lo=LAB.userData.leo;
- {const u=Math.min(1,t/3.4),k=u*u*(3-2*u),tx=LAB_LEO2.x,tz=LAB_LEO2.z;lo.g.position.set(Z.lo.x+(tx-Z.lo.x)*k,0,Z.lo.z+(tz-Z.lo.z)*k);lo.g.rotation.y=u<1?Math.atan2(tx-Z.lo.x,tz-Z.lo.z):L(lo.g.rotation.y,0,Math.min(1,dt*3))}
+ if(t<0){P.pos.x+=(0-P.pos.x)*Math.min(1,dt*4);mech.bot.position.x=P.pos.x;if(!Z.ev[4]&&t>=-LAB_DR+.3){Z.ev[4]=1;SND.play('bun',{g:.7})}
+  const k=Math.max(0,Math.min(1,(t+LAB_DR-.3)/.7)),e=k*k*(3-2*k);LAB.userData.doors.forEach((m,i)=>m.position.x=(i?1:-1)*(9.4-6.2*e));
+  if(!Z.ev[5]&&k>=1){Z.ev[5]=1;SND.play('step',{g:.5});shake=Math.max(shake,.3)}}
  [0,1,2].forEach(i=>{if(!Z.ev[i]&&t>=LAB_T0+LAB_U*i+1.6){Z.ev[i]=1;labLight(i)}});
  if(!Z.ev[3]&&t>=LAB_TE+.2){Z.ev[3]=1;comm(d.comm.m1,3.6);comm(d.comm.m2,3.2)}
  if(t>=LAB_TE+.6)Z.ord.forEach(e=>{const yaw=Math.atan2(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z);e.g.rotation.y=L(e.g.rotation.y,yaw,Math.min(1,dt*2))});
@@ -7137,9 +7148,13 @@ function labFight(dt){const Z=RUN.lab,d=RUN.def,g=Z.ord,al=g.filter(e=>e.alive),
  if(!al.length&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=8.4;
   comm(d.comm.clear,2.6);comm(d.comm.clear2,3.6,()=>{if(!RUN||!RUN.ok)return;RUN.hold=performance.now()+4800;setTimeout(()=>{if(!RUN||!RUN.ok)return;memFxShow(d);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},3300)},1000)});RUN.hold=performance.now()+60000}}
 function labTick(dt){const Z=RUN.lab,d=RUN.def,c=d.comm;Z.t+=dt;
+ if(Z.wk>=0&&Z.wk<6){Z.wk+=dt;const lo=LAB.userData.leo,u=Math.min(1,Z.wk/3.4),k=u*u*(3-2*u),tx=LAB_LEO2.x,tz=LAB_LEO2.z;lo.g.position.set(Z.lo.x+(tx-Z.lo.x)*k,0,Z.lo.z+(tz-Z.lo.z)*k);lo.g.rotation.y=u<1?Math.atan2(tx-Z.lo.x,tz-Z.lo.z):L(lo.g.rotation.y,0,Math.min(1,dt*3))}   // 廊下側へ下がり、着いたら広間のほうへ振り返る
+
  if(RUN.ok){if(finishWait(dt)){$('memFx').classList.remove('on');misFinish(true)}return}
  if(Z.st==='corr'){const z=P.pos.z;[[-270,c.c1],[-215,c.c2],[-150,c.c3]].forEach(([zz,tx],i)=>{if(Z.said===i&&z>zz){Z.said++;comm(tx,3.4)}});
   if(Math.hypot(P.pos.x-LAB_LEO.x,P.pos.z-LAB_LEO.z)<17){Z.st='talk';Z.lock=true;labTalk()}}
+ else if(Z.st==='free'){if(!Z.said2&&Z.wk>=3.6&&Math.hypot(P.pos.x-LAB_LEO2.x,P.pos.z-LAB_LEO2.z)<11){Z.st='talk2';Z.lock=true;labTalk2()}
+  else if(P.pos.z>-(LAB_R-11)&&Math.abs(P.pos.x)<LAB_CW+1)labMovieStart()}
  else if(Z.st==='movie')labMovie(dt);
  else if(Z.st==='fight')labFight(dt)}
 function relayTick(dt){const d=RUN.def,B=RUN.cmd,k=Math.max(0,B.hp/B.max),al=RUN.ants.filter(a=>a.alive).length;
@@ -7744,7 +7759,7 @@ R.setAnimationLoop(()=>{
   }else{
    const f=_q.set(Math.sin(camYaw),0,Math.cos(camYaw));
    // 肩越し：機体の真後ろ・頭より少し上から前方を見る（上半身から上だけが画面下に入る、FPS寄りの見え方）
-   const K=m.camK||1;_v.set(P.pos.x-f.x*5.4*K,8.6*K+y,P.pos.z-f.z*5.4*K);if(RUN&&(RUN.def.field==='hangar'||RUN.def.field==='power'||RUN.def.field==='under')){const lim=fieldR()+1,h=Math.hypot(_v.x,_v.z);if(h>lim){_v.x*=lim/h;_v.z*=lim/h}}C.position.lerp(_v,Math.min(1,dt*12));
+   const K=m.camK||1;_v.set(P.pos.x-f.x*5.4*K,8.6*K+y,P.pos.z-f.z*5.4*K);if(RUN&&RUN.def.lab)labCamLim(_v);if(RUN&&(RUN.def.field==='hangar'||RUN.def.field==='power'||RUN.def.field==='under')){const lim=fieldR()+1,h=Math.hypot(_v.x,_v.z);if(h>lim){_v.x*=lim/h;_v.z*=lim/h}}C.position.lerp(_v,Math.min(1,dt*12));
    C.lookAt(P.pos.x+f.x*26,5.4*K+y*.7,P.pos.z+f.z*26);
   }
  }else{C.position.set(Math.sin(az)*dist*Math.cos(el2),camTY+Math.sin(el2)*dist,Math.cos(az)*dist*Math.cos(el2));C.lookAt(0,camTY,0)}
