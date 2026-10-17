@@ -993,7 +993,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v239</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v240</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1071,7 +1071,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v239</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v240</span></div>
  </div>
 </div>
 
@@ -1138,7 +1138,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v239</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v240</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4879,6 +4879,8 @@ SHOULDER.LBL={...SHOULDER.MS,name:'審判砲',st:{kind:'射撃',dmg:30,range:120
  build(g){return libraLaser(g,LBK)}};
 /* リブラのレーザー：充填2.2秒（細い赤い線が2本、自機を左右から挟み、ゆっくり追う）→ 2.6秒照射（2本は開いて閉じてを繰り返す）。触れている間 0.25秒ごとに30（本数分） */
 const LB_CH=2.2/6.7;
+/* 開き（rad）の時間変化：開いた状態から1.0秒で閉じる→完全に重なる1.2秒（開き0）→1.0秒で開く→開いたまま1.3秒（計4.5秒。HP30%未満は全体を0.75倍の速さで繰り返す） */
+function libraOff(tf,rage){const T=[[1,.42,0],[1.2,0,0],[1,0,.42],[1.3,.42,.42]],cy=4.5;let t=rage?tf/.75%cy:tf%cy;const ss=x=>x*x*(3-2*x);for(const [d,a0,a1] of T){if(t<d)return a0+(a1-a0)*ss(t/d);t-=d}return .42}
 function libraBeamOff(e){const L=e.lb;if(!L)return;L.on=false;L.ph=0;L.bm.forEach(b=>b.G.visible=false)}
 function libraBeam(e,A,dt){
  if(!e.lb){const bgm=new THREE.BoxGeometry(1,1,1);bgm.translate(0,0,.5);
@@ -4889,7 +4891,7 @@ function libraBeam(e,A,dt){
  const tb=Math.atan2(pc.x-mid.x,pc.z-mid.z);
  if(!L.on){L.on=true;L.bear=tb;L.ph=0}
  let df=tb-L.bear;df=Math.atan2(Math.sin(df),Math.cos(df));L.bear+=Math.max(-.4*dt,Math.min(.4*dt,df));
- const rage=e.hp<e.max*.3,tf=Math.max(0,(u-LB_CH)*A.def.act.dur),off=charge?.42:.25+.17*Math.cos(tf*Math.PI*2/(rage?2.4:3.2));   // 左右に開いて閉じてを繰り返す（.08〜.42）
+ const rage=e.hp<e.max*.3,tf=Math.max(0,(u-LB_CH)*A.def.act.dur),off=charge?.42:libraOff(tf,rage);
  if(charge&&L.ph===0){L.ph=1;sAt('charge',e.g.position,{g:.8,dk:.2})}
  if(!charge&&L.ph===1){L.ph=2;sAt('mainGun',e.g.position,{g:.9,dk:.3});shake=Math.max(shake,.4)}
  L.bm.forEach((b,i)=>{const sg=i?1:-1,th=L.bear+sg*off,hz=Math.hypot(pc.x-fr[i].x,pc.z-fr[i].z)||1,sl=(pc.y-fr[i].y)/hz,dir=new THREE.Vector3(Math.sin(th),sl,Math.cos(th)).normalize();
@@ -4902,16 +4904,15 @@ function libraBeam(e,A,dt){
    if(dir.y<-.01&&sOnce('lbs'+i,.06)){const gp=fr[i].clone().addScaledVector(dir,len);spawn(0xffe0a0,2.4,gp,{life:.12,grow:1});spawn(0xff6030,1.4,gp.clone().add(new THREE.Vector3((Math.random()-.5)*3,1+Math.random()*2,(Math.random()-.5)*3)),{life:.3,grow:.6})}}});
  if(!charge){shake=Math.max(shake,.14);if(sOnce('lbbm',.45))sAt('mainGun',e.g.position,{g:.4,dk:.3})}}
 /* リブラの盾は2枚で別々の耐久（SHE_HP）。正面から当たった側の盾が受け、壊れた側は通常の正面装甲（×.25）。復活は25秒（HP30%未満は40秒） */
-const SHE_HP=6000;
+const SHE_HP=5000;
 function dualShield(e,dmg,pos){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z,l=Math.hypot(dx,dz)||1,fr=(dx*Math.sin(ry)+dz*Math.cos(ry))/l;
- if(fr<=(e.gFront??.2))return dmg;
- const lat=(dx*Math.cos(ry)-dz*Math.sin(ry))/l,sd=lat>=0?1:-1;let s=null;
- if(Math.abs(lat)<.22)return dmg*apK(.5);   // 中央は盾がない（機体が見える）：通常の正面装甲
- if(e.shx[sd].brk<=0)s=sd;
+ if(fr<-.3)return dmg;   // 背面だけ弱点（盾を通らない）
+ const lat=(dx*Math.cos(ry)-dz*Math.sin(ry))/l,sd=lat>=0?1:-1;let s=null;   // 背面以外はどこに当たっても盾が受ける（その側が壊れていれば残りの盾）
+ if(e.shx[sd].brk<=0)s=sd;else if(e.shx[-sd].brk<=0)s=-sd;
  if(s==null)return dmg*apK(.25);
  e.hitIn=.35;const q=e.shx[s],take=Math.min(dmg,Math.max(0,q.hp)),over=dmg-take;q.hp-=take;
  spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
- if(q.hp<=0){q.brk=e.hp<e.max*.3?40:25;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2);shBreakComm(e);if(e.shx[-s].brk>0)e.guardT=0}
+ if(q.hp<=0){q.brk=1;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2);shBreakComm(e);if(e.shx[-s].brk>0){e.guardT=0;e.shRec=25}}   // 両方壊れたら25秒後に2枚とも復元
  return take*apK(.15)+over}
 const GEAR_MOB={
  militia:{name:'払い下げ機',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'sand',hp:2400,dmg:40,rate:3.4,rng:50,spd:6,keep:24,bs:24,rw:1800,tier:'mob'},
@@ -4935,7 +4936,7 @@ const GEAR_MOB={
  vb2:{name:'キャリア',model:'timo',vpose:'timo',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RFT',lHand:'MGT',rShoulder:'MST',lShoulder:'none'},   // ティモ：旧型を手入れした万能型。ライフル・マシンガン・ミサイル（CH7 で強化版「キャリア改」）
   hp:20000,dmg:0,rate:1.8,rng:70,spd:9,keep:22,bs:30,rw:0,tier:'boss',msK:1.6,tx:{dk:.22,spread:1.8,cdK:1.4,gap:.7},msMax:2},
  vb3:{name:'リブラ',model:'erich',vpose:'common',dual:1,beam:1,cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'LBS',lHand:'LBS',rShoulder:'LBM',lShoulder:'LBL'},   // エーリヒ：両手の巨大な盾で正面を固め、ミサイルとレーザーで攻める耐久型
-  hp:30000,dmg:0,rate:2.6,rng:70,spd:5,keep:28,bs:24,rw:0,tier:'boss',msK:1,msSpd:1.8,msMax:12,rage:1,tx:{dk:.16,spread:1.6,cdK:1.0,gap:1,qb:0,jump:0},guard:{p:9,near:0,t:[2.2,3.4],cd:[.5,1.2]}},
+  hp:30000,dmg:0,rate:2.6,rng:70,spd:5,keep:28,bs:24,rw:0,tier:'boss',msK:1,msSpd:1.8,msHom:1.7,msMax:12,rage:1,tx:{dk:.16,spread:1.6,cdK:1.0,gap:1,qb:0,jump:0},guard:{p:9,near:0,t:[2.2,3.4],cd:[.5,1.2]}},
  cvBoss:{name:'無人輸送ギア（親機）',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'none',rShoulder:'MS',lShoulder:'none'},tint:'convoy',hp:22500,dmg:34,rate:2.0,rng:70,spd:12,keep:30,bs:30,rw:6000,scale:1.15,tier:'boss'},
  cvEsc:{name:'無人護衛ギア',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'convoyD',hp:7500,dmg:30,rate:3.0,rng:60,spd:12,keep:30,bs:30,rw:2000,tier:'mob'},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
@@ -4983,7 +4984,7 @@ const CH_BS=1.5;   // 4-1 のあいだだけ、自機の弾速（射撃・ミサ
 const ENEMY_MS=.7;   // 敵ギアのミサイルの威力倍率（兵装の威力×段階の倍率に掛ける。以前は .5）。弾速・VERSUS 倍率は ENEMY_BS／VS_BS／VS_DMG
 function gearMissile(e,A,obj,i){const st=A.def.st,bk=ENEMY_BS*(RUN&&RUN.vs?VS_BS:1),dk=RUN&&RUN.vs?VS_DMG:1;obj.getWorldPosition(_p);obj.getWorldDirection(_d);if(st.vert?!(i|0):(i|0)%2===0)sAt(st.vert?'vmissile':'missile',_p,{g:.38});
  const m=new THREE.Mesh(UB,new THREE.MeshBasicMaterial({color:0xffa080}));m.scale.set(.16,.16,.55);m.position.copy(_p);S.add(m);
- FX.push({m,homeT:st.vert?.7:.45,homeK:st.vert?3:1.4,arc:!!st.arc,vel:st.vert?_d.clone().multiplyScalar(20*bk*(e.spec.msSpd||1)):_d.clone().multiplyScalar(7*(e.spec.msSpd||1)).add(new THREE.Vector3(0,st.arc?8:5,0)),life:st.range/st.spd+1.6/(e.spec.msSpd||1),age:0,missile:true,base:.16,tt:0,team:'e',vmax:26*bk*(e.spec.msSpd||1),dmg:Math.round(st.dmg*e.tier.dk*ENEMY_MS*dk*(e.spec.msK||1)),splash:st.area||0,imp:st.imp,home:e.atT?null:PTGT});{const iv=einV();if(iv){const f=FX[FX.length-1];f.vel.x+=iv.x;f.vel.z+=iv.z;f.vmax+=Math.hypot(iv.x,iv.z)}}}
+ FX.push({m,homeT:(st.vert?.7:.45)/(e.spec.msHom||1),homeK:(st.vert?3:1.4)*(e.spec.msHom||1),arc:!!st.arc,vel:st.vert?_d.clone().multiplyScalar(20*bk*(e.spec.msSpd||1)):_d.clone().multiplyScalar(7*(e.spec.msSpd||1)).add(new THREE.Vector3(0,st.arc?8:5,0)),life:st.range/st.spd+1.6/(e.spec.msSpd||1),age:0,missile:true,base:.16,tt:0,team:'e',vmax:26*bk*(e.spec.msSpd||1),dmg:Math.round(st.dmg*e.tier.dk*ENEMY_MS*dk*(e.spec.msK||1)),splash:st.area||0,imp:st.imp,home:e.atT?null:PTGT});{const iv=einV();if(iv){const f=FX[FX.length-1];f.vel.x+=iv.x;f.vel.z+=iv.z;f.vmax+=Math.hypot(iv.x,iv.z)}}}
 function gearMelee(e,A){const S0=A.def.st,ry=e.g.rotation.y,fx=Math.sin(ry),fz=Math.cos(ry),dmg=Math.round(S0.dmg*e.tier.mk);
  const tg=e.atT&&RUN&&RUN.tr?TOBJ().position:P.pos,dx=tg.x-e.g.position.x,dz=tg.z-e.g.position.z,d=Math.hypot(dx,dz)||1;
  if(d<S0.range+3.2&&(dx*fx+dz*fz)/d>.3){if(e.atT)truckHit(dmg,new THREE.Vector3(tg.x,2,tg.z));else if(Math.abs(mech.bot.position.y-e.y)<5)hitPlayer(dmg,S0.imp,playerCenter(new THREE.Vector3()))}}
@@ -5034,7 +5035,7 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
   if(r.length){const w=r.find(x=>x.kind==='近接')||r[Math.floor(Math.random()*r.length)];e.act={def:w.def,id:w.id,s:w.s,w:w.w,t0:t,st:{},fired:new Set()};w.cd=w.def.act.dur+(sp.rate||3)*T.cdK/(RUN&&RUN.vs?VS_FIRE:1)*(.8+Math.random()*.4)*(sp.rage&&e.hp<e.max*.5?.65:1)}}
  // シールド（どの段階でも）：自機が撃っている間、正面に構える
  const shw=e.shx?(e.ws.find(w=>w.kind==='防御'&&e.shx[w.s].brk<=0)||null):e.shw,G=sp.guard;
- if(e.shx){[-1,1].forEach(s=>{const q=e.shx[s];if(q.brk>0){q.brk-=dt;if(q.brk<=0)q.hp=q.max}});e.ws.forEach(w=>{if(w.kind==='防御'&&w.w&&w.w.rig)w.w.rig.pv.visible=e.shx[w.s].brk<=0});if(!shw)e.guardT=0;else if(!e.fin&&e.alive)e.guardT=9}   // リブラ：盾は常時展開（攻撃と同時）
+ if(e.shx){if(e.shx[-1].brk>0&&e.shx[1].brk>0){e.shRec=(e.shRec??25)-dt;if(e.shRec<=0){[-1,1].forEach(s=>{e.shx[s].brk=0;e.shx[s].hp=e.shx[s].max})}}e.ws.forEach(w=>{if(w.kind==='防御'&&w.w&&w.w.rig)w.w.rig.pv.visible=e.shx[w.s].brk<=0});if(!shw)e.guardT=0;else if(!e.fin&&e.alive)e.guardT=9}   // リブラ：盾は常時展開（攻撃と同時）
  if(e.shBrk>0){e.shBrk-=dt;if(e.shBrk<=0)e.shHp=e.shMax}
  if(G){if(shw&&!(e.shBrk>0)&&!e.act&&pa&&e.gCd<=0&&e.stun<=0&&e.rushT<=0&&Math.random()<dt*G.p*(d<G.near?.15:1)){e.guardT=G.t[0]+Math.random()*(G.t[1]-G.t[0]);e.gCd=G.cd[0]+Math.random()*(G.cd[1]-G.cd[0])}}
  else if(shw&&!(e.shBrk>0)&&!e.act&&pa&&e.gCd<=0&&e.stun<=0&&Math.random()<dt*3){e.guardT=1.1+Math.random()*.6;e.gCd=3+Math.random()*2}
@@ -5373,7 +5374,7 @@ let HITSRC=null;
 const AP_IDS=new Set(['RF3','RF4']);   // ダメージを下げる補正を無視する兵装
 const apK=m=>m<1&&HITSRC&&AP_IDS.has(cfg[HITSRC])?1:m;
 function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(RUN&&RUN.sv)e.rt=t+3;if(mode==='play'&&SS.dmgOut)dmg=Math.round(dmg*SS.dmgOut);   // 系列特性：与えるダメージの倍率
- if(e.type==='gear'&&e.guardT>0&&e.shx){dmg=dualShield(e,dmg,pos)}else if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){{const kk=apK(e.gFront<0?.1:.15),raw=dmg,take=Math.min(raw,Math.max(0,e.shHp??0)),over=raw-take;e.shHp=Math.max(0,(e.shHp??0)-take);dmg=take*kk+over;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
+ if(e.type==='gear'&&e.shx){dmg=dualShield(e,dmg,pos)}else if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){{const kk=apK(e.gFront<0?.1:.15),raw=dmg,take=Math.min(raw,Math.max(0,e.shHp??0)),over=raw-take;e.shHp=Math.max(0,(e.shHp??0)-take);dmg=take*kk+over;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
   if(e.shHp<=0&&e.shMax>0){e.guardT=0;e.shBrk=e.spec.shRec??ENEMY_SH_REC;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2);shBreakComm(e)}}}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=apK(.25);spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
  // 命中の演出：共通の命中音・威力に応じた光と火花・小さな振動・ダメージの数字（CONFIG で ON のとき）
  const pw=Math.max(0,Math.min(1,(dmg-30)/700));e.hit=Math.max(e.hit,.06+.09*pw);e.vib=.12;spawn(0xffffff,.5,pos,{life:.08});
