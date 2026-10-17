@@ -993,7 +993,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v237</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v238</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1071,7 +1071,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v237</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v238</span></div>
  </div>
 </div>
 
@@ -1138,7 +1138,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v237</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v238</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4854,9 +4854,9 @@ SHOULDER.MST={...SHOULDER.MS,name:'キャリアのミサイル',build(g){const p
 /* リブラ（エーリヒ機・05 CENTURION）専用兵装：両手の巨大な盾・右肩の巨大ミサイルポッド・左肩の2方向レーザー砲。見た目は SERIES[05].rival の wep／sh（libraShield／libraPod／libraLaser）、弾の出口と盾の構えは HAND.LBS／SHOULDER.LBM／LBL（非表示）で同じ形から作る。ショップには並べない */
 const LBK={};['main','sub','trim','metal','glow','joint','frame'].forEach(k=>LBK[k]=psMat(0x445544));
 function libraPod(g,K){const pod=grp(g,0,.5,0);pod.rotation.x=-.2;
- box(pod,1.5,1.0,1.5,K.main,0,0,0);[.55,-.55].forEach(y=>box(pod,1.54,.1,1.54,K.trim,0,y,0));box(pod,1.5,1.0,.04,K.frame,0,0,.77);
- [-1,1].forEach(q=>box(pod,.08,.9,.9,K.sub,q*.78,0,.1));
- const cells=[];for(let j=0;j<2;j++)for(let i=0;i<4;i++){const m=grp(pod,-.54+i*.36,.24-j*.48,.8);cyl(m,.14,.14,.06,K.metal,0,0,0,Math.PI/2,0,8);cells.push(m)}
+ box(pod,1.5,1.3,1.5,K.main,0,0,0);[.7,-.7].forEach(y=>box(pod,1.54,.1,1.54,K.trim,0,y,0));box(pod,1.5,1.3,.04,K.frame,0,0,.77);
+ [-1,1].forEach(q=>box(pod,.08,1.2,.9,K.sub,q*.78,0,.1));
+ const cells=[];for(let j=0;j<3;j++)for(let i=0;i<4;i++){const m=grp(pod,-.54+i*.36,.4-j*.4,.8);cyl(m,.14,.14,.06,K.metal,0,0,0,Math.PI/2,0,8);cells.push(m)}
  return {cells}}
 function libraLaser(g,K){const c=grp(g,0,.55,0);c.rotation.x=-.1;
  box(c,1.2,1.0,1.6,K.main,0,0,0);box(c,1.24,.1,1.64,K.trim,0,.55,0);
@@ -4869,7 +4869,7 @@ HAND.LBS={...HAND.SH4,vis:true,name:'リブラの大盾',st:{...HAND.SH4.st,fron
   [-1,1].forEach(q=>{box(p,1.15,4.4,.22,LBT.mid,q*1.55,.2,.12,0,q*.42,0);box(p,.8,3.4,.2,LBT.back,q*2.25,.1,.5,0,q*.7,0);box(p,.08,4.2,.12,LBT.glow,q*1.0,.2,.3,0,q*.2,0);box(p,.1,3.2,.12,LBT.gold,q*2.62,.1,.62,0,q*.7,0)});
   box(p,.14,2.6,.1,LBT.glow,0,.5,.66);box(p,1.2,.1,.1,LBT.glow,0,1.5,.66);
   return {plate:p,pv:R.pv,rig:R}}};
-SHOULDER.LBM={...SHOULDER.MS,name:'審判ミサイル',st:{kind:'射撃',dmg:600,range:95,area:4,rate:'1斉射',count:8,ammo:16,reload:12,wt:0,imp:'C',spd:40,hom:'強',note:'リブラ専用。8連装を一斉に放つ'},
+SHOULDER.LBM={...SHOULDER.MS,name:'審判ミサイル',st:{kind:'射撃',dmg:600,range:95,area:4,rate:'1斉射',count:12,ammo:24,reload:12,wt:0,imp:'C',spd:40,hom:'強',note:'リブラ専用。12連装を一斉に放つ'},
  act:{name:'一斉発射',dur:1.6,run(c){c.w.cells.forEach((m,i)=>{if(c.once('m'+i,.1+i*.07)&&c.missile(m,i)){flash(m,.25,0xffb060);shake=Math.max(shake,.04)}});
   return {w:env(c.u,.1,.7),torsoX:.1,torsoY:twist(c.s,.1),headY:twist(c.s,-.1),legs:stance(c.s,.5)}}},
  build(g){return libraPod(g,LBK)}};
@@ -4933,7 +4933,7 @@ const GEAR_MOB={
  vb2:{name:'キャリア',model:'timo',vpose:'timo',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RFT',lHand:'MGT',rShoulder:'MST',lShoulder:'none'},   // ティモ：旧型を手入れした万能型。ライフル・マシンガン・ミサイル（CH7 で強化版「キャリア改」）
   hp:20000,dmg:0,rate:1.8,rng:70,spd:9,keep:22,bs:30,rw:0,tier:'boss',msK:1.6,tx:{dk:.22,spread:1.8,cdK:1.4,gap:.7},msMax:2},
  vb3:{name:'リブラ',model:'erich',vpose:'common',dual:1,beam:1,cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'LBS',lHand:'LBS',rShoulder:'LBM',lShoulder:'LBL'},   // エーリヒ：両手の巨大な盾で正面を固め、ミサイルとレーザーで攻める耐久型
-  hp:30000,dmg:0,rate:2.6,rng:70,spd:5,keep:28,bs:24,rw:0,tier:'boss',msK:1,msSpd:1.8,msMax:8,rage:1,tx:{dk:.16,spread:1.6,cdK:1.0,gap:1,qb:0,jump:0},guard:{p:9,near:0,t:[2.2,3.4],cd:[.5,1.2]}},
+  hp:30000,dmg:0,rate:2.6,rng:70,spd:5,keep:28,bs:24,rw:0,tier:'boss',msK:1,msSpd:1.8,msMax:12,rage:1,tx:{dk:.16,spread:1.6,cdK:1.0,gap:1,qb:0,jump:0},guard:{p:9,near:0,t:[2.2,3.4],cd:[.5,1.2]}},
  cvBoss:{name:'無人輸送ギア（親機）',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'none',rShoulder:'MS',lShoulder:'none'},tint:'convoy',hp:22500,dmg:34,rate:2.0,rng:70,spd:12,keep:30,bs:30,rw:6000,scale:1.15,tier:'boss'},
  cvEsc:{name:'無人護衛ギア',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'convoyD',hp:7500,dmg:30,rate:3.0,rng:60,spd:12,keep:30,bs:30,rw:2000,tier:'mob'},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
