@@ -993,7 +993,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v235</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v236</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1071,7 +1071,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v235</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v236</span></div>
  </div>
 </div>
 
@@ -1138,7 +1138,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v235</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v236</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -2410,7 +2410,7 @@ const ITEM_CLS={'HD-03':'D','CR-03':'D','AR-03':'D','LG-03':'D','RF3':'D','MG3':
 // 'X'＝SHOP に並ばない（00 COUNTER・ラスト・オーダー）
 // 02系（BULWARK 02 と2ndタイプ武器）は最初のトレーニング完了後に入荷
 const is02=id=>/^(HD|CR|AR|LG)-02$/.test(id)||/^(RF|MG|BZ|BL|SH|MS|GC|RD|BT|IC)2$/.test(id);
-const clsOk=id=>(!is02(id)||TTUT>=TT_N)&&(!ITEM_CLS[id]||((ITEM_CLS[id]==='N'?false:ITEM_CLS[id]==='X'?(/-04$/.test(id)&&!!VSS.win[2]):ITEM_CLS[id]==='Q'?!!VSS.winB[1]:CLASSES.indexOf(CLS)>=CLASSES.indexOf(ITEM_CLS[id]))));
+const clsOk=id=>(!is02(id)||TTUT>=TT_N)&&(!ITEM_CLS[id]||((ITEM_CLS[id]==='N'?false:ITEM_CLS[id]==='X'?(/-04$/.test(id)&&!!VSS.win[2]):ITEM_CLS[id]==='Y'?(/-05$/.test(id)&&!!VSS.winB[2]):ITEM_CLS[id]==='Q'?!!VSS.winB[1]:CLASSES.indexOf(CLS)>=CLASSES.indexOf(ITEM_CLS[id]))));
 
 /* 名前の体系：CAT＝種類（英語の項目名）、TYPE＝種類の日本語、MODEL＝型番、NAME＝固有名。
    同じ種類の装備が増えたら、同じ CAT で型番と固有名だけ変えて追加する */
@@ -2922,9 +2922,8 @@ const SERIES=[
     for(let i=0;i<3;i++)box(P.hip,.76-i*.04,.04,.13,K.trim,0,-.12-i*.2,.43);
     cyl(P.torso,.19,.19,.04,K.trim,0,1.05,.58,Math.PI/2,0,8);
    },
-   wep:{r:W.rifle,
-    l(g,K){const p=grp(g,0,-.5,-.36);box(p,.7,2.0,.1,K.main,0,0,0);[-1,1].forEach(q=>box(p,.32,2.0,.1,K.main,q*.48,0,.06,0,q*.35,0));
-     box(p,1.32,.08,.18,K.trim,0,.98,.04);box(p,1.32,.08,.18,K.trim,0,-.98,.04);cyl(p,.16,.16,.12,K.trim,0,0,-.08,Math.PI/2,0,8);box(g,.2,.5,.2,K.frame,0,-.3,-.15)}},
+   wep:{r(g,K){box(g,.2,.5,.2,K.frame,0,-.3,-.15)},l(g,K){box(g,.2,.5,.2,K.frame,0,-.3,-.15)}},
+   sh:{r(g,K){libraPod(g,K)},l(g,K){libraLaser(g,K)}},
    back(g,K){box(g,.9,.5,.3,K.sub,0,0,-.1);box(g,.12,1.2,.12,K.frame,0,.8,-.2);box(g,1.8,.08,.08,K.trim,0,1.4,-.2);cyl(g,.08,.08,.1,K.trim,0,1.4,-.2,Math.PI/2,0,8);
     [-1,1].forEach(q=>{box(g,.03,.5,.03,K.metal,q*.85,1.15,-.2);box(g,.4,.04,.4,K.trim,q*.85,.9,-.2)})}},
   shop:{name:'CENTURION SET',jp:'CENTURION 05 一式（購入時）',deco:['装飾なし。とさかは頭頂の短い稜線だけ','色は主人公の塗装。胸の上端とすねの下端にオレンジの警戒ライン']}},
@@ -3263,7 +3262,7 @@ const GXF=[
  {n:'04',ser:'GLA',name:'GLADIATOR 04',cls:'X',price:28000,ml:'G',types:['兜型','軽装型','近接型','軽量二脚'],
   head:{wt:9,ability:'quick',abName:'高速ロック',abEn:'QUICK LOCK',lockDeg:25,lockAdd:10,abDesc:'ロックした敵へ視点がすばやく向き、ロックが外れにくい。ロック角度 ±25°、距離＋10m'},
   core:{armor:820,boost:140,wt:46},arms:{armor:260,load:117,wt:22},legs:{armor:470,mob:115,wt:48}},
- {n:'05',ser:'CEN',name:'CENTURION 05',cls:'N',price:34000,ml:'C',types:['一文字型','制式型','重ね板型','中重量二脚'],
+ {n:'05',ser:'CEN',name:'CENTURION 05',cls:'Y',price:34000,ml:'C',types:['一文字型','制式型','重ね板型','中重量二脚'],
   head:{wt:12,ability:'wide',abName:'広角ロック',abEn:'WIDE LOCK',lockDeg:40,lockAdd:10,abDesc:'広い角度でロックする。ロック角度 ±40°、距離＋10m'},
   core:{armor:1000,boost:120,wt:62},arms:{armor:330,load:135,wt:34},legs:{armor:520,mob:90,wt:72}},
  {n:'06',ser:'REV',name:'REVENANT 06',cls:'A',price:38000,ml:'R',types:['一角型','試作型','骨格型','逆関節'],
@@ -4488,7 +4487,7 @@ const cf=k=>{const n=parseInt(cc(k).slice(1),16),f=v=>{v/=255;return v<=.03928?v
 const CHKEY=[['ノーナ','nona'],['ドール','doll'],['ベル','bell'],['JONAH','jonah'],['ジョナ','jonah'],['オットー','otto'],['セレナ','serena'],['エーリヒ','erich'],['ヴィクトル','viktor'],['ハンス','hans'],['ティモ','timo'],['ミラ','mira'],['ガイウス','gaius'],['レナード','leonard'],['ヴァルター','walter'],['ペトラ','petra']];
 const chKey=nm=>{nm=String(nm||'');const h=CHKEY.find(([w])=>nm.includes(w));return h?h[1]:'client'};
 const VSP={b:{nm:'BELL-01 ベル',c:cc('bell'),f:cf('bell'),v:'bell'},n:{nm:'N-07 ノーナ（端末）',c:cc('nona'),f:cf('nona'),v:'nona'},j:{nm:'JONAH（無線）',c:cc('jonah'),f:cf('jonah'),v:'adultF'}};
-const VCH={serena:{nm:'セレナ・ヴァルデス',c:cc('serena'),f:cf('serena'),v:'youthF',img:'img/rivals/rival-david-serena.png'},erich:{nm:'エーリヒ・ブラント',c:cc('erich'),f:cf('erich'),v:'adultM',img:'img/rivals/rival-deborah-erich.png'},viktor:{nm:'ヴィクトル・ザイン',c:cc('viktor'),f:cf('viktor'),v:'youthM',img:'img/rivals/rival-nimrod-viktor.png'},timo:{nm:'ティモ・アルケン',c:cc('timo'),f:cf('timo'),v:'youthM',img:'img/rivals/rival-noah-timo.png'}};
+const VCH={serena:{nm:'セレナ・ヴァルデス',c:cc('serena'),f:cf('serena'),v:'youthF',img:'img/rivals/rival-david-serena.png'},erich:{nm:'エーリヒ・ブラント',c:cc('erich'),f:cf('erich'),v:'adultM',img:'img/rivals/rival-deborah-erich.png'},viktor:{nm:'ヴィクトル・ザイン',c:cc('viktor'),f:cf('viktor'),v:'youthM',img:'img/rivals/rival-nimrod-viktor.png'},timo:{nm:'ティモ・アルケン',c:cc('timo'),f:cf('timo'),v:'youthM',img:'img/rivals/rival-noah-timo.png'},gaius:{nm:'ガイウス・ハーラン',c:cc('gaius'),f:cf('gaius'),v:'adultM',img:'img/rivals/rival-joshua-gaius.png'}};
 /* 場面に応じて一度だけ出る会話（VSS.seen に記録）。ok が真になった受付の訪問で、ベルの案内のあとに流れる。セリフは仮 */
 const VSEV=[
  {id:'c-semi-erich',ok:()=>!!VSS.win[0],lines:[   // 1回戦に勝った直後の受付：エーリヒ（現在の審判官のトップ）の初登場。このあと 3-2 のメールが届く
@@ -4532,6 +4531,38 @@ const VSEV=[
   ['erich','決勝で、お会いしましょう。……そこまで勝ち上がれたなら、ですが。'],
   ['n','……判定する側が、戦う側に回るなんて。'],
   ['n','「上の指示」と言いました。デボラ、でしょうか。……○○、気をつけましょう。']]},
+ {id:'b-final-serena',ok:()=>VSC===VSC_B&&vsCur()===2&&vsState(2)==='open',lines:[   // B 決勝が開いて最初の受付：セレナ（観戦に来た）。セリフは仮
+  ['b','……○○様。決勝の観覧席について、ご報告です。特別観覧席に、お一人、ご予約が入りました。'],
+  ['serena','わたしよ。……あら、いい顔してる。'],
+  ['n','セレナさん。観戦に、いらしたのですか。'],
+  ['serena','勝ち上がった人の顔を、見に来ただけ。……黒羊さん、決勝の相手はエーリヒなのね。'],
+  ['serena','前に、あの人が審判の試合で戦ったことがあるの。いつも正しかったわ。正しすぎて、息が詰まるくらい。'],
+  ['n','……C 大会でも、ですか。'],
+  ['serena','そう。わたし、あの舞台にいたあいだ、一度も聞き返さなかったの。どうしてここで戦うのか、誰がそれを決めたのか。<ruby class="mc">DAVID<rt>ダビデ</rt></ruby>が「私の決定に従うだけでいい」と言えば、それで納得していた。'],
+  ['serena','優勝しても、拍手はわたしのものじゃなかったわ。舞台のものだった。……気づいたのは、あなたに負けたあとだけど。'],
+  ['n','……疑問を、お持ちだったのですね。'],
+  ['serena','疑問なんて立派なものじゃない。ただの、遅い気づき。'],
+  ['serena','エーリヒは、規則の人。規則に従う人は、規則を決めた人の言うことも聞く。……だから、気をつけて。'],
+  ['serena','負けたら承知しないわよ。観覧席から、見ているから。'],
+  ['b','セレナ・ヴァルデス様、観覧席へご案内いたします。'],
+  ['n','……やはり、ほかにも疑問を持つ方が、いらしたのですね。']]},
+ {id:'b-final-erich-after',ok:()=>!!VSS.winB[2],lines:[   // 決勝に勝った直後の受付：エーリヒ（試合後）。センサーの件は本人も知らなかった。セリフは仮
+  ['erich','……天秤は、傾きました。'],
+  ['erich','私は、規則に従ってきました。従っていれば、天秤は水平に保てると、信じて。……今日、初めて傾きました。'],
+  ['n','ペトラさんから、機体のセンサーのことを聞きました。あなたは、ご存じなかったのでは。'],
+  ['erich','……知りませんでした。誰が、何を測ろうとしたのか。……調べます。公正であるために。'],
+  ['erich','優勝、おめでとうございます。……判定は、副官から正式に出ます。'],
+  ['b','優勝を確認いたしました。おめでとうございます、○○様。']]},
+ {id:'b-final-gaius',ok:()=>!!VSS.winB[2],lines:[   // 同じ訪問の最後：ガイウス（貴賓席の回線）の初登場。次の大会には出ない人。セリフは仮
+  ['_',900],
+  ['n','……貴賓席の回線から、通信が入っています。'],
+  ['b','許可は、出ています。……ガイウス・ハーラン様。闘技場の頂点、「無敗の皇帝」と呼ばれる方です。'],
+  ['gaius','……見ていた。B の頂点に立ったそうだな。'],
+  ['n','あなたは……。'],
+  ['gaius','名乗る必要はない。見届けに来ただけだ。……私は、次の大会には出ない。'],
+  ['gaius','だが、壁の向こうへ行くなら、いずれ会うことになる。……以上だ。'],
+  ['_',700],
+  ['n','……通信が、切れました。壁の向こう、と言いましたね。']]},
  {id:'b-r1-news',ok:()=>!!VSS.winB[0],lines:[   // B 大会の1回戦に勝った直後：闘技場速報（ノーナが読む）。ヴィクトル失格（準決勝）への伏線
   ['n','闘技場の速報が、端末に届きました。B 大会、1回戦の全試合が終了です。'],
   ['n','……エーリヒ・ブラントも、<em>初戦を突破</em>。試合は、ほぼ一方的だったそうです。'],
@@ -4820,6 +4851,65 @@ SHOULDER.MST={...SHOULDER.MS,name:'キャリアのミサイル',build(g){const p
  box(pod,.03,.14,.8,TMW.cloth,.2,.5,-.7,.3);
  const cells=[];for(let j=0;j<2;j++)for(let i=0;i<3;i++){const m=grp(pod,-.27+i*.27,.14-j*.28,.5);box(m,.22,.22,.04,TMW.dk,0,0,.0);box(m,.12,.12,.05,TMW.steel,0,0,.02);cells.push(m)}
  return {cells}}};
+/* リブラ（エーリヒ機・05 CENTURION）専用兵装：両手の巨大な盾・右肩の巨大ミサイルポッド・左肩の2方向レーザー砲。見た目は SERIES[05].rival の wep／sh（libraShield／libraPod／libraLaser）、弾の出口と盾の構えは HAND.LBS／SHOULDER.LBM／LBL（非表示）で同じ形から作る。ショップには並べない */
+const LBK={};['main','sub','trim','metal','glow','joint','frame'].forEach(k=>LBK[k]=psMat(0x445544));
+function libraPod(g,K){const pod=grp(g,0,.5,0);pod.rotation.x=-.2;
+ box(pod,1.5,1.0,1.5,K.main,0,0,0);[.55,-.55].forEach(y=>box(pod,1.54,.1,1.54,K.trim,0,y,0));box(pod,1.5,1.0,.04,K.frame,0,0,.77);
+ [-1,1].forEach(q=>box(pod,.08,.9,.9,K.sub,q*.78,0,.1));
+ const cells=[];for(let j=0;j<2;j++)for(let i=0;i<4;i++){const m=grp(pod,-.54+i*.36,.24-j*.48,.8);cyl(m,.14,.14,.06,K.metal,0,0,0,Math.PI/2,0,8);cells.push(m)}
+ return {cells}}
+function libraLaser(g,K){const c=grp(g,0,.55,0);c.rotation.x=-.1;
+ box(c,1.2,1.0,1.6,K.main,0,0,0);box(c,1.24,.1,1.64,K.trim,0,.55,0);
+ box(c,.56,.56,2.6,K.sub,0,0,2.0);[1.0,1.9,2.8].forEach(z=>box(c,.74,.74,.14,K.trim,0,0,z));
+ [-1,1].forEach(q=>{box(c,.2,.34,1.1,K.trim,q*.42,0,3.7);box(c,.14,.14,.2,K.glow,q*.42,0,4.3)});
+ return {muzzle:[-1,1].map(q=>grp(c,q*.42,0,4.35))}}
+const LBT={back:psMat(0xffffff,{map:panel('#4a6a3a','#243a24')}),mid:psMat(0xffffff,{map:panel('#6f8a3a','#3a4a24')}),dark:psMat(0x1c1712),gold:psMat(0x9a8a4a),glow:new THREE.MeshBasicMaterial({color:0xb6e88a})};
+HAND.LBS={...HAND.SH4,vis:true,name:'リブラの大盾',st:{...HAND.SH4.st,front:.2,grd:{walk:0,dash:0,qb:0,jump:0,opp:1}},
+ build(g,s){const R=shieldBase(g,s),p=R.p;shieldPlate(R,2.6,5.4,{back:LBT.back,mid:LBT.mid,panel:LBT.back,band:LBT.gold,acc:LBT.gold,fin:LBT.dark});
+  box(p,.12,1.5,.08,LBT.glow,0,.35,.64);box(p,1.5,.1,.08,LBT.glow,0,1.15,.64);[-1,1].forEach(q=>{box(p,.5,.06,.08,LBT.glow,q*.6,.8,.64);box(p,.03,.34,.06,LBT.glow,q*.6,.97,.64)});
+  return {plate:p,pv:R.pv,rig:R}}};
+SHOULDER.LBM={...SHOULDER.MS,name:'審判ミサイル',st:{kind:'射撃',dmg:600,range:95,area:4,rate:'1斉射',count:8,ammo:16,reload:12,wt:0,imp:'C',spd:40,hom:'強',note:'リブラ専用。8連装を一斉に放つ'},
+ act:{name:'一斉発射',dur:2.2,run(c){c.w.cells.forEach((m,i)=>{if(c.once('m'+i,.1+i*.11)&&c.missile(m,i)){flash(m,.25,0xffb060);shake=Math.max(shake,.04)}});
+  return {w:env(c.u,.1,.7),torsoX:.1,torsoY:twist(c.s,.1),headY:twist(c.s,-.1),legs:stance(c.s,.5)}}},
+ build(g){return libraPod(g,LBK)}};
+SHOULDER.LBL={...SHOULDER.MS,name:'審判砲',st:{kind:'射撃',dmg:30,range:120,area:0,rate:'充填2.2秒→照射2.6秒',count:1,ammo:INF,reload:0,wt:0,imp:'C',spd:0,hom:'なし',note:'リブラ専用。2本のビームを左右に開いて放つ'},
+ act:{name:'二方向照射',dur:4.8,root:true,beam:true,run(c){return {w:env(c.u,.1,.9),torsoX:.05,legs:stance(c.s,.4),crouch:.15}}},
+ build(g){return libraLaser(g,LBK)}};
+/* リブラのレーザー：充填2.2秒（細い赤い線が2本、自機を左右から挟み、ゆっくり追う）→ 2.6秒照射（2本は少しずつ閉じていく）。触れている間 0.25秒ごとに30（本数分） */
+const LB_CH=2.2/4.8;
+function libraBeamOff(e){const L=e.lb;if(!L)return;L.on=false;L.ph=0;L.bm.forEach(b=>b.G.visible=false)}
+function libraBeam(e,A,dt){
+ if(!e.lb){const bgm=new THREE.BoxGeometry(1,1,1);bgm.translate(0,0,.5);
+  e.lb={bm:[0,1].map(()=>{const C=new THREE.Mesh(bgm,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.95,depthWrite:false})),O=new THREE.Mesh(bgm,new THREE.MeshBasicMaterial({color:0xff3020,transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false})),G=new THREE.Group();C.frustumCulled=O.frustumCulled=false;G.add(O,C);G.visible=false;S.add(G);return {G,C,O}}),bear:0,hitT:[0,0],on:false,ph:0}}
+ const L=e.lb,w=A&&A.def.act.beam?A.w:null;
+ if(!w||!w.muzzle||e.stun>.3||TRAIN||P.hp.core<=0||P.down>0||e.fin||!e.alive){if(L.on)libraBeamOff(e);return}
+ const u=(t-A.t0)/A.def.act.dur,charge=u<LB_CH,pc=playerCenter(new THREE.Vector3()),fr=w.muzzle.map(m=>m.getWorldPosition(new THREE.Vector3())),mid=fr[0].clone().add(fr[1]).multiplyScalar(.5);
+ const tb=Math.atan2(pc.x-mid.x,pc.z-mid.z);
+ if(!L.on){L.on=true;L.bear=tb;L.ph=0}
+ let df=tb-L.bear;df=Math.atan2(Math.sin(df),Math.cos(df));L.bear+=Math.max(-.4*dt,Math.min(.4*dt,df));
+ const rage=e.hp<e.max*.3,tf=Math.max(0,(u-LB_CH)*A.def.act.dur),off=charge?.42:Math.max(.05,.42-(rage?.18:.12)*tf);
+ if(charge&&L.ph===0){L.ph=1;sAt('charge',e.g.position,{g:.8,dk:.2})}
+ if(!charge&&L.ph===1){L.ph=2;sAt('mainGun',e.g.position,{g:.9,dk:.3});shake=Math.max(shake,.4)}
+ L.bm.forEach((b,i)=>{const sg=i?1:-1,th=L.bear+sg*off,hz=Math.hypot(pc.x-fr[i].x,pc.z-fr[i].z)||1,sl=(pc.y-fr[i].y)/hz,dir=new THREE.Vector3(Math.sin(th),sl,Math.cos(th)).normalize();
+  let len=140;if(dir.y<-.01)len=Math.min(len,fr[i].y/-dir.y);
+  b.G.position.copy(fr[i]);b.G.lookAt(fr[i].clone().add(dir));b.G.visible=true;
+  if(charge){b.C.visible=false;const q=.14;b.C.scale.set(q*.4,q*.4,len);b.O.scale.set(q,q,len);b.O.material.opacity=.3+.35*Math.abs(Math.sin(t*18))}
+  else{b.C.visible=true;const q=1.7;b.C.scale.set(q*.4,q*.4,len);b.O.scale.set(q,q,len);b.O.material.opacity=.55;
+   L.hitT[i]-=dt;const tt=Math.max(0,Math.min(len,pc.clone().sub(fr[i]).dot(dir))),pt=fr[i].clone().addScaledVector(dir,tt);
+   if(L.hitT[i]<=0&&pc.distanceTo(pt)<3){L.hitT[i]=.25;hitPlayer(30,'C',pt)}
+   if(dir.y<-.01&&sOnce('lbs'+i,.06)){const gp=fr[i].clone().addScaledVector(dir,len);spawn(0xffe0a0,2.4,gp,{life:.12,grow:1});spawn(0xff6030,1.4,gp.clone().add(new THREE.Vector3((Math.random()-.5)*3,1+Math.random()*2,(Math.random()-.5)*3)),{life:.3,grow:.6})}}});
+ if(!charge){shake=Math.max(shake,.14);if(sOnce('lbbm',.45))sAt('mainGun',e.g.position,{g:.4,dk:.3})}}
+/* リブラの盾は2枚で別々の耐久（SHE_HP）。正面から当たった側の盾が受け、壊れた側は通常の正面装甲（×.25）。復活は25秒（HP30%未満は40秒） */
+const SHE_HP=6000;
+function dualShield(e,dmg,pos){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z,l=Math.hypot(dx,dz)||1,fr=(dx*Math.sin(ry)+dz*Math.cos(ry))/l;
+ if(fr<=(e.gFront??.2))return dmg;
+ const lat=(dx*Math.cos(ry)-dz*Math.sin(ry))/l,sd=lat>=0?1:-1;let s=null;
+ if(e.shx[sd].brk<=0)s=sd;else if(Math.abs(lat)<.3&&e.shx[-sd].brk<=0)s=-sd;
+ if(s==null)return dmg*apK(.25);
+ const q=e.shx[s],take=Math.min(dmg,Math.max(0,q.hp)),over=dmg-take;q.hp-=take;
+ spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
+ if(q.hp<=0){q.brk=e.hp<e.max*.3?40:25;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2);shBreakComm(e);if(e.shx[-s].brk>0)e.guardT=0}
+ return take*apK(.15)+over}
 const GEAR_MOB={
  militia:{name:'払い下げ機',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'sand',hp:2400,dmg:40,rate:3.4,rng:50,spd:6,keep:24,bs:24,rw:1800,tier:'mob'},
  bulwark:{name:'重装機',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'SH',rShoulder:'none',lShoulder:'none'},tint:'rust',hp:3600,dmg:30,rate:2.2,rng:40,spd:4.5,keep:18,bs:22,rw:2400,tier:'mob'},
@@ -4841,13 +4931,15 @@ const GEAR_MOB={
   hp:17000,dmg:0,rate:1.5,rng:70,spd:10,keep:14,bs:32,rw:0,tier:'boss',msK:2,tx:{dk:.24,mk:.273,spread:1.6,cdK:1.3,gap:.6},guard:{p:6,near:0,t:[.8,1.2],cd:[1.5,2.5]},rush:26,msMax:3,rage:1},
  vb2:{name:'キャリア',model:'timo',vpose:'timo',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RFT',lHand:'MGT',rShoulder:'MST',lShoulder:'none'},   // ティモ：旧型を手入れした万能型。ライフル・マシンガン・ミサイル（CH7 で強化版「キャリア改」）
   hp:20000,dmg:0,rate:1.8,rng:70,spd:9,keep:22,bs:30,rw:0,tier:'boss',msK:1.6,tx:{dk:.22,spread:1.8,cdK:1.4,gap:.7},msMax:2},
+ vb3:{name:'リブラ',model:'erich',vpose:'common',dual:1,beam:1,cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'LBS',lHand:'LBS',rShoulder:'LBM',lShoulder:'LBL'},   // エーリヒ：両手の巨大な盾で正面を固め、ミサイルとレーザーで攻める耐久型
+  hp:30000,dmg:0,rate:2.6,rng:70,spd:5,keep:28,bs:24,rw:0,tier:'boss',msK:1,msSpd:1.3,msMax:8,rage:1,tx:{dk:.16,spread:1.6,cdK:1.5,gap:1,qb:0,jump:0},guard:{p:9,near:0,t:[2.2,3.4],cd:[.5,1.2]}},
  cvBoss:{name:'無人輸送ギア（親機）',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'none',rShoulder:'MS',lShoulder:'none'},tint:'convoy',hp:22500,dmg:34,rate:2.0,rng:70,spd:12,keep:30,bs:30,rw:6000,scale:1.15,tier:'boss'},
  cvEsc:{name:'無人護衛ギア',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'convoyD',hp:7500,dmg:30,rate:3.0,rng:60,spd:12,keep:30,bs:30,rw:2000,tier:'mob'},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
 };
 function rivalGear(g,key,c){const Sx=GX.SERIES[GEARS[key].s],bot=GX.build(g,Sx.base,Sx.rival,Sx.rival.pal),weps={},hide=o=>o.traverse(x=>{if(x.isMesh)x.visible=false});
  bot.arms.forEach(a=>{const s=a.s,hk=s<0?'rHand':'lHand',sk=s<0?'rShoulder':'lShoulder';
-  if(c[hk]&&c[hk]!=='none'){const mh=mountHand(a.hand);weps[hk]=HAND[c[hk]].build(mh,s);hide(mh)}
+  if(c[hk]&&c[hk]!=='none'){const mh=mountHand(a.hand);weps[hk]=HAND[c[hk]].build(mh,s);if(!HAND[c[hk]].vis)hide(mh)}
   if(c[sk]&&c[sk]!=='none'){const hp=grp(bot.torso,s*bot.P.so.shoulder[0],bot.P.so.shoulder[1],bot.P.so.shoulder[2]);weps[sk]=SHOULDER[c[sk]].build(mountShoulder(hp),s);hide(hp)}});
  let mm=null;bot.traverse(x=>{if(!mm&&x.isMesh&&x.material&&x.material.emissive&&x.material.color&&x.material.color.getHex()===Sx.rival.pal.main)mm=x.material});
  bot.weps=weps;bot.mm=mm;return bot}
@@ -4873,6 +4965,7 @@ function gearInit(e){const sp=e.spec;e.tier={...GEAR_TIER[sp.tier||'mob'],...(sp
  GSLOTS.forEach(([k,s,T])=>{const id=sp.cfg[k];if(!id||id==='none')return;const def=T[id];if(!def||!def.act||!def.st)return;e.ws.push({k,s,id,def,kind:def.st.kind,cd:1+Math.random()*2.5,w:e.model.weps[k]||{}})});
  e.shMax=sp.shHp??ENEMY_SH_HP;e.shHp=e.shMax;e.shBrk=0;e.fin=null;e.finDone=false;if(e.model&&e.model.legs&&e.B){e.B.arms.forEach((b,i)=>{b.x=-.28;b.z=i?.12:-.12;b.e=-.82});e.B.legs.forEach(b=>{b.th=0;b.kn=0});e.B.tX=0;e.gd=0;e.gb=null;standJoints(e.model,e.lean||0)}e.hpBar.visible=!(RUN&&RUN.def&&RUN.def.vs!=null);e.act=null;e.y=0;e.vy=0;e.dashT=0;e.dashCd=1+Math.random()*3;e.qb=null;e.qbCd=2+Math.random()*2;e.jCd=3+Math.random()*4;e.guardT=0;e.gCd=0;e.rushT=0;e.fxT=0;e.dSide=1;
  e.shw=e.ws.find(w=>w.kind==='防御')||null;e.gFront=e.shw?(e.shw.def.st.front??.2):.2;
+ if(sp.dual){e.shx={'-1':{hp:SHE_HP,max:SHE_HP,brk:0},'1':{hp:SHE_HP,max:SHE_HP,brk:0}}}else e.shx=null;e.lb=e.lb||null;
  e.lean=sp.model?0:CORES[sp.cfg.core]?.lean||0;e.B={arms:[{x:-.28,z:-.12,e:-.82},{x:-.28,z:.12,e:-.82}],legs:[{th:0,kn:0},{th:0,kn:0}],tX:0}}
 function gearAim(e){return e.atT&&RUN&&RUN.tr?new THREE.Vector3(TOBJ().position.x,1.8+Math.random()*1.6,TOBJ().position.z):playerCenter(new THREE.Vector3())}
 function gearShot(e,A,obj,vis={}){const S0=A.def.st,T=e.tier;obj.getWorldPosition(_p);const from=_p.clone(),aim=gearAim(e),spd=Math.max(22,Math.min(52,(S0.spd||40)*.6));
@@ -4929,6 +5022,7 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
    once:(id,u0)=>c.u>=u0&&!A.fired.has(id)&&(A.fired.add(id),true),
    shot:(obj,vis)=>{A.st.ns=(A.st.ns||0)+1;if(T.rf&&/^RF/.test(A.id)&&A.st.ns>T.rf)return false;gearShot(e,A,obj,vis);return true},missile:(obj,i)=>{A.st.nm=(A.st.nm||0)+1;if(A.st.nm>(sp.msMax||GEAR_MS_MAX))return false;gearMissile(e,A,obj,i);return true},melee:()=>{gearMelee(e,A);if(sp.bladeFx)bladeBurst(A.w)}};
   if(c.u>=1||e.stun>.3){endOf(A.def)?.(A.w);e.act=null;e.gapT=T.gap||0}else{o=A.def.act.run(c);if(o&&o.scroll)scroll=o.scroll}}
+ if(sp.beam)libraBeam(e,A,dt);
  if(A&&sp.bladeFx&&A.w&&A.w.muzzle&&A.def.st&&A.def.st.kind==='近接'){const u=(t-A.t0)/A.def.act.dur;if(u>.15&&u<.85)bladeTrail(A.w,dt)}   // ブレードの軌道に粒子（セレナ。GEAR_MOB の bladeFx）
  shake=shk+Math.max(0,shake-shk)*(Math.hypot(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z)<16?.3:0);
  if(scroll){const ry=e.g.rotation.y;e.home.x+=Math.sin(ry)*scroll*dt;e.home.z+=Math.cos(ry)*scroll*dt}
@@ -4936,7 +5030,8 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
  e.gapT=(e.gapT||0)-dt;if(!e.act&&free&&armed&&e.guardT<=0&&e.gapT<=0){const r=e.ws.filter(w=>w.cd<=0&&w.kind!=='防御'&&(w.kind==='近接'?d<w.def.st.range+4:d<Math.min(w.def.st.range,sp.rng||w.def.st.range)));
   if(r.length){const w=r.find(x=>x.kind==='近接')||r[Math.floor(Math.random()*r.length)];e.act={def:w.def,id:w.id,s:w.s,w:w.w,t0:t,st:{},fired:new Set()};w.cd=w.def.act.dur+(sp.rate||3)*T.cdK/(RUN&&RUN.vs?VS_FIRE:1)*(.8+Math.random()*.4)*(sp.rage&&e.hp<e.max*.5?.65:1)}}
  // シールド（どの段階でも）：自機が撃っている間、正面に構える
- const shw=e.shw,G=sp.guard;
+ const shw=e.shx?(e.ws.find(w=>w.kind==='防御'&&e.shx[w.s].brk<=0)||null):e.shw,G=sp.guard;
+ if(e.shx){[-1,1].forEach(s=>{const q=e.shx[s];if(q.brk>0){q.brk-=dt;if(q.brk<=0)q.hp=q.max}});e.ws.forEach(w=>{if(w.kind==='防御'&&w.w&&w.w.rig)w.w.rig.pv.visible=e.shx[w.s].brk<=0});if(!shw)e.guardT=0}
  if(e.shBrk>0){e.shBrk-=dt;if(e.shBrk<=0)e.shHp=e.shMax}
  if(G){if(shw&&!(e.shBrk>0)&&!e.act&&pa&&e.gCd<=0&&e.stun<=0&&e.rushT<=0&&Math.random()<dt*G.p*(d<G.near?.15:1)){e.guardT=G.t[0]+Math.random()*(G.t[1]-G.t[0]);e.gCd=G.cd[0]+Math.random()*(G.cd[1]-G.cd[0])}}
  else if(shw&&!(e.shBrk>0)&&!e.act&&pa&&e.gCd<=0&&e.stun<=0&&Math.random()<dt*3){e.guardT=1.1+Math.random()*.6;e.gCd=3+Math.random()*2}
@@ -4953,8 +5048,9 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
   if(o.legs){const lw=o.legs.w??w;legF.forEach((f,i)=>{f.th=L(f.th,o.legs.th[i],lw);f.kn=L(f.kn,o.legs.kn[i],lw)})}
   if(o.torsoY!=null)tY=L(tY,o.torsoY,w);if(o.torsoX!=null)tX=L(tX,o.torsoX,w);if(o.headY!=null)hY=L(hY,o.headY,w);if(o.crouch)crouch=Math.max(crouch,o.crouch*w);if(o.lift)lift+=o.lift}
  {const on=e.guardT>0&&shw,old=e.gd||0;e.gd=Math.max(0,Math.min(1,old+(on?1:-1)*dt/.2));if(on&&old<=0)e.gb=0;e.gb=(e.gb==null?1:e.gb)+dt;
-  if(shw){const br=on?Math.sin(Math.PI*Math.min(1,e.gb/.4)):0,q=sm(e.gd);if(shw.w&&shw.w.rig){shw.w.rig.gd=e.gd;shw.w.rig.br=br}
-   if(q>0){const gp=GUARD_POSE(shw.s);mixArm(armF[shw.s<0?0:1],{x:gp.x-br*.12,z:gp.z,e:gp.e},q);crouch=Math.max(crouch,.15*q)}}}
+  if(shw){const br=on?Math.sin(Math.PI*Math.min(1,e.gb/.4)):0,q=sm(e.gd);if(shw.w&&shw.w.rig){shw.w.rig.gd=e.gd;shw.w.rig.br=br}if(e.shx)e.ws.forEach(w=>{if(w.kind==='防御'&&w.w&&w.w.rig){w.w.rig.gd=e.gd;w.w.rig.br=br}})
+   if(q>0){const gp=GUARD_POSE(shw.s);mixArm(armF[shw.s<0?0:1],{x:gp.x-br*.12,z:gp.z,e:gp.e},q);crouch=Math.max(crouch,.15*q);
+    if(e.shx){const o2=e.ws.find(w=>w.kind==='防御'&&w!==shw&&e.shx[w.s].brk<=0);if(o2){const g2=GUARD_POSE(o2.s);mixArm(armF[o2.s<0?0:1],{x:g2.x-br*.12,z:g2.z,e:g2.e},q)}}}}}
  m.torso.rotation.set(tX+e.lean,tY,0);m.head.rotation.y=hY;
  m.arms.forEach((a,i)=>{a.sh.rotation.set(armF[i].x+e.lean*.6,0,armF[i].z);a.el.rotation.x=armF[i].e});
  m.legs.forEach((l,i)=>{const b=legF[i];if(l.dg){digiPose(l,b.th,b.kn,crouch);return}
@@ -5274,7 +5370,7 @@ let HITSRC=null;
 const AP_IDS=new Set(['RF3','RF4']);   // ダメージを下げる補正を無視する兵装
 const apK=m=>m<1&&HITSRC&&AP_IDS.has(cfg[HITSRC])?1:m;
 function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(RUN&&RUN.sv)e.rt=t+3;if(mode==='play'&&SS.dmgOut)dmg=Math.round(dmg*SS.dmgOut);   // 系列特性：与えるダメージの倍率
- if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){{const kk=apK(e.gFront<0?.1:.15),raw=dmg,take=Math.min(raw,Math.max(0,e.shHp??0)),over=raw-take;e.shHp=Math.max(0,(e.shHp??0)-take);dmg=take*kk+over;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
+ if(e.type==='gear'&&e.guardT>0&&e.shx){dmg=dualShield(e,dmg,pos)}else if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){{const kk=apK(e.gFront<0?.1:.15),raw=dmg,take=Math.min(raw,Math.max(0,e.shHp??0)),over=raw-take;e.shHp=Math.max(0,(e.shHp??0)-take);dmg=take*kk+over;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
   if(e.shHp<=0&&e.shMax>0){e.guardT=0;e.shBrk=e.spec.shRec??ENEMY_SH_REC;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2);shBreakComm(e)}}}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=apK(.25);spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
  // 命中の演出：共通の命中音・威力に応じた光と火花・小さな振動・ダメージの数字（CONFIG で ON のとき）
  const pw=Math.max(0,Math.min(1,(dmg-30)/700));e.hit=Math.max(e.hit,.06+.09*pw);e.vib=.12;spawn(0xffffff,.5,pos,{life:.08});
@@ -5297,7 +5393,7 @@ function updateEnemies(dt){
   if(e.post&&e.alive){const dd=Math.hypot(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z);e.g.visible=dd<JAM_CULL;if(dd>=JAM_CULL&&jamQuiet(e)){if(e.shadow)e.shadow.visible=false;return}}   // 4-2：霧の向こう（遠い護衛）は描かず、巡回の計算もしない
   if(e.fin){finTick(e,dt);return}
   if(!e.alive&&e.fall){towerFall(e,dt);return}
-  if(!e.alive){if(RUN)return;e.respawn-=dt;if(e.respawn<=0)placeEnemy(e);return}
+  if(!e.alive){if(e.lb&&e.lb.on)libraBeamOff(e);if(RUN)return;e.respawn-=dt;if(e.respawn<=0)placeEnemy(e);return}
   const tr=RUN&&RUN.tr&&RUN.tr.hp>0?RUN.tr:null,dP=Math.hypot(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z),dT=tr?Math.hypot(TOBJ().position.x-e.g.position.x,TOBJ().position.z-e.g.position.z):1e9,atT=tr&&(svTgt(e)||(e.cargo?dT<60:dT<dP-6));if(RUN&&RUN.sv&&dP<15)e.rt=t+3;
   const to=_q.copy(atT?TOBJ().position:P.pos).sub(e.g.position);to.y=0;const d=to.length(),yaw=Math.atan2(to.x,to.z);
   if(e.type==='boss'){bossTick(e,dt,d,yaw);return}
@@ -5870,6 +5966,9 @@ const MLIST=[
  {id:'n-shop-b',ch:0,kind:'mail',notice:true,shop:'B',ready:false,title:'入荷のお知らせ',from:'部品倉庫 D-06',fromFull:'第7整備区画 部品倉庫（整備管理AI D-06）',reward:0,
   subj:'CLASS B への昇格、おめでとうございます！！ 新しい兵装が入荷いたしました！！',body:'○○様<br>CLASS B への昇格、おめでとうございます！ ドール、棚の前で、小さく拍手をいたしました。<br>兵装の4つ目の型のうち、まず5点が入荷いたしました。<b>レールライフル</b>・<b>連装ガトリング</b>・<b>連撃ブレード</b>・<b>展開シールド</b>・<b>高出力ブースター</b>でございます。どれも、いままでの型より、ずっとクセの強い品でございます。<br>残りの5点は、準備が整い次第、またご案内いたします。出どころは、いつものとおり、お聞きにならないでくださいませ。<br><span class="end">── D-06</span>',
   mailNona:'ドールさんからです。新しい兵装が5点、入荷したようです。'},
+ {id:'n-shop-y',ch:0,kind:'mail',notice:true,shop:'Y',ready:false,title:'入荷のお知らせ',from:'部品倉庫 D-06',fromFull:'第7整備区画 部品倉庫（整備管理AI D-06）',reward:0,
+  subj:'ご優勝おめでとうございます！！ 見覚えのない荷が届いておりました！！',body:'○○様<br>ドールでございます。優勝、おめでとうございます！<br>本日、棚卸しをしておりましたところ、見覚えのない荷が<b>四つ</b>増えておりました。<br>旧軍の制式部品、<b>CENTURION 05</b> の4点（頭・胴・腕・脚）でございます。エーリヒ様の機体と同じ系統の部品です。<br>……どこから届いたのかは、わたくしにも分かりません。数えるのは3回確かめました。4回目もしましょうか？<br>店頭に並べました。どうぞお越しくださいませ。<br><span class="end">── D-06</span>',
+  mailNona:'ドールさんからです。……ドール、また数え直しを。'},
  {id:'n-shop-q',ch:0,kind:'mail',notice:true,shop:'Q',ready:false,title:'入荷のお知らせ',from:'部品倉庫 D-06',fromFull:'第7整備区画 部品倉庫（整備管理AI D-06）',reward:0,
   subj:'準決勝のご勝利、おめでとうございます！！ 残りの兵装が入荷いたしました！！',body:'○○様<br>準決勝のご勝利、おめでとうございます！ 中継で拝見しておりました。<br>決勝に向けて、兵装の4つ目の型の残り5点が入荷いたしました。<b>誘導バズーカ</b>・<b>マイクロミサイル</b>・<b>対艦砲</b>・<b>全周レーダー</b>・<b>全周迎撃装置</b>でございます。<br>決勝のお相手は、手強いと伺っております。どうか、ご準備を万全に。<br>ぜひ、ぜひお立ち寄りを！<br><span class="end">── D-06</span>',
   mailNona:'ドールさんからです。決勝に向けて、残りの5点が入荷したそうです。'},
@@ -5899,9 +5998,22 @@ const MLIST=[
  {id:'v-b2',ch:0,kind:'mail',notice:true,ready:false,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
   subj:'対戦カード決定 ── 準決勝（B 大会）',body:'第7区画 代表 ○○ 殿<br>CLASS B 大会、<b>準決勝</b>の対戦カードが決まりました。<br>お相手：第4区画 代表 <b>ティモ・アルケン</b>（機体名：キャリア）<br>会場：闘技場 中央アリーナ<br>勝者は決勝に進出します。試合前に、受付で参加の最終確認を行ってください。<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
   mailNona:'B 大会、準決勝の知らせです。お相手は第4区画のティモ・アルケンさん。壁の外の砂原から来た選手で、機体名は「キャリア」です。'},
- {id:'v-b3',ch:0,kind:'mail',notice:true,ready:false,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
-  subj:'対戦カード決定 ── 決勝（B 大会）',body:'第7区画 代表 ○○ 殿<br>CLASS B 大会、<b>決勝</b>の対戦カードが決まりました。<br>お相手：第5区画 代表 <b>エーリヒ・ブラント</b><br>会場：闘技場 中央アリーナ<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
-  mailNona:'B 大会、決勝の知らせです。（文面は仮）'}];
+ {id:'v-b3',ch:0,kind:'mail',notice:true,ready:true,title:'対戦カード決定',from:'闘技場運営局',fromFull:'第3区画 闘技場運営局（<ruby class="mc n">P.A.S.T.O.R.<rt>パスター</rt></ruby><span class="mcn">-03</span> <ruby class="mc">DAVID<rt>ダビデ</rt></ruby> 管轄）',reward:0,
+  subj:'対戦カード決定 ── 決勝（B 大会）',body:'第7区画 代表 ○○ 殿<br>CLASS B 大会、<b>決勝</b>の対戦カードが決まりました。<br>お相手：第5区画 代表 <b>エーリヒ・ブラント</b>（機体名：リブラ）<br>会場：闘技場 中央アリーナ<br>なお、本試合は<b>審判官長が選手として出場する、大会史上初の決勝</b>です。審判は副官が務めます。<br>詳しくは、闘技場の受付（MENU の VERSUS）でご確認ください。<br><span class="end">── 闘技場運営局</span>',
+  mailNona:'決勝の知らせです。……審判を務めていた方と、戦うことになりました。'},
+ {id:'v-b3-petra',ch:0,kind:'visit',notice:true,once:true,ready:true,afterRead:'v-b3',title:'ペトラの来訪（決勝前）',from:'整備主任 ペトラ',client:'ペトラ',voice:'adultF',img:'img/clients/client-mechanic-petra.png',imgF:'',   // 決勝の対戦カードのメールを読んだあとの来訪。リブラの外見の情報とセンサーの話。セリフは仮
+  talk:[['c','決勝の相手、エーリヒなんでしょ。……ちょっと話しておこうと思って、来たわ。'],
+   ['n','ペトラさん。リブラの整備は、まだ審判部が……'],
+   ['c','封印は解けてないわ。でも運び込みのとき、搬入の手伝いだけはさせてもらえたの。外から見ただけよ。それでも、分かることはある。'],
+   ['c','まず盾。でかいのを2枚、両手に持ってるわ。正面は鉄壁よ。ただ、あれだけの面積を支えるには、横と背中は薄くするしかない。<em>盾の裏は、がら空き</em>。'],
+   ['c','それから肩。ミサイルのポッドと、レーザーの砲台。ミサイルは数で押してくるタイプ。レーザーは、前にあたしが見た要塞のやつに似てたわ。<em>撃つ前に、必ず光の線が出る</em>。それを見たら動くこと。'],
+   ['n','……詳しいですね。'],
+   ['c','整備屋だもの。……それと、もう一つ。前に話したセンサーのこと。あれ、<em>頭じゃなくて背中に積んであった</em>わ。'],
+   ['c','機体の動きじゃなくて、乗ってる人の反応を測るつもりみたい。……エーリヒ本人は、積んである理由を知らないはず。搬入のとき、「これは何の装置だ」って訊いてたもの。誰も答えなかったけどね。'],
+   ['n','本人にも、知らされていない……。'],
+   ['c','あの人、規則の人なのよ。規則どおりに動いてる。それが誰かの役に立ってるかどうかは、考えないようにしてきた人。……戦ってあげて。ちゃんとした相手として。'],
+   ['d','ペトラ様、お茶が入りました！　……あ、冷めておりました。'],
+   ['c','あ、お茶は結構よ。ドールさんに「冷めた」って言われるの、もう慣れたから。じゃ、観覧席から見てるわ！']]}];
 const MDEF=Object.fromEntries(MLIST.map(d=>[d.id,d]));
 /* ===== VERSUS（闘技場のクラス別トーナメント）=====
  1章に3試合（1回戦 → 準決勝 → 決勝）。各試合は「前の試合に勝つ」＋「need の依頼をクリア」で条件がそろい、
@@ -5922,7 +6034,9 @@ const VSC_B={cls:'B',ch:4,name:'CLASS B 大会',rounds:[
    talk:{start:['第7区画の代表か。……民兵あがりの意地、見せてやる。'],win:['……やるな。盾ごと、持っていかれたか。'],lose:['まだまだ甘いな。出直してこい。']}}},
  {label:'SEMIFINAL',ja:'準決勝',need:'4-2',mail:'v-b2',prize:35000,opp:{name:'ティモ・アルケン',en:'TIMO ARKEN',ali:'砂原の使者',reg:'第4区画',pastor:'NOAH',mech:'キャリア（MILITIA 01 カスタム）',note:'第4区画の使者。壁の外の砂原を知り尽くした、寡黙で優しい少年。旧型を手入れし尽くした機体で、ライフル・マシンガン・ミサイルを距離に応じて使い分ける万能型。',gear:'vb2',v:'youthM',riv:'timo',
    talk:{start:['……始めよう。負けるわけにはいかない。'],win:['……おれの負けだ。強いな、あんた。'],lose:['……悪いな。だが、いい試合だった。']}}},
- {label:'FINAL',ja:'決勝',ready:false,need:'4-3',mail:'v-b3',prize:50000,opp:{name:'エーリヒ・ブラント',en:'ERICH BRANDT',reg:'第5区画',pastor:'DEBORAH',mech:'リブラ（05 CENTURION）',note:'第5区画の審判官のトップ。丁寧な口調の63歳。盾とライフルで反撃する。',gear:'vb3',v:'adultM',riv:'erich',talk:{start:[],win:[],lose:[]}}}]};
+ {label:'FINAL',ja:'決勝',need:'4-3',mail:'v-b3',prize:50000,opp:{name:'エーリヒ・ブラント',en:'ERICH BRANDT',ali:'鉄血の天秤',reg:'第5区画',pastor:'DEBORAH',mech:'リブラ（05 CENTURION）',note:'第5区画の審判官のトップ。丁寧な口調の63歳。両手の巨大な盾で正面を固め、肩の巨大ミサイルとレーザー砲で攻める耐久型。',gear:'vb3',v:'adultM',riv:'erich',
+   nstart:['盾が2枚。正面は固いですが、盾の裏と背面は手薄です。回り込みましょう、○○。','肩のレーザーは、撃つ前に赤い光の線が出ます。線が見えたら動いてください。ミサイルは数が多いので、迎撃も考えて。'],
+   talk:{start:['決勝を、執り行います。……審判席には、私はおりません。ですが、規則は私が守ります。','公正に、全力で参ります。私情は、挟みません。'],win:['……負けました。公正な結果です。'],lose:['規則どおりの結果です。……出直しなさい。']}}}]};
 const VST=[VSC_C,VSC_B];let VSC=VSC_C;   // いま受付で見ている大会
 const vsW=(T=VSC)=>T===VSC_B?VSS.winB:VSS.win;
 const vsOk=()=>TUT==='done'&&CLASSES.indexOf(CLS)>=CLASSES.indexOf(VSC_C.cls);
@@ -6395,7 +6509,7 @@ const depOk=(k,st)=>k==='tut'?(st?st.tut:tutOk()):/^vs\d$/.test(k)?(st?st.vs.st[
 // 入荷のお知らせ：いまの等級までの分で、まだ届いていないものを届ける（古い等級から順に、時刻を1ずつずらす）
 function shopNotice(){const ci=CLASSES.indexOf(CLS),out=[];let t=Date.now();if(TTUT<TT_N)return out;  // 最初のトレーニングが済むまで入荷のお知らせは届かない
 
- MLIST.filter(d=>d.shop&&!MIS[d.id]&&(d.shop==='G'?!!VSS.win[2]:d.shop==='Q'?!!VSS.winB[1]:CLASSES.indexOf(d.shop)<=ci)).forEach(d=>{MIS[d.id]={got:true,read:false,clear:false,n:0,t:t++};out.push(d)});return out}
+ MLIST.filter(d=>d.shop&&!MIS[d.id]&&(d.shop==='G'?!!VSS.win[2]:d.shop==='Q'?!!VSS.winB[1]:d.shop==='Y'?!!VSS.winB[2]:CLASSES.indexOf(d.shop)<=ci)).forEach(d=>{MIS[d.id]={got:true,read:false,clear:false,n:0,t:t++};out.push(d)});return out}
 function misDeliver(kind){if(TUT!=='done')return [];const out=[];
  if(['train','continue','mission','shop','ttdone','versus'].includes(kind))MLIST.forEach(d=>{if(!isMis(d)||!d.ready||MIS[d.id])return;if(d.afterReg&&!VSS.reg)return;if(d.afterSeen&&!VSS.seen[d.afterSeen])return;if(!misDeps(d).every(k=>depOk(k)))return;if(d.afterGot&&(!MIS[d.afterGot]||out.some(x=>x.id===d.afterGot)))return;if(d.afterVisit&&!(MIS[d.afterVisit]&&MIS[d.afterVisit].read))return;
   MIS[d.id]={got:true,read:false,clear:false,n:0,t:Date.now()};out.push(d)});
@@ -7031,9 +7145,9 @@ function finEval(F,t){if(F.k==='collapse')return finCollapse(F,t);const [A,B,C]=
 const FIN_T=1.65;
 function finFx(p){spawn(0xffffff,1.4,p,{life:.18,grow:1.6});spawn(0xfff0b0,2.4,p,{life:.3,grow:1.2});shake=Math.max(shake,.3);SND.play('unlock',{g:.35})}
 // 撃破：その場で連続爆発（小6回→大1回）し、黒い煙を上げながらうなだれる
-function finDown(e){e.fin={k:'down',t:0,n:0,big:false,sm:0,from:finStart(e.model),dg:e.model.legs.some(l=>l.dg)};e.hpBar.visible=false;e.mat.emissive.setRGB(0,0,0);e.guardT=0}
+function finDown(e){if(e.lb)libraBeamOff(e);e.fin={k:'down',t:0,n:0,big:false,sm:0,from:finStart(e.model),dg:e.model.legs.some(l=>l.dg)};e.hpBar.visible=false;e.mat.emissive.setRGB(0,0,0);e.guardT=0}
 // 相手の勝ちポーズ（自機が負けたとき）。以後ギアの思考・移動・攻撃は一切動かさない
-function finWin(e){const m=e.model;e.fin={k:'win',t:0,fx:0,from:finStart(m),keys:FPOSE[e.spec.vpose]||FPOSE.common};e.hpBar.visible=false;e.guardT=0}
+function finWin(e){if(e.lb)libraBeamOff(e);const m=e.model;e.fin={k:'win',t:0,fx:0,from:finStart(m),keys:FPOSE[e.spec.vpose]||FPOSE.common};e.hpBar.visible=false;e.guardT=0}
 function finTick(e,dt){const F=e.fin,m=e.model,sc=e.spec.scale||1,gp=e.g.position;F.t+=dt;if(F.k==='hold')return;
  if(e.y>0){e.vy-=26*dt;e.y=Math.max(0,e.y+e.vy*dt);gp.y=e.y}
  let v;
@@ -7056,6 +7170,7 @@ const VSN={start:[['盾持ちの重装機です。正面は固い。側面に回
 /* ライバルの試合中の通信。once＝1試合に1回／rep＝何度でも（30秒以上あけ、順に使う）。pri が大きいほど優先 */
 const VSEV_K={stand:{pri:1},firstE:{pri:1},firstP:{pri:1},cover:{pri:1,rep:1},melee:{pri:1},eHalf:{pri:2},pHalf:{pri:2},eLow:{pri:2},pLow:{pri:2},idle:{pri:1,rep:1}};
 const VRIV={timo:{stand:['……風が止んでいる。'],firstE:['まず、一つだ。……悪いな。'],firstP:['……当てられたか。やるな。'],cover:['隠れても、風の音で分かる。','……そこだ。動くな。'],melee:['近いな……！'],eHalf:['……強いな。だが、まだ倒れるわけにはいかない。'],pHalf:['……まだ立てるのか。'],eLow:['もう少しだ。……もう少しだけ、持ってくれ。'],pLow:['……悪いな。決めさせてもらう。'],idle:['……どうした。','見ているだけでは、砂は晴れない。'],arms:['腕が……動かないのか。'],legs:['脚が……動かないのか。']},
+ erich:{stand:['天秤は、まだ水平です。……始めましょう。'],firstE:['規則どおり、一つ目です。'],firstP:['……届きましたか。見事です。'],cover:['物陰に隠れても、天秤は傾きません。','……照準。'],melee:['近い。……ですが、盾は下ろしません。'],eHalf:['なるほど。……あなたは、正しく戦っている。'],pHalf:['まだ立っていられますか。'],eLow:['天秤が、傾き始めている。……この感覚は、初めてです。'],pLow:['……終わりにしましょう。'],idle:['どうしました。公正に、お相手します。'],arms:['腕を失っても、規則は変わりません。'],legs:['脚が止まりましたか。']},
  serena:{stand:['様子見？　退屈させないで。'],firstE:['まずは一つ。'],firstP:['へえ……当ててくるのね。'],cover:['隠れても無駄よ。','柱の陰が好きなのね。','観客が退屈しているわ。出てきなさい。'],
  melee:['その距離で来る？　いいわ。'],eHalf:['……やるじゃない。'],pHalf:['まだ立っていられる？'],eLow:['ここからが本番よ。'],pLow:['終わりにしましょう。'],idle:['どうしたの、手が止まってる。','撃たないの？　つまらないわ。','見とれている場合じゃないわよ。'],
  arms:['腕はもう使えないわね。'],legs:['脚が止まったわ。どう逃げるの？']}};
@@ -7068,7 +7183,7 @@ function vsInit(){VSC=RUN.def.vt==='B'?VSC_B:VSC_C;const i=RUN.def.vs,r=VSC.roun
 function vsGo(){if(!RUN||!RUN.vs)return;const V=RUN.vs,o=V.r.opp;goWaitClear();GOW=true;VSCAM.on=true;VSCAM.t=0;commClear();
  // まず機体だけを見せ、1.8秒後に名前の帯
  GOWT.push(setTimeout(()=>{banner(o.en,(o.ali?'「'+o.ali+'」 ／ ':'')+o.reg+'代表 ／ '+o.mech,false,2.4);SND.play('start',{g:.35})},1800));
- GOWT.push(setTimeout(()=>{VSCAM.on=false;goSeq('MATCH START',V.r.ja,V.rem?[]:[...o.talk.start.map(x=>['o',x]),...VSN.start[V.i].map(x=>['n',x])],()=>{if(RUN&&RUN.vs){V.go=true;V.last=RUN.time||0}})},5400));
+ GOWT.push(setTimeout(()=>{VSCAM.on=false;goSeq('MATCH START',V.r.ja,V.rem?[]:[...o.talk.start.map(x=>['o',x]),...(o.nstart||VSN.start[V.i]).map(x=>['n',x])],()=>{if(RUN&&RUN.vs){V.go=true;V.last=RUN.time||0}})},5400));
  // MATCH START の帯に合わせて歓声（goSeq の帯は、最後の文字が出きってから2秒後）
  const ck=setInterval(()=>{if(!RUN||!RUN.vs){clearInterval(ck);return}if(bnBusy&&$('banner').querySelector('small').textContent===V.r.ja){clearInterval(ck);SND.play('cheer',{g:.45,size:1.2})}},100);setTimeout(()=>clearInterval(ck),30000)}
 // 試合中の出来事を通信の候補に積む（ライバルの通信と、ノーナの短い返し）
@@ -7655,7 +7770,7 @@ function dbgApply(){const now=Date.now();
  // 等級の通知メール：クリア済みの★の分だけ届いている状態にそろえる
  MLIST.filter(d=>d.story&&d.cls).forEach(d=>{const nid='n-cls-'+d.cls.toLowerCase();if(!MDEF[nid])return;if(DW.m[d.id]===2){if(!MIS[nid])MIS[nid]={got:true,read:true,clear:false,n:0,t:now}}else delete MIS[nid]});
  // VERSUS：受付の初回・各試合の勝利と対戦カードのメール
- if(!DW.vs.reg&&VSS.reg)VSS.seen={};if(DW.vs.sb[0]<2){delete VSS.seen['b-erich-reg'];delete VSS.seen['b-r1-news']}if(DW.vs.sb[1]<2){delete VSS.seen['b-semi-timo'];delete VSS.seen['b-semi-timo-after'];delete VSS.seen['b-semi-emergency']}   // オズ戦を「未着／届いた」に戻したら、エーリヒの登録と速報をもう一度見られる
+ if(!DW.vs.reg&&VSS.reg)VSS.seen={};if(DW.vs.sb[0]<2){delete VSS.seen['b-erich-reg'];delete VSS.seen['b-r1-news']}if(DW.vs.sb[1]<2){delete VSS.seen['b-semi-timo'];delete VSS.seen['b-semi-timo-after'];delete VSS.seen['b-semi-emergency']}if(DW.vs.sb[2]<2){delete VSS.seen['b-final-serena'];delete VSS.seen['b-final-erich-after'];delete VSS.seen['b-final-gaius']}   // オズ戦を「未着／届いた」に戻したら、エーリヒの登録と速報をもう一度見られる
  VSS.reg=DW.vs.reg;const vsNew=[];[[VSC_C,DW.vs.st,VSS.win],[VSC_B,DW.vs.sb,VSS.winB]].forEach(([T,sts,wins])=>T.rounds.forEach((r,i)=>{const v=sts[i];wins[i]=v===2;if(v>=1){if(!MIS[r.mail]){MIS[r.mail]={got:true,read:v===2,clear:false,n:0,t:now+i};if(v===1)vsNew.push(r)}}else delete MIS[r.mail]}));
  // パーツ：所持品を入れ替え。00 は TUNE を全 MAX に。持っていない品を装備していたら、その部位を初期装備に戻す
  const nOwn=DW.own.size;OWN.clear();START_OWN.forEach(i=>OWN.add(i));DW.own.forEach(i=>OWN.add(i));
