@@ -993,7 +993,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v242</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v243</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1071,7 +1071,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v242</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v243</span></div>
  </div>
 </div>
 
@@ -1138,7 +1138,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v242</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v243</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4886,7 +4886,7 @@ SHOULDER.LBM={...SHOULDER.MS,name:'審判ミサイル',st:{kind:'射撃',dmg:600
 SHOULDER.LBL={...SHOULDER.MS,name:'審判砲',st:{kind:'射撃',dmg:30,range:120,area:0,rate:'充填2.2秒→照射4.5秒',count:1,ammo:INF,reload:0,wt:0,imp:'C',spd:0,hom:'なし',note:'リブラ専用。2本のビームを左右に開いて放つ'},
  act:{name:'二方向照射',dur:6.7,root:true,beam:true,run(c){return {w:env(c.u,.1,.9),torsoX:.05,legs:stance(c.s,.4),crouch:.15}}},
  build(g){return libraLaser(g,LBK)}};
-/* リブラのレーザー：充填2.2秒（細い赤い線が2本、自機を左右から挟み、ゆっくり追う）→ 2.6秒照射（2本は開いて閉じてを繰り返す）。触れている間 0.25秒ごとに30（本数分） */
+/* リブラのレーザー：充填2.2秒（細い赤い線が2本、自機を左右から挟み、ゆっくり追う）→ 2.6秒照射（2本は開いて閉じてを繰り返す）。触れている間 0.25秒ごとに36（本数分） */
 const LB_CH=2.2/6.7;
 /* 開き（rad）の時間変化：開いた状態から1.0秒で閉じる→完全に重なる1.2秒（開き0）→1.0秒で開く→開いたまま1.3秒（計4.5秒。HP30%未満は全体を0.75倍の速さで繰り返す） */
 function libraOff(tf,rage){const T=[[1,.42,0],[1.2,0,0],[1,0,.42],[1.3,.42,.42]],cy=4.5;let t=rage?tf/.75%cy:tf%cy;const ss=x=>x*x*(3-2*x);for(const [d,a0,a1] of T){if(t<d)return a0+(a1-a0)*ss(t/d);t-=d}return .42}
@@ -4909,7 +4909,7 @@ function libraBeam(e,A,dt){
   if(charge){b.C.visible=false;const q=.14;b.C.scale.set(q*.4,q*.4,len);b.O.scale.set(q,q,len);b.O.material.opacity=.3+.35*Math.abs(Math.sin(t*18))}
   else{b.C.visible=true;const q=1.7;b.C.scale.set(q*.4,q*.4,len);b.O.scale.set(q,q,len);b.O.material.opacity=.55;
    L.hitT[i]-=dt;const tt=Math.max(0,Math.min(len,pc.clone().sub(fr[i]).dot(dir))),pt=fr[i].clone().addScaledVector(dir,tt);
-   if(L.hitT[i]<=0&&pc.distanceTo(pt)<3){L.hitT[i]=.25;hitPlayer(30,'C',pt)}
+   if(L.hitT[i]<=0&&pc.distanceTo(pt)<3){L.hitT[i]=.25;hitPlayer(36,'C',pt)}
    if(dir.y<-.01&&sOnce('lbs'+i,.06)){const gp=fr[i].clone().addScaledVector(dir,len);spawn(0xffe0a0,2.4,gp,{life:.12,grow:1});spawn(0xff6030,1.4,gp.clone().add(new THREE.Vector3((Math.random()-.5)*3,1+Math.random()*2,(Math.random()-.5)*3)),{life:.3,grow:.6})}}});
  if(!charge){shake=Math.max(shake,.14);if(sOnce('lbbm',.45))sAt('mainGun',e.g.position,{g:.4,dk:.3})}}
 /* リブラの盾は2枚で別々の耐久（SHE_HP）。正面から当たった側の盾が受け、壊れた側は通常の正面装甲（×.25）。復活は25秒（HP30%未満は40秒） */
@@ -4945,7 +4945,7 @@ const GEAR_MOB={
  vb2:{name:'キャリア',model:'timo',vpose:'timo',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RFT',lHand:'MGT',rShoulder:'MST',lShoulder:'none'},   // ティモ：旧型を手入れした万能型。ライフル・マシンガン・ミサイル（CH7 で強化版「キャリア改」）
   hp:20000,dmg:0,rate:1.8,rng:70,spd:9,keep:22,bs:30,rw:0,tier:'boss',msK:1.6,tx:{dk:.22,spread:1.8,cdK:1.4,gap:.7},msMax:2},
  vb3:{name:'リブラ',model:'erich',vpose:'common',dual:1,beam:1,cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'LBS',lHand:'LBS',rShoulder:'LBM',lShoulder:'LBL'},   // エーリヒ：両手の巨大な盾で正面を固め、ミサイルとレーザーで攻める耐久型
-  hp:30000,dmg:0,rate:2.6,rng:70,spd:5,keep:28,bs:24,rw:0,tier:'boss',msK:1,msSpd:1.8,msHom:1.7,msMax:12,rage:1,tx:{dk:.16,spread:1.6,cdK:1.0,gap:1,qb:0,jump:0},guard:{p:9,near:0,t:[2.2,3.4],cd:[.5,1.2]}},
+  hp:30000,dmg:0,rate:2.6,rng:70,spd:5,keep:28,bs:24,rw:0,tier:'boss',msK:.8,msSpd:1.8,msHom:1.7,msMax:12,rage:1,tx:{dk:.16,spread:1.6,cdK:1.0,gap:1,qb:0,jump:0},guard:{p:9,near:0,t:[2.2,3.4],cd:[.5,1.2]}},
  cvBoss:{name:'無人輸送ギア（親機）',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'none',rShoulder:'MS',lShoulder:'none'},tint:'convoy',hp:22500,dmg:34,rate:2.0,rng:70,spd:12,keep:30,bs:30,rw:6000,scale:1.15,tier:'boss'},
  cvEsc:{name:'無人護衛ギア',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'convoyD',hp:7500,dmg:30,rate:3.0,rng:60,spd:12,keep:30,bs:30,rw:2000,tier:'mob'},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
@@ -5035,7 +5035,7 @@ function gearTick(e,dt,d,yaw){const sp=e.spec,m=e.model,T=e.tier||(gearInit(e),e
    once:(id,u0)=>c.u>=u0&&!A.fired.has(id)&&(A.fired.add(id),true),
    shot:(obj,vis)=>{A.st.ns=(A.st.ns||0)+1;if(T.rf&&/^RF/.test(A.id)&&A.st.ns>T.rf)return false;gearShot(e,A,obj,vis);return true},missile:(obj,i)=>{A.st.nm=(A.st.nm||0)+1;if(A.st.nm>(sp.msMax||GEAR_MS_MAX))return false;gearMissile(e,A,obj,i);return true},melee:()=>{gearMelee(e,A);if(sp.bladeFx)bladeBurst(A.w)}};
   if(c.u>=1||e.stun>.3){endOf(A.def)?.(A.w);e.act=null;e.gapT=T.gap||0}else{o=A.def.act.run(c);if(o&&o.scroll)scroll=o.scroll}}
- if(sp.beam)libraBeam(e,A,dt);
+ if(sp.beam){e.lbOn=!!(A&&A.def.act.beam);libraBeam(e,A,dt)}
  if(A&&sp.bladeFx&&A.w&&A.w.muzzle&&A.def.st&&A.def.st.kind==='近接'){const u=(t-A.t0)/A.def.act.dur;if(u>.15&&u<.85)bladeTrail(A.w,dt)}   // ブレードの軌道に粒子（セレナ。GEAR_MOB の bladeFx）
  shake=shk+Math.max(0,shake-shk)*(Math.hypot(P.pos.x-e.g.position.x,P.pos.z-e.g.position.z)<16?.3:0);
  if(scroll){const ry=e.g.rotation.y;e.home.x+=Math.sin(ry)*scroll*dt;e.home.z+=Math.cos(ry)*scroll*dt}
@@ -5383,13 +5383,13 @@ let HITSRC=null;
 const AP_IDS=new Set(['RF3','RF4']);   // ダメージを下げる補正を無視する兵装
 const apK=m=>m<1&&HITSRC&&AP_IDS.has(cfg[HITSRC])?1:m;
 function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(RUN&&RUN.sv)e.rt=t+3;if(mode==='play'&&SS.dmgOut)dmg=Math.round(dmg*SS.dmgOut);   // 系列特性：与えるダメージの倍率
- if(e.type==='gear'&&e.shx){dmg=dualShield(e,dmg,pos)}else if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){{const kk=apK(e.gFront<0?.1:.15),raw=dmg,take=Math.min(raw,Math.max(0,e.shHp??0)),over=raw-take;e.shHp=Math.max(0,(e.shHp??0)-take);dmg=take*kk+over;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
+ if(e.type==='gear'&&e.shx){if(e.lbOn)dmg*=1.5;else dmg=dualShield(e,dmg,pos)}else if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){{const kk=apK(e.gFront<0?.1:.15),raw=dmg,take=Math.min(raw,Math.max(0,e.shHp??0)),over=raw-take;e.shHp=Math.max(0,(e.shHp??0)-take);dmg=take*kk+over;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
   if(e.shHp<=0&&e.shMax>0){e.guardT=0;e.shBrk=e.spec.shRec??ENEMY_SH_REC;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2);shBreakComm(e)}}}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=apK(.25);spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
  // 命中の演出：共通の命中音・威力に応じた光と火花・小さな振動・ダメージの数字（CONFIG で ON のとき）
  const pw=Math.max(0,Math.min(1,(dmg-30)/700));e.hit=Math.max(e.hit,.06+.09*pw);e.vib=.12;spawn(0xffffff,.5,pos,{life:.08});
  for(let i=0,n=Math.round(3+7*pw);i<n;i++)spawn(i%2?0xffa040:0xffd070,.1+.06*pw,pos,{vel:new THREE.Vector3((Math.random()-.5)*10,2+Math.random()*6,(Math.random()-.5)*10),grav:16,life:.25+Math.random()*.2});
  if(sOnce('ehit',.05))sAt('ehit',pos,{g:.5});dmgNum(e,dmg);
- const I=e.type==='boss'||e.type==='siege'?null:IMP[imp];if(I&&!(e.stImm>0)&&Math.random()<I.p){e.stun=Math.max(e.stun,I.st);e.stImm=I.st+.6;e.kb.copy(e.g.position).sub(P.pos).setY(0).normalize().multiplyScalar(I.kb*3)}
+ const I=e.type==='boss'||e.type==='siege'?null:IMP[imp];if(I&&!e.lbOn&&!(e.stImm>0)&&Math.random()<I.p){e.stun=Math.max(e.stun,I.st);e.stImm=I.st+.6;e.kb.copy(e.g.position).sub(P.pos).setY(0).normalize().multiplyScalar(I.kb*3)}
  if(e.hp<=0){if(RUN&&RUN.kills&&!e.noRw)RUN.kills[e.type]=(RUN.kills[e.type]||0)+1;e.alive=false;const keepB=e.type==='gear'&&RUN&&((RUN.vs&&e===RUN.vs.e)||e.spec.tier==='boss');e.g.visible=e.type==='boss'||e.type==='siege'||keepB||(e.type==='antenna'&&e.k>1);if(e.type==='antenna'&&e.k>1)towerBreak(e);if(keepB)finDown(e);if(e.type==='siege')siegeDead(e);if(e.type==='boss'){e.vents.forEach(m=>m.color.setHex(0x2a1a14));e.head.rotation.x=.08;e.mat.emissive.setRGB(0,0,0);e.mat.color.setHex(0x4a4a4a)}e.respawn=5;P.kills++;if(TRT)ttEvt('kill',HITSRC);if(!TRAIN&&!(RUN&&RUN.vs)&&!e.noRw){const rw=e.type==='gear'?(e.spec.rw||2000):e.type==='drone'?REWARD.drone:e.type==='walker'?1500:e.type==='crawler'?600:e.type==='bomber'?500:e.type==='antenna'?1000:REWARD.turret;CREDIT+=rw;P.earned=(P.earned||0)+rw;saveGame();say('撃破 ＋'+rw.toLocaleString()+' CR',1)}if(!keepB)explode(e.center(new THREE.Vector3()),2);if(lockT===e)lockT=null;if(lockT2===e)lockT2=null}}
 // 索敵レーダー（RD-3）：壁の向こうでも敵の輪郭が見える（奥行きを無視して描く線）
 const XR_M=new THREE.LineBasicMaterial({color:0xff6a4c,transparent:true,opacity:.55,depthTest:false});
