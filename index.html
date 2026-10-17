@@ -993,7 +993,7 @@ body.eqm #visit{display:none}
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v243</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v244</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1071,7 +1071,7 @@ body.eqm #visit{display:none}
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v243</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v244</span></div>
  </div>
 </div>
 
@@ -1138,7 +1138,7 @@ body.eqm #visit{display:none}
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v243</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v244</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -2237,7 +2237,7 @@ const BL_DUO={name:'二連斬り',dur:1.5,cancel:true,run(c){
    end(w){w.blade.scale.set(1,1,1)}};
 Object.assign(HAND,{
  // 徹甲ライフル：上下2本のレールの間を通る四角い銃身、光るコイル3つ、青いレンズのスコープ
- 'RF3':{...HAND.RF,st:{kind:'射撃',dmg:230,range:75,area:0,rate:'3点射／1.3秒',count:1,ammo:21,reload:3.5,wt:16,imp:'B',spd:95,hom:'なし',pierce:true,note:'徹甲弾：敵のシールドを破りダメージを与えられる。弾が敵を貫通し、並んだ敵すべてに当たる'},build(g){box(g,.22,.66,.32,VW.steel2,0,-.35,0);box(g,.12,.36,.26,VW.dark,0,-.25,-.22,.3);
+ 'RF3':{...HAND.RF,st:{kind:'射撃',dmg:230,range:75,area:0,rate:'3点射／1.3秒',count:1,ammo:21,reload:3.5,wt:16,imp:'B',spd:95,hom:'なし',pierce:true,note:'徹甲弾：敵のシールドや装甲を無視して、そのまま本体にダメージを与える。弾が敵を貫通し、並んだ敵すべてに当たる'},build(g){box(g,.22,.66,.32,VW.steel2,0,-.35,0);box(g,.12,.36,.26,VW.dark,0,-.25,-.22,.3);
    box(g,.1,1.7,.1,VW.dark,0,-1.4,0);[-1,1].forEach(q=>box(g,.05,1.8,.16,VW.steel,0,-1.35,q*.11));
    for(let i=0;i<3;i++){box(g,.18,.06,.26,VW.glow,0,-.95-i*.32,0)}
    box(g,.16,.26,.3,VW.steel,0,-2.3,0);box(g,.2,.06,.34,VW.warn,0,-2.18,0);
@@ -2302,7 +2302,7 @@ Object.assign(HAND,{
 });
 Object.assign(SHOULDER,{
  // 貫通砲：長い角形の砲身に光るコイル3つ、後ろの大きな蓄電箱
- 'GC3':{...SHOULDER.GC,act:{...SHOULDER.GC.act,dur:2.8},st:{kind:'射撃',dmg:1050,range:90,area:0,rate:'1発／2.8秒',count:1,ammo:4,reload:9,wt:33,imp:'S',spd:70,hom:'なし',pierce:true,note:'弾が敵を突き抜けて、後ろの敵にも当たる。しゃがんで撃つ（発射中は移動不可）'},
+ 'GC3':{...SHOULDER.GC,act:{...SHOULDER.GC.act,dur:2.8},st:{kind:'射撃',dmg:1050,range:90,area:0,rate:'1発／2.8秒',count:1,ammo:4,reload:9,wt:33,imp:'S',spd:70,hom:'なし',pierce:true,note:'敵のシールドや装甲を無視して、弾が突き抜ける。後ろの敵にも当たる。しゃがんで撃つ（発射中は移動不可）'},
   build(g){const gun=grp(g,0,.3,0);box(gun,.55,.5,.8,VW.steel2,0,0,-.2);box(gun,.57,.07,.82,VW.warn,0,.27,-.2);
    box(gun,.2,.2,1.9,VW.dark,0,.05,.95);[-1,1].forEach(q=>box(gun,.06,.28,1.9,VW.steel,q*.13,.05,.95));
    for(let i=0;i<3;i++)box(gun,.34,.34,.08,VW.glow,0,.05,.4+i*.45);box(gun,.32,.32,.18,VW.steel,0,.05,1.9);
@@ -2325,8 +2325,8 @@ Object.assign(EXT,{
 const VX={cy:new THREE.MeshBasicMaterial({color:0x7fe8ff}),gold:psMat(0xd0a840)};
 Object.assign(HAND,{
  // レールライフル：電磁加速の単発狙撃。徹甲ライフルと同じく、ダメージを下げる補正を受けない
- 'RF4':{...HAND.RF3,st:{kind:'射撃',dmg:1100,range:110,area:0,rate:'1発／1.9秒',count:1,ammo:6,reload:5,wt:20,imp:'S',spd:140,hom:'なし',pierce:true,note:'電磁加速の1発。シールドや装甲に弾かれず、ダメージが落ちない。弾が敵を貫通し、並んだ敵すべてに当たる'},
-  act:{name:'電磁狙撃',dur:1.9,run(c){const s=c.s;
+ 'RF4':{...HAND.RF3,st:{kind:'射撃',dmg:1100,range:110,area:0,rate:'1発／1.4秒',count:1,ammo:6,reload:5,wt:20,imp:'S',spd:140,hom:'なし',pierce:true,note:'電磁加速の1発。シールドや装甲に弾かれず、ダメージが落ちない。弾が敵を貫通し、並んだ敵すべてに当たる'},
+  act:{name:'電磁狙撃',dur:1.4,run(c){const s=c.s;
    if(c.once('f',.45)&&c.shot(c.w.muzzle,{size:.2,color:0x9fe8ff,len:10,trail:.12})){flash(c.w.muzzle,1,0x9fe8ff);c.st.kick=1;shake=Math.max(shake,.16)}
    const k=c.st.kick=(c.st.kick||0)*.9;
    return {w:env(c.u,.2,.8),arm:{x:AIM.x-k*.3,z:s*.05,e:AIM.e-k*.55},off:brace(s),torsoY:twist(s,.4)+k*twist(s,-.1),torsoX:.08-k*.15,headY:twist(s,-.35),legs:stance(s),crouch:.25+k*.15}}},
@@ -2415,22 +2415,22 @@ const clsOk=id=>(!is02(id)||TTUT>=TT_N)&&(!ITEM_CLS[id]||((ITEM_CLS[id]==='N'?fa
 /* 名前の体系：CAT＝種類（英語の項目名）、TYPE＝種類の日本語、MODEL＝型番、NAME＝固有名。
    同じ種類の装備が増えたら、同じ CAT で型番と固有名だけ変えて追加する */
 const PN={
- 'HD-01':['MILITIA 01','センサー型','','HS-110A'],'HD-02':['BULWARK 02','モノアイ型','','HM-220'],'HD-03':['VANGUARD 03','複眼型','','HC-330'],
- 'CR-01':['MILITIA 01','標準型','','CM-300'],'CR-02':['BULWARK 02','重装型','','CH-420B'],'CR-03':['VANGUARD 03','高出力型','','CV-500'],
- 'AR-01':['MILITIA 01','標準型','','AM-150'],'AR-02':['BULWARK 02','重装型','','AH-260'],'AR-03':['VANGUARD 03','精密型','','AV-310'],
- 'LG-01':['MILITIA 01','中量二脚','','LM-200'],'LG-02':['BULWARK 02','重量二脚','','LH-350'],'LG-03':['VANGUARD 03','高機動二脚','','LV-380'],
+ 'HD-01':['MILITIA 01','汎用型','','HS-110A'],'HD-02':['BULWARK 02','重防御型','','HM-220'],'HD-03':['VANGUARD 03','高機動型','','HC-330'],
+ 'CR-01':['MILITIA 01','汎用型','','CM-300'],'CR-02':['BULWARK 02','重防御型','','CH-420B'],'CR-03':['VANGUARD 03','高機動型','','CV-500'],
+ 'AR-01':['MILITIA 01','汎用型','','AM-150'],'AR-02':['BULWARK 02','重防御型','','AH-260'],'AR-03':['VANGUARD 03','高機動型','','AV-310'],
+ 'LG-01':['MILITIA 01','汎用型','','LM-200'],'LG-02':['BULWARK 02','重防御型','','LH-350'],'LG-03':['VANGUARD 03','高機動型','','LV-380'],
  'RF3':['RIFLE','徹甲ライフル','','WR-30AP'],'MG3':['MACHINE GUN','ガトリング','','WM-60G'],'BL3':['BLADE','突進ブレード','','WL-12R'],'MS3':['MISSILE','垂直ミサイル','','SM-4V'],'RD3':['RADAR','索敵レーダー','','SR-09'],
  'RF4':['RIFLE','レールライフル','','WR-60R'],'MG4':['MACHINE GUN','連装ガトリング','','WM-90T'],'BZ4':['BAZOOKA','誘導バズーカ','','WB-55H'],'BL4':['BLADE','連撃ブレード','','WL-33C'],'SH4':['SHIELD','展開シールド','','WS-20F'],
- 'MS4':['MISSILE','マイクロミサイル','','SM-12M'],'GC4':['CANNON','対艦砲','','SG-140A'],'RD4':['RADAR','全周レーダー','','SR-15W'],'BT4':['BOOSTER','高出力ブースター','','XB-30'],'IC4':['INTERCEPTOR','全周迎撃装置','','XI-40'],
+ 'MS4':['MISSILE','マイクロミサイル','','SM-12M'],'GC4':['CANNON','対艦砲','','SG-140A'],'RD4':['RADAR','全周レーダー','','SR-15W'],'BT4':['BOOSTER','四連噴射ブースター','','XB-30'],'IC4':['INTERCEPTOR','全周迎撃装置','','XI-40'],
  'BZ3':['BAZOOKA','炸裂バズーカ','','WB-40X'],'SH3':['SHIELD','大型シールド','','WS-10T'],'GC3':['CANNON','貫通砲','','SG-90P'],'BT3':['BOOSTER','大出力ブースター','','XB-20'],'IC3':['INTERCEPTOR','広域迎撃装置','','XI-20'],
- 'RF':['RIFLE','ライフル','','WR-07A'],'MG':['MACHINE GUN','マシンガン','','WM-12'],'BZ':['BAZOOKA','バズーカ','','WB-40'],
- 'BL':['BLADE','ブレード','','WL-03'],'SH':['SHIELD','シールド','','WS-08'],
- 'MS':['MISSILE','ミサイル','','SM-6X'],'RD':['RADAR','レーダー','','SR-02'],'GC':['CANNON','グレネード砲','','SG-90'],
- 'BT':['BOOSTER','追加ブースター','','XB-15'],'IC':['INTERCEPTOR','迎撃装置','','XI-04'],
- 'RF2':['RIFLE','ライフル','','WR-11S'],'MG2':['MACHINE GUN','マシンガン','','WM-20H'],'BZ2':['BAZOOKA','バズーカ','','WB-25L'],
- 'BL2':['BLADE','ブレード','','WL-07H'],'SH2':['SHIELD','シールド','','WS-03L'],
- 'MS2':['MISSILE','ミサイル','','SM-2H'],'RD2':['RADAR','レーダー','','SR-05W'],'GC2':['CANNON','グレネード砲','','SG-60'],
- 'BT2':['BOOSTER','追加ブースター','','XB-08'],'IC2':['INTERCEPTOR','迎撃装置','','XI-09']};
+ 'RF':['RIFLE','制式ライフル','','WR-07A'],'MG':['MACHINE GUN','軽機関銃','','WM-12'],'BZ':['BAZOOKA','携行バズーカ','','WB-40'],
+ 'BL':['BLADE','制式ブレード','','WL-03'],'SH':['SHIELD','制式シールド','','WS-08'],
+ 'MS':['MISSILE','連装ミサイル','','SM-6X'],'RD':['RADAR','標準レーダー','','SR-02'],'GC':['CANNON','グレネード砲','','SG-90'],
+ 'BT':['BOOSTER','加速ブースター','','XB-15'],'IC':['INTERCEPTOR','近接迎撃装置','','XI-04'],
+ 'RF2':['RIFLE','強装ライフル','','WR-11S'],'MG2':['MACHINE GUN','重機関銃','','WM-20H'],'BZ2':['BAZOOKA','軽量バズーカ','','WB-25L'],
+ 'BL2':['BLADE','高周波ブレード','','WL-07H'],'SH2':['SHIELD','軽量シールド','','WS-03L'],
+ 'MS2':['MISSILE','重ミサイル','','SM-2H'],'RD2':['RADAR','長距離レーダー','','SR-05W'],'GC2':['CANNON','伏せ撃ち砲','','SG-60'],
+ 'BT2':['BOOSTER','容量ブースター','','XB-08'],'IC2':['INTERCEPTOR','速射迎撃装置','','XI-09']};
 /* ===== 04〜07・00 COUNTER・ラスト・オーダーのフレーム（GEAR FILE のモックと同じ形）=====
  GX＝モックの系列の作り方をそのまま持ってきた箱（ゲーム側の名前とぶつからないよう閉じた中に置く）。
  ・装備できるパーツ：HEADS/CORES/ARMS/LEGS に 'HD-04' などで登録し、部位ごとに GX の形を組む（gxHead/gxCore/gxArms/gxLegs）
@@ -3287,13 +3287,14 @@ const GXF=[
   head:{wt:14,ability:'multi',abName:'マルチロック',abEn:'MULTI LOCK',lockDeg:30,lockAdd:20,abDesc:'2体を同時にロックする。±30°、距離＋20m（仮）'},
   core:{armor:1400,boost:150,wt:70},arms:{armor:450,load:150,wt:38},legs:{armor:720,mob:105,wt:80}},
 ];
+const FNAME={'04':'近接戦型','05':'防衛型','06':'強襲型','07':'統率型','00':'特異型','LO':'旗機型'};   // SHOP 等の灰色の種類名（同じ系統は4部位とも同名）
 GXF.forEach(f=>{const id=k=>k+'-'+f.n,B=f.ser;
  HEADS[id('HD')]={name:id('HD')+' '+f.types[0],...f.head,build(h){gxHead(B,h)}};
  CORES[id('CR')]={name:id('CR')+' '+f.types[1],...f.core,lean:GX[B].lean||0,build(t){return gxCore(B,t)}};
  ARMS[id('AR')]={name:id('AR')+' '+f.types[2],...f.arms,build(sh,s){return gxArms(B,sh,s)}};
  LEGS[id('LG')]={name:id('LG')+' '+f.types[3],...f.legs,build(hip){return gxLegs(B,hip)}};
  ['HD','CR','AR','LG'].forEach((k,i)=>{const v=[f.head,f.core,f.arms,f.legs][i];
-  PN[id(k)]=[f.name,f.types[i],'',k[0]+f.ml+'-'+(i===0?f.head.wt*45:i===3?v.mob*4:v.armor)];ITEM_CLS[id(k)]=f.cls;
+  PN[id(k)]=[f.name,FNAME[f.n],'',k[0]+f.ml+'-'+(i===0?f.head.wt*45:i===3?v.mob*4:v.armor)];ITEM_CLS[id(k)]=f.cls;
   EN[id(k)]=f.name.replace(/ \d+$/,'')+' '+['HEAD','CORE','ARMS','LEGS'][i];
   DESC[id(k)]=(f.n==='00'?'設計者がノーナのために作った対抗機の部位。':f.n==='LO'?'JOSHUA 軍の旗機の部位（系列外・購入不可）。':f.name+' 系列の部位。')+'性能は仮の値です。'})});
 
@@ -5380,10 +5381,11 @@ function dmgNumClear(){DN.forEach(d=>{d.on=false;d.el.hidden=true})}
 const IMP={S:{st:.8,kb:4,p:1},A:{st:.6,kb:2.5,p:1},B:{st:.45,kb:1.5,p:1},C:{st:.35,kb:.8,p:.5},D:{st:.3,kb:.4,p:.25}};
 let HITSRC=null;
 // 徹甲ライフル（RF3）：ダメージを下げる補正（1より小さい倍率）を無視する。プラスの補正（背面・弱点など）はそのまま
-const AP_IDS=new Set(['RF3','RF4']);   // ダメージを下げる補正を無視する兵装
-const apK=m=>m<1&&HITSRC&&AP_IDS.has(cfg[HITSRC])?1:m;
+const AP_IDS=new Set(['RF3','RF4','GC3','GC4']);   // ダメージを下げる補正を無視する兵装
+const apOn=()=>!!(HITSRC&&AP_IDS.has(cfg[HITSRC]));   // 徹甲・レール・貫通砲・対艦砲：敵の盾・装甲を無視
+const apK=m=>m<1&&apOn()?1:m;
 function hitEnemy(e,dmg,pos,imp){if(!e.alive)return;if(RUN&&RUN.sv)e.rt=t+3;if(mode==='play'&&SS.dmgOut)dmg=Math.round(dmg*SS.dmgOut);   // 系列特性：与えるダメージの倍率
- if(e.type==='gear'&&e.shx){if(e.lbOn)dmg*=1.5;else dmg=dualShield(e,dmg,pos)}else if(e.type==='gear'&&e.guardT>0){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){{const kk=apK(e.gFront<0?.1:.15),raw=dmg,take=Math.min(raw,Math.max(0,e.shHp??0)),over=raw-take;e.shHp=Math.max(0,(e.shHp??0)-take);dmg=take*kk+over;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
+ if(e.type==='gear'&&e.shx){if(e.lbOn)dmg*=1.5;else if(!apOn())dmg=dualShield(e,dmg,pos)}else if(e.type==='gear'&&e.guardT>0&&!apOn()){const ry=e.g.rotation.y,dx=pos.x-e.g.position.x,dz=pos.z-e.g.position.z;if((dx*Math.sin(ry)+dz*Math.cos(ry))/(Math.hypot(dx,dz)||1)>(e.gFront??.2)){{const kk=apK(e.gFront<0?.1:.15),raw=dmg,take=Math.min(raw,Math.max(0,e.shHp??0)),over=raw-take;e.shHp=Math.max(0,(e.shHp??0)-take);dmg=take*kk+over;spawn(0x6fc8ff,1.2,pos,{life:.12,grow:.5});if(sOnce('eshd',.1))sAt('shield',pos,{g:.4});
   if(e.shHp<=0&&e.shMax>0){e.guardT=0;e.shBrk=e.spec.shRec??ENEMY_SH_REC;spawn(0xffffff,2.4,pos,{life:.25,grow:2});spawn(0x6fc8ff,3,pos,{life:.4,grow:2.5});sAt('shield',pos,{g:.8});shake=Math.max(shake,.2);shBreakComm(e)}}}}if(e.type==='boss')dmg=bossDmg(e,dmg,pos);else if(e.type==='siege')dmg=siegeDmg(e,dmg,pos);if(RUN&&RUN.vs&&e===RUN.vs.e&&dmg>0)vsHitE();if(e.shielded&&e.shielded()){dmg*=apK(.25);spawn(0x6fd3e0,1.1,pos,{life:.12,grow:1.4});if(RUN&&!RUN.shSaid&&RUN.def.comm.shield){RUN.shSaid=true;comm(RUN.def.comm.shield,2.8)}}e.hp-=dmg;
  // 命中の演出：共通の命中音・威力に応じた光と火花・小さな振動・ダメージの数字（CONFIG で ON のとき）
  const pw=Math.max(0,Math.min(1,(dmg-30)/700));e.hit=Math.max(e.hit,.06+.09*pw);e.vib=.12;spawn(0xffffff,.5,pos,{life:.08});
