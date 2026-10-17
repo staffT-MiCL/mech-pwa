@@ -994,7 +994,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v249</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v250</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1072,7 +1072,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v249</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v250</span></div>
  </div>
 </div>
 
@@ -1139,7 +1139,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v249</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v250</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -3625,6 +3625,7 @@ const SND=(()=>{
   holo(d,t){osc('sine',1400,t,.15,d,{f2:2800,peak:.35});osc('sine',2800,t+.12,.35,d,{peak:.2})},
   tick(d,t){osc('sine',jit(2600,.03),t,.02,d,{peak:.4});snap(t,d,{f:8000,peak:.15,dur:.005})},
   bun(d,t){osc('sawtooth',150,t,.2,d,{f2:55,peak:.3,a:.004});sub(t,120,42,.28,d,.9);osc('square',64,t,.1,d,{peak:.12});snap(t,d,{f:3200,peak:.22,dur:.01})},   // 「ブンッ」：扉の閉まる音・機体の起動音
+  boon(d,t){osc('sawtooth',62,t,1.4,d,{f2:98,fT:.55,a:.12,r:.55,peak:.2});osc('sawtooth',63.5,t,1.4,d,{f2:99.5,fT:.55,a:.12,r:.55,peak:.12,detune:8});osc('sine',124,t,1.2,d,{f2:196,fT:.55,a:.1,r:.5,peak:.2});sub(t,48,48,1.1,d,.5)},   // 長い「ブーン」：ボスの起動音
   online(d,t){[1046,1568,2093].forEach((f,i)=>osc('sine',f,t+i*.07,.5,d,{peak:.4}));sub(t,90,60,.6,d,.5)},
   reinf(d,t){for(let i=0;i<2;i++)[-14,14].forEach(dt=>osc('sawtooth',330,t+i*.5,.4,d,{f2:660,peak:.07,detune:dt}));sub(t,60,60,1,d,.4)},
   // ---- 出撃中（第2回）：アタック・芯・サブ低音・余韻の層。残響なし ----
@@ -6011,7 +6012,7 @@ const MLIST=[
   res:{ok:'ティモさんから通信です。「入口で待っていた。……無事でよかった」と。',ng:'撤退します。……あの三機は、まだ広間にいます。'},
   start:{x:0,z:-312},bgm:'boss',memFx:['N ／ D ／ M','── 糸は、三本あった'],
   enemies:[{type:'gear',gear:'lab_n',x:-24,z:40},{type:'gear',gear:'lab_d',x:0,z:50},{type:'gear',gear:'lab_m',x:24,z:40}],
-  leoTalk:[['c','よう、ハンガー07の払い下げ乗り。遅かったな。'],
+  leoTalk:[['c','よう、ハンガー07の払い下げ乗り。……いや、第七の黒羊だったな。遅かったな。'],
    ['n','レナードさん。なぜ、ここに。入口は ○○ のために開かれたはずです。'],
    ['c','表口はな。裏口なら、測量図があれば見つかる。'],
    ['c','砂原で逃げた輸送ギアの件、覚えてるか。あの依頼を仲介したのは、おれだ。積み荷は、壁の内側の測量図だった。'],
@@ -6036,7 +6037,7 @@ const MLIST=[
    key:{pre:[],post:[]},
    voice:{name:'レナード（通信）',lines:['写しは取った。いい仕事だ。','……お前の値段、また上がったな。']},
    after:[]}},
- {id:'v-lab-doll',ch:0,kind:'visit',notice:true,once:true,together:true,ready:true,afterClear:'4-S',title:'ドールの違和感',from:'砂原の使者 ティモ',client:'ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',   // 4-S のあと、ガレージで。ドールは自分の正体を知らない。ノーナだけが気づく。セリフは仮
+ {id:'v-lab-doll',ch:0,kind:'visit',notice:true,once:true,together:true,live:true,ready:true,afterClear:'4-S',title:'ドールの違和感',from:'ドール',client:'ドール',voice:'youthM',img:'',imgF:'',   // 4-S のあと、ガレージで。ドールは自分の正体を知らない。ノーナだけが気づく。セリフは仮
   talk:[['d','おかえりなさいませ、○○様！ お留守のあいだに、倉庫の部品をぜんぶ数え直しておきました。数えるのだけは、得意でございますので。'],
    ['d','それが不思議なことに、数えている間じゅう、ずっと誰かに呼ばれているような気がいたしまして。……故障でしょうか。'],
    ['n','……いいえ。故障では、ありません。']],
@@ -6689,12 +6690,12 @@ $('mailBtn').onclick=()=>{if(TUT!=='done')return;const mb=$('mailBox');if(!mb.hi
 /* ----- 来訪（VISIT）：依頼人がハンガーを訪ねてくる。def.talk＝[['c'|'n'|'d', 文], ...]（c＝依頼人、n＝ノーナ、d＝ドールの通信）
  最後に［依頼を受ける］（依頼一覧を開く）／［考えておく］。どちらでも依頼は一覧に残り、一覧から［会話を見返す］で見直せる ----- */
 const VS={q:[],iv:null,done:null,d:null};
-const V_SP={c:d=>{const k=chKey(d.client||d.from);return [d.client||d.from,cc(k),false,cf(k)]},n:()=>['N-07 ノーナ',cc('nona'),true,cf('nona')],d:()=>['D-06 ドール（通信）',cc('doll'),true,cf('doll')]};
+const V_SP={c:d=>{const k=chKey(d.client||d.from);return [d.client||d.from,cc(k),false,cf(k)]},n:()=>['N-07 ノーナ',cc('nona'),true,cf('nona')],d:d=>['D-06 ドール'+(d.live?'':'（通信）'),cc('doll'),!d.live,cf('doll')]};
 function visitPlay(id,replay){const d=MDEF[id];if(!d||!d.talk)return;mailClose();nbClose();VS.d=d;clearTimeout(VS.t);
- const img=$('vImg');img.style.visibility='hidden';img.onload=()=>{img.style.visibility=''};img.removeAttribute('src');img.src=d.img;if(img.complete&&img.naturalWidth)img.style.visibility='';img.style.filter=d.imgF||'';img.alt=d.from;img.classList.remove('dim');
+ const img=$('vImg');img.style.visibility='hidden';img.onload=()=>{img.style.visibility=''};img.removeAttribute('src');if(d.img){img.src=d.img;if(img.complete&&img.naturalWidth)img.style.visibility=''}img.style.filter=d.imgF||'';img.alt=d.from;img.classList.remove('dim');
  const v=$('visit');$('vCh').innerHTML='';$('vTx').textContent='';$('vNm').textContent='';$('vCi').hidden=true;$('vNx').hidden=true;$('vSkip').hidden=!replay;VS.replay=!!replay;
  v.classList.remove('in','out');v.style.setProperty('--vc',V_SP[d.talk[0][0]](d)[1]);v.hidden=false;document.body.classList.add('visiting');VS.q=d.talk.slice();VS.fin=null;VS.busy=true;
- if(!replay)SND.play('visit',{g:.45});void v.offsetWidth;v.classList.add('in');VS.t=setTimeout(()=>{VS.busy=false;visitNext()},700)}
+ if(!replay&&!d.noSe)SND.play('visit',{g:.45});void v.offsetWidth;v.classList.add('in');VS.t=setTimeout(()=>{VS.busy=false;visitNext()},700)}
 function visitNext(){clearInterval(VS.iv);VS.iv=null;
  if(!VS.q.length){visitChoices();return}
  const [sp,raw]=VS.q.shift(),[nm,col,cut,fcol]=V_SP[sp](VS.d),txt=raw.replace(/○○様/g,esc(PILOT||'操縦者')+'様').replace(/○○/g,esc(PILOT||'操縦者'));
@@ -7112,13 +7113,13 @@ function labInit(){const d=RUN.def,Z=RUN.lab={st:'corr',t:0,lock:false,cam:null,
  LAB.userData.ped.forEach(m=>m.color.setHex(0x1a2024));LAB.userData.doors.forEach((m,i)=>m.position.x=(i?9.4:-9.4));
  $('esc').hidden=true}
 function labLight(i){const Z=RUN.lab,e=Z.ord[i],col=[0x6fd3e0,0x8cf06e,0xe0403a][i];LAB.userData.ped[i].color.setHex(col);e.model.labMats.forEach(m=>m.color.setHex(col));
- spawn(col,5,new THREE.Vector3(e.g.position.x,5,e.g.position.z),{life:.5,grow:3});SND.play('bun',{g:.6});SND.play('online',{g:.25});shake=Math.max(shake,.25)}
+ spawn(col,5,new THREE.Vector3(e.g.position.x,5,e.g.position.z),{life:.5,grow:3});SND.play('boon',{g:.6});shake=Math.max(shake,.25)}
 function labTalk(){const d=RUN.def;commClear();
- MDEF._lab={id:'_lab',once:true,kind:'visit',talk:d.leoTalk,img:'img/rivals/rival-solomon-leonard.png',imgF:'',from:'仲介屋 レナード',client:'レナード',voice:'adultM'};
+ MDEF._lab={id:'_lab',noSe:true,once:true,kind:'visit',talk:d.leoTalk,img:'img/rivals/rival-solomon-leonard.png',imgF:'',from:'仲介屋 レナード',client:'レナード',voice:'adultM'};
  $('gui').hidden=false;document.body.classList.add('labtalk');VS.cb=()=>{$('gui').hidden=true;document.body.classList.remove('labtalk');labAfter()};visitPlay('_lab')}
 function labAfter(){const Z=RUN&&RUN.lab;if(!Z)return;const lo=LAB.userData.leo;Z.st='free';Z.lock=false;Z.zmin=LAB_LEO2.z+8;Z.wk=0;Z.lo={x:lo.g.position.x,z:lo.g.position.z}}   // 会話のあと：レナード機は廊下側へ下がって振り返る。自機はその手前までしか下がれない
 function labTalk2(){const d=RUN.def;commClear();
- MDEF._lab2={id:'_lab2',once:true,kind:'visit',talk:d.leoTalk2,img:'img/rivals/rival-solomon-leonard.png',imgF:'',from:'仲介屋 レナード',client:'レナード',voice:'adultM'};
+ MDEF._lab2={id:'_lab2',noSe:true,once:true,kind:'visit',talk:d.leoTalk2,img:'img/rivals/rival-solomon-leonard.png',imgF:'',from:'仲介屋 レナード',client:'レナード',voice:'adultM'};
  $('gui').hidden=false;document.body.classList.add('labtalk');VS.cb=()=>{$('gui').hidden=true;document.body.classList.remove('labtalk');const Z=RUN&&RUN.lab;if(Z){Z.st='free';Z.lock=false;Z.said2=1}};visitPlay('_lab2')}
 function labMovieStart(){const Z=RUN.lab;if(!RUN||!RUN.lab)return;Z.st='movie';Z.t=-LAB_DR;Z.lock=true;Z.seal=true;   // 広間に入ると扉が閉まる（t が負の間＝扉の場面）
  P.vel.set(0,0,0);P.yaw=camYaw=0;Z.cam=true}
@@ -7829,7 +7830,7 @@ function keyBand(done){const b=$('clsBand');$('clsTx').innerHTML='KEY<i>／</i>�
 function classUpSeq2(d){const N=esc(PILOT||'操縦者'),from=CLS,c=d.cu,nm=x=>[x.replace(/○○/g,N)];
  if(c.key){KEYHOLD=true;misHeader()}
  const toClass=()=>{KEYHOLD=false;CLS=d.cls;CH=d.ch+1;let tt=Date.now();['n-cls-'+d.cls.toLowerCase(),...(c.mails||[])].forEach(id=>{if(MDEF[id]&&!MIS[id])MIS[id]={got:true,read:false,clear:false,n:0,t:tt++}});shopNotice();saveGame();misHeader();$('mailBtn').classList.add('new');SND.play('mail');
-  classBand(from,d.cls,()=>{if(c.after&&c.after.length)nonaSay(c.after.map(nm))})};
+  classBand(from,d.cls,()=>{if(c.after&&c.after.length)nonaSay(c.after.map(nm));else visitCheck()})};   // 帯のあと：続きの来訪（4-S はドール）があれば続けて通す
  const tail=()=>{if(c.news){nonaSay(c.news.map(nm),{hold:true});NB.then=toClass}else toClass()};
  const voice=()=>{nonaSay(c.voice.lines.map(nm),{hold:true,name:c.voice.name});
   NB.then=()=>{if(c.afterVoice){nonaSay(c.afterVoice.map(nm),{hold:true});NB.then=tail}else tail()}};
