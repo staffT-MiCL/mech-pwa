@@ -20,7 +20,7 @@
 :root{
  --bg:#07090a; --panel:#0e1211; --panel2:#121816; --line:#2c3833; --fg:#d9e0dc; --dim:#7f8c86; --faint:#4a5550;
  --accent:#8cf06e; --fire:#f0a040; --cyan:#6fd3e0; --alert:#ff5a3c; --olive:#5b6b3a;
- --c-nona:#6fd3e0; --c-doll:#8cf06e; --c-client:#d8a35a; --c-bell:#b4bcbc; --c-jonah:#6fa0f0; --c-otto:#c9a23c; --c-serena:#c8435c; --c-erich:#6f8a3a; --c-viktor:#a866d0; --c-hans:#8e94e0; --c-timo:#d4bc8c; --c-mira:#ff7a4a; --c-gaius:#4560b4; --c-leonard:#b09a48; --c-walter:#d8a35a; --c-petra:#e08838;
+ --c-nona:#6fd3e0; --c-doll:#8cf06e; --c-client:#d8a35a; --c-bell:#b4bcbc; --c-jonah:#6fa0f0; --c-otto:#c9a23c; --c-serena:#c8435c; --c-erich:#6f8a3a; --c-viktor:#a866d0; --c-hans:#8e94e0; --c-timo:#d4bc8c; --c-mira:#ff7a4a; --c-gaius:#4560b4; --c-leonard:#b09a48; --c-walter:#d8a35a; --c-petra:#e08838; --c-noah:#c9c3ae;
  /* キャラクターごとの色（名札・枠。通信・受付・来訪・SHOP・依頼のどの場面でも同じ）。ここだけで管理する。
     【新しいキャラの色の決め方】①キャラ設定のテーマ色（衣装・性格）から主色を選ぶ ②暗い背景で沈まない明るさ（暗い色は彩度か明度を上げる）③既存のキャラと色相か明るさで区別できる（近い系統は明るさ・彩度で離す）④名札の文字色は自動（cf()：明るい色は黒、暗い色は白）⑤ここに --c-名前 を足し、JS の CHKEY に名前を足す。 */ --khaki:#b8a878;
  --disp:"DotGothic16","MS Gothic",monospace; --mech:"Chakra Petch","DotGothic16",monospace; --sten:"Stardos Stencil","Chakra Petch",monospace;
@@ -994,7 +994,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v250</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v251</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1072,7 +1072,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v250</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v251</span></div>
  </div>
 </div>
 
@@ -1139,7 +1139,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v250</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v251</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4497,7 +4497,7 @@ const cc=k=>getComputedStyle(document.documentElement).getPropertyValue('--c-'+k
 // 名札の文字色：背景が明るければ黒、暗ければ白（色を変えても自動で読める）
 const cf=k=>{const n=parseInt(cc(k).slice(1),16),f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};return .2126*f(n>>16)+.7152*f(n>>8&255)+.0722*f(n&255)>.28?'#0b0e0d':'#fff'};
 // 名前（日本語・英字）から色のキー。見つからなければ依頼人の色。新しいキャラはここへ足す
-const CHKEY=[['ノーナ','nona'],['ドール','doll'],['ベル','bell'],['JONAH','jonah'],['ジョナ','jonah'],['オットー','otto'],['セレナ','serena'],['エーリヒ','erich'],['ヴィクトル','viktor'],['ハンス','hans'],['ティモ','timo'],['ミラ','mira'],['ガイウス','gaius'],['レナード','leonard'],['ヴァルター','walter'],['ペトラ','petra']];
+const CHKEY=[['ノーナ','nona'],['ドール','doll'],['ベル','bell'],['JONAH','jonah'],['ジョナ','jonah'],['オットー','otto'],['セレナ','serena'],['エーリヒ','erich'],['ヴィクトル','viktor'],['ハンス','hans'],['ティモ','timo'],['ミラ','mira'],['ガイウス','gaius'],['レナード','leonard'],['ヴァルター','walter'],['ペトラ','petra'],['NOAH','noah']];
 const chKey=nm=>{nm=String(nm||'');const h=CHKEY.find(([w])=>nm.includes(w));return h?h[1]:'client'};
 const VSP={b:{nm:'BELL-01 ベル',c:cc('bell'),f:cf('bell'),v:'bell'},n:{nm:'N-07 ノーナ（端末）',c:cc('nona'),f:cf('nona'),v:'nona'},j:{nm:'JONAH（無線）',c:cc('jonah'),f:cf('jonah'),v:'adultF'}};
 const VCH={serena:{nm:'セレナ・ヴァルデス',c:cc('serena'),f:cf('serena'),v:'youthF',img:'img/rivals/rival-david-serena.png'},erich:{nm:'エーリヒ・ブラント',c:cc('erich'),f:cf('erich'),v:'adultM',img:'img/rivals/rival-deborah-erich.png'},viktor:{nm:'ヴィクトル・ザイン',c:cc('viktor'),f:cf('viktor'),v:'youthM',img:'img/rivals/rival-nimrod-viktor.png'},timo:{nm:'ティモ・アルケン',c:cc('timo'),f:cf('timo'),v:'youthM',img:'img/rivals/rival-noah-timo.png'},gaius:{nm:'ガイウス・ハーラン',c:cc('gaius'),f:cf('gaius'),v:'adultM',img:'img/rivals/rival-joshua-gaius.png'}};
@@ -6035,7 +6035,8 @@ const MLIST=[
   after:{ok:'……ありがとう。入口の前で、待っている。',later:'わかった。……待つ。入口は、まだ開いている。'},
   cu:{mails:[],mem:['……思い出しました。わたくしは、ひとりではなかった。','設計者は、三つの対抗AIを作りました。N は糸を紡ぐ者。D は糸を測る者。M は糸を断つ者。','わたくしは N。……D は、狂いを見つけるために、物を測り、数え続ける役目でした。','あの信号は、D を呼ぶためのものだったのかもしれません。'],
    key:{pre:[],post:[]},
-   voice:{name:'レナード（通信）',lines:['写しは取った。いい仕事だ。','……お前の値段、また上がったな。']},
+   voice:[{name:'レナード（通信）',lines:['写しは取った。いい仕事だ。','……お前の値段、また上がったな。']},
+    {name:'NOAH（通信）',lines:['HX-07 の操縦者。……いや、用があるのは、N-07 のほうだ。','あの部屋は、設計者の残した子にしか開かない。だから、招いた。','確かめたかった。お前たちが、救うために紡ぐのか、それとも断つのか。','答えは、まだ出さなくていい。……壁は、また閉じる。'],after:['<ruby class="mc">NOAH<rt>ノア</rt></ruby> は、わたくしのことを……知っていました。']}],
    after:[]}},
  {id:'v-lab-doll',ch:0,kind:'visit',notice:true,once:true,together:true,live:true,ready:true,afterClear:'4-S',title:'ドールの違和感',from:'ドール',client:'ドール',voice:'youthM',img:'',imgF:'',   // 4-S のあと、ガレージで。ドールは自分の正体を知らない。ノーナだけが気づく。セリフは仮
   talk:[['d','おかえりなさいませ、○○様！ お留守のあいだに、倉庫の部品をぜんぶ数え直しておきました。数えるのだけは、得意でございますので。'],
@@ -6710,7 +6711,7 @@ function visitChoices(){const ch=$('vCh');if(ch.childElementCount||VS.fin)return
  if(d.cv!=null){[['◀ 前',()=>charStep(-1)],['次 ▶',()=>charStep(1)],['DEBUG へ戻る',()=>{visitEnd();setTimeout(dbgOpen,680)}]]
   .forEach(([lab,fn])=>{const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=e=>{e.stopPropagation();if(!VS.busy)fn()};ch.appendChild(b)});return}
  // 見返し：選択肢は出さず、最後のセリフのあとタップで依頼一覧へ戻る
- if(d.once){VS.fin=()=>{const cb=VS.cb,nn=d.nona;VS.cb=null;visitEnd();if(nn)setTimeout(()=>{nonaSay(nn.map(x=>[x]),{hold:!!cb});if(cb)NB.then=cb},720);else if(cb)setTimeout(cb,720)};$('vNx').hidden=false;return}   // 来訪だけの場面（依頼ではない）：最後のセリフのあとタップで終わる
+ if(d.once){VS.fin=()=>{const cb=VS.cb,nn=d.nona;VS.cb=null;visitEnd();if(nn)setTimeout(()=>{nonaSay(nn.map(x=>[x.replace(/○○/g,esc(PILOT||'操縦者'))]),{hold:!!cb});if(cb)NB.then=cb},720);else if(cb)setTimeout(cb,720)};$('vNx').hidden=false;return}   // 来訪だけの場面（依頼ではない）：最後のセリフのあとタップで終わる
  if(VS.replay){VS.fin=()=>{visitEnd();openBoard(d.id)};$('vNx').hidden=false;return}
  const ok=()=>{visitEnd();openBoard(d.id)},later=()=>{visitEnd();nonaSay([['依頼一覧に入れておきました。MENU の <em>MISSION</em> から、いつでも確認できます。']])};
  const pick=(key,fn)=>{ch.innerHTML='';const a=d.after&&d.after[key];if(!a){fn();return}VS.fin=fn;VS.q=[['c',a]];visitNext()};
@@ -7832,13 +7833,15 @@ function classUpSeq2(d){const N=esc(PILOT||'操縦者'),from=CLS,c=d.cu,nm=x=>[x
  const toClass=()=>{KEYHOLD=false;CLS=d.cls;CH=d.ch+1;let tt=Date.now();['n-cls-'+d.cls.toLowerCase(),...(c.mails||[])].forEach(id=>{if(MDEF[id]&&!MIS[id])MIS[id]={got:true,read:false,clear:false,n:0,t:tt++}});shopNotice();saveGame();misHeader();$('mailBtn').classList.add('new');SND.play('mail');
   classBand(from,d.cls,()=>{if(c.after&&c.after.length)nonaSay(c.after.map(nm));else visitCheck()})};   // 帯のあと：続きの来訪（4-S はドール）があれば続けて通す
  const tail=()=>{if(c.news){nonaSay(c.news.map(nm),{hold:true});NB.then=toClass}else toClass()};
- const voice=()=>{nonaSay(c.voice.lines.map(nm),{hold:true,name:c.voice.name});
-  NB.then=()=>{if(c.afterVoice){nonaSay(c.afterVoice.map(nm),{hold:true});NB.then=tail}else tail()}};
- const nx=()=>{if(c.voice)voice();else tail()};
+ const vl=c.voice?[].concat(c.voice):[];   // 声だけの通信（複数可。各 {name,lines,after}）
+ const vEnd=()=>{if(c.afterVoice){nonaSay(c.afterVoice.map(nm),{hold:true});NB.then=tail}else tail()};
+ const voice=(i=0)=>{const v=vl[i],go=()=>i+1<vl.length?voice(i+1):vEnd();nonaSay(v.lines.map(nm),{hold:true,name:v.name});
+  NB.then=()=>{if(v.after){nonaSay(v.after.map(nm),{hold:true});NB.then=go}else go()}};
+ const nx=()=>{if(vl.length)voice();else tail()};
  const key=()=>{const go=()=>keyBand(()=>{KEYHOLD=false;misHeader();$('keyBtn').classList.add('new');if(c.key.post.length){nonaSay(c.key.post.map(nm),{hold:true});NB.then=nx}else nx()});
   if(c.key.pre.length){nonaSay(c.key.pre.map(nm),{hold:true});NB.then=go}else go()};
  nonaSay(c.mem.map(nm),{hold:true});
- NB.then=c.key?key:(c.voice?voice:tail)}
+ NB.then=c.key?key:(vl.length?()=>voice():tail)}
 function classUpSeq(d){if(d.cu)return classUpSeq2(d);const N=esc(PILOT||'操縦者'),from=CLS;
  nonaSay([[N+'。あの砲台の信号ですが……止まる直前、送り先がありました。どこかに、まだ命令を出しているものがいます。'],['記録には、何もありません。……それなのに、なぜか、聞き覚えがある気がするのです。']],{hold:true});
  NB.then=()=>{CLS=d.cls;CH=d.ch+1;const nid='n-cls-'+d.cls.toLowerCase();if(MDEF[nid]&&!MIS[nid])MIS[nid]={got:true,read:false,clear:false,n:0,t:Date.now()};const sn=shopNotice();saveGame();misHeader();$('mailBtn').classList.add('new');
