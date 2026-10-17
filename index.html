@@ -994,7 +994,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
 </head>
 <body>
 <div id="clsBand" aria-live="polite"><b>CLASS UP</b><span id="clsTx"></span></div>
-<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v246</span><button id="bootBtn" type="button">START</button>
+<div id="boot"><span class="bk">COUNTER PROTOCOL</span><span class="bv">BUILD v247</span><button id="bootBtn" type="button">START</button>
  <div class="bh"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><span>スマートフォンは横向きにしてプレイしてください<small>START を押すと、音声が流れ、横画面の全画面表示に切り替わります</small></span></div></div>
 <div id="rot" role="alert"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="6" width="16" height="36" rx="2" fill="none" stroke="#f0a040" stroke-width="2.5"/><rect x="21" y="37" width="6" height="2" fill="#f0a040"/></svg><b>ROTATE DEVICE</b><span>画面を横向きにしてください</span></div>
 <div id="app">
@@ -1072,7 +1072,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
   <button class="mitem" id="mConfig"><span class="no">SYS</span><span class="t en">CONFIG<br><small>画質・表示・視点を変更する</small></span></button>
   <button class="mitem" id="mExit"><span class="no">SYS</span><span class="t en">SAVE &amp; EXIT<br><small>自動で保存してタイトル画面に戻る</small></span></button>
   <div class="warn-msg" id="mWarn"></div>
-  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v246</span></div>
+  <div class="mfoot"><span id="mUnit">HX-07 VESTIGE</span><span>VER 0.9 ／ v247</span></div>
  </div>
 </div>
 
@@ -1139,7 +1139,7 @@ body.labtalk #gui>:not(#visit){display:none!important}body.labtalk #gui{z-index:
   <button class="tbtn tcon" id="tCon">CONTINUE<small id="tConSub"></small></button>
  </div>
  <div class="tcred">© CREATED BY <b>スタッフT</b></div>
- <div class="tver" id="tVer">VER 0.9 ／ BUILD v246</div>
+ <div class="tver" id="tVer">VER 0.9 ／ BUILD v247</div>
 </div>
 <div id="loading" hidden role="status" aria-label="読み込み中"><div class="lbox"><div class="lhd">NOW LOADING<b id="lPct">0%</b></div><div class="lbar" id="lBar"></div><div class="llog" id="lLog"></div></div><div class="lgear"></div></div>
 <div id="op" hidden>
@@ -4972,11 +4972,11 @@ const GEAR_MOB={
  vb3:{name:'リブラ',model:'erich',vpose:'common',dual:1,beam:1,cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'LBS',lHand:'LBS',rShoulder:'LBM',lShoulder:'LBL'},   // エーリヒ：両手の巨大な盾で正面を固め、ミサイルとレーザーで攻める耐久型
   hp:30000,dmg:0,rate:2.6,rng:70,spd:5,keep:28,bs:24,rw:0,tier:'boss',msK:.8,msSpd:1.8,msHom:1.7,msMax:12,rage:1,tx:{dk:.16,spread:1.6,cdK:1.0,gap:1,qb:0,jump:0},guard:{p:9,near:0,t:[2.2,3.4],cd:[.5,1.2]}},
  lab_n:{name:'警備機 N',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'RF3',rShoulder:'none',lShoulder:'none'},tint:{main:0xe6e8e4,sub:0xb4b9b6,warn:0x6fd3e0,joint:0x1a1c20,eye:0x202a30},
-  hp:15000,dmg:0,rate:2.0,rng:70,spd:8,keep:26,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.2,spread:1.7,cdK:1.3,gap:.8},deco(m){labDeco(m,'N')}},   // N：中距離から両手のライフル
+  hp:15000,dmg:0,rate:2.0,rng:70,spd:8,keep:26,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.13,spread:1.7,cdK:1.3,gap:.8},deco(m){labDeco(m,'N')}},   // N：中距離から両手のライフル
  lab_d:{name:'警備機 D',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF4',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:{main:0xe6e8e4,sub:0xb4b9b6,warn:0x8cf06e,joint:0x1a1c20,eye:0x202a30},
-  hp:15000,dmg:0,rate:2.0,rng:110,spd:6,keep:46,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.3,spread:1.1,cdK:1.2,gap:1},deco(m){labDeco(m,'D')}},   // D：遠距離から長砲身
+  hp:15000,dmg:0,rate:2.0,rng:110,spd:6,keep:46,bs:28,rw:0,scale:1.2,tier:'boss',tx:{dk:.09,spread:1.1,cdK:1.2,gap:1},deco(m){labDeco(m,'D')}},   // D：遠距離から長砲身
  lab_m:{name:'警備機 M',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'BL4',lHand:'BL4',rShoulder:'none',lShoulder:'none'},tint:{main:0xe6e8e4,sub:0xb4b9b6,warn:0xe0403a,joint:0x1a1c20,eye:0x202a30},
-  hp:15000,dmg:0,rate:1.6,rng:30,spd:11,keep:6,bs:30,rw:0,scale:1.2,tier:'boss',rush:34,tx:{mk:.35,spread:1.6,cdK:1.0,gap:.5},deco(m){labDeco(m,'M')}},   // M：近接で斬りかかる
+  hp:15000,dmg:0,rate:1.6,rng:30,spd:11,keep:6,bs:30,rw:0,scale:1.2,tier:'boss',rush:34,tx:{mk:.15,spread:1.6,cdK:1.3,gap:.65},deco(m){labDeco(m,'M')}},   // M：近接で斬りかかる
  cvBoss:{name:'無人輸送ギア（親機）',cfg:{head:'HD-02',core:'CR-02',arms:'AR-02',legs:'LG-02',rHand:'MG',lHand:'none',rShoulder:'MS',lShoulder:'none'},tint:'convoy',hp:22500,dmg:34,rate:2.0,rng:70,spd:12,keep:30,bs:30,rw:6000,scale:1.15,tier:'boss'},
  cvEsc:{name:'無人護衛ギア',cfg:{head:'HD-01',core:'CR-01',arms:'AR-01',legs:'LG-01',rHand:'RF',lHand:'none',rShoulder:'none',lShoulder:'none'},tint:'convoyD',hp:7500,dmg:30,rate:3.0,rng:60,spd:12,keep:30,bs:30,rw:2000,tier:'mob'},
  vanguard:{name:'旧軍の制式機',cfg:{head:'HD-03',core:'CR-03',arms:'AR-03',legs:'LG-03',rHand:'RF3',lHand:'BL',rShoulder:'MS',lShoulder:'none'},tint:'graph',hp:3000,dmg:55,rate:2.8,rng:60,spd:8,keep:28,bs:28,rw:2800,tier:'mid'},
@@ -6003,7 +6003,7 @@ const MLIST=[
  {id:'4-S',wx:'indoor',ch:4,kind:'visit',story:true,ready:true,need:['vb2'],afterVisit:'v-b3-valter',jam:true,lab:true,title:'壁の中の研究所',from:'砂原の使者 ティモ',client:'ティモ',voice:'youthM',img:'img/rivals/rival-noah-timo.png',imgF:'',reward:36000,cls:'A',field:'lab',fieldJa:'壁の内側（旧軍の研究所）',   // 長い廊下→レナード→起動ムービー→円形の広間で N／D／M。セリフは仮
   obj:'広間の警備機3機（N・D・M）をすべて撃破（1機あたり耐久15,000）',fail:'CORE 大破',enemyJa:'警備機 N ／ D ／ M（旧軍の制式ではない次世代機）',
   desc:'<ruby class="mc">NOAH<rt>ノア</rt></ruby> の許しで、壁の入口が開いた。内側は旧軍の研究所。長い廊下の先の円形の広間で、三機の警備機が待っている。壁の内側は妨害下で、ロックは半分の距離、マップは使えない。依頼人は、砂原の使者ティモ。',
-  brief:['壁の内側、信号の発信源となっている施設へ進入します。ヴァルターさんの話にあった、設計者の研究所と思われます。<br>内部は妨害下です。ロックは半分の距離、マップは使えません。','進入路は長い一本道の廊下です。敵の反応はありません。……反応がないこと自体が、不気味です。<br>最奥の円形の広間に、警備機が三機あります。連携して動くと予測されます。'],
+  brief:['壁の内側、信号の発信源となっている施設へ進入します。ヴァルターさんの話にあった、設計者の研究所と思われます。','内部は妨害下です。ロックは半分の距離、マップは使えません。','進入路は長い一本道の廊下です。敵の反応はありません。……反応がないこと自体が、不気味です。','最奥の円形の広間に、警備機が三機あります。連携して動くと予測されます。'],
   comm:{start:[['i','ここから先は、おれは入れない。待ってる。']],c1:'内部の電源が生きています。……誰かが、ずっと維持していたようです。',c2:'信号が強くなりました。同じ数を、繰り返し数えています。',c3:'前方に機影。……この反応は、レナードさんです。',
    m1:'起動しました。三機、同時に。……識別名は、N、D、M。',m2:'この並び……。いえ、今は戦闘に集中します。',fight:'妨害、継続。残り三機です。',
    d1:'一機、停止。残りの動きが速くなりました。連携を崩してください。',d2:'二機、停止。最後の一機が、単独で攻撃を強めています。',clear:'三機とも、沈黙。',clear2:'……動力部の奥に、何かあります。接続します。'},
@@ -6335,7 +6335,6 @@ const LAB_R=65,LAB_CW=5.6,LAB_Z0=-330,LAB_PED=[[-24,40],[0,50],[24,40]],LAB_LEO=
  const N=96,rw=LAB_R+1.5;
  for(let i=0;i<N;i++){const a=i/N*Math.PI*2;if(Math.abs(a-Math.PI)<.115)continue;const w=2*Math.PI*rw/N+.6;
   box(LAB,w,15,3,i%2?wl:wl2,Math.sin(a)*rw,7.5,Math.cos(a)*rw,0,a,0);box(LAB,w-.6,.35,.2,cy,Math.sin(a)*(rw-1.55),3,Math.cos(a)*(rw-1.55),0,a,0);if(i%2)box(LAB,w-.6,.25,.2,cy,Math.sin(a)*(rw-1.55),9,Math.cos(a)*(rw-1.55),0,a,0)}
- for(let i=0;i<6;i++){const a=(i*60+30)*Math.PI/180,x=Math.sin(a)*36,z=Math.cos(a)*36;box(LAB,2.6,15,2.6,wl,x,7.5,z,0,a,0);box(LAB,2.9,.8,2.9,hz,x,.4,z,0,a,0);box(LAB,.1,12,.1,cy,x-Math.sin(a)*1.35,7,z-Math.cos(a)*1.35,0,a,0)}
  for(let i=0;i<12;i++){const a=i/12*Math.PI*2,r=i%2?24:46;box(LAB,5,.3,1.4,lamp,Math.sin(a)*r,17,Math.cos(a)*r,0,a,0)}
  const ped=[];LAB_PED.forEach(([x,z])=>{cyl(LAB,3.8,4.2,.5,dk,x,.25,z,0,0,20);const m=new THREE.MeshBasicMaterial({color:0x1a2024}),rg=new THREE.Mesh(new THREE.RingGeometry(2.9,3.5,36),m);rg.rotation.x=-Math.PI/2;rg.position.set(x,.52,z);LAB.add(rg);ped.push(m)});LAB.userData.ped=ped;LAB.add(new THREE.HemisphereLight(0xdff0f4,0x303a40,1.1));
  for(let k=0,z=-(LAB_R+3);z>LAB_Z0-4;z-=8,k++){[-1,1].forEach(sg=>{box(LAB,1.8,12,8.2,k%2?wl:wl2,sg*(LAB_CW+.9),6,z);box(LAB,.08,.3,7.4,cy,sg*(LAB_CW-.02),2.4,z);box(LAB,.08,.2,7.4,cy,sg*(LAB_CW-.02),7.5,z);box(LAB,.3,.02,2.4,hz,sg*3.2,.04,z)});if(k%2===0)box(LAB,LAB_CW*2,.3,1.2,lamp,0,14,z-4)}
@@ -7134,7 +7133,7 @@ function labMovie(dt){const Z=RUN.lab,d=RUN.def,t=Z.t,lo=LAB.userData.leo;
   banner('BATTLE START','N ／ D ／ M',false,2);SND.play('start',{g:.5});comm(d.comm.fight,3)}}
 function labFight(dt){const Z=RUN.lab,d=RUN.def,g=Z.ord,al=g.filter(e=>e.alive),dead=3-al.length,tot=g.reduce((a,e)=>a+Math.max(0,e.hp),0),mx=g.reduce((a,e)=>a+e.max,0),k=tot/mx;
  $('escHp').style.width=(100*k)+'%';$('escHp').classList.toggle('lo',k<.35);$('escD').textContent=Math.ceil(k*100)+'%';$('escS').textContent='警備機 N ／ D ／ M　残り '+al.length;
- if(dead>Z.dead){Z.dead=dead;if(al.length){al.forEach(e=>{e.spec.spd*=1.15;e.tier.cdK/=1.15;e.tier.gap/=1.15;e.ws.forEach(w=>{w.cd=Math.min(w.cd,.8)})});SND.play('reinf',{g:.4});comm(dead===1?d.comm.d1:d.comm.d2,3)}}
+ if(dead>Z.dead){Z.dead=dead;if(al.length){al.forEach(e=>{e.spec.spd*=1.1;e.tier.cdK/=1.1;e.tier.gap/=1.1;e.ws.forEach(w=>{w.cd=Math.min(w.cd,.8)})});SND.play('reinf',{g:.4});comm(dead===1?d.comm.d1:d.comm.d2,3)}}
  if(!al.length&&!RUN.ok&&P.down<=0){RUN.ok=true;SND.play('complete',{g:.55});RUN.endT=8.4;
   comm(d.comm.clear,2.6);comm(d.comm.clear2,3.6,()=>{if(!RUN||!RUN.ok)return;RUN.hold=performance.now()+4800;setTimeout(()=>{if(!RUN||!RUN.ok)return;memFxShow(d);setTimeout(()=>{if(RUN&&RUN.ok)banner('MISSION COMPLETE',RUN.def.title)},3300)},1000)});RUN.hold=performance.now()+60000}}
 function labTick(dt){const Z=RUN.lab,d=RUN.def,c=d.comm;Z.t+=dt;
